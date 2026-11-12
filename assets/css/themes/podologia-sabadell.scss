@@ -1,0 +1,365 @@
+/* ----------------------------------------------------------------------------
+ * Easy!Appointments - Online Appointment Scheduler
+ *
+ * Podologia Sabadell theme
+ * Inspired by the identity of https://www.podologiasabadell.com/
+ * Copyright (c) 2026 - Custom theme
+ * License: GPL-3.0-or-later
+ *
+ * Place in: assets/css/themes/podologia-sabadell.scss
+ * Compile with the Easy!Appointments Gulp styles task.
+ * ---------------------------------------------------------------------------- */
+
+$theme: 'podologia-sabadell' !default;
+
+// -----------------------------------------------------------------------------
+// Brand palette: deep clinical blue, bright cyan and airy white.
+// -----------------------------------------------------------------------------
+$white: #ffffff !default;
+$gray-100: #f4f9fc !default;
+$gray-200: #e9f1f7 !default;
+$gray-300: #d8e6ef !default;
+$gray-400: #b8cbd9 !default;
+$gray-500: #8ba1b2 !default;
+$gray-600: #637b8f !default;
+$gray-700: #435c70 !default;
+$gray-800: #25445b !default;
+$gray-900: #102e47 !default;
+$black: #091f31 !default;
+
+$blue: #075397 !default;
+$indigo: #354c9b !default;
+$purple: #66528c !default;
+$pink: #bf5d86 !default;
+$red: #c53e50 !default;
+$orange: #c77c28 !default;
+$yellow: #e6b544 !default;
+$green: #237b64 !default;
+$teal: #008da9 !default;
+$cyan: #08a2c9 !default;
+
+$brand-navy: #063f7e;
+$brand-cyan: #08a2c9;
+$brand-cyan-soft: #e7f7fb;
+$brand-cyan-deep: #087b9b;
+
+$primary: $brand-navy !default;
+$secondary: $gray-700 !default;
+$success: $green !default;
+$info: $brand-cyan-deep !default;
+$warning: $yellow !default;
+$danger: $red !default;
+$light: $gray-100 !default;
+$dark: $gray-900 !default;
+
+// Bootstrap uses this to choose legible foreground colors.
+$min-contrast-ratio: 4.5 !default;
+
+// -----------------------------------------------------------------------------
+// Global design tokens
+// -----------------------------------------------------------------------------
+$body-bg: $gray-100 !default;
+$body-color: $gray-800 !default;
+$headings-color: $brand-navy !default;
+$border-color: $gray-300 !default;
+$link-color: $brand-navy !default;
+$link-hover-color: #006d99 !default;
+$component-active-bg: $primary !default;
+
+$enable-rounded: true !default;
+$border-radius: 0.75rem !default;
+$border-radius-sm: 0.45rem !default;
+$border-radius-lg: 1rem !default;
+$box-shadow-sm: 0 5px 18px rgba($brand-navy, 0.06) !default;
+$box-shadow: 0 12px 35px rgba($brand-navy, 0.09) !default;
+
+$font-family-sans-serif:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif !default;
+
+$font-size-base: 1rem !default;
+$line-height-base: 1.6 !default;
+$headings-font-weight: 650 !default;
+$headings-line-height: 1.25 !default;
+
+$btn-font-weight: 600 !default;
+$btn-padding-y: 0.65rem !default;
+$btn-padding-x: 1.2rem !default;
+$btn-border-radius: 0.65rem !default;
+$btn-border-radius-sm: 0.5rem !default;
+$btn-border-radius-lg: 0.8rem !default;
+$input-btn-focus-color: rgba($brand-cyan, 0.22) !default;
+$input-btn-focus-width: 0.2rem !default;
+
+$input-bg: $white !default;
+$input-color: $gray-900 !default;
+$input-border-color: $gray-300 !default;
+$input-border-radius: 0.65rem !default;
+$input-focus-border-color: $brand-cyan-deep !default;
+$input-focus-box-shadow: 0 0 0 0.2rem rgba($brand-cyan, 0.17) !default;
+$form-select-border-color: $gray-300 !default;
+$form-select-focus-border-color: $brand-cyan-deep !default;
+
+$navbar-dark-color: rgba($white, 0.85) !default;
+$navbar-dark-hover-color: $white !default;
+$navbar-light-hover-color: $brand-navy !default;
+$alert-border-width: 0 !default;
+$progress-height: 0.5rem !default;
+$progress-border-radius: 1rem !default;
+
+// Preserve the exact Bootstrap import structure used by Easy!Appointments.
+@import '../../../node_modules/bootstrap/scss/bootstrap';
+
+// -----------------------------------------------------------------------------
+// Fonts and common controls
+// -----------------------------------------------------------------------------
+$web-font-path: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' !default;
+@if $web-font-path {
+    @import url($web-font-path);
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+    background: rgba($brand-cyan, 0.25);
+    color: $brand-navy;
+}
+
+:focus-visible {
+    outline: 3px solid $brand-cyan;
+    outline-offset: 2px;
+}
+
+.btn,
+.form-control,
+.form-select {
+    transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.btn-primary {
+    &:hover,
+    &:focus-visible {
+        background-color: #03508d;
+        border-color: #03508d;
+    }
+}
+
+.btn-outline-primary:hover {
+    color: $white;
+}
+
+.badge.bg-light {
+    color: $dark;
+}
+
+.progress {
+    box-shadow: none;
+
+    .progress-bar {
+        font-size: 0.65rem;
+        line-height: 1;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Customer-facing booking wizard (scoped so backend views stay predictable)
+// -----------------------------------------------------------------------------
+#book-appointment-wizard {
+    background-color: $white !important; // Overrides the stock `.bg-body` utility.
+    border-radius: 1rem;
+    box-shadow: 0 16px 48px rgba($brand-navy, 0.1);
+
+    #header {
+        // `bg-primary` is !important in Bootstrap, so this is intentional.
+        background: linear-gradient(115deg, $brand-navy 0%, #07599b 100%) !important;
+        color: $white;
+
+        #company-name {
+            font-weight: 600 !important;
+            letter-spacing: -0.02em;
+        }
+
+        .display-booking-selection {
+            color: rgba($white, 0.78) !important;
+        }
+    }
+
+    // The stock wizard gives these headings `text-muted` and `fw-light`.
+    .frame-title {
+        color: $brand-navy !important;
+        font-weight: 650 !important;
+        letter-spacing: -0.025em;
+    }
+
+    .wizard-frame label {
+        color: $gray-800;
+    }
+
+    .form-select,
+    .form-control {
+        min-height: 2.8rem;
+        border-color: $gray-300;
+        background-color: $white;
+
+        &:focus {
+            border-color: $brand-cyan-deep;
+            box-shadow: 0 0 0 0.2rem rgba($brand-cyan, 0.16);
+        }
+    }
+
+    // Easy!Appointments uses `.btn-dark` for the wizard Next buttons.
+    .command-buttons .button-next.btn-dark {
+        background-color: $brand-navy !important;
+        border-color: $brand-navy !important;
+        color: $white !important;
+
+        &:hover,
+        &:focus-visible {
+            background-color: #03508d !important;
+            border-color: #03508d !important;
+        }
+    }
+
+    .command-buttons .button-back {
+        color: $brand-navy;
+        border-color: $gray-400;
+
+        &:hover,
+        &:focus-visible {
+            background-color: $brand-cyan-soft;
+            border-color: $brand-cyan-deep;
+            color: $brand-navy;
+        }
+    }
+
+    #service-description {
+        color: $gray-700;
+        line-height: 1.6;
+    }
+
+    // Time slots inherit their clickable state from Easy!Appointments.
+    #available-hours .available-hour {
+        border-radius: 0.55rem;
+        border-color: $gray-300;
+        color: $brand-navy;
+        background-color: $white;
+
+        &:hover:not(:disabled) {
+            background-color: $brand-cyan-soft;
+            border-color: $brand-cyan-deep;
+            color: $brand-navy;
+        }
+    }
+
+    #available-hours .selected-hour {
+        background-color: $brand-navy !important;
+        border-color: $brand-navy !important;
+        color: $white !important;
+    }
+
+    #frame-footer {
+        background-color: $gray-100;
+        border-top-color: $gray-200 !important;
+        color: $gray-700;
+
+        a {
+            color: $brand-navy;
+        }
+    }
+
+    // Avoid changing the dimensions controlled by frontend.css.
+    #steps .book-step {
+        border-radius: 0.6rem !important;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Flatpickr: the stock installation loads `material_green.css` before this theme.
+// These rules re-color the actual appointment-date picker in brand blue.
+// -----------------------------------------------------------------------------
+#book-appointment-wizard {
+    .flatpickr-calendar {
+        border-radius: 0.8rem;
+        box-shadow: 0 5px 22px rgba($brand-navy, 0.07);
+    }
+
+    .flatpickr-months,
+    .flatpickr-month,
+    .flatpickr-weekdays,
+    span.flatpickr-weekday {
+        background-color: $brand-navy;
+        color: $white;
+        fill: $white;
+    }
+
+    .flatpickr-current-month,
+    .flatpickr-current-month .flatpickr-monthDropdown-months,
+    .flatpickr-current-month input.cur-year,
+    .flatpickr-months .flatpickr-prev-month,
+    .flatpickr-months .flatpickr-next-month {
+        color: $white;
+        fill: $white;
+    }
+
+    .flatpickr-day.today {
+        border-color: $brand-cyan-deep;
+    }
+
+    .flatpickr-day.today:not(.selected):hover {
+        background: $brand-cyan-soft;
+        color: $brand-navy;
+    }
+
+    .flatpickr-day.selected,
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange,
+    .flatpickr-day.selected:hover {
+        background-color: $brand-navy;
+        border-color: $brand-navy;
+        color: $white;
+    }
+
+    .flatpickr-day:not(.flatpickr-disabled):not(.selected):hover {
+        background-color: $brand-cyan-soft;
+        border-color: $brand-cyan-soft;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Responsive: let the booking screen use the full width on narrow devices.
+// -----------------------------------------------------------------------------
+@media (max-width: 767.98px) {
+    #book-appointment-wizard {
+        border-radius: 0;
+        box-shadow: none;
+
+        #header {
+            padding-top: 1.25rem !important;
+            padding-bottom: 1.25rem !important;
+        }
+
+        .frame-title {
+            font-size: 1.45rem;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn,
+    .form-control,
+    .form-select {
+        transition: none;
+    }
+}
