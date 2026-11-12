@@ -602,4 +602,7 @@ $lang['cancel_appointment_question'] = 'The appointment stays in the calendar as
 $lang['cancel_without_notifying'] = 'Cancel without notifying';
 $lang['cancel_and_notify'] = 'Cancel and notify';
 $lang['delete_appointment_warning'] = 'Deleting removes the appointment for good, together with its history. Use it only to fix mistakes; to call off an appointment use "Cancel appointment" instead.';
+$lang['calendar_slot_minutes'] = 'Calendar interval';
+$lang['calendar_slot_minutes_hint'] = 'Height of each row of the calendar and step used when appointments are dragged or resized. Appointments can still last any number of minutes.';
+$lang['calendar_slot_minutes_invalid'] = 'The calendar interval must be a whole number of minutes between 5 and 60.';
 // End

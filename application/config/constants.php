@@ -98,6 +98,10 @@ const APPOINTMENT_STATUS_COMPLETED = 'completed';
 const APPOINTMENT_STATUS_CANCELLED = 'cancelled';
 const APPOINTMENT_STATUS_NO_SHOW = 'no_show';
 
+const CALENDAR_SLOT_MINUTES_DEFAULT = 15;
+const CALENDAR_SLOT_MINUTES_MIN = 5;
+const CALENDAR_SLOT_MINUTES_MAX = 60;
+
 const LOGIN_RATE_LIMIT_ATTEMPTS = 5; // Failed login attempts allowed per window
 const LOGIN_RATE_LIMIT_WINDOW = 300; // Seconds
 

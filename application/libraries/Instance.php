@@ -105,7 +105,7 @@ class Instance
                 'username' => 'administrator',
                 'password' => $password,
                 'notifications' => true,
-                'calendar_view' => CALENDAR_VIEW_DEFAULT,
+                'calendar_view' => CALENDAR_VIEW_TABLE,
             ],
         ]);
 

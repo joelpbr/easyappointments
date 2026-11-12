@@ -602,4 +602,7 @@ $lang['cancel_appointment_question'] = 'La cita quedará en el calendario como c
 $lang['cancel_without_notifying'] = 'Cancelar sin avisar';
 $lang['cancel_and_notify'] = 'Cancelar y avisar';
 $lang['delete_appointment_warning'] = 'Eliminar borra la cita definitivamente, junto con su historial. Úsalo solo para corregir errores; para anular una cita usa «Cancelar cita».';
+$lang['calendar_slot_minutes'] = 'Intervalo de la agenda';
+$lang['calendar_slot_minutes_hint'] = 'Altura de cada fila de la agenda y paso al arrastrar o redimensionar citas. Las citas pueden seguir durando cualquier número de minutos.';
+$lang['calendar_slot_minutes_invalid'] = 'El intervalo de la agenda debe ser un número entero de minutos entre 5 y 60.';
 // End

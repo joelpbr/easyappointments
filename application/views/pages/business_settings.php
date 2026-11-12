@@ -124,6 +124,21 @@
                             </div>
                         </div>
 
+                        <h5 class="mb-3 fw-light"><?= lang('calendar_slot_minutes') ?></h5>
+
+                        <div class="mb-5">
+                            <label for="calendar-slot-minutes" class="form-label">
+                                <?= lang('minutes') ?>
+                            </label>
+                            <input id="calendar-slot-minutes" data-field="calendar_slot_minutes" class="form-control"
+                                   type="number" min="5" max="60" step="5">
+                            <div class="form-text text-muted">
+                                <small>
+                                    <?= lang('calendar_slot_minutes_hint') ?>
+                                </small>
+                            </div>
+                        </div>
+
                         <div class="d-flex justify-content-start align-items-center mb-3">
                             <h5 class="mb-0 me-3 fw-light">
                                 <?= lang('appointment_status_options') ?>

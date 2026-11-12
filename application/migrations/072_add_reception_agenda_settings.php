@@ -1,0 +1,58 @@
+<?php defined('BASEPATH') or exit('No direct script access allowed');
+
+/* ----------------------------------------------------------------------------
+ * Easy!Appointments - Online Appointment Scheduler
+ *
+ * @package     EasyAppointments
+ * @author      A.Tselegidis <alextselegidis@gmail.com>
+ * @copyright   Copyright (c) Alex Tselegidis
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * @link        https://easyappointments.org
+ * ---------------------------------------------------------------------------- */
+
+/**
+ * Reception agenda.
+ *
+ * - "calendar_slot_minutes": the grid interval of the calendar, 15 minutes by default.
+ * - Administrators and secretaries (reception) start on the table view, where the providers are shown side by side.
+ * - Spanish regional format: weeks start on Monday and times use 24 hours, unless they were already changed.
+ */
+class Migration_Add_reception_agenda_settings extends EA_Migration
+{
+    /**
+     * Upgrade method.
+     */
+    public function up(): void
+    {
+        if (!$this->db->get_where('settings', ['name' => 'calendar_slot_minutes'])->num_rows()) {
+            $this->db->insert('settings', ['name' => 'calendar_slot_minutes', 'value' => '15']);
+        }
+
+        $user_ids = $this->db
+            ->select('users.id')
+            ->from('users')
+            ->join('roles', 'roles.id = users.id_roles', 'inner')
+            ->where_in('roles.slug', ['admin', 'secretary'])
+            ->get()
+            ->result_array();
+
+        if ($user_ids) {
+            $this->db
+                ->where_in('id_users', array_column($user_ids, 'id'))
+                ->where('calendar_view', 'default')
+                ->update('user_settings', ['calendar_view' => 'table']);
+        }
+
+        $this->db->update('settings', ['value' => 'monday'], ['name' => 'first_weekday', 'value' => 'sunday']);
+        $this->db->update('settings', ['value' => 'military'], ['name' => 'time_format', 'value' => 'regular']);
+    }
+
+    /**
+     * Downgrade method.
+     */
+    public function down(): void
+    {
+        // The previous calendar view of each user is not known, so it is left as it is.
+        $this->db->delete('settings', ['name' => 'calendar_slot_minutes']);
+    }
+}
