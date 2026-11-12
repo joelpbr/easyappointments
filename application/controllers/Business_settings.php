@@ -74,6 +74,7 @@ class Business_settings extends EA_Controller
             'user_id' => $user_id,
             'role_slug' => $role_slug,
             'business_settings' => filter_sensitive_settings($this->settings_model->get()),
+            'appointment_statuses' => appointment_statuses(),
             'first_weekday' => setting('first_weekday'),
             'time_format' => setting('time_format'),
         ]);
@@ -110,6 +111,10 @@ class Business_settings extends EA_Controller
                     $setting['id'] = $existing_setting['id'];
                 }
 
+                if ($setting['name'] === 'appointment_statuses') {
+                    $setting['value'] = $this->prepare_appointment_statuses((string) $setting['value']);
+                }
+
                 $this->settings_model->only($setting, $this->allowed_setting_fields);
 
                 $this->settings_model->optional($setting, $this->optional_setting_fields);
@@ -121,6 +126,31 @@ class Business_settings extends EA_Controller
         } catch (Throwable $e) {
             json_exception($e);
         }
+    }
+
+    /**
+     * Validate the appointment statuses before they are stored.
+     *
+     * @param string $value Statuses as JSON.
+     *
+     * @return string Normalized statuses as JSON.
+     *
+     * @throws RuntimeException When a removed status is still used by appointments.
+     */
+    protected function prepare_appointment_statuses(string $value): string
+    {
+        $statuses = normalize_appointment_statuses(json_decode($value, true) ?: []);
+
+        $removed_codes = array_diff(array_column(appointment_statuses(), 'code'), array_column($statuses, 'code'));
+
+        if (
+            $removed_codes &&
+            $this->appointments_model->query()->where_in('status', $removed_codes)->count_all_results() > 0
+        ) {
+            throw new RuntimeException(lang('appointment_status_in_use'));
+        }
+
+        return json_encode($statuses, JSON_UNESCAPED_UNICODE);
     }
 
     /**

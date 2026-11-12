@@ -408,7 +408,7 @@ $lang['allow_rescheduling_cancellation_before'] = 'Permitir reagendar/cancelar a
 $lang['at_least_one_field'] = 'Al menos un campo debe ser mostrado en la página de reservas.';
 $lang['status'] = 'Estado';
 $lang['appointment_status_options'] = 'Opciones de estado de citas';
-$lang['appointment_status_options_info'] = 'Define una lista de los estados de disponibilidad de citas que pueden usarse en la página de calendario (la primera se convertirá en el valor por defecto).';
+$lang['appointment_status_options_info'] = 'Cambia el nombre de los estados o añade los tuyos. Las citas nuevas empiezan con el primer estado. Las citas con un estado que libera el hueco (por ejemplo, cancelada) siguen en el calendario, pero ya no ocupan su tiempo.';
 $lang['sunday_short'] = 'Dom';
 $lang['monday_short'] = 'Lun';
 $lang['tuesday_short'] = 'Mar';
@@ -594,4 +594,7 @@ $lang['caldav_allow_host_and_connect'] = 'Permitir y conectar';
 $lang['inactive'] = 'Inactivo';
 $lang['service_active_hint'] = 'Los servicios inactivos conservan sus citas, pero ya no se pueden elegir para citas nuevas ni reservar en línea.';
 $lang['service_has_appointments'] = 'Este servicio tiene citas y no se puede borrar. Desactívalo para conservar el historial de citas.';
+$lang['status_frees_slot'] = 'Libera el hueco';
+$lang['system_status'] = 'Sistema';
+$lang['appointment_status_in_use'] = 'Un estado eliminado todavía lo usan algunas citas. Cambia antes su estado.';
 // End

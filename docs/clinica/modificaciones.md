@@ -20,3 +20,30 @@ Migración nueva: `application/migrations/070_add_treatment_catalog.php` (`servi
 | `application/views/pages/services.php`, `assets/js/pages/services.js` | Interruptor «Activo» y aviso «Inactivo» en el listado | Gestionar el estado desde la interfaz |
 | `application/language/*/translations_lang.php` | Claves `inactive`, `service_active_hint`, `service_has_appointments` | Textos nuevos (español traducido, resto en inglés) |
 | `openapi.yml` | `serviceName` en citas, `isActive` en servicios | Documentar la API |
+
+## Estados de cita (fase 3)
+
+Archivos nuevos: `application/helpers/appointment_status_helper.php` (lectura y normalización de los estados) y
+`application/migrations/071_add_appointment_status_codes.php` (sustituye el ajuste `appointment_status_options` por
+`appointment_statuses` y convierte el estado de las citas existentes a códigos).
+
+Las citas guardan un código estable (`scheduled`, `confirmed`, `completed`, `cancelled`, `no_show` o `custom_*`). Los
+estados del sistema siempre existen y conservan su significado; la clínica puede renombrarlos y añadir los suyos. Un
+estado que «libera el hueco» (Cancelada) deja de contar como tiempo ocupado.
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/config/constants.php`, `application/config/autoload.php` | Constantes `APPOINTMENT_STATUS_*` y carga del helper | Códigos compartidos |
+| `application/models/Appointments_model.php` | Validación del código; Programada por defecto; `get_slot_occupying()` y filtro en los contadores de asistentes y en `has_provider_conflict()` | Antes el estado no tenía efecto: una cita cancelada seguía ocupando el hueco |
+| `application/libraries/Availability.php` | Usa `get_slot_occupying()` | Los huecos de citas canceladas vuelven a estar disponibles |
+| `application/controllers/Booking_cancellation.php` | Cancelar marca la cita como Cancelada y añade el motivo a las notas, en lugar de borrarla; el webhook pasa a `appointment_save`; una cita ya cancelada no se puede volver a cancelar | No borrar en silencio citas canceladas (especificación 9.6) |
+| `application/controllers/Booking.php` | Las reservas y reprogramaciones públicas empiezan como Programada; una cita cancelada no se puede gestionar desde su enlace | Coherencia con los estados |
+| `application/controllers/Business_settings.php` | Normaliza los estados al guardar y rechaza quitar un estado que usan citas | Integridad de los datos |
+| `application/controllers/Calendar.php`, `application/views/pages/calendar.php`, `application/views/components/appointments_modal.php` | El desplegable usa código y nombre | Mostrar el nombre configurado |
+| `application/views/emails/appointment_*_email.php` | Muestran el nombre del estado | Los emails no deben enseñar el código |
+| `assets/js/components/appointment_status_options.js`, `assets/js/pages/business_settings.js` | Editor reescrito: nombre, «libera el hueco» y borrado solo para los propios. Construye el HTML con jQuery en vez de interpolar el texto | Nuevo modelo y se elimina una inyección de HTML del original |
+| `assets/js/utils/calendar_event_popover.js`, `calendar_default_view.js`, `calendar_table_view.js`, `assets/css/backend.scss` | Nombre del estado en el popover; las citas que liberan hueco se ven atenuadas y tachadas | Distinguir las canceladas sin ocultarlas |
+| `openapi.yml` | `status` documentado como código | Documentar la API |
+
+**Limitación conocida**: si recepción cancela una cita desde el calendario y el profesional sincroniza con Google o
+CalDAV, el evento externo se actualiza pero no se borra. La cancelación desde el enlace del paciente sí lo borra.

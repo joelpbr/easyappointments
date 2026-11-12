@@ -3,7 +3,7 @@
  * Local variables.
  *
  * @var array $available_services
- * @var array $appointment_status_options
+ * @var array $appointment_statuses
  * @var array $timezones
  * @var array $require_first_name
  * @var array $require_last_name
@@ -151,9 +151,9 @@
                                         <?= lang('status') ?>
                                     </label>
                                     <select id="appointment-status" class="form-select">
-                                        <?php foreach ($appointment_status_options as $appointment_status_option): ?>
-                                            <option value="<?= e($appointment_status_option) ?>">
-                                                <?= e($appointment_status_option) ?>
+                                        <?php foreach ($appointment_statuses as $appointment_status): ?>
+                                            <option value="<?= e($appointment_status['code']) ?>">
+                                                <?= e($appointment_status['name']) ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>

@@ -19,6 +19,32 @@
 App.Utils.CalendarEventPopover = (function () {
     const moment = window.moment;
 
+    /**
+     * Get the display name of an appointment status code.
+     *
+     * @param {String} code Status code.
+     *
+     * @return {String}
+     */
+    function getStatusName(code) {
+        const status = (vars('appointment_statuses') || []).find((status) => status.code === code);
+
+        return status ? status.name : code || '-';
+    }
+
+    /**
+     * Check whether an appointment status frees the slot (e.g. cancelled).
+     *
+     * @param {String} code Status code.
+     *
+     * @return {Boolean}
+     */
+    function statusFreesSlot(code) {
+        const status = (vars('appointment_statuses') || []).find((status) => status.code === code);
+
+        return Boolean(status?.frees_slot);
+    }
+
     // Icon Rendering Functions
 
     /**
@@ -283,7 +309,7 @@ App.Utils.CalendarEventPopover = (function () {
                 ...createPopoverRow('start', formatDateTime(info.event.start)),
                 ...createPopoverRow('end', formatDateTime(info.event.end)),
                 ...createPopoverRow('timezone', vars('timezones')[provider.timezone]),
-                ...createPopoverRow('status', data.status || '-'),
+                ...createPopoverRow('status', getStatusName(data.status)),
                 ...createPopoverRow('service', data.service.name),
                 $('<strong/>', {class: 'd-inline-block me-2', text: lang('provider')}),
                 renderMapIcon(provider),
@@ -337,6 +363,8 @@ App.Utils.CalendarEventPopover = (function () {
     // Public API
 
     return {
+        getStatusName,
+        statusFreesSlot,
         renderPhoneIcon,
         renderMapIcon,
         renderMailIcon,

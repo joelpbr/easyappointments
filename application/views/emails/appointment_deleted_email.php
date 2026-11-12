@@ -467,7 +467,7 @@ $customer_address = trim((string) ($customer['address'] ?? ''));
                                                         <?= lang('status') ?>
                                                     </td>
                                                     <td style="padding: 3px;">
-                                                        <?= e($appointment['status']) ?>
+                                                        <?= e(appointment_status_name($appointment['status'])) ?>
                                                     </td>
                                                 </tr>
                                             <?php endif; ?>

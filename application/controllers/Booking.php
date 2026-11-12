@@ -208,7 +208,8 @@ class Booking extends EA_Controller
 
             $results = $this->appointments_model->get(['hash' => $appointment_hash]);
 
-            if (empty($results)) {
+            // A cancelled appointment cannot be managed any more.
+            if (empty($results) || $results[0]['status'] === APPOINTMENT_STATUS_CANCELLED) {
                 html_vars([
                     'show_message' => true,
                     'page_title' => lang('page_title') . ' ' . $company_name,
@@ -396,7 +397,10 @@ class Booking extends EA_Controller
                     'hash' => $appointment_hash,
                 ]);
 
-                if (empty($existing_appointments)) {
+                if (
+                    empty($existing_appointments) ||
+                    $existing_appointments[0]['status'] === APPOINTMENT_STATUS_CANCELLED
+                ) {
                     throw new RuntimeException('Invalid appointment hash or appointment not found.');
                 }
 
@@ -570,9 +574,8 @@ class Booking extends EA_Controller
             $appointment['is_unavailability'] = false;
             $appointment['color'] = $service['color'];
 
-            $appointment_status_options_json = setting('appointment_status_options', '[]');
-            $appointment_status_options = json_decode($appointment_status_options_json, true) ?? [];
-            $appointment['status'] = $appointment_status_options[0] ?? null;
+            // New and rescheduled bookings start as scheduled, a previous confirmation no longer applies.
+            $appointment['status'] = APPOINTMENT_STATUS_SCHEDULED;
             $appointment['end_datetime'] = $this->appointments_model->calculate_end_datetime($appointment);
 
             $this->appointments_model->only($appointment, $this->allowed_appointment_fields);

@@ -879,6 +879,9 @@ App.Utils.CalendarTableView = (function () {
                     color: appointment.color,
                     display: 'block',
                     data: appointment,
+                    classNames: App.Utils.CalendarEventPopover.statusFreesSlot(appointment.status)
+                        ? ['fc-appointment-freed']
+                        : [],
                 };
             });
         $providerColumn.find('.calendar-wrapper').data('fullCalendar').addEventSource(calendarEvents);

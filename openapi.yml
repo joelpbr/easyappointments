@@ -2176,6 +2176,7 @@ components:
                     type: string
                 status:
                     type: string
+                    description: Status code, one of the configured appointment statuses (scheduled, confirmed, completed, cancelled, no_show or a custom_ code).
                 notes:
                     type: string
                 customerId:
@@ -2200,7 +2201,7 @@ components:
                 location: Test Street 1A, 12345 Some State, Some Place
                 meetingLink: https://meet.jit.si/example-meeting
                 color: '#123456'
-                status: Booked
+                status: scheduled
                 notes: This is a test appointment.
                 customerId: 5
                 providerId: 2
@@ -2223,6 +2224,7 @@ components:
                     type: string
                 status:
                     type: string
+                    description: Status code. New appointments default to scheduled.
                 notes:
                     type: string
                 customerId:
@@ -2237,7 +2239,7 @@ components:
                 location: Test Street 1A, 12345 Some State, Some Place
                 meetingLink: https://meet.jit.si/example-meeting
                 color: '#123456'
-                status: Booked
+                status: scheduled
                 notes: This is a test appointment.
                 customerId: 5
                 providerId: 2

@@ -212,8 +212,6 @@ class Calendar extends EA_Controller
 
         $calendar_view = request('view', $user['settings']['calendar_view']);
 
-        $appointment_status_options = setting('appointment_status_options');
-
         $customers = $this->customers_model->get(null, 50, null, 'update_datetime DESC');
 
         if (setting('limit_customer_access') && $role_slug === DB_SLUG_PROVIDER) {
@@ -248,6 +246,7 @@ class Calendar extends EA_Controller
                 array_filter($available_services, fn(array $service): bool => $service['is_active']),
             ),
             'secretary_providers' => $secretary_providers,
+            'appointment_statuses' => appointment_statuses(),
             'edit_appointment' => $edit_appointment,
             'google_sync_feature' => filter_var(
                 setting('google_sync_feature') ?: config('google_sync_feature'),
@@ -270,7 +269,7 @@ class Calendar extends EA_Controller
             'available_providers' => filter_sensitive_users_data($available_providers),
             'available_services' => $available_services,
             'secretary_providers' => $secretary_providers,
-            'appointment_status_options' => json_decode($appointment_status_options, true) ?? [],
+            'appointment_statuses' => appointment_statuses(),
             'require_first_name' => setting('require_first_name'),
             'require_last_name' => setting('require_last_name'),
             'require_email' => setting('require_email'),

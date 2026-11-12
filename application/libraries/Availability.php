@@ -366,7 +366,7 @@ class Availability
 
         $appointments = array_values(
             array_merge(
-                $this->CI->appointments_model->get($where),
+                $this->CI->appointments_model->get_slot_occupying($where),
                 $this->CI->unavailabilities_model->get($where),
                 $this->CI->blocked_periods_model->get_for_period($date, $date),
             ),
