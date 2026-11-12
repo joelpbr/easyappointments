@@ -235,6 +235,7 @@ class Calendar extends EA_Controller
             'date_format' => setting('date_format'),
             'time_format' => setting('time_format'),
             'first_weekday' => setting('first_weekday'),
+            'calendar_slot_minutes' => calendar_slot_minutes(),
             'company_working_plan' => setting('company_working_plan'),
             'timezones' => $this->timezones->to_array(),
             'privileges' => $privileges,

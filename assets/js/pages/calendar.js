@@ -19,6 +19,8 @@ App.Pages.Calendar = (function () {
 
     const moment = window.moment;
 
+    const AUTO_REFRESH_INTERVAL = 30000; // Milliseconds
+
     /**
      * Add the page event listeners.
      */
@@ -139,13 +141,38 @@ App.Pages.Calendar = (function () {
      */
     function initialize() {
         // Load and initialize the calendar view.
-        if (vars('calendar_view') === 'table') {
-            App.Utils.CalendarTableView.initialize();
-        } else {
-            App.Utils.CalendarDefaultView.initialize();
-        }
+        const calendarView =
+            vars('calendar_view') === 'table' ? App.Utils.CalendarTableView : App.Utils.CalendarDefaultView;
+
+        calendarView.initialize();
 
         App.Pages.Calendar.addEventListeners();
+
+        startAutoRefresh(calendarView);
+    }
+
+    /**
+     * Keep the calendar up to date with the changes made from other sessions.
+     *
+     * The calendar reloads every AUTO_REFRESH_INTERVAL and when the browser tab becomes visible again, but never while
+     * the user is working on it (an open dialog, popover or a drag in progress), so nothing is lost or moved under them.
+     *
+     * @param {Object} calendarView The active calendar view module.
+     */
+    function startAutoRefresh(calendarView) {
+        const isBusy = () =>
+            document.visibilityState !== 'visible' ||
+            $('.modal.show, .popover, .fc-event-dragging, .fc-event-resizing, .fc-highlight').length > 0;
+
+        const refresh = () => {
+            if (!isBusy()) {
+                calendarView.refresh();
+            }
+        };
+
+        setInterval(refresh, AUTO_REFRESH_INTERVAL);
+
+        document.addEventListener('visibilitychange', refresh);
     }
 
     document.addEventListener('DOMContentLoaded', initialize);

@@ -115,6 +115,10 @@ class Business_settings extends EA_Controller
                     $setting['value'] = $this->prepare_appointment_statuses((string) $setting['value']);
                 }
 
+                if ($setting['name'] === 'calendar_slot_minutes') {
+                    $setting['value'] = (string) validate_calendar_slot_minutes($setting['value']);
+                }
+
                 $this->settings_model->only($setting, $this->allowed_setting_fields);
 
                 $this->settings_model->optional($setting, $this->optional_setting_fields);

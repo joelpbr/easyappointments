@@ -20,11 +20,19 @@ developers to maintain and readjust their custom modifications on the main proje
 - Cancelled appointments no longer take their slot, so the time can be booked again, and they stay visible but faded in the calendar
 - Cancelling from the link in the confirmation email keeps the appointment as cancelled, with the reason in its notes, instead of deleting it
 - The calendar has a "Cancel appointment" action that keeps the appointment as cancelled, sends the cancellation email and removes it from the synced Google or CalDAV calendar; deleting now asks for a confirmation that explains the history is lost, and the dialogs say "Close" instead of "Cancel"
+- Administrators and reception open the calendar on the split view, with one column per provider that shares the screen width, and it can also show three days or a week
+- The calendar grid interval is configurable in the business settings (15 minutes by default)
+- Appointment blocks show the patient, the treatment, the time, the duration and the status, colored by treatment with a readable text color
+- The calendar refreshes by itself every 30 seconds and when going back to its tab, so changes from other sessions show up
+- The split view remembers the selected providers, services and number of days
+- Weeks start on Monday and times use 24 hours by default
 - The local development environment now starts with docker compose -f docker-compose.dev.yml up and only includes the application, the database, the asset watcher and Mailpit (phpMyAdmin, Baikal, OpenLDAP, phpLDAPadmin and Swagger UI were removed)
 - The Docker setup now runs MySQL 8.4 and defaults to the Spanish language and the Europe/Madrid time zone, both configurable in .env
 
 ### Fixed
 
+- Appointments created without a color, for example through the API, now take the color of their service instead of the default blue
+- The day names of the calendar are shown in the user language instead of always in English
 - Deleting a service that has appointments is now refused instead of silently deleting all of its appointments
 - The services API now returns the service color, as documented
 - A fresh installation now opens the installer instead of asking for a database migration when a console command, such as the scheduled synchronization, ran before the installation was completed

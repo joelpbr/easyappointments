@@ -270,10 +270,11 @@ App.Http.Calendar = (function () {
      * @param {String} filterType The filter type, could be either "provider" or "service".
      * @param {String} startDate Visible start date of the calendar.
      * @param {String} endDate Visible end date of the calendar.
+     * @param {Boolean} [silent] Do not show the error dialog when the request fails (automatic refreshes).
      *
      * @returns {jQuery.jqXHR}
      */
-    function getCalendarAppointments(recordId, startDate, endDate, filterType) {
+    function getCalendarAppointments(recordId, startDate, endDate, filterType, silent = false) {
         const url = App.Utils.Url.siteUrl('calendar/get_calendar_appointments');
 
         const data = {
@@ -284,7 +285,7 @@ App.Http.Calendar = (function () {
             filter_type: filterType,
         };
 
-        return $.post(url, data);
+        return $.ajax({url, method: 'POST', data, global: !silent});
     }
 
     /**
@@ -292,10 +293,11 @@ App.Http.Calendar = (function () {
      *
      * @param {Date} startDate
      * @param {Date} endDate
+     * @param {Boolean} [silent] Do not show the error dialog when the request fails (automatic refreshes).
      *
      * @return {*|jQuery}
      */
-    function getCalendarAppointmentsForTableView(startDate, endDate) {
+    function getCalendarAppointmentsForTableView(startDate, endDate, silent = false) {
         const url = App.Utils.Url.siteUrl('calendar/get_calendar_appointments_for_table_view');
 
         const data = {
@@ -304,7 +306,7 @@ App.Http.Calendar = (function () {
             end_date: moment(endDate).format('YYYY-MM-DD'),
         };
 
-        return $.post(url, data);
+        return $.ajax({url, method: 'POST', data, global: !silent});
     }
 
     /**

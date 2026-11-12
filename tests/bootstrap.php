@@ -104,3 +104,18 @@ define('APPOINTMENT_STATUS_CANCELLED', 'cancelled');
 define('APPOINTMENT_STATUS_NO_SHOW', 'no_show');
 
 require_once APPPATH . 'helpers/appointment_status_helper.php';
+
+// Matches application/config/constants.php.
+define('CALENDAR_SLOT_MINUTES_DEFAULT', 15);
+define('CALENDAR_SLOT_MINUTES_MIN', 5);
+define('CALENDAR_SLOT_MINUTES_MAX', 60);
+
+// Translations are not loaded in the unit tests, the key stands for the text.
+if (!function_exists('lang')) {
+    function lang(string $key): string
+    {
+        return $key;
+    }
+}
+
+require_once APPPATH . 'helpers/calendar_helper.php';

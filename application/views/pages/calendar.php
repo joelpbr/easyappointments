@@ -146,7 +146,10 @@
 
 <?php section('scripts'); ?>
 
+<!-- Day and month names of the calendar in the user language (only loaded here, other pages rely on English moment). -->
+<script src="<?= asset_url('assets/vendor/moment/locales.min.js') ?>"></script>
 <script src="<?= asset_url('assets/vendor/fullcalendar/index.global.min.js') ?>"></script>
+<script src="<?= asset_url('assets/vendor/fullcalendar/locales-all.global.min.js') ?>"></script>
 <script src="<?= asset_url('assets/vendor/fullcalendar-moment/index.global.min.js') ?>"></script>
 <script src="<?= asset_url('assets/vendor/jquery-jeditable/jquery.jeditable.min.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/ui.js') ?>"></script>
@@ -154,6 +157,7 @@
 <script src="<?= asset_url('assets/js/utils/calendar_table_view.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_event_popover.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_appointment_actions.js') ?>"></script>
+<script src="<?= asset_url('assets/js/utils/calendar_event_content.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/calendar_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/customers_http_client.js') ?>"></script>
 <?php if (vars('calendar_view') === CALENDAR_VIEW_DEFAULT): ?>

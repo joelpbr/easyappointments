@@ -354,7 +354,7 @@ App.Pages.Admins = (function () {
         $admins.find('.save-cancel-group').hide();
         $admins.find('.record-details').find('input, select, textarea').val('').prop('disabled', true);
         $admins.find('.record-details .form-label span').prop('hidden', true);
-        $admins.find('.record-details #calendar-view').val('default');
+        $admins.find('.record-details #calendar-view').val('table');
         $admins.find('.record-details #language').val(vars('default_language'));
         $admins.find('.record-details #timezone').val(vars('default_timezone'));
         $admins.find('.record-details #notifications').prop('checked', true);
