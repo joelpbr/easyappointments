@@ -597,4 +597,9 @@ $lang['service_has_appointments'] = 'Este servicio tiene citas y no se puede bor
 $lang['status_frees_slot'] = 'Libera el hueco';
 $lang['system_status'] = 'Sistema';
 $lang['appointment_status_in_use'] = 'Un estado eliminado todavía lo usan algunas citas. Cambia antes su estado.';
+$lang['cancel_appointment'] = 'Cancelar cita';
+$lang['cancel_appointment_question'] = 'La cita quedará en el calendario como cancelada y su hueco volverá a estar libre. ¿Quieres avisar al paciente y al profesional?';
+$lang['cancel_without_notifying'] = 'Cancelar sin avisar';
+$lang['cancel_and_notify'] = 'Cancelar y avisar';
+$lang['delete_appointment_warning'] = 'Eliminar borra la cita definitivamente, junto con su historial. Úsalo solo para corregir errores; para anular una cita usa «Cancelar cita».';
 // End

@@ -153,6 +153,7 @@
 <script src="<?= asset_url('assets/js/utils/calendar_default_view.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_table_view.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_event_popover.js') ?>"></script>
+<script src="<?= asset_url('assets/js/utils/calendar_appointment_actions.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/calendar_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/customers_http_client.js') ?>"></script>
 <?php if (vars('calendar_view') === CALENDAR_VIEW_DEFAULT): ?>

@@ -335,12 +335,23 @@ App.Utils.CalendarDefaultView = (function () {
         if (isWorkingPlanException(data)) {
             handleDeleteWorkingPlanException();
         } else if (!isUnavailability(data)) {
-            handleDeleteAppointment(data.id);
+            App.Utils.CalendarAppointmentActions.confirmDelete(() => handleDeleteAppointment(data.id));
         } else {
             App.Http.Calendar.deleteUnavailability(data.id).done(() => {
                 $reloadAppointments.trigger('click');
             });
         }
+    }
+
+    /**
+     * Handle cancel appointment popover button click.
+     */
+    function onCancelAppointmentPopoverClick() {
+        closePopover();
+
+        App.Utils.CalendarAppointmentActions.cancel(lastFocusedEventData.extendedProps.data, () =>
+            $reloadAppointments.trigger('click'),
+        );
     }
 
     /**
@@ -351,7 +362,7 @@ App.Utils.CalendarDefaultView = (function () {
     function handleDeleteAppointment(appointmentId) {
         App.Utils.Message.show(lang('delete_appointment_title'), lang('notify_users_on_delete_question'), [
             {
-                text: lang('cancel'),
+                text: lang('close'),
                 click: (event, notifyModal) => notifyModal.hide(),
             },
             {
@@ -370,7 +381,7 @@ App.Utils.CalendarDefaultView = (function () {
 
                     const reasonButtons = [
                         {
-                            text: lang('cancel'),
+                            text: lang('close'),
                             click: (event, messageModal) => messageModal.hide(),
                         },
                         {
@@ -1214,6 +1225,7 @@ App.Utils.CalendarDefaultView = (function () {
 
         // Popover delete button
         $calendarPage.on('click', '.delete-popover', onDeletePopoverClick);
+        $calendarPage.on('click', '.cancel-appointment-popover', onCancelAppointmentPopoverClick);
 
         // Filter change
         $selectFilterItem.on('change', () => {

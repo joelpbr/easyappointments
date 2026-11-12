@@ -175,17 +175,23 @@ App.Utils.CalendarEventPopover = (function () {
      *
      * @param {string} displayEdit - CSS class to show/hide edit button.
      * @param {string} displayDelete - CSS class to show/hide delete button.
+     * @param {string} [displayCancel] - CSS class to show/hide the cancel appointment button.
      * @returns {jQuery} Button container element.
      */
-    function createPopoverButtons(displayEdit, displayDelete) {
+    function createPopoverButtons(displayEdit, displayDelete, displayCancel = 'd-none') {
         return $('<div/>', {
-            class: 'd-flex justify-content-center',
+            class: 'd-flex flex-wrap justify-content-center gap-2',
             html: [
-                createPopoverButton('close-popover btn btn-outline-secondary me-2', 'fas fa-ban', 'close'),
+                createPopoverButton('close-popover btn btn-outline-secondary', 'fas fa-times', 'close'),
                 createPopoverButton(
                     'delete-popover btn btn-outline-secondary ' + displayDelete,
                     'fas fa-trash-alt',
                     'delete',
+                ),
+                createPopoverButton(
+                    'cancel-appointment-popover btn btn-outline-danger ' + displayCancel,
+                    'fas fa-calendar-times',
+                    'cancel_appointment',
                 ),
                 createPopoverButton('edit-popover btn btn-primary ' + displayEdit, 'fas fa-edit', 'edit'),
             ],
@@ -331,7 +337,7 @@ App.Utils.CalendarEventPopover = (function () {
                 ...createPopoverRow('notes', getEventNotes(info.event)),
                 renderCustomContent(info),
                 $('<hr/>'),
-                createPopoverButtons(displayEdit, displayDelete),
+                createPopoverButtons(displayEdit, displayDelete, statusFreesSlot(data.status) ? 'd-none' : displayEdit),
             ],
         });
     }
