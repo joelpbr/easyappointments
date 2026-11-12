@@ -45,5 +45,17 @@ estado que «libera el hueco» (Cancelada) deja de contar como tiempo ocupado.
 | `assets/js/utils/calendar_event_popover.js`, `calendar_default_view.js`, `calendar_table_view.js`, `assets/css/backend.scss` | Nombre del estado en el popover; las citas que liberan hueco se ven atenuadas y tachadas | Distinguir las canceladas sin ocultarlas |
 | `openapi.yml` | `status` documentado como código | Documentar la API |
 
-**Limitación conocida**: si recepción cancela una cita desde el calendario y el profesional sincroniza con Google o
-CalDAV, el evento externo se actualiza pero no se borra. La cancelación desde el enlace del paciente sí lo borra.
+**Resuelto en «Acciones de la cita»**: cancelar desde el calendario también borra el evento de Google o CalDAV.
+
+## Acciones de la cita (fase 3)
+
+Archivo nuevo: `assets/js/utils/calendar_appointment_actions.js` (cancelar y confirmar el borrado, compartido por las dos
+vistas del calendario).
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/controllers/Calendar.php` | Guardar una cita con un estado que libera el hueco no comprueba conflictos, borra el evento de Google/CalDAV y envía el email de cancelación, solo la primera vez | Cancelar desde el calendario es una cancelación de verdad y no un simple cambio |
+| `assets/js/utils/calendar_event_popover.js` | Botón «Cancelar cita» en las citas que ocupan su hueco; el icono de «Cerrar» deja de ser el de prohibido | «Cerrar» parecía una cancelación |
+| `assets/js/utils/calendar_default_view.js`, `calendar_table_view.js` | Acción «Cancelar cita»; «Eliminar» pide confirmación avisando de que se pierde el historial; los diálogos usan «Cerrar» en vez de «Cancelar» | Evitar confundir cerrar un diálogo con cancelar la cita |
+| `application/views/components/appointments_modal.php`, `assets/js/components/appointments_modal.js` | «Cancelar» pasa a «Cerrar» | Ídem |
+| `application/views/pages/calendar.php` | Carga el módulo nuevo | — |

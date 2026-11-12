@@ -229,7 +229,7 @@ App.Components.AppointmentsModal = (function () {
                     response.message + ' ' + lang('would_you_like_to_proceed'),
                     [
                         {
-                            text: lang('cancel'),
+                            text: lang('close'),
                             click: (event, messageModal) => {
                                 messageModal.hide();
                             },

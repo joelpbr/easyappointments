@@ -597,4 +597,9 @@ $lang['service_has_appointments'] = 'This service has appointments and cannot be
 $lang['status_frees_slot'] = 'Frees the slot';
 $lang['system_status'] = 'System';
 $lang['appointment_status_in_use'] = 'A removed status is still used by some appointments. Change their status first.';
+$lang['cancel_appointment'] = 'Cancel appointment';
+$lang['cancel_appointment_question'] = 'The appointment stays in the calendar as cancelled and its time becomes free. Do you want to notify the customer and the provider?';
+$lang['cancel_without_notifying'] = 'Cancel without notifying';
+$lang['cancel_and_notify'] = 'Cancel and notify';
+$lang['delete_appointment_warning'] = 'Deleting removes the appointment for good, together with its history. Use it only to fix mistakes; to call off an appointment use "Cancel appointment" instead.';
 // End

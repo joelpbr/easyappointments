@@ -385,6 +385,16 @@ class Calendar extends EA_Controller
             // Save appointment changes to the database.
             $manage_mode = !empty($appointment_data['id']);
 
+            // A status that frees the slot (e.g. cancelled) is handled as a cancellation: no conflict check, the event
+            // is removed from the synced calendars and the users get the cancellation notification, once.
+            $free_codes = appointment_status_free_codes();
+
+            $frees_slot = in_array($appointment_data['status'] ?? '', $free_codes, true);
+
+            $was_freed =
+                $manage_mode &&
+                in_array($this->appointments_model->value((int) $appointment_data['id'], 'status'), $free_codes, true);
+
             if ($appointment_data) {
                 $appointment = $appointment_data;
 
@@ -420,12 +430,14 @@ class Calendar extends EA_Controller
                 // Check if the provider has a conflicting appointment at the selected time
                 $exclude_appointment_id = !empty($appointment['id']) ? (int) $appointment['id'] : null;
 
-                $has_conflict = $this->appointments_model->has_provider_conflict(
-                    (int) $appointment['id_users_provider'],
-                    $appointment['start_datetime'],
-                    $appointment['end_datetime'],
-                    $exclude_appointment_id,
-                );
+                $has_conflict =
+                    !$frees_slot &&
+                    $this->appointments_model->has_provider_conflict(
+                        (int) $appointment['id_users_provider'],
+                        $appointment['start_datetime'],
+                        $appointment['end_datetime'],
+                        $exclude_appointment_id,
+                    );
 
                 if ($has_conflict && !$force_save) {
                     json_response([
@@ -476,17 +488,33 @@ class Calendar extends EA_Controller
                 'time_format' => setting('time_format'),
             ];
 
-            $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $customer, $settings);
+            if ($frees_slot) {
+                if (!$was_freed) {
+                    $this->synchronization->sync_appointment_deleted($appointment, $provider);
 
-            if ($notify_users) {
-                $this->notifications->notify_appointment_saved(
-                    $appointment,
-                    $service,
-                    $provider,
-                    $customer,
-                    $settings,
-                    $manage_mode,
-                );
+                    if ($notify_users) {
+                        $this->notifications->notify_appointment_deleted(
+                            $appointment,
+                            $service,
+                            $provider,
+                            $customer,
+                            $settings,
+                        );
+                    }
+                }
+            } else {
+                $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $customer, $settings);
+
+                if ($notify_users) {
+                    $this->notifications->notify_appointment_saved(
+                        $appointment,
+                        $service,
+                        $provider,
+                        $customer,
+                        $settings,
+                        $manage_mode,
+                    );
+                }
             }
 
             $this->webhooks_client->trigger(WEBHOOK_APPOINTMENT_SAVE, $appointment);

@@ -372,7 +372,7 @@
             <div class="modal-footer">
 
                 <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <?= lang('cancel') ?>
+                    <?= lang('close') ?>
                 </button>
                 <button id="save-appointment" class="btn btn-primary">
                     <i class="fas fa-check-square me-2"></i>
