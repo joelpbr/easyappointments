@@ -914,6 +914,8 @@ App.Utils.CalendarTableView = (function () {
      * @param {Array} appointments - Appointment data array.
      */
     function createAppointments($providerColumn, appointments) {
+        $providerColumn.data('middayAppointments', appointments);
+        App.Utils.CalendarMidday.schedule();
         if (!appointments.length) {
             return;
         }
@@ -1156,7 +1158,8 @@ App.Utils.CalendarTableView = (function () {
             const breakEnd = moment(start.format('YYYY-MM-DD') + ' ' + breakPeriod.end);
 
             calendarEventSource.push({
-                title: lang('not_working'),
+                title: breakPeriod.start < '16:00' && breakPeriod.end > '12:00' ? 'Mediodía' : lang('not_working'),
+                middayBreak: true,
                 start: breakStart.toDate(),
                 end: breakEnd.toDate(),
                 allDay: false,
@@ -1591,6 +1594,10 @@ App.Utils.CalendarTableView = (function () {
             eventResize: onEventResize,
             eventDrop: onEventDrop,
             select: (info) => onSelect(info, fullCalendar),
+            selectAllow: (info) => App.Utils.CalendarMidday.allows($providerColumn[0], info),
+            eventAllow: (info) => App.Utils.CalendarMidday.allows($providerColumn[0], info),
+            eventsSet: () => App.Utils.CalendarMidday.schedule(),
+            datesSet: () => App.Utils.CalendarMidday.schedule(),
         });
 
         fullCalendar.render();

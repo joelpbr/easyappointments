@@ -1,6 +1,8 @@
 <?php extend('layouts/backend_layout'); ?>
 
 <?php section('content'); ?>
+<link rel="stylesheet" href="<?= asset_url('assets/css/calendar_midday.css') ?>">
+
 
 <div class="container-fluid backend-page pt-0 pb-0" id="calendar-page">
     <div class="row mb-3 text-white py-3 bg-dark" id="calendar-toolbar">
@@ -169,6 +171,7 @@
 <script src="<?= asset_url('assets/vendor/jquery-jeditable/jquery.jeditable.min.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/ui.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_default_view.js') ?>"></script>
+<script src="<?= asset_url('assets/js/utils/calendar_midday.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_table_view.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_event_popover.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_appointment_actions.js') ?>"></script>

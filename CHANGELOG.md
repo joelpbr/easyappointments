@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- The reception calendar folds the shared midday break by default, with a toggle beside the date; visits and reservations keep the interval open, including visits hidden by treatment filters
 - Wallet and Infiltración are available as clinic treatments, assigned to the existing providers
 - Production Docker setup: clone the repository, copy .env.example to .env and run docker compose up -d to start the application, its database and the scheduled calendar synchronization and data cleanup
 - The SMTP server can be set through the SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS and SMTP_CRYPTO environment variables
@@ -18,6 +19,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- Midday breaks are labeled "Mediodía" and out-of-hours periods use red stripes with bold white text outlined in black
 - Treatment dropdowns follow the clinic frequency order, with distinct light backgrounds for readable black text; appointments using the previous treatment colors follow the new palette while custom colors stay unchanged
 - Cancelled appointments no longer take their slot, so the time can be booked again, and they stay visible but faded in the calendar
 - Cancelling from the link in the confirmation email keeps the appointment as cancelled, with the reason in its notes, instead of deleting it
