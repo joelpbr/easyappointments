@@ -1193,7 +1193,7 @@ App.Utils.CalendarDefaultView = (function () {
         const dateStr = calendarDate.format('YYYY-MM-DD');
 
         return breaks.map((breakPeriod) => ({
-            title: lang('not_working'),
+            title: breakPeriod.start < '16:00' && breakPeriod.end > '12:00' ? 'Mediodía' : lang('not_working'),
             start: moment(dateStr + ' ' + breakPeriod.start).toDate(),
             end: moment(dateStr + ' ' + breakPeriod.end).toDate(),
             allDay: false,

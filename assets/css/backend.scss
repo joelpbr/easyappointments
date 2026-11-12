@@ -261,16 +261,19 @@ body .modal.full-screen .modal-push {
     background: var(--bs-secondary-bg) url('../img/unavailability.jpg');
 }
 
-// Out of the working hours (before opening, breaks, after closing and days off): one plain reddish tone, so the
+// Out of the working hours (before opening, breaks, after closing and days off): a reddish striped background, so the
 // clinic sees at a glance where an appointment would be an exception. Unavailabilities and blocked periods keep their
 // own styles.
 #calendar-page #calendar .fc-out-of-hours,
 #calendar .fc-out-of-hours {
-    background: #f6d5d8 !important;
+    background: #ff7483 url('../img/unavailability.jpg') repeat !important;
+    background-blend-mode: multiply;
     opacity: 1;
     border: 0;
-    color: #8c2f39;
-    font-weight: normal;
+    color: #ffffff;
+    -webkit-text-stroke: 1px #000000;
+    paint-order: stroke fill;
+    font-weight: bold;
     font-style: italic;
 }
 
@@ -677,4 +680,8 @@ body .modal.full-screen .modal-push {
 // Slot search: the time window pickers stay on one line next to the presets.
 #slot-search-modal .slot-search-time-range .flatpickr-wrapper {
     width: 6rem;
+}
+
+#calendar-page #calendar .fc-out-of-hours .fc-event-title {
+    font-weight: bold;
 }
