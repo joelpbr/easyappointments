@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- Wallet and Infiltración are available as clinic treatments, assigned to the existing providers
 - Production Docker setup: clone the repository, copy .env.example to .env and run docker compose up -d to start the application, its database and the scheduled calendar synchronization and data cleanup
 - The SMTP server can be set through the SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS and SMTP_CRYPTO environment variables
 - The Docker setup now takes a database backup every day, keeps them for BACKUP_RETENTION_DAYS days, rotates the container logs and reports the health of the application container
@@ -17,6 +18,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- Treatment dropdowns follow the clinic frequency order, with distinct light backgrounds for readable black text; appointments using the previous treatment colors follow the new palette while custom colors stay unchanged
 - Cancelled appointments no longer take their slot, so the time can be booked again, and they stay visible but faded in the calendar
 - Cancelling from the link in the confirmation email keeps the appointment as cancelled, with the reason in its notes, instead of deleting it
 - The calendar has a "Cancel appointment" action that keeps the appointment as cancelled, sends the cancellation email and removes it from the synced Google or CalDAV calendar; deleting now asks for a confirmation that explains the history is lost, and the dialogs say "Close" instead of "Cancel"

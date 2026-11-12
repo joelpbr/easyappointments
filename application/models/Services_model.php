@@ -373,6 +373,8 @@ class Services_model extends EA_Model
      */
     public function get_available_services(bool $without_private = false): array
     {
+        $this->order_dropdown_services();
+
         if ($without_private) {
             $this->db->where('services.is_private', false)->where('services.is_active', true);
         }
@@ -385,7 +387,6 @@ class Services_model extends EA_Model
             ->from('services')
             ->join('services_providers', 'services_providers.id_services = services.id', 'inner')
             ->join('service_categories', 'service_categories.id = services.id_service_categories', 'left')
-            ->order_by('name ASC')
             ->get()
             ->result_array();
 
@@ -480,11 +481,17 @@ class Services_model extends EA_Model
      */
     public function to_options(array|string|null $where = null): array
     {
+        $this->order_dropdown_services();
+
         if ($where !== null) {
             $this->db->where($where);
         }
 
-        $services = $this->db->select('id, name')->from('services')->order_by('name')->get()->result_array();
+        $services = $this->db
+            ->select('id, name')
+            ->from('services')
+            ->get()
+            ->result_array();
 
         $options = [];
 
@@ -496,6 +503,36 @@ class Services_model extends EA_Model
         }
 
         return $options;
+    }
+
+    /**
+     * Apply the clinic's service order to dropdown queries.
+     */
+    private function order_dropdown_services(): void
+    {
+        $names = [
+            'Quiropodia',
+            'Exploración',
+            'Entrega SP',
+            'Cura',
+            'Cura PV',
+            'Wallet',
+            'Infiltración',
+            'Silicona',
+            'Ortonixia',
+            'Moldes',
+            'Cirugía',
+            'Otro',
+        ];
+
+        $order = 'CASE ' . $this->db->protect_identifiers('services.name');
+
+        foreach ($names as $position => $name) {
+            $order .= ' WHEN ' . $this->db->escape($name) . ' THEN ' . $position;
+        }
+
+        $this->db->order_by($order . ' ELSE ' . count($names) . ' END', 'ASC', false);
+        $this->db->order_by('services.name ASC, services.id ASC');
     }
 
     /**
