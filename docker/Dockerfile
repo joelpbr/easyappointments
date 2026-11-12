@@ -18,12 +18,14 @@ COPY assets ./assets
 RUN npx gulp compile
 
 # 3. PHP + Apache runtime shared by both targets
-FROM php:8.3-apache AS base
+FROM php:8.3-apache-trixie AS base
 COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions gd ldap mysqli opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php.ini $PHP_INI_DIR/conf.d/app.ini
 COPY docker/apache.conf /etc/apache2/conf-enabled/app.conf
+COPY --chmod=755 docker/cron.sh /usr/local/bin/ea-cron
+ENV TZ=Europe/Madrid
 WORKDIR /var/www/html
 
 # 4. Development target

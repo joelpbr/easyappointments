@@ -3,10 +3,10 @@
 Docker runs Easy!Appointments, its database and its scheduled tasks without installing Apache, PHP or MySQL on the
 server. The repository ships two stacks:
 
-| File                     | Purpose     | Services                                                                    |
-|--------------------------|-------------|-----------------------------------------------------------------------------|
-| `docker-compose.yml`     | Production  | `app` (Apache + PHP), `cron` (calendar sync and data cleanup), `db` (MySQL) |
-| `docker-compose.dev.yml` | Development | `app` (with Xdebug and Composer), `node` (asset watcher), `db`, `mailpit`   |
+| File                     | Purpose     | Services                                                                               |
+|--------------------------|-------------|----------------------------------------------------------------------------------------|
+| `docker-compose.yml`     | Production  | `app` (Apache + PHP), `cron` (calendar sync, data cleanup, daily backup), `db` (MySQL) |
+| `docker-compose.dev.yml` | Development | `app` (with Xdebug and Composer), `node` (asset watcher), `db`, `mailpit`              |
 
 ## Production
 
@@ -44,11 +44,36 @@ If the new version contains database changes, the application asks you to run th
 
 ### Backups
 
+The `cron` service writes one database backup per day to `storage/backups` (inside the `storage` volume) and deletes
+the ones older than `BACKUP_RETENTION_DAYS`. Both volumes live on the same disk as the server, so copy the backups to
+another place regularly:
+
+```bash
+docker compose cp app:/var/www/html/storage/backups ./backups
+```
+
+Run a backup on demand with:
+
 ```bash
 docker compose exec -u www-data app php index.php console backup
 ```
 
-The backup is written to `storage/backups` inside the `storage` volume.
+### Restoring
+
+```bash
+docker compose cp app:/var/www/html/storage/backups/<file>.gz .
+{ echo 'SET FOREIGN_KEY_CHECKS=0;'; gunzip -c <file>.gz; } \
+    | docker compose exec -T db sh -c 'mysql -ueasyappointments -p"$MYSQL_PASSWORD" easyappointments'
+```
+
+### Operations
+
+- Every container restarts automatically after a crash, and after a server reboot when the Docker service starts on boot.
+- `docker compose ps` shows the health of `app` and `db`. Docker reports an unhealthy container but does not restart it
+  by itself, so watch this status from your monitoring.
+- The container logs (`docker compose logs`) are rotated at 5 files of 10 MB per service.
+- Keep the same `DB_PASSWORD` once the stack is running: MySQL only reads it the first time it starts, changing it
+  later locks the application out of the database.
 
 ## Development
 

@@ -9,10 +9,12 @@ developers to maintain and readjust their custom modifications on the main proje
 
 - Production Docker setup: clone the repository, copy .env.example to .env and run docker compose up -d to start the application, its database and the scheduled calendar synchronization and data cleanup
 - The SMTP server can be set through the SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS and SMTP_CRYPTO environment variables
+- The Docker setup now takes a database backup every day, keeps them for BACKUP_RETENTION_DAYS days, rotates the container logs and reports the health of the application container
 
 ### Changed
 
 - The local development environment now starts with docker compose -f docker-compose.dev.yml up and only includes the application, the database, the asset watcher and Mailpit (phpMyAdmin, Baikal, OpenLDAP, phpLDAPadmin and Swagger UI were removed)
+- The Docker setup now runs MySQL 8.4 and defaults to the Spanish language and the Europe/Madrid time zone, both configurable in .env
 
 ### Fixed
 
