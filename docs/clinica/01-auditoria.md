@@ -252,7 +252,7 @@ Se limitará a: `Calendar.php` y `Appointments_model.php` (guardado transacciona
 | Responsabilidad legal | El producto modificado necesita su **declaración responsable** de productor (RD 1007/2023) | La asume el proveedor para el sistema de facturación |
 | Coste | Desarrollo y mantenimiento normativo propios | Cuota del proveedor |
 | Sin internet | Hay que gestionar la remisión diferida según la norma | Depende del proveedor |
-| Recomendación | — | **Recomendada** por riesgo legal y mantenimiento, salvo que la clínica prefiera no depender de un tercero |
+| Decisión | **Elegida** (ver `decisiones.md`) | Descartada |
 
 ### D.6 Actualizaciones de Easy!Appointments
 
@@ -285,7 +285,7 @@ Las fases 3 a 6 no dependen de información externa y pueden empezar ya con dato
 
 | Riesgo | Impacto | Mitigación |
 | --- | --- | --- |
-| **¿Servidor local o en la nube?** La especificación asume un servidor en la clínica (LAN, VPN, SAI, funcionamiento sin internet); también se ha planteado desplegar en la nube | Alto: cambia el acceso, los webhooks y el funcionamiento sin internet | **Decisión pendiente.** En local: agenda sin internet, pero los webhooks de WhatsApp necesitan un relay o túnel saliente. En la nube: webhooks directos, pero sin internet en la clínica no hay agenda |
+| **Despliegue en VPS** (decidido, ver `decisiones.md`): la agenda depende de la conexión a internet de la clínica | Medio | HTTPS obligatorio delante de `app`; copias externas; los webhooks de WhatsApp llegan directamente a la VPS |
 | Disponibilidad: huecos falsos o dobles reservas | Alto | Un único motor, revalidación al guardar y bloqueo transaccional; pruebas con concurrencia |
 | Estados sin efecto en la versión original | Alto: una cita cancelada sigue bloqueando | Estados con `blocks_slot`; migración de los estados existentes |
 | WhatsApp: plantillas no aprobadas, coste por mensaje, número verificado | Medio | Alta temprana en Meta; la plantilla *utility* tiene coste por mensaje en España (consultar la tarifa vigente de Meta) |
@@ -302,14 +302,14 @@ Las fases 3 a 6 no dependen de información externa y pueden empezar ya con dato
 
 ### Decisiones externas pendientes
 
-1. Servidor local o en la nube (ver F).
+1. ~~Servidor local o en la nube~~: VPS en la nube (decidido).
 2. Nombre de la clínica, profesionales, horarios, duraciones y precios.
 3. Excel de pacientes.
 4. Cuenta de Meta Business, número de WhatsApp y plantilla.
-5. Forma jurídica, emisor o emisores fiscales y vía de facturación (D.5).
+5. Forma jurídica y emisor o emisores fiscales (la vía de facturación ya está decidida: motor propio).
 6. Modalidad VERI\*FACTU / NO VERI\*FACTU y asesoría fiscal.
 7. Municipio para los festivos (Madrid por defecto).
-8. Destino de la copia externa y VPN.
+8. Destino de la copia externa y proveedor de la VPS.
 
 ---
 
