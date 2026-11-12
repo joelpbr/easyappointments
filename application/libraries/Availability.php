@@ -321,6 +321,36 @@ class Availability
     }
 
     /**
+     * Load once the data get_available_periods() needs for every day of a range.
+     *
+     * A search over many days would otherwise run the same queries for every day and provider, each one reading the
+     * whole appointment history of the provider.
+     *
+     * @param array $provider Provider data.
+     * @param string $date_from First date (Y-m-d).
+     * @param string $date_to Last date (Y-m-d).
+     *
+     * @return array Data to pass to get_available_periods() as $preloaded.
+     */
+    public function preload_period_data(array $provider, string $date_from, string $date_to): array
+    {
+        $where = [
+            'id_users_provider' => (int) $provider['id'],
+            'start_datetime <=' => $date_to . ' 23:59:59',
+            'end_datetime >=' => $date_from . ' 00:00:00',
+        ];
+
+        return [
+            'working_plan_exceptions' => $this->CI->working_plan_exceptions_model->get_by_provider($provider['id']),
+            'events' => array_merge(
+                $this->CI->appointments_model->get_slot_occupying($where),
+                $this->CI->unavailabilities_model->get($where),
+                $this->CI->blocked_periods_model->get_for_period($date_from, $date_to),
+            ),
+        ];
+    }
+
+    /**
      * Get an array containing the free time periods (start - end) of a selected date.
      *
      * This method is very important because there are many cases where the system needs to know when a provider is
@@ -330,18 +360,26 @@ class Availability
      * @param string $date Selected date (Y-m-d).
      * @param array $provider Provider data.
      * @param int|null $exclude_appointment_id Exclude an appointment from the availability generation.
+     * @param array|null $preloaded Data loaded once for a whole date range (see preload_period_data()), so that a
+     * search over many days does not query the database for every day.
      *
      * @return array Returns an array with the available time periods of the provider.
      *
      * @throws Exception
      */
-    public function get_available_periods(string $date, array $provider, ?int $exclude_appointment_id = null): array
-    {
+    public function get_available_periods(
+        string $date,
+        array $provider,
+        ?int $exclude_appointment_id = null,
+        ?array $preloaded = null,
+    ): array {
         // Get the service, provider's working plan and provider appointments.
         $working_plan = json_decode($provider['settings']['working_plan'], true);
 
         // Get the provider's working plan exceptions from the new table.
-        $working_plan_exceptions = $this->CI->working_plan_exceptions_model->get_by_provider($provider['id']);
+        $working_plan_exceptions =
+            $preloaded['working_plan_exceptions'] ??
+            $this->CI->working_plan_exceptions_model->get_by_provider($provider['id']);
 
         // Validate and sanitize inputs before building query
         $provider_id = (int) $provider['id'];
@@ -364,13 +402,31 @@ class Availability
             $where['id !='] = (int) $exclude_appointment_id;
         }
 
-        $appointments = array_values(
-            array_merge(
-                $this->CI->appointments_model->get_slot_occupying($where),
-                $this->CI->unavailabilities_model->get($where),
-                $this->CI->blocked_periods_model->get_for_period($date, $date),
-            ),
-        );
+        if ($preloaded !== null) {
+            // Same selection as the queries below, on the events loaded for the whole range.
+            $appointments = array_values(
+                array_filter(
+                    $preloaded['events'],
+                    fn(array $event): bool => substr($event['start_datetime'], 0, 10) <= $date &&
+                        substr($event['end_datetime'], 0, 10) >= $date &&
+                        // Like the "id !=" condition below, the exclusion only applies to the appointments table
+                        // (appointments and unavailabilities), not to the blocked periods.
+                        !(
+                            $exclude_appointment_id &&
+                            array_key_exists('is_unavailability', $event) &&
+                            (int) $event['id'] === $exclude_appointment_id
+                        ),
+                ),
+            );
+        } else {
+            $appointments = array_values(
+                array_merge(
+                    $this->CI->appointments_model->get_slot_occupying($where),
+                    $this->CI->unavailabilities_model->get($where),
+                    $this->CI->blocked_periods_model->get_for_period($date, $date),
+                ),
+            );
+        }
 
         // Find the empty spaces on the plan. The first split between the plan is due to a break (if any). After that
         // every reserved appointment is considered to be a taken space in the plan.

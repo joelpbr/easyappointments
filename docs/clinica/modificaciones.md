@@ -189,3 +189,17 @@ unitarios.
 | --- | --- | --- |
 | `application/views/pages/calendar.php` | Botones «Nueva cita» y «Buscar hueco» en la barra de la agenda e inclusión del buscador | Pantalla principal (especificación 17.1 y 8.1) |
 | `assets/css/backend.scss` | Ancho de las horas de la franja | Maquetación |
+
+## Rendimiento del buscador (fase 4)
+
+Medido con 50.000 citas repartidas en dos años: la búsqueda de 14 días tardaba 1,1 s y la de 92 días 7,3 s, porque
+`Availability::get_available_periods()` consulta las citas de cada día con una condición que recorre todo el historial
+del profesional, y el buscador la llama una vez por profesional y día.
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/libraries/Availability.php` | `preload_period_data()` carga una vez las citas que ocupan hueco, las ausencias, los bloqueos y las excepciones de todo un rango; `get_available_periods()` acepta esos datos en un parámetro opcional `$preloaded` y aplica sobre ellos la misma selección que sus consultas. Sin el parámetro funciona igual que antes | Rendimiento (especificación 8.7) |
+| `application/libraries/Slot_finder.php` | Precarga los datos de cada profesional antes de recorrer los días | — |
+
+Resultado: 0,11 s (14 días) y 0,26 s (92 días), con resultados idénticos a los anteriores en cinco búsquedas
+comparadas byte a byte.
