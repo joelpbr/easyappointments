@@ -81,6 +81,7 @@ class Booking extends EA_Controller
         $this->load->library('availability');
         $this->load->library('webhooks_client');
         $this->load->library('jitsi_client');
+        $this->load->library('slot_rules');
     }
 
     /**
@@ -580,7 +581,31 @@ class Booking extends EA_Controller
 
             $this->appointments_model->only($appointment, $this->allowed_appointment_fields);
 
-            $appointment_id = $this->appointments_model->save($appointment);
+            // The availability was checked above, but another visitor or the reception could have taken the slot
+            // since then: check again and save while holding the provider lock. Services with several attendants
+            // share their slot by design, so only the single attendant ones are checked here.
+            $appointment_id = $this->slot_rules->lock_provider(
+                (int) $appointment['id_users_provider'],
+                function () use ($appointment, $service) {
+                    $violations =
+                        (int) $service['attendants_number'] > 1
+                            ? []
+                            : $this->slot_rules->check(
+                                (int) $appointment['id_users_provider'],
+                                (int) $appointment['id_services'],
+                                $appointment['start_datetime'],
+                                $appointment['end_datetime'],
+                                !empty($appointment['id']) ? (int) $appointment['id'] : null,
+                            );
+
+                    if ($violations) {
+                        throw new RuntimeException(lang('requested_hour_is_unavailable'));
+                    }
+
+                    return $this->appointments_model->save($appointment);
+                },
+            );
+
             $appointment = $this->appointments_model->find($appointment_id);
 
             $company_color = setting('company_color');

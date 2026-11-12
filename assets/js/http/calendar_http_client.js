@@ -55,6 +55,15 @@ App.Http.Calendar = (function () {
 
         return $.post(url, data)
             .done((response) => {
+                // The server refused the appointment (e.g. a rule that cannot be confirmed): it was not saved.
+                if (response?.success === false && !(response.conflict && response.forceable !== false)) {
+                    if (errorCallback) {
+                        errorCallback(response);
+                    }
+
+                    return;
+                }
+
                 if (successCallback) {
                     successCallback(response);
                 }
@@ -84,6 +93,7 @@ App.Http.Calendar = (function () {
             start_datetime: appointment.start_datetime,
             end_datetime: appointment.end_datetime,
             appointment_id: appointment.id ?? '',
+            service_id: appointment.id_services ?? '',
         };
 
         return $.post(url, data)
@@ -330,16 +340,29 @@ App.Http.Calendar = (function () {
         notifyUsers,
         revertCallback,
     ) {
+        // A refused appointment is not saved: tell why and put the event back where it was.
+        const onRefused = (response) => {
+            if (response?.message) {
+                App.Utils.Message.show(lang('scheduling_conflict'), response.message);
+            } else if (errorCallback) {
+                errorCallback();
+            }
+
+            if (revertCallback) {
+                revertCallback();
+            }
+        };
+
         const attemptSave = (forceSave = false) => {
-            saveAppointment(appointment, customer, null, errorCallback, notifyUsers, forceSave).done((response) => {
-                if (response.conflict) {
+            saveAppointment(appointment, customer, null, onRefused, notifyUsers, forceSave).done((response) => {
+                if (response.conflict && response.forceable !== false) {
                     // Show conflict confirmation dialog
                     App.Utils.Message.show(
                         lang('scheduling_conflict'),
                         response.message + ' ' + lang('would_you_like_to_proceed'),
                         [
                             {
-                                text: lang('cancel'),
+                                text: lang('close'),
                                 click: (event, messageModal) => {
                                     messageModal.hide();
                                     if (revertCallback) {

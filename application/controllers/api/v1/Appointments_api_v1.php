@@ -35,6 +35,7 @@ class Appointments_api_v1 extends EA_Controller
         $this->load->library('webhooks_client');
         $this->load->library('synchronization');
         $this->load->library('notifications');
+        $this->load->library('slot_rules');
 
         $this->api->auth();
 
@@ -220,7 +221,11 @@ class Appointments_api_v1 extends EA_Controller
                 $appointment['end_datetime'] = $this->appointments_model->calculate_end_datetime($appointment);
             }
 
-            $appointment_id = $this->appointments_model->save($appointment);
+            $appointment_id = $this->save_within_rules($appointment);
+
+            if ($appointment_id === null) {
+                return;
+            }
 
             $created_appointment = $this->appointments_model->find($appointment_id);
 
@@ -232,6 +237,62 @@ class Appointments_api_v1 extends EA_Controller
         } catch (Throwable $e) {
             json_exception($e);
         }
+    }
+
+    /**
+     * Save an appointment if it respects the slot rules, while holding the provider lock.
+     *
+     * The API cannot confirm a conflict like reception does, so any violation refuses the appointment with a 409
+     * response that explains why. Statuses that free the slot (e.g. cancelled) are always accepted.
+     *
+     * @param array $appointment Appointment data.
+     *
+     * @return int|null The appointment ID, or null when it was refused (the response is already sent).
+     *
+     * @throws Throwable
+     */
+    private function save_within_rules(array $appointment): ?int
+    {
+        if (empty($appointment['id_users_provider'])) {
+            // Let the model report the missing fields.
+            return $this->appointments_model->save($appointment);
+        }
+
+        $frees_slot = in_array($appointment['status'] ?? '', appointment_status_free_codes(), true);
+
+        $stored = !empty($appointment['id']) ? $this->appointments_model->find((int) $appointment['id']) : [];
+
+        $needs_check = !$frees_slot && Slot_rules::slot_changed($stored, $appointment);
+
+        return $this->slot_rules->lock_provider((int) $appointment['id_users_provider'], function () use (
+            $appointment,
+            $needs_check,
+        ) {
+            $violations = !$needs_check
+                ? []
+                : $this->slot_rules->check(
+                    (int) $appointment['id_users_provider'],
+                    isset($appointment['id_services']) ? (int) $appointment['id_services'] : null,
+                    $appointment['start_datetime'],
+                    $appointment['end_datetime'],
+                    !empty($appointment['id']) ? (int) $appointment['id'] : null,
+                );
+
+            if ($violations) {
+                json_response(
+                    [
+                        'success' => false,
+                        'violations' => $violations,
+                        'message' => Slot_rules::message($violations),
+                    ],
+                    409,
+                );
+
+                return null;
+            }
+
+            return $this->appointments_model->save($appointment);
+        });
     }
 
     /**
@@ -301,7 +362,11 @@ class Appointments_api_v1 extends EA_Controller
             // The ID in the URL is authoritative, a different one in the body must not redirect the update
             $appointment['id'] = $id;
 
-            $appointment_id = $this->appointments_model->save($appointment);
+            $appointment_id = $this->save_within_rules($appointment);
+
+            if ($appointment_id === null) {
+                return;
+            }
 
             $updated_appointment = $this->appointments_model->find($appointment_id);
 

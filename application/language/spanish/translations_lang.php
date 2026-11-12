@@ -615,4 +615,11 @@ $lang['fewer_details'] = 'Menos datos';
 $lang['appointment_duration_invalid'] = 'La cita debe durar al menos 5 minutos.';
 $lang['appointment_comment'] = 'Comentario';
 $lang['administrative_notes'] = 'Observaciones administrativas';
+$lang['slot_rule_overlap_appointment'] = 'El profesional ya tiene otra cita en ese horario.';
+$lang['slot_rule_overlap_unavailability'] = 'El profesional no está disponible en ese horario (ausencia).';
+$lang['slot_rule_blocked_period'] = 'La agenda está bloqueada en ese horario.';
+$lang['slot_rule_outside_working_plan'] = 'El horario está fuera de la jornada del profesional (o en un descanso).';
+$lang['slot_rule_invalid_period'] = 'La cita debe terminar después de empezar.';
+$lang['slot_rule_provider_inactive'] = 'El profesional está inactivo y no puede tener citas.';
+$lang['slot_rule_service_not_offered'] = 'El profesional no realiza este tratamiento.';
 // End

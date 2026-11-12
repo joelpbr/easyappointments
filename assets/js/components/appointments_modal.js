@@ -234,9 +234,11 @@ App.Components.AppointmentsModal = (function () {
                 $reloadAppointments.trigger('click');
             };
 
-            // Define error callback.
-            const errorCallback = () => {
-                $appointmentsModal.find('.modal-message').text(lang('service_communication_error'));
+            // Define error callback, with the reason given by the server when it refused the appointment.
+            const errorCallback = (response) => {
+                $appointmentsModal
+                    .find('.modal-message')
+                    .text(response?.message || lang('service_communication_error'));
                 $appointmentsModal.find('.modal-message').addClass('alert-danger').removeClass('d-none');
                 $appointmentsModal.find('.modal-body').scrollTop(0);
             };
@@ -298,6 +300,13 @@ App.Components.AppointmentsModal = (function () {
             const conflictCallback = (response) => {
                 if (!response.conflict) {
                     promptNotifyUsersAndSave(false);
+
+                    return;
+                }
+
+                // Some rules cannot be confirmed (e.g. an inactive provider): the appointment must be changed.
+                if (response.forceable === false) {
+                    errorCallback(response);
 
                     return;
                 }

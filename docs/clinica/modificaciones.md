@@ -146,3 +146,25 @@ originales.
 
 **Pendiente (fase 11)**: la fuente Inter se descarga de Google Fonts, igual que en los temas incluidos. Para no enviar
 la IP de los pacientes a Google conviene servirla desde la propia aplicación antes de producción.
+
+## Reglas de disponibilidad al guardar (fase 4)
+
+Archivos nuevos: `application/libraries/Slot_rules.php` (comprueba un hueco con las mismas reglas del motor de
+disponibilidad y guarda dentro de un bloqueo por profesional) y `application/migrations/077_add_appointments_period_index.php`
+(índice `appointments (id_users_provider, start_datetime, end_datetime)`).
+
+Reglas: solape con otra cita que ocupa hueco, ausencia del profesional, periodo bloqueado y fuera de la jornada
+(horario, descansos, excepciones) — recepción puede confirmarlas a propósito —, y profesional inactivo, tratamiento no
+realizado por el profesional o periodo inválido, que nunca se pueden forzar. Una cita que se edita sin cambiar de hueco
+no se vuelve a comprobar, para no bloquear cambios de notas en citas confirmadas fuera de las reglas.
+
+**Doble reserva simultánea**: comprobar y guardar se hace en una transacción que bloquea antes la fila del profesional
+(`SELECT … FOR UPDATE`). Probado con dos peticiones a la vez: una entra y la otra recibe 409.
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/controllers/Calendar.php` | `check_provider_conflict` y `save_appointment` usan `Slot_rules` y guardan bajo el bloqueo; la respuesta indica si se puede confirmar (`forceable`) | Antes solo se miraban solapes con otras citas (especificación 6.4) |
+| `application/controllers/api/v1/Appointments_api_v1.php` | Crear y editar respetan las reglas; si no, 409 con `violations` y `message` | La API aceptaba citas solapadas o fuera de horario |
+| `application/controllers/Booking.php` | La reserva pública vuelve a comprobar y guarda bajo el bloqueo | Evitar dos reservas en el mismo hueco entre la comprobación y el guardado |
+| `assets/js/http/calendar_http_client.js`, `assets/js/components/appointments_modal.js` | Envía el tratamiento al comprobar; un rechazo no forzable se muestra en el formulario y una cita arrastrada vuelve a su sitio | Mensajes claros (especificación 9.7) |
+| `openapi.yml` | Respuesta 409 | Documentar la API |

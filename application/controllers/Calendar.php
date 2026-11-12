@@ -97,6 +97,7 @@ class Calendar extends EA_Controller
         $this->load->library('webhooks_client');
         $this->load->library('permissions');
         $this->load->library('jitsi_client');
+        $this->load->library('slot_rules');
     }
 
     /**
@@ -300,6 +301,7 @@ class Calendar extends EA_Controller
             check('start_datetime', 'date');
             check('end_datetime', 'date');
             check('appointment_id', 'numeric|null');
+            check('service_id', 'numeric|null');
 
             if (cannot('add', PRIV_APPOINTMENTS) && cannot('edit', PRIV_APPOINTMENTS)) {
                 throw new RuntimeException('You do not have the required permissions for this task.');
@@ -311,8 +313,11 @@ class Calendar extends EA_Controller
 
             $appointment_id = request('appointment_id');
 
-            $has_conflict = $this->appointments_model->has_provider_conflict(
+            $service_id = request('service_id');
+
+            $violations = $this->slot_rules->check(
                 $provider_id,
+                !empty($service_id) ? (int) $service_id : null,
                 request('start_datetime'),
                 request('end_datetime'),
                 !empty($appointment_id) ? (int) $appointment_id : null,
@@ -320,8 +325,9 @@ class Calendar extends EA_Controller
 
             json_response([
                 'success' => true,
-                'conflict' => $has_conflict,
-                'message' => $has_conflict ? lang('provider_has_conflicting_appointment') : '',
+                'conflict' => !empty($violations),
+                'forceable' => Slot_rules::is_forceable($violations),
+                'message' => Slot_rules::message($violations),
             ]);
         } catch (Throwable $e) {
             json_exception($e);
@@ -429,44 +435,68 @@ class Calendar extends EA_Controller
                     abort(403, 'Forbidden');
                 }
 
-                // Check if the provider has a conflicting appointment at the selected time
                 $exclude_appointment_id = !empty($appointment['id']) ? (int) $appointment['id'] : null;
 
-                $has_conflict =
-                    !$frees_slot &&
-                    $this->appointments_model->has_provider_conflict(
-                        (int) $appointment['id_users_provider'],
-                        $appointment['start_datetime'],
-                        $appointment['end_datetime'],
-                        $exclude_appointment_id,
-                    );
+                $stored = $exclude_appointment_id ? $this->appointments_model->find($exclude_appointment_id) : [];
 
-                if ($has_conflict && !$force_save) {
-                    json_response([
-                        'success' => false,
-                        'conflict' => true,
-                        'message' => lang('provider_has_conflicting_appointment'),
-                    ]);
+                // A cancellation never conflicts (it frees the slot) and an edit that keeps the same slot is not
+                // checked again.
+                $needs_check = !$frees_slot && Slot_rules::slot_changed($stored, $appointment);
+
+                // The rules are checked and the appointment saved while holding the provider lock, so a second
+                // session cannot take the same slot in between.
+                $rejection = $this->slot_rules->lock_provider((int) $appointment['id_users_provider'], function () use (
+                    &$appointment,
+                    $needs_check,
+                    $force_save,
+                    $exclude_appointment_id,
+                    $manage_mode,
+                ) {
+                    $violations = !$needs_check
+                        ? []
+                        : $this->slot_rules->check(
+                            (int) $appointment['id_users_provider'],
+                            (int) $appointment['id_services'],
+                            $appointment['start_datetime'],
+                            $appointment['end_datetime'],
+                            $exclude_appointment_id,
+                        );
+
+                    if ($violations && (!$force_save || !Slot_rules::is_forceable($violations))) {
+                        return [
+                            'success' => false,
+                            'conflict' => true,
+                            'forceable' => Slot_rules::is_forceable($violations),
+                            'message' => Slot_rules::message($violations),
+                        ];
+                    }
+
+                    if ($manage_mode && !empty($appointment['id'])) {
+                        $this->synchronization->remove_appointment_on_provider_change(
+                            $appointment['id'],
+                            $appointment['id_users_provider'],
+                        );
+                    }
+
+                    // Jitsi integration: if enabled and meeting_link is empty, generate a Jitsi meeting link
+                    if (setting('jitsi_enabled') === '1' && empty($appointment['meeting_link'])) {
+                        $appointment['meeting_link'] = $this->jitsi_client->generate_link();
+                    }
+
+                    $this->appointments_model->only($appointment, $this->allowed_appointment_fields);
+
+                    $this->appointments_model->optional($appointment, $this->optional_appointment_fields);
+
+                    $appointment['id'] = $this->appointments_model->save($appointment);
+
+                    return null;
+                });
+
+                if ($rejection) {
+                    json_response($rejection);
+
                     return;
                 }
-
-                if ($manage_mode && !empty($appointment['id'])) {
-                    $this->synchronization->remove_appointment_on_provider_change(
-                        $appointment['id'],
-                        $appointment['id_users_provider'],
-                    );
-                }
-
-                // Jitsi integration: if enabled and meeting_link is empty, generate a Jitsi meeting link
-                if (setting('jitsi_enabled') === '1' && empty($appointment['meeting_link'])) {
-                    $appointment['meeting_link'] = $this->jitsi_client->generate_link();
-                }
-
-                $this->appointments_model->only($appointment, $this->allowed_appointment_fields);
-
-                $this->appointments_model->optional($appointment, $this->optional_appointment_fields);
-
-                $appointment['id'] = $this->appointments_model->save($appointment);
             }
 
             if (empty($appointment['id'])) {

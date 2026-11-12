@@ -615,4 +615,11 @@ $lang['fewer_details'] = 'Fewer details';
 $lang['appointment_duration_invalid'] = 'The appointment must last at least 5 minutes.';
 $lang['appointment_comment'] = 'Comment';
 $lang['administrative_notes'] = 'Administrative notes';
+$lang['slot_rule_overlap_appointment'] = 'The provider already has another appointment at that time.';
+$lang['slot_rule_overlap_unavailability'] = 'The provider is not available at that time (absence).';
+$lang['slot_rule_blocked_period'] = 'The agenda is blocked at that time.';
+$lang['slot_rule_outside_working_plan'] = 'The time is outside the working hours of the provider (or in a break).';
+$lang['slot_rule_invalid_period'] = 'The appointment must end after it starts.';
+$lang['slot_rule_provider_inactive'] = 'The provider is inactive and cannot take appointments.';
+$lang['slot_rule_service_not_offered'] = 'The provider does not offer this service.';
 // End
