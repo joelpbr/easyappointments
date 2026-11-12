@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'Server CalDAV odmítl uživatelské j
 $lang['caldav_sync_failed_unreachable'] = 'Server CalDAV se nepodařilo kontaktovat. Ověřte, že běží a že je adresa připojení správná.';
 $lang['caldav_private_host_warning'] = 'Tento server je v privátní síti. Připojením se jeho hostitel přidá mezi povolené adresy připojení.';
 $lang['caldav_allow_host_and_connect'] = 'Povolit a připojit';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

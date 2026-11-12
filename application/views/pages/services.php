@@ -152,6 +152,22 @@
                 </div>
             </div>
 
+            <div class="border rounded mb-3 p-3">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="is-active" checked>
+
+                    <label class="form-check-label" for="is-active">
+                        <?= lang('active') ?>
+                    </label>
+                </div>
+
+                <div class="form-text text-muted">
+                    <small>
+                        <?= lang('service_active_hint') ?>
+                    </small>
+                </div>
+            </div>
+
             <div class="mb-3">
                 <label class="form-label" for="description">
                     <?= lang('description') ?>

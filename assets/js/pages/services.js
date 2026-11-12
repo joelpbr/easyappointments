@@ -25,6 +25,7 @@ App.Pages.Services = (function () {
     const $slotInterval = $('#slot-interval');
     const $attendantsNumber = $('#attendants-number');
     const $isPrivate = $('#is-private');
+    const $isActive = $('#is-active');
     const $location = $('#location');
     const $description = $('#description');
     const $filterServices = $('#filter-services');
@@ -160,6 +161,7 @@ App.Pages.Services = (function () {
                 slot_interval: $slotInterval.val(),
                 attendants_number: $attendantsNumber.val(),
                 is_private: Number($isPrivate.prop('checked')),
+                is_active: Number($isActive.prop('checked')),
                 id_service_categories: $serviceCategoryId.val() || undefined,
             };
 
@@ -333,6 +335,7 @@ App.Pages.Services = (function () {
         $services.find('.record-details').find('input, select, textarea').val('').prop('disabled', true);
         $services.find('.record-details .form-label span').prop('hidden', true);
         $services.find('.record-details #is-private').prop('checked', false);
+        $services.find('.record-details #is-active').prop('checked', true);
         $services.find('.record-details h4 a').remove();
 
         $services.find('.add-edit-delete-group').show();
@@ -366,6 +369,7 @@ App.Pages.Services = (function () {
         $slotInterval.val(service.slot_interval);
         $attendantsNumber.val(service.attendants_number);
         $isPrivate.prop('checked', service.is_private);
+        $isActive.prop('checked', service.is_active);
         App.Components.ColorSelection.setColor($color, service.color);
 
         const serviceCategoryId = service.id_service_categories !== null ? service.id_service_categories : '';
@@ -463,7 +467,11 @@ App.Pages.Services = (function () {
     function getFilterHtml(service) {
         const name = service.name;
 
-        const info = service.duration + ' min - ' + service.price + ' ' + service.currency;
+        let info = service.duration + ' min - ' + service.price + ' ' + service.currency;
+
+        if (!service.is_active) {
+            info += ' - ' + lang('inactive');
+        }
 
         return $('<div/>', {
             'class': 'service-row entry',

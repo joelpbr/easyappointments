@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'رفض خادم CalDAV اسم الم�
 $lang['caldav_sync_failed_unreachable'] = 'تعذر الوصول إلى خادم CalDAV. تأكد من أنه يعمل وأن عنوان الاتصال صحيح.';
 $lang['caldav_private_host_warning'] = 'هذا الخادم على شبكة خاصة. سيؤدي الاتصال إلى إضافة مضيفه إلى عناوين الاتصال المسموح بها.';
 $lang['caldav_allow_host_and_connect'] = 'السماح والاتصال';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

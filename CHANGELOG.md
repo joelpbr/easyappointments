@@ -10,6 +10,9 @@ developers to maintain and readjust their custom modifications on the main proje
 - Production Docker setup: clone the repository, copy .env.example to .env and run docker compose up -d to start the application, its database and the scheduled calendar synchronization and data cleanup
 - The SMTP server can be set through the SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS and SMTP_CRYPTO environment variables
 - The Docker setup now takes a database backup every day, keeps them for BACKUP_RETENTION_DAYS days, rotates the container logs and reports the health of the application container
+- The clinic treatment catalog (Quiropodia, Exploración, Cirugía, Cura, Cura PV, Entrega SP, Moldes, Silicona, Ortonixia and Otro) is created with its colors, ready to adjust from the services page
+- Services can be deactivated: they keep their appointments, but can no longer be chosen for new appointments or booked online
+- Appointments keep the name of the service at the time of the visit, so renaming a service no longer changes the appointment history
 
 ### Changed
 
@@ -18,6 +21,8 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Fixed
 
+- Deleting a service that has appointments is now refused instead of silently deleting all of its appointments
+- The services API now returns the service color, as documented
 - A fresh installation now opens the installer instead of asking for a database migration when a console command, such as the scheduled synchronization, ran before the installation was completed
 - Booking with the e-mail address of an existing customer no longer overwrites their stored name, phone number and address, which previously let anyone who knew the address change the customer's details; returning customers can still update them from the manage link of their own appointment
 - Private services and providers can no longer be booked, and providers can no longer be booked for services they do not offer, by sending requests directly to the booking page endpoints

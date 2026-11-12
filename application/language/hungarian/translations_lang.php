@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'A CalDAV kiszolgáló elutasította a
 $lang['caldav_sync_failed_unreachable'] = 'A CalDAV kiszolgáló nem érhető el. Győződjön meg róla, hogy fut, és hogy a kapcsolódási cím helyes.';
 $lang['caldav_private_host_warning'] = 'Ez a kiszolgáló magánhálózaton található. A csatlakozáskor a gépneve bekerül az engedélyezett kapcsolódási címek közé.';
 $lang['caldav_allow_host_and_connect'] = 'Engedélyezés és csatlakozás';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

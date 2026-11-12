@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'เซิร์ฟเวอร์ Cal
 $lang['caldav_sync_failed_unreachable'] = 'ไม่สามารถติดต่อเซิร์ฟเวอร์ CalDAV ได้ โปรดตรวจสอบว่าเซิร์ฟเวอร์ทำงานอยู่และ URL การเชื่อมต่อถูกต้อง';
 $lang['caldav_private_host_warning'] = 'เซิร์ฟเวอร์นี้อยู่ในเครือข่ายส่วนตัว การเชื่อมต่อจะเพิ่มโฮสต์ของเซิร์ฟเวอร์นี้ลงใน URL การเชื่อมต่อที่อนุญาต';
 $lang['caldav_allow_host_and_connect'] = 'อนุญาตและเชื่อมต่อ';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

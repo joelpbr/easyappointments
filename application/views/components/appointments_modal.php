@@ -41,6 +41,26 @@
                                     </label>
                                     <select id="select-service" class="required form-select">
                                         <?php
+                                        // Inactive services stay hidden for new appointments, but must exist as
+                                        // options so that appointments already using them can still be saved.
+                                        $service_option = function (array $service): string {
+                                            $label = e($service['name']);
+                                            $hidden = '';
+
+                                            if (!$service['is_active']) {
+                                                $label .= ' (' . lang('inactive') . ')';
+                                                $hidden = ' hidden';
+                                            }
+
+                                            return '<option value="' .
+                                                $service['id'] .
+                                                '"' .
+                                                $hidden .
+                                                '>' .
+                                                $label .
+                                                '</option>';
+                                        };
+
                                         // Group services by category, only if there is at least one service
                                         // with a parent category.
                                         $has_category = false;
@@ -85,11 +105,7 @@
                                                     echo '<optgroup label="' . $group_label . '">';
 
                                                     foreach ($group as $service) {
-                                                        echo '<option value="' .
-                                                            $service['id'] .
-                                                            '">' .
-                                                            e($service['name']) .
-                                                            '</option>';
+                                                        echo $service_option($service);
                                                     }
 
                                                     echo '</optgroup>';
@@ -97,11 +113,7 @@
                                             }
                                         } else {
                                             foreach ($available_services as $service) {
-                                                echo '<option value="' .
-                                                    $service['id'] .
-                                                    '">' .
-                                                    e($service['name']) .
-                                                    '</option>';
+                                                echo $service_option($service);
                                             }
                                         }
                                         ?>

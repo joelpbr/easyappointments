@@ -161,15 +161,19 @@ class Installation extends EA_Controller
                 'company_link' => $company['company_link'],
             ]);
 
-            // Service
-            $service_id = $this->services_model->save([
-                'name' => 'Service',
-                'duration' => '30',
-                'price' => '0',
-                'currency' => '',
-                'slot_interval' => 15,
-                'attendants_number' => '1',
-            ]);
+            // Services: the treatment catalog created by the migrations, or a sample service on a bare database.
+            $service_ids = array_column($this->services_model->get(), 'id');
+
+            if (empty($service_ids)) {
+                $service_ids[] = $this->services_model->save([
+                    'name' => 'Service',
+                    'duration' => '30',
+                    'price' => '0',
+                    'currency' => '',
+                    'slot_interval' => 15,
+                    'attendants_number' => '1',
+                ]);
+            }
 
             // Provider
             $this->providers_model->save([
@@ -177,7 +181,7 @@ class Installation extends EA_Controller
                 'last_name' => 'Doe',
                 'email' => 'jane@example.org',
                 'phone_number' => '+1 (000) 000-0000',
-                'services' => [$service_id],
+                'services' => $service_ids,
                 'language' => $admin['language'],
                 'timezone' => $admin['timezone'],
                 'settings' => [

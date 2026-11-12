@@ -28,6 +28,7 @@ class Services_model extends EA_Model
         'price' => 'float',
         'attendants_number' => 'integer',
         'is_private' => 'boolean',
+        'is_active' => 'boolean',
         'id_service_categories' => 'integer',
     ];
 
@@ -46,6 +47,7 @@ class Services_model extends EA_Model
         'slotInterval' => 'slot_interval',
         'attendantsNumber' => 'attendants_number',
         'isPrivate' => 'is_private',
+        'isActive' => 'is_active',
         'serviceCategoryId' => 'id_service_categories',
     ];
 
@@ -264,10 +266,14 @@ class Services_model extends EA_Model
      *
      * @param int $service_id Service ID.
      *
-     * @throws RuntimeException
+     * @throws RuntimeException When the service has appointments, as deleting it would also delete them.
      */
     public function delete(int $service_id): void
     {
+        if ($this->db->get_where('appointments', ['id_services' => $service_id], 1)->num_rows()) {
+            throw new RuntimeException(lang('service_has_appointments'));
+        }
+
         $this->db->delete('services', ['id' => $service_id]);
     }
 
@@ -335,14 +341,14 @@ class Services_model extends EA_Model
     /**
      * Get all the service records that are assigned to at least one provider.
      *
-     * @param bool $without_private Only include the public services.
+     * @param bool $without_private Only include the services that can be booked publicly (public and active).
      *
      * @return array Returns an array of services.
      */
     public function get_available_services(bool $without_private = false): array
     {
         if ($without_private) {
-            $this->db->where('services.is_private', false);
+            $this->db->where('services.is_private', false)->where('services.is_active', true);
         }
 
         $services = $this->db
@@ -509,9 +515,11 @@ class Services_model extends EA_Model
             'currency' => $service['currency'],
             'description' => $service['description'],
             'location' => $service['location'],
+            'color' => $service['color'],
             'slotInterval' => (int) $service['slot_interval'],
             'attendantsNumber' => (int) $service['attendants_number'],
             'isPrivate' => (bool) $service['is_private'],
+            'isActive' => (bool) ($service['is_active'] ?? true),
             'serviceCategoryId' =>
                 $service['id_service_categories'] !== null ? (int) $service['id_service_categories'] : null,
         ];
@@ -575,6 +583,10 @@ class Services_model extends EA_Model
 
         if (array_key_exists('isPrivate', $service)) {
             $decoded_resource['is_private'] = (bool) $service['isPrivate'];
+        }
+
+        if (array_key_exists('isActive', $service)) {
+            $decoded_resource['is_active'] = (bool) $service['isActive'];
         }
 
         $service = $decoded_resource;

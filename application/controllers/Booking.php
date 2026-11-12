@@ -678,8 +678,8 @@ class Booking extends EA_Controller
     /**
      * Make sure the service and provider can be booked from the public booking page.
      *
-     * Private records are hidden from the booking page, and a provider can only be booked for the services assigned
-     * to them, so requests that bypass the page must not be able to reach them either.
+     * Private and inactive records are hidden from the booking page, and a provider can only be booked for the services
+     * assigned to them, so requests that bypass the page must not be able to reach them either.
      *
      * @param mixed $service_id Service ID.
      * @param mixed $provider_id Provider ID or ANY_PROVIDER.
@@ -690,7 +690,7 @@ class Booking extends EA_Controller
     {
         $service = $this->services_model->find((int) $service_id);
 
-        if ($service['is_private']) {
+        if ($service['is_private'] || !$service['is_active']) {
             throw new RuntimeException('The requested service is not available.');
         }
 

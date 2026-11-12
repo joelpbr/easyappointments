@@ -268,13 +268,17 @@ App.Components.AppointmentsModal = (function () {
                 );
 
                 if (providers.length) {
-                    $selectService.val(providers[0].services[0]).trigger('change');
+                    const activeServiceId = providers[0].services.find(
+                        (serviceId) => !$selectService.find('option[value="' + serviceId + '"]').prop('hidden'),
+                    );
+
+                    $selectService.val(activeServiceId).trigger('change');
                     $selectProvider.val(providerId);
                 }
             } else if ($selectFilterItem.find('option:selected').attr('type') === 'service') {
                 $selectService.find('option[value="' + $selectFilterItem.val() + '"]').prop('selected', true);
             } else {
-                $selectService.find('option:first').prop('selected', true).trigger('change');
+                $selectService.find('option:not([hidden]):first').prop('selected', true).trigger('change');
             }
 
             $selectProvider.trigger('change');

@@ -44,6 +44,7 @@ class Appointments_model extends EA_Model
         'notes' => 'notes',
         'hash' => 'hash',
         'serviceId' => 'id_services',
+        'serviceName' => 'service_name',
         'providerId' => 'id_users_provider',
         'customerId' => 'id_users_customer',
         'googleCalendarId' => 'id_google_calendar',
@@ -229,6 +230,8 @@ class Appointments_model extends EA_Model
         $appointment['update_datetime'] = date('Y-m-d H:i:s');
         $appointment['hash'] = random_string('alnum', 12);
 
+        $this->set_service_name($appointment);
+
         if (!$this->db->insert('appointments', $appointment)) {
             throw new RuntimeException('Could not insert appointment.');
         }
@@ -249,11 +252,52 @@ class Appointments_model extends EA_Model
     {
         $appointment['update_datetime'] = date('Y-m-d H:i:s');
 
+        $this->set_service_name($appointment);
+
         if (!$this->db->update('appointments', $appointment, ['id' => $appointment['id']])) {
             throw new RuntimeException('Could not update appointment record.');
         }
 
         return $appointment['id'];
+    }
+
+    /**
+     * Keep the name of the service at the time of the appointment.
+     *
+     * The name is only taken when the appointment is created or its service changes, so renaming a service later does
+     * not rewrite the appointment history. Any service name sent by the caller is ignored.
+     *
+     * @param array $appointment Associative array with the appointment data.
+     */
+    protected function set_service_name(array &$appointment): void
+    {
+        unset($appointment['service_name']);
+
+        if (empty($appointment['id_services'])) {
+            return;
+        }
+
+        if (!empty($appointment['id'])) {
+            $stored = $this->db
+                ->select('id_services, service_name')
+                ->get_where('appointments', ['id' => $appointment['id']])
+                ->row_array();
+
+            if (
+                $stored &&
+                (int) $stored['id_services'] === (int) $appointment['id_services'] &&
+                $stored['service_name']
+            ) {
+                return;
+            }
+        }
+
+        $service = $this->db
+            ->select('name')
+            ->get_where('services', ['id' => $appointment['id_services']])
+            ->row_array();
+
+        $appointment['service_name'] = $service['name'] ?? null;
     }
 
     /**
@@ -615,6 +659,7 @@ class Appointments_model extends EA_Model
             'customerId' => $appointment['id_users_customer'] !== null ? (int) $appointment['id_users_customer'] : null,
             'providerId' => $appointment['id_users_provider'] !== null ? (int) $appointment['id_users_provider'] : null,
             'serviceId' => $appointment['id_services'] !== null ? (int) $appointment['id_services'] : null,
+            'serviceName' => $appointment['service_name'] ?? null,
             'meetingLink' => $appointment['meeting_link'],
             'googleCalendarId' =>
                 $appointment['id_google_calendar'] !== null ? $appointment['id_google_calendar'] : null,
