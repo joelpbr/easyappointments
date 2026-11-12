@@ -267,7 +267,7 @@ pruebas y se integra en `develop`. Aislar el código nuevo reduce los conflictos
 | --- | --- | --- | --- |
 | 1 Auditoría | Este documento | — | Revisión y aprobación |
 | 2 Infraestructura | Docker, MySQL, copias diarias, restauración probada, logs, salud | — | **Hecha**: `docker compose up -d`, instalación, cita, email y restauración probados |
-| 3 Agenda multiprofesional | Recepción, vista en tabla predeterminada, intervalos, tratamientos y colores, estados, modal rápido, refresco | 2 | Escenarios A, B, G, H visibles en la agenda; pruebas 23.1 y 23.2 |
+| 3 Agenda multiprofesional | Recepción, vista en tabla predeterminada, intervalos, tratamientos y colores, estados, modal rápido, refresco | 2 | **Hecha**: Escenarios A, B, G, H visibles en la agenda; pruebas 23.1 y 23.2 |
 | 4 Motor de disponibilidad | `Slot_rules`, `Slot_finder`, «Buscar hueco», bloqueo transaccional | 3 | Escenarios C, D, E, F; pruebas 23.3; búsqueda < 1 s con 50 000 citas |
 | 5 Pacientes | Autocompletado, duplicados, profesional habitual, primera visita, datos fiscales opcionales | 3 | Pruebas 23.4; escenario M |
 | 6 Festivos y ausencias | Tipos, alcance, repetición, festivos, citas afectadas | 4 | Pruebas 23.6; escenarios G y H |

@@ -220,7 +220,7 @@
 
                                 <div class="mb-3">
                                     <label for="appointment-notes" class="form-label">
-                                        <?= lang('notes') ?>
+                                        <?= lang('appointment_comment') ?>
                                         <?php if ($require_notes): ?>
                                             <span class="text-danger">*</span>
                                         <?php endif; ?>
@@ -385,7 +385,7 @@
 
                                 <div class="mb-3">
                                     <label for="customer-notes" class="form-label">
-                                        <?= lang('notes') ?>
+                                        <?= lang('administrative_notes') ?>
                                     </label>
                                     <textarea id="customer-notes" rows="3" class="form-control"></textarea>
                                 </div>

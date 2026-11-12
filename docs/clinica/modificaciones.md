@@ -128,3 +128,10 @@ anotan que cambiaron (`***`), nunca su contenido, para no copiar datos sensibles
 | `application/config/autoload.php` | Carga el helper | — |
 
 Pendiente para la fase 11: pantalla de consulta del registro para administradores.
+
+## Terminología de la clínica (fase 3)
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/language/spanish/translations_lang.php` | Servicio → Tratamiento, Cliente → Paciente, Proveedor → Profesional, Secretario/a → Recepcionista, en 76 textos. Se mantienen los usos genéricos («nuestro servicio para agendar», «ID de cliente» de Google y los textos «Acerca de») | Interfaz en el lenguaje de la clínica (especificación 17.3). Solo afecta al español; los demás idiomas conservan sus términos |
+| `application/views/components/appointments_modal.php` | «Notas» de la cita pasa a «Comentario» y las del paciente a «Observaciones administrativas» (claves nuevas `appointment_comment` y `administrative_notes`) | Había dos campos «Notas» en el mismo formulario (especificación 9.1) |

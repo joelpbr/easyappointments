@@ -613,4 +613,6 @@ $lang['not_specified'] = 'Not specified';
 $lang['more_details'] = 'More details';
 $lang['fewer_details'] = 'Fewer details';
 $lang['appointment_duration_invalid'] = 'The appointment must last at least 5 minutes.';
+$lang['appointment_comment'] = 'Comment';
+$lang['administrative_notes'] = 'Administrative notes';
 // End
