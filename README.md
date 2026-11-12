@@ -82,27 +82,19 @@ git clone https://github.com/alextselegidis/easyappointments.git
 # Navigate into the project
 cd easyappointments
 
-# Start the Docker environment
-docker compose up
+# Start the Docker development environment
+docker compose -f docker-compose.dev.yml up
 ```
 
-Then open a second terminal and enter the application container:
+The dependencies are installed and the assets are rebuilt on save automatically. Open a shell in the application
+container with:
 
 ```bash id="app-shell"
-docker compose exec php-fpm bash
+docker compose -f docker-compose.dev.yml exec app bash
 ```
 
-Inside the container, install dependencies:
-
-```bash id="deps"
-npm install && composer install
-```
-
-Start the development watcher:
-
-```bash id="dev"
-npm start
-```
+To run it in production, copy `.env.example` to `.env`, fill it in and run `docker compose up -d`. See
+[Docker](docs/docker.md) for the details.
 
 Build production assets:
 

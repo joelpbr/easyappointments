@@ -3,6 +3,21 @@
 This file contains the code changes that were introduced into each release (starting from v1.1.0) so that is easy for
 developers to maintain and readjust their custom modifications on the main project codebase.
 
+## [Unreleased]
+
+### Added
+
+- Production Docker setup: clone the repository, copy .env.example to .env and run docker compose up -d to start the application, its database and the scheduled calendar synchronization and data cleanup
+- The SMTP server can be set through the SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS and SMTP_CRYPTO environment variables
+
+### Changed
+
+- The local development environment now starts with docker compose -f docker-compose.dev.yml up and only includes the application, the database, the asset watcher and Mailpit (phpMyAdmin, Baikal, OpenLDAP, phpLDAPadmin and Swagger UI were removed)
+
+### Fixed
+
+- A fresh installation now opens the installer instead of asking for a database migration when a console command, such as the scheduled synchronization, ran before the installation was completed
+
 ## [1.6.1] - 2026-10-12
 
 ### Added

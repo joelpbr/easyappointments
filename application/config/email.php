@@ -17,5 +17,17 @@ $config['mailtype'] = 'html'; // or 'text'
 // $config['from_name'] = '';
 // $config['from_address'] = '';
 // $config['reply_to'] = '';
+
+// The SMTP server can also be set through environment variables, as the Docker setup does.
+if (getenv('SMTP_HOST')) {
+    $config['protocol'] = 'smtp';
+    $config['smtp_host'] = getenv('SMTP_HOST');
+    $config['smtp_port'] = (int) (getenv('SMTP_PORT') ?: 587);
+    $config['smtp_auth'] = (bool) getenv('SMTP_USER');
+    $config['smtp_user'] = (string) getenv('SMTP_USER');
+    $config['smtp_pass'] = (string) getenv('SMTP_PASS');
+    $config['smtp_crypto'] = (string) getenv('SMTP_CRYPTO');
+}
+
 $config['crlf'] = "\r\n";
 $config['newline'] = "\r\n";

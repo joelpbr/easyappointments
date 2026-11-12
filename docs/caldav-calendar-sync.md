@@ -2,11 +2,17 @@
 
 This guide explains how to set up a local CalDAV server (Baikal) for testing calendar sync with Easy!Appointments.
 
-> **Note:** This guide uses the Docker development setup from `docker-compose.yml`.
+> **Note:** This guide runs Baikal next to the Docker development setup from `docker-compose.dev.yml`.
 
 ## Setting Up Baikal
 
-Baikal is a free, self-hosted calendar server. In the Docker setup, it runs at http://localhost:8100.
+Baikal is a free, self-hosted calendar server. Start it on the development network with:
+
+```bash
+docker run -d --name baikal --network easyappointments-dev_default -p 8100:80 ckulka/baikal:0.10.1-apache
+```
+
+It then runs at http://localhost:8100.
 
 ### First-Time Setup
 

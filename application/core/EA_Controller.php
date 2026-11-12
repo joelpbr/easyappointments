@@ -197,7 +197,8 @@ class EA_Controller extends CI_Controller
             return;
         }
 
-        if (!$this->db->table_exists('migrations')) {
+        // A console command can create the migrations table before installation, so check the users table instead.
+        if (!is_app_installed()) {
             return;
         }
 

@@ -6,15 +6,13 @@
 /docs/apigen/html
 /docs/jsdoc/html
 /docs/plato/html
-/docker/mysql/
-/docker/baikal/
-/docker/openldap/
 /node_modules/
 /npm-debug.log
 /assets/js/**/*.min.js
 /assets/css/**/*.css
 /assets/vendor
 /config.php
+/.env
 /storage/backups/*
 !/storage/backups/.htaccess
 !/storage/backups/index.html

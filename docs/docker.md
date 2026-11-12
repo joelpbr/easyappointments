@@ -1,72 +1,75 @@
 # Docker
 
-Docker lets you run Easy!Appointments on your computer without installing Apache, PHP, or MySQL manually. Everything runs inside containers — isolated mini-environments that are easy to start and stop.
+Docker runs Easy!Appointments, its database and its scheduled tasks without installing Apache, PHP or MySQL on the
+server. The repository ships two stacks:
 
-## Getting Started
+| File                     | Purpose     | Services                                                                    |
+|--------------------------|-------------|-----------------------------------------------------------------------------|
+| `docker-compose.yml`     | Production  | `app` (Apache + PHP), `cron` (calendar sync and data cleanup), `db` (MySQL) |
+| `docker-compose.dev.yml` | Development | `app` (with Xdebug and Composer), `node` (asset watcher), `db`, `mailpit`   |
 
-1. Make sure you have [Docker](https://www.docker.com/) installed.
-2. Clone or download the project.
-3. Edit the `config.php` file in the root folder to match the Docker setup:
-
-```php
-class Config {
-    // GENERAL SETTINGS
-    const BASE_URL      = 'http://localhost';
-    const LANGUAGE      = 'english';
-    const DEBUG_MODE    = TRUE;
-
-    // DATABASE SETTINGS
-    const DB_HOST       = 'mysql';
-    const DB_NAME       = 'easyappointments';
-    const DB_USERNAME   = 'user';
-    const DB_PASSWORD   = 'password';
-
-    // GOOGLE CALENDAR SYNC
-    const GOOGLE_SYNC_FEATURE   = FALSE;
-    const GOOGLE_CLIENT_ID      = '';
-    const GOOGLE_CLIENT_SECRET  = '';
-}
-```
-
-4. Start everything with:
+## Production
 
 ```bash
-docker compose up
+git clone <repository-url> easyappointments
+cd easyappointments
+cp .env.example .env    # set BASE_URL and DB_PASSWORD at least
+docker compose up -d
 ```
 
-If you put a reverse proxy in front of the containers, set the `PROXY_IPS` environment variable on the PHP container to the proxy address or subnet (e.g. `PROXY_IPS=172.18.0.0/16`), so the client IP addresses are read from the `X-Forwarded-For` header instead of every visitor looking like the proxy.
+Open `BASE_URL` in the browser and the installer creates the administrator account.
 
-## What's Included
+All the settings live in `.env`, see `.env.example` for the full list. The data is kept in two Docker volumes:
+`db-data` (the database) and `storage` (uploads, logs, sessions and backups).
 
-Once running, you can access these services in your browser:
+### HTTPS
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| **Easy!Appointments** | http://localhost | (your admin account) |
-| **phpMyAdmin** (database manager) | http://localhost:8080 | `root` / `secret` |
-| **Mailpit** (email testing) | http://localhost:8025 | (no login needed) |
-| **Baikal** (CalDAV testing) | http://localhost:8100 | `admin` / `admin` |
-| **phpLDAPadmin** (LDAP testing) | http://localhost:8200 | `cn=admin,dc=example,dc=org` / `admin` |
+The `app` container serves plain HTTP on `APP_PORT`. Put your reverse proxy (nginx, Caddy, Traefik, Cloudflare...) in
+front of it to terminate TLS, set `BASE_URL` to the `https://` address and set `PROXY_IPS` to the proxy address or
+subnet (e.g. `PROXY_IPS=172.18.0.0/16`), so the client IP addresses are read from the `X-Forwarded-For` header.
 
-## CalDAV Sync with Baikal
+### Email
 
-To test CalDAV syncing locally:
+Set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` and `SMTP_CRYPTO` in `.env` to send emails through your mail
+server.
 
-1. Open Baikal at http://localhost:8100 and create a new user.
-2. In Easy!Appointments, click **Enable Sync** → **CalDAV** and enter:
-   - **URL:** `http://baikal/dav.php/calendars/<your-username>/default/`
-   - **Username:** your Baikal username
-   - **Password:** your Baikal password
+### Updating
 
-The `baikal` host resolves to a private address, so the connection dialog asks you to confirm it. Click
-**Allow and connect** and the host is added to the allowed connection URLs for you. See
-[CalDAV Calendar Sync](caldav-calendar-sync.md) for the details.
+```bash
+git pull
+docker compose up -d --build
+```
 
-## LDAP
+If the new version contains database changes, the application asks you to run the update the next time you open it.
 
-OpenLDAP runs on the `openldap` container (ports `389` and `636`). You can manage it through phpLDAPadmin at http://localhost:8200.
+### Backups
 
-> **Note:** This Docker setup is for **development only**. Don't use it in production. For a production Docker image, see: https://github.com/alextselegidis/easyappointments-docker
+```bash
+docker compose exec -u www-data app php index.php console backup
+```
+
+The backup is written to `storage/backups` inside the `storage` volume.
+
+## Development
+
+```bash
+docker compose -f docker-compose.dev.yml up
+```
+
+| Service               | URL                   | Credentials             |
+|-----------------------|-----------------------|-------------------------|
+| **Easy!Appointments** | http://localhost      | (your admin account)    |
+| **MySQL**             | localhost:3306        | `easyappointments` / `secret` (root: `secret`) |
+| **Mailpit**           | http://localhost:8025 | (no login needed)       |
+
+The code is mounted from the host, Composer dependencies are installed on start and the `node` service rebuilds the
+JS and CSS assets on save. Xdebug connects to `host.docker.internal` when a debug session is triggered.
+
+Run commands inside the application container with:
+
+```bash
+docker compose -f docker-compose.dev.yml exec app bash
+```
 
 *This document applies to Easy!Appointments v1.6.1.*
 

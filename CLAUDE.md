@@ -21,7 +21,8 @@ CodeIgniter 3 in `system/`, which is framework code and should not be edited.
 - `application/config` — `config.php`, `routes.php`, `database.php`, `email.php`, `google.php`, `constants.php`.
 - `assets/js` — `pages`, `components`, `http` (one HTTP client per controller), `utils`, `layouts`.
 - `assets/css` — SCSS sources (`backend`, `frontend`, `general`) compiled next to their output.
-- `tests/Unit` — PHPUnit tests; `docker/` and `docker-compose.yml` — local stack; `docs/` — user documentation.
+- `tests/Unit` — PHPUnit tests; `docs/` — user documentation.
+- `docker/` — image and config; `docker-compose.yml` — production stack; `docker-compose.dev.yml` — local stack.
 
 ## Conventions
 
