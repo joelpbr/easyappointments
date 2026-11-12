@@ -39,6 +39,7 @@ developers to maintain and readjust their custom modifications on the main proje
 - Two sessions can no longer book the same slot at the same time
 - "Find slot" in the calendar searches the free slots by treatment, duration, providers, dates, days, morning or afternoon, a preferred time with a margin and a preferred provider, and books the chosen slot with the appointment form already filled in
 - Every time outside the working hours (before opening, breaks, after closing and days off) is shown in the same reddish tone and labeled "Fuera de horario"
+- Free time in the calendar is white, and the time that has already passed is shaded in yellow, moving forward every minute
 - The local development environment now starts with docker compose -f docker-compose.dev.yml up and only includes the application, the database, the asset watcher and Mailpit (phpMyAdmin, Baikal, OpenLDAP, phpLDAPadmin and Swagger UI were removed)
 - The Docker setup now runs MySQL 8.4 and defaults to the Spanish language and the Europe/Madrid time zone, both configurable in .env
 

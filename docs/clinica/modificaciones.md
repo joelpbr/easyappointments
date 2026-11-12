@@ -217,3 +217,12 @@ comparadas byte a byte.
 | Archivo | Cambio | Motivo |
 | --- | --- | --- |
 | `application/helpers/asset_helper.php` | `asset_url()` añade al token fijo la fecha de modificación del archivo | El token (`cache_busting_token`) solo cambia con cada versión de Easy!Appointments, así que tras una actualización los navegadores seguían usando el CSS y el JavaScript antiguos |
+
+## Tiempo pasado en amarillo
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `assets/js/utils/calendar_past_time.js` | Nuevo. Añade a cada calendario un evento de fondo `fc-past-time` desde el inicio de la vista hasta la hora actual y lo mueve cada minuto | La clínica quiere ver de un vistazo qué parte del día ya ha pasado |
+| `assets/js/utils/calendar_table_view.js`, `calendar_default_view.js` | Llaman a `CalendarPastTime.update()` tras cargar los eventos y exponen `getCalendars()` | Ídem |
+| `assets/js/pages/calendar.js`, `application/views/pages/calendar.php` | Arrancan el refresco por minuto e incluyen el script | Ídem |
+| `assets/css/backend.scss` | El tiempo libre pasa a blanco (se quita el amarillo de «hoy» de FullCalendar) y ese amarillo (`#f7f2cf`) marca el tiempo pasado, por encima del tono de fuera de horario | Ídem |

@@ -261,6 +261,27 @@ body .modal.full-screen .modal-push {
     background: var(--bs-secondary-bg) url('../img/unavailability.jpg');
 }
 
+// Free time is white; the yellow that FullCalendar gives to the whole of today is used for the time that has already
+// passed instead (see calendar_past_time.js), on top of the out of hours tone.
+#calendar {
+    --fc-today-bg-color: transparent;
+}
+
+#calendar .fc-timegrid-col {
+    background-color: #ffffff;
+}
+
+#calendar .fc-past-time {
+    background: #f7f2cf !important;
+    opacity: 1;
+    border: 0;
+}
+
+// Above the other background events, which get z-index 2 from the event rules.
+#calendar .fc-timegrid-bg-harness:has(> .fc-past-time) {
+    z-index: 3;
+}
+
 // Out of the working hours (before opening, breaks, after closing and days off): a reddish striped background, so the
 // clinic sees at a glance where an appointment would be an exception. Unavailabilities and blocked periods keep their
 // own styles.

@@ -903,6 +903,8 @@ App.Utils.CalendarDefaultView = (function () {
                 }
 
                 fullCalendar.addEventSource(events);
+
+                App.Utils.CalendarPastTime.update(fullCalendar);
             })
             .always(() => {
                 $('#loading').css('visibility', '');
@@ -1445,9 +1447,19 @@ App.Utils.CalendarDefaultView = (function () {
         );
     }
 
+    /**
+     * Get the FullCalendar instances of the view.
+     *
+     * @return {Array}
+     */
+    function getCalendars() {
+        return fullCalendar ? [fullCalendar] : [];
+    }
+
     return {
         initialize,
         refresh,
+        getCalendars,
         FILTER_TYPE_ALL,
         FILTER_TYPE_PROVIDER,
         FILTER_TYPE_SERVICE,

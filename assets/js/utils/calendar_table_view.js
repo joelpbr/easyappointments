@@ -1113,6 +1113,7 @@ App.Utils.CalendarTableView = (function () {
                 className: 'fc-unavailability fc-out-of-hours',
             });
             $calendar.data('fullCalendar').addEventSource(calendarEventSource);
+            App.Utils.CalendarPastTime.update($calendar.data('fullCalendar'));
             return;
         }
 
@@ -1170,6 +1171,7 @@ App.Utils.CalendarTableView = (function () {
             });
         });
         $calendar.data('fullCalendar').addEventSource(calendarEventSource);
+        App.Utils.CalendarPastTime.update($calendar.data('fullCalendar'));
     }
 
     /**
@@ -1820,8 +1822,21 @@ App.Utils.CalendarTableView = (function () {
 
     // Public API
 
+    /**
+     * Get the FullCalendar instances of the provider columns.
+     *
+     * @return {Array}
+     */
+    function getCalendars() {
+        return $('#calendar .calendar-wrapper')
+            .toArray()
+            .map((wrapper) => $(wrapper).data('fullCalendar'))
+            .filter(Boolean);
+    }
+
     return {
         initialize,
         refresh,
+        getCalendars,
     };
 })();
