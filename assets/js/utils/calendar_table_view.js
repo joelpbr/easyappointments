@@ -1108,7 +1108,7 @@ App.Utils.CalendarTableView = (function () {
                 color: EVENT_COLORS.notWorking,
                 editable: false,
                 display: 'background',
-                className: 'fc-unavailability',
+                className: 'fc-unavailability fc-out-of-hours',
             });
             $calendar.data('fullCalendar').addEventSource(calendarEventSource);
             return;
@@ -1127,7 +1127,7 @@ App.Utils.CalendarTableView = (function () {
                 color: EVENT_COLORS.notWorking,
                 editable: false,
                 display: 'background',
-                className: 'fc-unavailability',
+                className: 'fc-unavailability fc-out-of-hours',
             });
         }
 
@@ -1144,7 +1144,7 @@ App.Utils.CalendarTableView = (function () {
                 color: EVENT_COLORS.notWorking,
                 editable: false,
                 display: 'background',
-                className: 'fc-unavailability',
+                className: 'fc-unavailability fc-out-of-hours',
             });
         }
 
@@ -1156,14 +1156,14 @@ App.Utils.CalendarTableView = (function () {
             const breakEnd = moment(start.format('YYYY-MM-DD') + ' ' + breakPeriod.end);
 
             calendarEventSource.push({
-                title: lang('break'),
+                title: lang('not_working'),
                 start: breakStart.toDate(),
                 end: breakEnd.toDate(),
                 allDay: false,
                 color: EVENT_COLORS.notWorking,
                 editable: false,
                 display: 'background',
-                className: 'fc-unavailability fc-break',
+                className: 'fc-unavailability fc-out-of-hours',
             });
         });
         $calendar.data('fullCalendar').addEventSource(calendarEventSource);
