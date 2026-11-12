@@ -135,3 +135,14 @@ Pendiente para la fase 11: pantalla de consulta del registro para administradore
 | --- | --- | --- |
 | `application/language/spanish/translations_lang.php` | Servicio → Tratamiento, Cliente → Paciente, Proveedor → Profesional, Secretario/a → Recepcionista, en 76 textos. Se mantienen los usos genéricos («nuestro servicio para agendar», «ID de cliente» de Google y los textos «Acerca de») | Interfaz en el lenguaje de la clínica (especificación 17.3). Solo afecta al español; los demás idiomas conservan sus términos |
 | `application/views/components/appointments_modal.php` | «Notas» de la cita pasa a «Comentario» y las del paciente a «Observaciones administrativas» (claves nuevas `appointment_comment` y `administrative_notes`) | Había dos campos «Notas» en el mismo formulario (especificación 9.1) |
+
+## Tema «Podología Sabadell»
+
+Archivos nuevos: `assets/css/themes/podologia-sabadell.scss` (tema de Bootstrap con la identidad de la clínica: azul
+`#063f7e`, cian `#08a2c9` y fuente Inter; retoca sobre todo la página pública de reserva) y
+`application/migrations/076_set_podologia_sabadell_theme.php` (lo activa si la instalación seguía con el tema por
+defecto). Gulp lo compila como el resto de temas y aparece en *Configuración → General → Tema*. No modifica archivos
+originales.
+
+**Pendiente (fase 11)**: la fuente Inter se descarga de Google Fonts, igual que en los temas incluidos. Para no enviar
+la IP de los pacientes a Google conviene servirla desde la propia aplicación antes de producción.
