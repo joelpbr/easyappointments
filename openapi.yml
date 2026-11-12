@@ -2663,6 +2663,8 @@ components:
                     type: string
                 isPrivate:
                     type: boolean
+                isActive:
+                    type: boolean
                 ldapDn:
                     type: string
                 services:
@@ -2720,6 +2722,7 @@ components:
                 state: null
                 services: []
                 isPrivate: false
+                isActive: true
                 ldapDn: null
                 settings:
                     username: chrisdoe
@@ -2788,6 +2791,8 @@ components:
                     type: string
                 isPrivate:
                     type: boolean
+                isActive:
+                    type: boolean
                 ldapDn:
                     type: string
                 services:
@@ -2844,6 +2849,7 @@ components:
                 timezone: UTC
                 language: english
                 isPrivate: false
+                isActive: true
                 ldapDn: null
                 services: []
                 settings:

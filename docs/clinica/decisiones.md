@@ -46,3 +46,13 @@ se añade una nueva que sustituye a la anterior.
   los profesionales que gestiona asignados. Su pantalla principal es la vista en tabla, con una columna por
   profesional.
 - **Consecuencias**: los profesionales pueden seguir teniendo su propia cuenta con el rol `provider`.
+
+## D-006 · El apellido del profesional es opcional, sin campo «nombre visible en agenda»
+
+- **Fecha**: 12/11/2026
+- **Contexto**: la especificación (4.1) pide nombre, apellidos y un nombre visible en agenda. Easy!Appointments muestra
+  el nombre y los apellidos del profesional en más de 20 lugares.
+- **Decisión**: hacer opcionales los apellidos. El nombre que se quiera ver en la agenda («Sara», «Dra. Sara») se
+  escribe en el campo nombre.
+- **Consecuencias**: sin cambios en las vistas ni en la API; si más adelante se necesitan apellidos para facturar, se
+  rellenan en la ficha sin afectar a la agenda.

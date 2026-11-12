@@ -83,3 +83,14 @@ las citas que tenían el azul por defecto.
 | `assets/js/http/calendar_http_client.js` | Modo silencioso para las consultas automáticas | Un fallo puntual no abre el aviso de error cada 30 s |
 | `application/views/pages/calendar.php`, `gulpfile.js` | Carga los idiomas de moment y FullCalendar solo en el calendario | Los nombres de los días salían en inglés en todos los idiomas |
 | `assets/css/backend.scss` | Estilos de la tarjeta | — |
+
+## Gestión de profesionales (fase 3)
+
+Migración nueva: `application/migrations/073_add_users_active_state.php` (`users.is_active`).
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/models/Providers_model.php` | `is_active` (API `isActive`); los inactivos no salen en `get_available_providers()`; el apellido es opcional y se guarda como texto vacío; `delete()` rechaza profesionales con citas | Desactivar conservando el historial (especificación 4.2): la clave foránea borraba sus citas en cascada. El apellido opcional permite que la agenda muestre solo «Sara» sin un campo «nombre visible» aparte (decisión D-006) |
+| `application/controllers/Booking.php` | `check_bookable()` rechaza profesionales inactivos | No se les pueden dar citas ni con peticiones directas |
+| `application/controllers/Providers.php`, `application/views/pages/providers.php`, `assets/js/pages/providers.js` | Interruptor «Activo», apellido no obligatorio y aviso «Inactivo» en el listado | Gestión desde la interfaz |
+| `openapi.yml` | `isActive` en profesionales | Documentar la API |

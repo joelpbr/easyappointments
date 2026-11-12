@@ -27,6 +27,7 @@ App.Pages.Providers = (function () {
     const $state = $('#state');
     const $zipCode = $('#zip-code');
     const $isPrivate = $('#is-private');
+    const $isActive = $('#is-active');
     const $notes = $('#notes');
     const $language = $('#language');
     const $timezone = $('#timezone');
@@ -197,6 +198,7 @@ App.Pages.Providers = (function () {
                 state: $state.val(),
                 zip_code: $zipCode.val(),
                 is_private: Number($isPrivate.prop('checked')),
+                is_active: Number($isActive.prop('checked')),
                 notes: $notes.val(),
                 language: $language.val(),
                 timezone: $timezone.val(),
@@ -393,6 +395,7 @@ App.Pages.Providers = (function () {
         $providers.find('.record-details #language').val(vars('default_language'));
         $providers.find('.record-details #timezone').val(vars('default_timezone'));
         $providers.find('.record-details #is-private').prop('checked', false);
+        $providers.find('.record-details #is-active').prop('checked', true);
         $providers.find('.record-details #notifications').prop('checked', true);
         $providers.find('.add-break, .add-working-plan-exception, #reset-working-plan').prop('disabled', true);
 
@@ -432,6 +435,7 @@ App.Pages.Providers = (function () {
         $state.val(provider.state);
         $zipCode.val(provider.zip_code);
         $isPrivate.prop('checked', provider.is_private);
+        $isActive.prop('checked', provider.is_active);
         $notes.val(provider.notes);
         $language.val(provider.language);
         $timezone.val(provider.timezone);
@@ -556,13 +560,15 @@ App.Pages.Providers = (function () {
      * @return {String} The html code that represents the record on the filter results list.
      */
     function getFilterHtml(provider) {
-        const name = provider.first_name + ' ' + provider.last_name;
+        const name = [provider.first_name, provider.last_name].filter(Boolean).join(' ');
 
         let info = provider.email;
 
         info = provider.mobile_number ? info + ', ' + provider.mobile_number : info;
 
         info = provider.phone_number ? info + ', ' + provider.phone_number : info;
+
+        info = provider.is_active === false ? info + ' - ' + lang('inactive') : info;
 
         return $('<div/>', {
             'class': 'provider-row entry',

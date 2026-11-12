@@ -26,6 +26,7 @@ class Providers_model extends EA_Model
     protected array $casts = [
         'id' => 'integer',
         'is_private' => 'boolean',
+        'is_active' => 'boolean',
         'id_roles' => 'integer',
     ];
 
@@ -47,6 +48,7 @@ class Providers_model extends EA_Model
         'language' => 'language',
         'notes' => 'notes',
         'isPrivate' => 'is_private',
+        'isActive' => 'is_active',
         'ldapDn' => 'ldap_dn',
         'roleId' => 'id_roles',
     ];
@@ -63,6 +65,11 @@ class Providers_model extends EA_Model
      */
     public function save(array $provider): int
     {
+        // The last name is optional; store an empty string so the names never render as "Sara null".
+        if (array_key_exists('last_name', $provider) || empty($provider['id'])) {
+            $provider['last_name'] = trim((string) ($provider['last_name'] ?? ''));
+        }
+
         $this->validate($provider);
 
         if (empty($provider['id'])) {
@@ -99,8 +106,9 @@ class Providers_model extends EA_Model
             }
         }
 
-        // Make sure all required fields are provided.
-        if (empty($provider['first_name']) || empty($provider['last_name']) || empty($provider['email'])) {
+        // Make sure all required fields are provided. The last name is optional, so the agenda can show only a first
+        // name (e.g. "Sara").
+        if (empty($provider['first_name']) || empty($provider['email'])) {
             throw new InvalidArgumentException('Not all required fields are provided: ' . print_r($provider, true));
         }
 
@@ -487,6 +495,16 @@ class Providers_model extends EA_Model
      */
     public function delete(int $provider_id): void
     {
+        // The appointments reference the provider with ON DELETE CASCADE, so deleting a provider with appointments
+        // would also delete them. Such a provider must be deactivated instead.
+        $has_appointments = $this->db
+            ->get_where('appointments', ['id_users_provider' => $provider_id, 'is_unavailability' => false], 1)
+            ->num_rows();
+
+        if ($has_appointments) {
+            throw new RuntimeException(lang('provider_has_appointments'));
+        }
+
         $this->db->delete('users', ['id' => $provider_id, 'id_roles' => $this->get_provider_role_id()]);
     }
 
@@ -672,6 +690,9 @@ class Providers_model extends EA_Model
             $this->db->where('users.is_private', false);
         }
 
+        // Inactive providers keep their appointments, but no longer take new ones.
+        $this->db->where('users.is_active', true);
+
         $providers = $this->db
             ->select('users.*')
             ->from('users')
@@ -835,6 +856,7 @@ class Providers_model extends EA_Model
             'zip' => $provider['zip_code'],
             'notes' => $provider['notes'],
             'isPrivate' => $provider['is_private'],
+            'isActive' => (bool) ($provider['is_active'] ?? true),
             'ldapDn' => $provider['ldap_dn'],
             'timezone' => $provider['timezone'],
             'language' => $provider['language'],
@@ -956,6 +978,10 @@ class Providers_model extends EA_Model
 
         if (array_key_exists('isPrivate', $provider)) {
             $decoded_resource['is_private'] = (bool) $provider['isPrivate'];
+        }
+
+        if (array_key_exists('isActive', $provider)) {
+            $decoded_resource['is_active'] = (bool) $provider['isActive'];
         }
 
         if (array_key_exists('ldapDn', $provider)) {
