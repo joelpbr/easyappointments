@@ -109,16 +109,20 @@ class Instance
             ],
         ]);
 
-        // Service
+        // Services: the treatment catalog created by the migrations, or a sample service on a bare database.
 
-        $service_id = $this->CI->services_model->save([
-            'name' => 'Service',
-            'duration' => '30',
-            'price' => '0',
-            'currency' => '',
-            'slot_interval' => 15,
-            'attendants_number' => '1',
-        ]);
+        $service_ids = array_column($this->CI->services_model->get(), 'id');
+
+        if (empty($service_ids)) {
+            $service_ids[] = $this->CI->services_model->save([
+                'name' => 'Service',
+                'duration' => '30',
+                'price' => '0',
+                'currency' => '',
+                'slot_interval' => 15,
+                'attendants_number' => '1',
+            ]);
+        }
 
         // Provider
 
@@ -127,7 +131,7 @@ class Instance
             'last_name' => 'Doe',
             'email' => 'jane@example.org',
             'phone_number' => '+10000000000',
-            'services' => [$service_id],
+            'services' => $service_ids,
             'settings' => [
                 'username' => 'janedoe',
                 'password' => random_string(),

@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'CalDAV 服务器拒绝了用户名和
 $lang['caldav_sync_failed_unreachable'] = '无法连接到 CalDAV 服务器。请确认服务器正在运行，并且连接网址正确。';
 $lang['caldav_private_host_warning'] = '此服务器位于专用网络中。连接后会将其主机添加到允许的连接网址中。';
 $lang['caldav_allow_host_and_connect'] = '允许并连接';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

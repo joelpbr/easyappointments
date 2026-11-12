@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'Serveri CalDAV refuzoi emrin e përdo
 $lang['caldav_sync_failed_unreachable'] = 'Serveri CalDAV nuk u arrit. Sigurohuni që është në punë dhe se adresa e lidhjes është e saktë.';
 $lang['caldav_private_host_warning'] = 'Ky server ndodhet në një rrjet privat. Lidhja do ta shtojë hostin e tij te adresat e lejuara të lidhjes.';
 $lang['caldav_allow_host_and_connect'] = 'Lejo dhe lidhu';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

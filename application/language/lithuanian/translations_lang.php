@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'CalDAV serveris atmetė naudotojo var
 $lang['caldav_sync_failed_unreachable'] = 'Nepavyko susisiekti su CalDAV serveriu. Įsitikinkite, kad jis veikia ir kad prisijungimo adresas teisingas.';
 $lang['caldav_private_host_warning'] = 'Šis serveris yra privačiame tinkle. Prisijungus jo serverio vardas bus pridėtas prie leidžiamų prisijungimo adresų.';
 $lang['caldav_allow_host_and_connect'] = 'Leisti ir prisijungti';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

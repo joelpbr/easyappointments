@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'Serverul CalDAV a respins numele de u
 $lang['caldav_sync_failed_unreachable'] = 'Serverul CalDAV nu a putut fi contactat. Asigurați-vă că funcționează și că adresa de conectare este corectă.';
 $lang['caldav_private_host_warning'] = 'Acest server se află într-o rețea privată. La conectare, gazda sa va fi adăugată la adresele de conectare permise.';
 $lang['caldav_allow_host_and_connect'] = 'Permite și conectează';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

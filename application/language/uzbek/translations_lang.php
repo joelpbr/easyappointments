@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'CalDAV serveri foydalanuvchi nomi va 
 $lang['caldav_sync_failed_unreachable'] = 'CalDAV serveriga ulanib bo\'lmadi. U ishlayotganiga va ulanish manzili to\'g\'riligiga ishonch hosil qiling.';
 $lang['caldav_private_host_warning'] = 'Bu server shaxsiy tarmoqda joylashgan. Ulanish uning xostini ruxsat etilgan ulanish manzillariga qo\'shadi.';
 $lang['caldav_allow_host_and_connect'] = 'Ruxsat berish va ulanish';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

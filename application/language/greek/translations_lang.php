@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'Ο διακομιστής CalDAV απ
 $lang['caldav_sync_failed_unreachable'] = 'Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή CalDAV. Βεβαιωθείτε ότι λειτουργεί και ότι η διεύθυνση σύνδεσης είναι σωστή.';
 $lang['caldav_private_host_warning'] = 'Αυτός ο διακομιστής βρίσκεται σε ιδιωτικό δίκτυο. Με τη σύνδεση θα προστεθεί στις επιτρεπόμενες διευθύνσεις σύνδεσης.';
 $lang['caldav_allow_host_and_connect'] = 'Να επιτραπεί και σύνδεση';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

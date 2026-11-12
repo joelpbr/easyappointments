@@ -242,7 +242,11 @@ class Calendar extends EA_Controller
             'privileges' => $privileges,
             'calendar_view' => $calendar_view,
             'available_providers' => filter_sensitive_users_data($available_providers),
-            'available_services' => $available_services,
+            // Only the active services can be chosen for new appointments. The appointment modal still renders the
+            // inactive ones (see html_vars below) so that existing appointments keep their service.
+            'available_services' => array_values(
+                array_filter($available_services, fn(array $service): bool => $service['is_active']),
+            ),
             'secretary_providers' => $secretary_providers,
             'edit_appointment' => $edit_appointment,
             'google_sync_feature' => filter_var(

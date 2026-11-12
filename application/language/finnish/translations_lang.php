@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'CalDAV-palvelin hylkäsi käyttäjät
 $lang['caldav_sync_failed_unreachable'] = 'CalDAV-palvelimeen ei saatu yhteyttä. Varmista, että se on käynnissä ja että yhteysosoite on oikein.';
 $lang['caldav_private_host_warning'] = 'Tämä palvelin on yksityisessä verkossa. Yhdistäminen lisää sen isännän sallittuihin yhteysosoitteisiin.';
 $lang['caldav_allow_host_and_connect'] = 'Salli ja yhdistä';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

@@ -591,4 +591,7 @@ $lang['caldav_sync_failed_credentials'] = 'Il server CalDAV ha rifiutato il nome
 $lang['caldav_sync_failed_unreachable'] = 'Non è stato possibile raggiungere il server CalDAV. Verifica che sia in funzione e che l\'URL di connessione sia corretto.';
 $lang['caldav_private_host_warning'] = 'Questo server si trova in una rete privata. Connettendosi, il suo host verrà aggiunto agli URL di connessione consentiti.';
 $lang['caldav_allow_host_and_connect'] = 'Consenti e connetti';
+$lang['inactive'] = 'Inactive';
+$lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
+$lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
 // End

@@ -2184,6 +2184,9 @@ components:
                     type: integer
                 serviceId:
                     type: integer
+                serviceName:
+                    type: string
+                    readOnly: true
                 googleCalendarId:
                     type: string
                 caldavCalendarId:
@@ -2202,6 +2205,7 @@ components:
                 customerId: 5
                 providerId: 2
                 serviceId: 6
+                serviceName: Quiropodia
                 googleCalendarId: null
                 caldavCalendarId: null
         AppointmentPayload:
@@ -2422,6 +2426,8 @@ components:
                     type: integer
                 isPrivate:
                     type: boolean
+                isActive:
+                    type: boolean
                 serviceCategoryId:
                     type: integer
             example:
@@ -2436,6 +2442,7 @@ components:
                 slotInterval: 30
                 attendantsNumber: 1
                 isPrivate: false
+                isActive: true
                 serviceCategoryId: null
         ServicePayload:
             type: object
@@ -2460,6 +2467,8 @@ components:
                     type: integer
                 isPrivate:
                     type: boolean
+                isActive:
+                    type: boolean
                 serviceCategoryId:
                     type: integer
             example:
@@ -2473,6 +2482,7 @@ components:
                 slotInterval: 30
                 attendantsNumber: 1
                 isPrivate: false
+                isActive: true
                 serviceCategoryId: null
         ServiceCategoryRecord:
             type: object
