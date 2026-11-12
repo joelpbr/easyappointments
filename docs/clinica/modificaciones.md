@@ -168,3 +168,24 @@ no se vuelve a comprobar, para no bloquear cambios de notas en citas confirmadas
 | `application/controllers/Booking.php` | La reserva pública vuelve a comprobar y guarda bajo el bloqueo | Evitar dos reservas en el mismo hueco entre la comprobación y el guardado |
 | `assets/js/http/calendar_http_client.js`, `assets/js/components/appointments_modal.js` | Envía el tratamiento al comprobar; un rechazo no forzable se muestra en el formulario y una cita arrastrada vuelve a su sitio | Mensajes claros (especificación 9.7) |
 | `openapi.yml` | Respuesta 409 | Documentar la API |
+
+## Buscador de huecos (fase 4)
+
+Archivos nuevos: `application/libraries/Slot_finder.php` (motor), `application/controllers/Slot_search.php`
+(`POST slot_search/search`), `application/views/components/slot_search_modal.php`,
+`assets/js/components/slot_search_modal.js` y `assets/js/http/slot_search_http_client.js`.
+
+El motor recorre los días del rango y, para cada profesional activo que realiza el tratamiento y que el usuario puede
+gestionar, toma los periodos libres de `Availability::get_available_periods()`, genera inicios sobre la cuadrícula de
+la agenda en los que cabe la duración completa y aplica la franja horaria, la hora preferida con su margen y los días
+de la semana. Ordena por fecha y después por cercanía a la hora preferida (o por hora), con el profesional preferido
+primero en los empates. Sin hora preferida se detiene en cuanto tiene resultados suficientes. Rango máximo 92 días y
+30 resultados.
+
+Los 7 casos de la especificación (8.3) están probados contra datos reales y la generación y el orden con tests
+unitarios.
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/views/pages/calendar.php` | Botones «Nueva cita» y «Buscar hueco» en la barra de la agenda e inclusión del buscador | Pantalla principal (especificación 17.1 y 8.1) |
+| `assets/css/backend.scss` | Ancho de las horas de la franja | Maquetación |

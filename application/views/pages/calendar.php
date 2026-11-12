@@ -49,6 +49,16 @@
             <?php endif; ?>
 
             <?php if (can('add', PRIV_APPOINTMENTS)): ?>
+                <button id="open-new-appointment" class="btn btn-light" type="button">
+                    <i class="fas fa-calendar-plus me-2"></i>
+                    <?= lang('new_appointment_title') ?>
+                </button>
+
+                <button id="open-slot-search" class="btn btn-light" type="button">
+                    <i class="fas fa-search me-2"></i>
+                    <?= lang('find_slot') ?>
+                </button>
+
                 <div class="dropdown d-inline-block">
                     <button class="btn btn-light" type="button" data-bs-toggle="dropdown">
                         <i class="fas fa-plus-square"></i>
@@ -133,6 +143,11 @@
     'require_city' => vars('require_city'),
     'require_zip_code' => vars('require_zip_code'),
     'require_notes' => vars('require_notes'),
+]); ?>
+
+<?php component('slot_search_modal', [
+    'available_services' => vars('available_services'),
+    'available_providers' => vars('available_providers'),
 ]); ?>
 
 <?php component('unavailabilities_modal', [
