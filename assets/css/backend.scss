@@ -261,6 +261,19 @@ body .modal.full-screen .modal-push {
     background: var(--bs-secondary-bg) url('../img/unavailability.jpg');
 }
 
+// Out of the working hours (before opening, breaks, after closing and days off): one plain reddish tone, so the
+// clinic sees at a glance where an appointment would be an exception. Unavailabilities and blocked periods keep their
+// own styles.
+#calendar-page #calendar .fc-out-of-hours,
+#calendar .fc-out-of-hours {
+    background: #f6d5d8 !important;
+    opacity: 1;
+    border: 0;
+    color: #8c2f39;
+    font-weight: normal;
+    font-style: italic;
+}
+
 #calendar-page .fc-daygrid-day-top {
     font-size: 11px;
 }

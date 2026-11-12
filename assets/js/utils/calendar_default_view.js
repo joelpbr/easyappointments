@@ -1123,7 +1123,7 @@ App.Utils.CalendarDefaultView = (function () {
             color: EVENT_COLORS.notWorking,
             editable: false,
             display: 'background',
-            className: 'fc-unavailability',
+            className: 'fc-unavailability fc-out-of-hours',
         };
     }
 
@@ -1155,7 +1155,7 @@ App.Utils.CalendarDefaultView = (function () {
                 color: EVENT_COLORS.notWorking,
                 editable: false,
                 display: 'background',
-                className: 'fc-unavailability',
+                className: 'fc-unavailability fc-out-of-hours',
             });
         }
 
@@ -1173,7 +1173,7 @@ App.Utils.CalendarDefaultView = (function () {
                 color: EVENT_COLORS.notWorking,
                 editable: false,
                 display: 'background',
-                className: 'fc-unavailability',
+                className: 'fc-unavailability fc-out-of-hours',
             });
         }
 
@@ -1193,14 +1193,14 @@ App.Utils.CalendarDefaultView = (function () {
         const dateStr = calendarDate.format('YYYY-MM-DD');
 
         return breaks.map((breakPeriod) => ({
-            title: lang('break'),
+            title: lang('not_working'),
             start: moment(dateStr + ' ' + breakPeriod.start).toDate(),
             end: moment(dateStr + ' ' + breakPeriod.end).toDate(),
             allDay: false,
             color: EVENT_COLORS.notWorking,
             editable: false,
             display: 'background',
-            className: 'fc-unavailability fc-break',
+            className: 'fc-unavailability fc-out-of-hours',
         }));
     }
 
