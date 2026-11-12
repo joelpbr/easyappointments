@@ -211,3 +211,9 @@ comparadas byte a byte.
 | `assets/js/utils/calendar_table_view.js`, `calendar_default_view.js` | Antes de abrir, descansos, después de cerrar y días cerrados llevan la clase `fc-out-of-hours` y la misma etiqueta; el descanso deja de llamarse «Pausa» | La clínica quiere ver todo lo que queda fuera de la jornada igual, sin distinguir mañana, mediodía o noche |
 | `assets/css/backend.scss` | `fc-out-of-hours`: fondo rojizo suave (`#f6d5d8`) con texto `#8c2f39`, sin la trama gris | Ídem. Las ausencias y los bloqueos conservan su estilo propio |
 | `application/language/spanish/translations_lang.php` | `not_working` pasa a «Fuera de horario» | Antes decía «Fuera de la oficina» |
+
+## Versión de los archivos estáticos
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/helpers/asset_helper.php` | `asset_url()` añade al token fijo la fecha de modificación del archivo | El token (`cache_busting_token`) solo cambia con cada versión de Easy!Appointments, así que tras una actualización los navegadores seguían usando el CSS y el JavaScript antiguos |

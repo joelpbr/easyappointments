@@ -40,6 +40,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Fixed
 
+- After an update the browsers load the new styles and scripts right away instead of keeping the previous ones from their cache
 - A new appointment from the calendar toolbar starts at the next slot of the agenda, without seconds, instead of jumping to the next hour at minutes 0, 15, 30 and 45
 - Deleting a provider that has appointments is now refused instead of silently deleting all of their appointments
 - Appointments created without a color, for example through the API, now take the color of their service instead of the default blue

@@ -36,5 +36,13 @@ function asset_url(string $uri = '', ?string $protocol = null): string
         $uri = str_replace('.css', '.min.css', $uri);
     }
 
+    // The fixed token only changes with a new release, so browsers kept serving old scripts and styles after an
+    // update. The modification time of the file changes whenever the file does.
+    $path = FCPATH . ltrim($uri, '/');
+
+    if (is_file($path)) {
+        $cache_busting_token .= '-' . filemtime($path);
+    }
+
     return base_url($uri . $cache_busting_token, $protocol);
 }
