@@ -96,9 +96,8 @@
                             <div class="mb-3">
                                 <label class="form-label" for="last-name">
                                     <?= lang('last_name') ?>
-                                    <span class="text-danger" hidden>*</span>
                                 </label>
-                                <input id="last-name" class="form-control required" maxlength="512" disabled>
+                                <input id="last-name" class="form-control" maxlength="512" disabled>
                             </div>
 
                             <div class="mb-3">
@@ -252,6 +251,19 @@
                                 <div class="form-text text-muted mb-3">
                                     <small>
                                         <?= lang('private_hint') ?>
+                                    </small>
+                                </div>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="is-active" checked>
+                                    <label class="form-check-label" for="is-active">
+                                        <?= lang('active') ?>
+                                    </label>
+                                </div>
+
+                                <div class="form-text text-muted mb-3">
+                                    <small>
+                                        <?= lang('provider_active_hint') ?>
                                     </small>
                                 </div>
 

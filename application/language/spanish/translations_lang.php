@@ -605,4 +605,6 @@ $lang['delete_appointment_warning'] = 'Eliminar borra la cita definitivamente, j
 $lang['calendar_slot_minutes'] = 'Intervalo de la agenda';
 $lang['calendar_slot_minutes_hint'] = 'Altura de cada fila de la agenda y paso al arrastrar o redimensionar citas. Las citas pueden seguir durando cualquier número de minutos.';
 $lang['calendar_slot_minutes_invalid'] = 'El intervalo de la agenda debe ser un número entero de minutos entre 5 y 60.';
+$lang['provider_active_hint'] = 'Los profesionales inactivos conservan sus citas, pero ya no aparecen en la agenda ni en la reserva en línea y no se les pueden dar citas.';
+$lang['provider_has_appointments'] = 'Este profesional tiene citas y no se puede borrar. Desactívalo para conservar el historial de citas.';
 // End

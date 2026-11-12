@@ -605,4 +605,6 @@ $lang['delete_appointment_warning'] = 'Deleting removes the appointment for good
 $lang['calendar_slot_minutes'] = 'Calendar interval';
 $lang['calendar_slot_minutes_hint'] = 'Height of each row of the calendar and step used when appointments are dragged or resized. Appointments can still last any number of minutes.';
 $lang['calendar_slot_minutes_invalid'] = 'The calendar interval must be a whole number of minutes between 5 and 60.';
+$lang['provider_active_hint'] = 'Inactive providers keep their appointments, but no longer appear in the calendar or the booking page and cannot be booked.';
+$lang['provider_has_appointments'] = 'This provider has appointments and cannot be deleted. Deactivate them instead to keep the appointment history.';
 // End

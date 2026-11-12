@@ -703,7 +703,11 @@ class Booking extends EA_Controller
 
         $provider = $this->providers_model->find((int) $provider_id);
 
-        if ($provider['is_private'] || !in_array((int) $service_id, $provider['services'], true)) {
+        if (
+            $provider['is_private'] ||
+            !$provider['is_active'] ||
+            !in_array((int) $service_id, $provider['services'], true)
+        ) {
             throw new RuntimeException('The requested provider is not available for this service.');
         }
     }
