@@ -149,6 +149,8 @@ App.Pages.Calendar = (function () {
         App.Pages.Calendar.addEventListeners();
 
         startAutoRefresh(calendarView);
+
+        App.Utils.CalendarPastTime.start(calendarView.getCalendars);
     }
 
     /**
