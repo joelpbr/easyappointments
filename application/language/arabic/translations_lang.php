@@ -607,4 +607,10 @@ $lang['calendar_slot_minutes_hint'] = 'Height of each row of the calendar and st
 $lang['calendar_slot_minutes_invalid'] = 'The calendar interval must be a whole number of minutes between 5 and 60.';
 $lang['provider_active_hint'] = 'Inactive providers keep their appointments, but no longer appear in the calendar or the booking page and cannot be booked.';
 $lang['provider_has_appointments'] = 'This provider has appointments and cannot be deleted. Deactivate them instead to keep the appointment history.';
+$lang['first_visit'] = 'First visit';
+$lang['first_visit_short'] = '1st visit';
+$lang['not_specified'] = 'Not specified';
+$lang['more_details'] = 'More details';
+$lang['fewer_details'] = 'Fewer details';
+$lang['appointment_duration_invalid'] = 'The appointment must last at least 5 minutes.';
 // End

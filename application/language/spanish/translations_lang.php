@@ -607,4 +607,10 @@ $lang['calendar_slot_minutes_hint'] = 'Altura de cada fila de la agenda y paso a
 $lang['calendar_slot_minutes_invalid'] = 'El intervalo de la agenda debe ser un número entero de minutos entre 5 y 60.';
 $lang['provider_active_hint'] = 'Los profesionales inactivos conservan sus citas, pero ya no aparecen en la agenda ni en la reserva en línea y no se les pueden dar citas.';
 $lang['provider_has_appointments'] = 'Este profesional tiene citas y no se puede borrar. Desactívalo para conservar el historial de citas.';
+$lang['first_visit'] = 'Primera visita';
+$lang['first_visit_short'] = '1.ª visita';
+$lang['not_specified'] = 'Sin indicar';
+$lang['more_details'] = 'Más datos';
+$lang['fewer_details'] = 'Menos datos';
+$lang['appointment_duration_invalid'] = 'La cita debe durar al menos 5 minutos.';
 // End

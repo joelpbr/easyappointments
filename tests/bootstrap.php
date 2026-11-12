@@ -119,3 +119,5 @@ if (!function_exists('lang')) {
 }
 
 require_once APPPATH . 'helpers/calendar_helper.php';
+
+require_once APPPATH . 'helpers/audit_helper.php';

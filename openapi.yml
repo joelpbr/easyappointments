@@ -2177,6 +2177,10 @@ components:
                 status:
                     type: string
                     description: Status code, one of the configured appointment statuses (scheduled, confirmed, completed, cancelled, no_show or a custom_ code).
+                isFirstVisit:
+                    type: boolean
+                    nullable: true
+                    description: First visit of the patient, null when it is not known.
                 notes:
                     type: string
                 customerId:
@@ -2202,6 +2206,7 @@ components:
                 meetingLink: https://meet.jit.si/example-meeting
                 color: '#123456'
                 status: scheduled
+                isFirstVisit: true
                 notes: This is a test appointment.
                 customerId: 5
                 providerId: 2
@@ -2225,6 +2230,10 @@ components:
                 status:
                     type: string
                     description: Status code. New appointments default to scheduled.
+                isFirstVisit:
+                    type: boolean
+                    nullable: true
+                    description: First visit of the patient, null when it is not known.
                 notes:
                     type: string
                 customerId:
@@ -2240,6 +2249,7 @@ components:
                 meetingLink: https://meet.jit.si/example-meeting
                 color: '#123456'
                 status: scheduled
+                isFirstVisit: true
                 notes: This is a test appointment.
                 customerId: 5
                 providerId: 2

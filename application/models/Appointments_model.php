@@ -19,6 +19,25 @@
 class Appointments_model extends EA_Model
 {
     /**
+     * Fields whose changes are recorded in the audit log.
+     */
+    private const AUDITED_FIELDS = [
+        'start_datetime',
+        'end_datetime',
+        'id_users_provider',
+        'id_users_customer',
+        'id_services',
+        'status',
+        'is_first_visit',
+        'notes',
+    ];
+
+    /**
+     * Audited fields that may hold sensitive free text: the log only records that they changed.
+     */
+    private const REDACTED_FIELDS = ['notes'];
+
+    /**
      * @var array
      */
     protected array $casts = [
@@ -41,6 +60,7 @@ class Appointments_model extends EA_Model
         'meetingLink' => 'meeting_link',
         'color' => 'color',
         'status' => 'status',
+        'isFirstVisit' => 'is_first_visit',
         'notes' => 'notes',
         'hash' => 'hash',
         'serviceId' => 'id_services',
@@ -62,6 +82,11 @@ class Appointments_model extends EA_Model
      */
     public function save(array $appointment): int
     {
+        // First visit: yes (1), no (0) or not known (NULL). Forms send an empty string for "not known".
+        if (array_key_exists('is_first_visit', $appointment)) {
+            $appointment['is_first_visit'] = normalize_first_visit($appointment['is_first_visit']);
+        }
+
         $this->validate($appointment);
 
         if (empty($appointment['id'])) {
@@ -245,7 +270,16 @@ class Appointments_model extends EA_Model
             throw new RuntimeException('Could not insert appointment.');
         }
 
-        return $this->db->insert_id();
+        $appointment_id = (int) $this->db->insert_id();
+
+        audit_log(
+            'created',
+            'appointment',
+            $appointment_id,
+            audit_changes([], $appointment, self::AUDITED_FIELDS, self::REDACTED_FIELDS),
+        );
+
+        return $appointment_id;
     }
 
     /**
@@ -263,8 +297,19 @@ class Appointments_model extends EA_Model
 
         $this->set_service_name($appointment);
 
+        $before = $this->db->get_where('appointments', ['id' => $appointment['id']])->row_array() ?: [];
+
         if (!$this->db->update('appointments', $appointment, ['id' => $appointment['id']])) {
             throw new RuntimeException('Could not update appointment record.');
+        }
+
+        $changes = audit_changes($before, $appointment, self::AUDITED_FIELDS, self::REDACTED_FIELDS);
+
+        if ($changes) {
+            $is_cancellation =
+                isset($changes['status']) && in_array($appointment['status'], appointment_status_free_codes(), true);
+
+            audit_log($is_cancellation ? 'cancelled' : 'updated', 'appointment', (int) $appointment['id'], $changes);
         }
 
         return $appointment['id'];
@@ -438,7 +483,28 @@ class Appointments_model extends EA_Model
      */
     public function delete(int $appointment_id): void
     {
+        $before =
+            $this->db
+                ->get_where('appointments', ['id' => $appointment_id, 'is_unavailability' => false])
+                ->row_array() ?:
+            [];
+
         $this->db->delete('appointments', ['id' => $appointment_id, 'is_unavailability' => false]);
+
+        if ($before) {
+            // Keep what the appointment was, so a deletion can still be traced.
+            audit_log(
+                'deleted',
+                'appointment',
+                $appointment_id,
+                audit_changes(
+                    $before,
+                    array_fill_keys(self::AUDITED_FIELDS, null),
+                    self::AUDITED_FIELDS,
+                    self::REDACTED_FIELDS,
+                ),
+            );
+        }
     }
 
     /**
@@ -678,6 +744,7 @@ class Appointments_model extends EA_Model
             'hash' => $appointment['hash'],
             'color' => $appointment['color'],
             'status' => $appointment['status'],
+            'isFirstVisit' => isset($appointment['is_first_visit']) ? (bool) $appointment['is_first_visit'] : null,
             'location' => $appointment['location'],
             'notes' => $appointment['notes'],
             'customerId' => $appointment['id_users_customer'] !== null ? (int) $appointment['id_users_customer'] : null,
@@ -734,6 +801,10 @@ class Appointments_model extends EA_Model
 
         if (array_key_exists('status', $appointment)) {
             $decoded_resource['status'] = $appointment['status'];
+        }
+
+        if (array_key_exists('isFirstVisit', $appointment)) {
+            $decoded_resource['is_first_visit'] = $appointment['isFirstVisit'];
         }
 
         if (array_key_exists('notes', $appointment)) {

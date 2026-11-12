@@ -33,6 +33,13 @@ class Api
     protected int $default_length = 20;
 
     /**
+     * User authenticated with Basic auth, recorded as the author in the audit log (null for the bearer token).
+     *
+     * @var int|null
+     */
+    public ?int $user_id = null;
+
+    /**
      * @var EA_Model
      */
     protected EA_Model $model;
@@ -88,6 +95,8 @@ class Api
             if (empty($user_data['role_slug']) || $user_data['role_slug'] !== DB_SLUG_ADMIN) {
                 throw new RuntimeException('The provided credentials do not match any admin user', 401);
             }
+
+            $this->user_id = (int) $user_data['user_id'];
         } catch (Throwable) {
             $this->request_authentication();
         }
