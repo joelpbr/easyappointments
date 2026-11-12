@@ -67,6 +67,7 @@ $autoload['helper'] = [
     'appointment_status',
     'array',
     'asset',
+    'audit',
     'calendar',
     'config',
     'date',

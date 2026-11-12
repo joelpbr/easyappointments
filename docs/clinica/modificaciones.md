@@ -109,3 +109,22 @@ sin indicar; el email del paciente deja de ser obligatorio).
 | `application/controllers/Calendar.php` | `is_first_visit` en los campos permitidos | — |
 | `assets/css/backend.scss` | Oculta los campos secundarios | — |
 | `openapi.yml` | `isFirstVisit` | Documentar la API |
+
+## Registro de auditoría (fase 3)
+
+Archivos nuevos: `application/helpers/audit_helper.php` (`audit_changes()`, `audit_log()`) y
+`application/migrations/075_create_audit_log_table.php` (tabla `audit_log`: fecha, usuario, origen —backend, api,
+public o console—, acción, entidad, id y cambios en JSON).
+
+Se registra desde los modelos, así que cubre el calendario, la API, la reserva pública y la consola. Las notas solo
+anotan que cambiaron (`***`), nunca su contenido, para no copiar datos sensibles al registro.
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/models/Appointments_model.php` | Registra creación, modificación («cancelled» si pasa a un estado que libera el hueco) y borrado de citas | Especificación 9.6 y 19.2 |
+| `application/models/Services_model.php` | Registra alta, cambios (nombre, duración, precio, color, privado, activo) y borrado de tratamientos | Ídem |
+| `application/models/Providers_model.php` | Registra alta, cambios (datos, activo, horario) y borrado de profesionales | Ídem, incluye «modificación de horarios» |
+| `application/libraries/Api.php` | Guarda el usuario autenticado por Basic auth | Autor de las operaciones de la API |
+| `application/config/autoload.php` | Carga el helper | — |
+
+Pendiente para la fase 11: pantalla de consulta del registro para administradores.

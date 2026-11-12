@@ -21,6 +21,11 @@
 class Services_model extends EA_Model
 {
     /**
+     * Fields whose changes are recorded in the audit log.
+     */
+    private const AUDITED_FIELDS = ['name', 'duration', 'price', 'color', 'is_private', 'is_active'];
+
+    /**
      * @var array
      */
     protected array $casts = [
@@ -187,6 +192,8 @@ class Services_model extends EA_Model
 
         $this->set_provider_ids($service_id, $provider_ids);
 
+        audit_log('created', 'service', (int) $service_id, audit_changes([], $service, self::AUDITED_FIELDS));
+
         return $service_id;
     }
 
@@ -207,8 +214,16 @@ class Services_model extends EA_Model
 
         unset($service['providers']);
 
+        $before = $this->db->get_where('services', ['id' => $service['id']])->row_array() ?: [];
+
         if (!$this->db->update('services', $service, ['id' => $service['id']])) {
             throw new RuntimeException('Could not update service.');
+        }
+
+        $changes = audit_changes($before, $service, self::AUDITED_FIELDS);
+
+        if ($changes) {
+            audit_log('updated', 'service', (int) $service['id'], $changes);
         }
 
         if ($provider_ids !== null) {
@@ -274,7 +289,18 @@ class Services_model extends EA_Model
             throw new RuntimeException(lang('service_has_appointments'));
         }
 
+        $before = $this->db->get_where('services', ['id' => $service_id])->row_array() ?: [];
+
         $this->db->delete('services', ['id' => $service_id]);
+
+        if ($before) {
+            audit_log(
+                'deleted',
+                'service',
+                $service_id,
+                audit_changes($before, array_fill_keys(self::AUDITED_FIELDS, null), self::AUDITED_FIELDS),
+            );
+        }
     }
 
     /**
