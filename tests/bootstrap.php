@@ -95,3 +95,12 @@ function &get_instance(): object
 }
 
 require_once APPPATH . 'helpers/permission_helper.php';
+
+// Matches application/config/constants.php.
+define('APPOINTMENT_STATUS_SCHEDULED', 'scheduled');
+define('APPOINTMENT_STATUS_CONFIRMED', 'confirmed');
+define('APPOINTMENT_STATUS_COMPLETED', 'completed');
+define('APPOINTMENT_STATUS_CANCELLED', 'cancelled');
+define('APPOINTMENT_STATUS_NO_SHOW', 'no_show');
+
+require_once APPPATH . 'helpers/appointment_status_helper.php';

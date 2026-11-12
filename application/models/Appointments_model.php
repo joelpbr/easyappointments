@@ -128,6 +128,11 @@ class Appointments_model extends EA_Model
             throw new InvalidArgumentException('The provided appointment color is invalid: ' . $appointment['color']);
         }
 
+        // The status decides whether the appointment takes its slot, so only the configured codes are accepted.
+        if (!empty($appointment['status']) && !appointment_status_exists((string) $appointment['status'])) {
+            throw new InvalidArgumentException('The provided appointment status is invalid: ' . $appointment['status']);
+        }
+
         // Make the appointment lasts longer than the minimum duration (in minutes).
         $diff = (strtotime($appointment['end_datetime']) - strtotime($appointment['start_datetime'])) / 60;
 
@@ -229,6 +234,10 @@ class Appointments_model extends EA_Model
         $appointment['create_datetime'] = date('Y-m-d H:i:s');
         $appointment['update_datetime'] = date('Y-m-d H:i:s');
         $appointment['hash'] = random_string('alnum', 12);
+
+        if (empty($appointment['status'])) {
+            $appointment['status'] = APPOINTMENT_STATUS_SCHEDULED;
+        }
 
         $this->set_service_name($appointment);
 
@@ -443,9 +452,13 @@ class Appointments_model extends EA_Model
         int $provider_id,
         ?int $exclude_appointment_id = null,
     ): int {
+        $free_codes = $this->free_status_codes();
+
         if ($exclude_appointment_id) {
             $this->db->where('id !=', $exclude_appointment_id);
         }
+
+        $this->where_slot_occupied($free_codes);
 
         $result = $this->db
             ->select('count(*) AS attendants_number')
@@ -480,9 +493,13 @@ class Appointments_model extends EA_Model
         int $provider_id,
         ?int $exclude_appointment_id = null,
     ): int {
+        $free_codes = $this->free_status_codes();
+
         if ($exclude_appointment_id) {
             $this->db->where('id !=', $exclude_appointment_id);
         }
+
+        $this->where_slot_occupied($free_codes);
 
         $result = $this->db
             ->select('count(*) AS attendants_number')
@@ -787,6 +804,8 @@ class Appointments_model extends EA_Model
             throw new InvalidArgumentException('The provided start or end date time is invalid.');
         }
 
+        $free_codes = $this->free_status_codes();
+
         $this->db->select('id')->from('appointments')->where('id_users_provider', $provider_id);
 
         if ($exclude_appointment_id) {
@@ -796,6 +815,8 @@ class Appointments_model extends EA_Model
         if ($appointments_only) {
             $this->db->where('is_unavailability', false);
         }
+
+        $this->where_slot_occupied($free_codes);
 
         // Check for overlapping appointments:
         // An overlap occurs when:  (existing_start < new_end) AND (existing_end > new_start)
@@ -807,5 +828,45 @@ class Appointments_model extends EA_Model
             ->group_end()
             ->get()
             ->num_rows() > 0;
+    }
+
+    /**
+     * Get the appointments that take their slot (the ones whose status does not free it, e.g. not cancelled).
+     *
+     * @param array $where Where conditions.
+     *
+     * @return array Returns an array of appointments.
+     */
+    public function get_slot_occupying(array $where): array
+    {
+        $this->where_slot_occupied($this->free_status_codes());
+
+        return $this->get($where);
+    }
+
+    /**
+     * Get the status codes that free the slot of an appointment.
+     *
+     * Call it before building a query: reading the setting runs its own query on the shared query builder, which would
+     * consume the conditions of a query under construction.
+     *
+     * @return array List of status codes, never empty as "NOT IN ()" is invalid SQL.
+     */
+    protected function free_status_codes(): array
+    {
+        return appointment_status_free_codes() ?: [APPOINTMENT_STATUS_CANCELLED];
+    }
+
+    /**
+     * Limit the next query to the records that take their slot.
+     *
+     * Unavailabilities have no status and always take their slot. "status IS NULL" is needed because "NOT IN" never
+     * matches NULL values.
+     *
+     * @param array $free_codes Status codes that free the slot, from free_status_codes().
+     */
+    protected function where_slot_occupied(array $free_codes): void
+    {
+        $this->db->group_start()->where('status IS NULL')->or_where_not_in('status', $free_codes)->group_end();
     }
 }

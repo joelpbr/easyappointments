@@ -92,6 +92,12 @@ const AVAILABILITIES_TYPE_FIXED = 'fixed';
 
 const EVENT_MINIMUM_DURATION = 5; // Minutes
 
+const APPOINTMENT_STATUS_SCHEDULED = 'scheduled';
+const APPOINTMENT_STATUS_CONFIRMED = 'confirmed';
+const APPOINTMENT_STATUS_COMPLETED = 'completed';
+const APPOINTMENT_STATUS_CANCELLED = 'cancelled';
+const APPOINTMENT_STATUS_NO_SHOW = 'no_show';
+
 const LOGIN_RATE_LIMIT_ATTEMPTS = 5; // Failed login attempts allowed per window
 const LOGIN_RATE_LIMIT_WINDOW = 300; // Seconds
 

@@ -408,7 +408,7 @@ $lang['allow_rescheduling_cancellation_before'] = 'Allow Rescheduling/Cancellati
 $lang['at_least_one_field'] = 'At least one field must be displayed in the booking page.';
 $lang['status'] = 'Status';
 $lang['appointment_status_options'] = 'Appointment Status Options';
-$lang['appointment_status_options_info'] = 'Define a list of available appointment status options that can be used in the calendar page (the first one will automatically become the default value).';
+$lang['appointment_status_options_info'] = 'Rename the statuses or add your own. New appointments start with the first status. Appointments with a status that frees the slot (e.g. cancelled) stay in the calendar, but no longer take their time.';
 $lang['sunday_short'] = 'Sun';
 $lang['monday_short'] = 'Mon';
 $lang['tuesday_short'] = 'Tue';
@@ -594,4 +594,7 @@ $lang['caldav_allow_host_and_connect'] = 'Allow and connect';
 $lang['inactive'] = 'Inactive';
 $lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
 $lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
+$lang['status_frees_slot'] = 'Frees the slot';
+$lang['system_status'] = 'System';
+$lang['appointment_status_in_use'] = 'A removed status is still used by some appointments. Change their status first.';
 // End

@@ -594,4 +594,7 @@ $lang['caldav_allow_host_and_connect'] = '許可して接続';
 $lang['inactive'] = 'Inactive';
 $lang['service_active_hint'] = 'Inactive services keep their appointments, but can no longer be selected for new appointments or booked online.';
 $lang['service_has_appointments'] = 'This service has appointments and cannot be deleted. Deactivate it instead to keep the appointment history.';
+$lang['status_frees_slot'] = 'Frees the slot';
+$lang['system_status'] = 'System';
+$lang['appointment_status_in_use'] = 'A removed status is still used by some appointments. Change their status first.';
 // End

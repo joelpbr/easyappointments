@@ -12,28 +12,66 @@
 /**
  * Appointment status options component.
  *
- * This module implements the appointment status options.
+ * Edits the appointment statuses: the system ones can only be renamed, the custom ones can also be removed and decide
+ * whether their appointments free the slot.
  */
 App.Components.AppointmentStatusOptions = (function () {
     /**
-     * Render an appointment status option.
+     * Render an appointment status.
      *
-     * @param {String} [appointmentStatusOption]
+     * @param {Object} status
+     * @param {String} status.code
+     * @param {String} status.name
+     * @param {Boolean} status.frees_slot
+     * @param {Boolean} status.is_system
      *
-     * @return {jQuery} Returns a jQuery selector with the list group item markup.
+     * @return {jQuery} Returns the list group item.
      */
-    function renderListGroupItem(appointmentStatusOption = '') {
-        return $(`
-            <li class="list-group-item d-flex justify-content-between align-items-center p-0 border-0 mb-3 appointment-status-option">
-                <label class="w-100 me-2">
-                    <input class="form-control" value="${appointmentStatusOption}">
-                </label>
-    
-                <button type="button" class="btn btn-outline-danger delete-appointment-status-option">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </li>
-        `);
+    function renderListGroupItem(status) {
+        const freesSlotId = 'frees-slot-' + status.code;
+
+        return $('<li/>', {
+            'class': 'list-group-item d-flex align-items-center p-0 border-0 mb-3 appointment-status-option',
+            'data-code': status.code,
+            'data-system': status.is_system ? '1' : '0',
+            'html': [
+                $('<input/>', {
+                    'class': 'form-control me-3',
+                    'type': 'text',
+                    'maxlength': 64,
+                    'value': status.name,
+                    'aria-label': lang('name'),
+                }),
+                $('<div/>', {
+                    'class': 'form-check text-nowrap me-3',
+                    'html': [
+                        $('<input/>', {
+                            'class': 'form-check-input',
+                            'type': 'checkbox',
+                            'id': freesSlotId,
+                            'checked': Boolean(status.frees_slot),
+                            'disabled': Boolean(status.is_system),
+                        }),
+                        $('<label/>', {
+                            'class': 'form-check-label',
+                            'for': freesSlotId,
+                            'text': lang('status_frees_slot'),
+                        }),
+                    ],
+                }),
+                status.is_system
+                    ? $('<span/>', {
+                          'class': 'badge text-bg-light border',
+                          'text': lang('system_status'),
+                      })
+                    : $('<button/>', {
+                          'type': 'button',
+                          'class': 'btn btn-outline-danger delete-appointment-status-option',
+                          'aria-label': lang('delete'),
+                          'html': [$('<i/>', {'class': 'fas fa-trash'})],
+                      }),
+            ],
+        });
     }
 
     /**
@@ -51,59 +89,60 @@ App.Components.AppointmentStatusOptions = (function () {
      * @param {jQuery.Event} event
      */
     function onAddAppointmentStatusOptionClick(event) {
-        const $target = $(event.currentTarget);
-
-        const $listGroup = $target.closest('.appointment-status-options').find('.list-group');
+        const $listGroup = $(event.currentTarget).closest('.appointment-status-options').find('.list-group');
 
         if (!$listGroup.length) {
             return;
         }
 
-        renderListGroupItem().appendTo($listGroup);
+        const code = 'custom_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+        renderListGroupItem({code, name: '', frees_slot: false, is_system: false})
+            .appendTo($listGroup)
+            .find('input:text')
+            .trigger('focus');
     }
 
     /**
-     * Get target options.
+     * Get the statuses.
      *
-     * @param {jQuery} $target Container element ".status-list" selector.
+     * @param {jQuery} $target Component container.
      *
-     * @return {String[]}
+     * @return {Object[]} List of {code, name, frees_slot}.
      */
     function getOptions($target) {
-        const $listGroup = $target.find('.list-group');
+        return $target
+            .find('.list-group li')
+            .toArray()
+            .map((listGroupItemEl) => {
+                const $listGroupItem = $(listGroupItemEl);
 
-        const appointmentStatusOptions = [];
-
-        $listGroup.find('li').each((index, listGroupItemEl) => {
-            const $listGroupItem = $(listGroupItemEl);
-            const appointmentStatusOption = $listGroupItem.find('input:text').val();
-            appointmentStatusOptions.push(appointmentStatusOption);
-        });
-
-        return appointmentStatusOptions;
+                return {
+                    code: $listGroupItem.data('code'),
+                    name: $listGroupItem.find('input:text').val().trim(),
+                    frees_slot: $listGroupItem.find('input:checkbox').prop('checked'),
+                };
+            })
+            .filter((status) => status.name !== '');
     }
 
     /**
-     * Set target options.
+     * Set the statuses.
      *
-     * @param {jQuery} $target Container element ".status-list" selector.
-     * @param {String[]} appointmentStatusOptions Appointment status options.
+     * @param {jQuery} $target Component container.
+     * @param {Object[]} statuses List of {code, name, frees_slot, is_system}.
      */
-    function setOptions($target, appointmentStatusOptions) {
-        if (!$target.length || !appointmentStatusOptions || !appointmentStatusOptions.length) {
-            return;
-        }
-
+    function setOptions($target, statuses) {
         const $listGroup = $target.find('.list-group');
 
-        if (!$listGroup.length) {
+        if (!$listGroup.length || !statuses) {
             return;
         }
 
         $listGroup.empty();
 
-        appointmentStatusOptions.forEach((appointmentStatusOption) => {
-            renderListGroupItem(appointmentStatusOption).appendTo($listGroup);
+        statuses.forEach((status) => {
+            renderListGroupItem(status).appendTo($listGroup);
         });
     }
 

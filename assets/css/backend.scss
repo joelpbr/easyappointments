@@ -206,6 +206,12 @@ body .modal.full-screen .modal-push {
     font-size: 11px;
 }
 
+// Appointments whose status frees the slot (e.g. cancelled) stay visible, but faded.
+#calendar .fc-event.fc-appointment-freed {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
 #calendar-page #calendar .fc-unavailability {
     background-image: url('../img/unavailability.jpg');
     background-blend-mode: hard-light;

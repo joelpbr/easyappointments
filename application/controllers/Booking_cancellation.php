@@ -40,7 +40,7 @@ class Booking_cancellation extends EA_Controller
     /**
      * Cancel an existing appointment.
      *
-     * This method removes an appointment from the company's schedule. In order for the appointment to be deleted, the
+     * This method cancels an appointment of the company's schedule. In order for the appointment to be cancelled, the
      * hash string must be provided. The customer can only cancel the appointment if the edit time period is not over
      * yet.
      *
@@ -84,7 +84,8 @@ class Booking_cancellation extends EA_Controller
 
             $occurrences = $this->appointments_model->get(['hash' => $appointment_hash]);
 
-            if (empty($occurrences)) {
+            // An appointment that is already cancelled cannot be cancelled again.
+            if (empty($occurrences) || $occurrences[0]['status'] === APPOINTMENT_STATUS_CANCELLED) {
                 html_vars([
                     'page_title' => lang('appointment_not_found'),
                     'company_color' => setting('company_color'),
@@ -122,7 +123,14 @@ class Booking_cancellation extends EA_Controller
                 'time_format' => setting('time_format'),
             ];
 
-            $this->appointments_model->delete($appointment['id']);
+            // The appointment is kept with the cancelled status, which frees its slot, instead of being deleted, so
+            // that the clinic keeps the history and the reason.
+            $appointment['status'] = APPOINTMENT_STATUS_CANCELLED;
+            $appointment['notes'] = trim(
+                ($appointment['notes'] ?? '') . "\n\n" . lang('reason') . ': ' . $cancellation_reason,
+            );
+
+            $this->appointments_model->save($appointment);
 
             $this->synchronization->sync_appointment_deleted($appointment, $provider);
 
@@ -135,7 +143,7 @@ class Booking_cancellation extends EA_Controller
                 $cancellation_reason,
             );
 
-            $this->webhooks_client->trigger(WEBHOOK_APPOINTMENT_DELETE, $appointment);
+            $this->webhooks_client->trigger(WEBHOOK_APPOINTMENT_SAVE, $appointment);
 
             html_vars([
                 'page_title' => lang('appointment_cancelled_title'),

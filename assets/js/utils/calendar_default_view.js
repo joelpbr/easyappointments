@@ -922,6 +922,9 @@ App.Utils.CalendarDefaultView = (function () {
                 color: appointment.color,
                 data: appointment,
                 display: 'block',
+                classNames: App.Utils.CalendarEventPopover.statusFreesSlot(appointment.status)
+                    ? ['fc-appointment-freed']
+                    : [],
             };
         });
     }

@@ -17,7 +17,7 @@
 App.Pages.BusinessSettings = (function () {
     const $saveSettings = $('#save-settings');
     const $applyGlobalWorkingPlan = $('#apply-global-working-plan');
-    const $appointmentStatusOptions = $('#appointment-status-options');
+    const $appointmentStatuses = $('#appointment-status-options');
     let workingPlanManager = null;
 
     /**
@@ -86,11 +86,11 @@ App.Pages.BusinessSettings = (function () {
             value: JSON.stringify(workingPlan),
         });
 
-        const appointmentStatusOptions = App.Components.AppointmentStatusOptions.getOptions($appointmentStatusOptions);
+        const appointmentStatuses = App.Components.AppointmentStatusOptions.getOptions($appointmentStatuses);
 
         businessSettings.push({
-            name: 'appointment_status_options',
-            value: JSON.stringify(appointmentStatusOptions),
+            name: 'appointment_statuses',
+            value: JSON.stringify(appointmentStatuses),
         });
 
         return businessSettings;
@@ -159,15 +159,10 @@ App.Pages.BusinessSettings = (function () {
         deserialize(businessSettings);
 
         let companyWorkingPlan = {};
-        let appointmentStatusOptions = [];
 
         vars('business_settings').forEach((businessSetting) => {
             if (businessSetting.name === 'company_working_plan') {
                 companyWorkingPlan = JSON.parse(businessSetting.value);
-            }
-
-            if (businessSetting.name === 'appointment_status_options') {
-                appointmentStatusOptions = JSON.parse(businessSetting.value);
             }
         });
 
@@ -176,7 +171,7 @@ App.Pages.BusinessSettings = (function () {
         workingPlanManager.timepickers(false);
         workingPlanManager.addEventListeners();
 
-        App.Components.AppointmentStatusOptions.setOptions($appointmentStatusOptions, appointmentStatusOptions);
+        App.Components.AppointmentStatusOptions.setOptions($appointmentStatuses, vars('appointment_statuses'));
 
         $saveSettings.on('click', onSaveSettingsClick);
 
