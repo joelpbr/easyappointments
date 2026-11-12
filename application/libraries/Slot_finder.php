@@ -75,9 +75,22 @@ class Slot_finder
         // completes the result list has been processed.
         $chronological = empty($constraints['preferred_time']);
 
+        // The appointments, unavailabilities, blocked periods and exceptions are loaded once per provider for the
+        // whole range, instead of once per provider and day.
+        $preloaded = [];
+
+        foreach ($providers as $provider) {
+            $preloaded[$provider['id']] = $this->CI->availability->preload_period_data($provider, $date_from, $date_to);
+        }
+
         while ($date <= $last) {
             foreach ($providers as $provider) {
-                $periods = $this->CI->availability->get_available_periods($date->format('Y-m-d'), $provider);
+                $periods = $this->CI->availability->get_available_periods(
+                    $date->format('Y-m-d'),
+                    $provider,
+                    null,
+                    $preloaded[$provider['id']],
+                );
 
                 foreach (self::slots_in_periods($date->format('Y-m-d'), $periods, $duration, $interval) as $slot) {
                     if (new DateTime($slot['start']) < $now || !self::matches($slot, $constraints)) {
