@@ -380,6 +380,8 @@ class Booking extends EA_Controller
             $customer = $post_data['customer'] ?? [];
             $manage_mode = filter_var($post_data['manage_mode'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
+            $managed_customer_id = null;
+
             // Security: Verify hash when updating an existing appointment
             if ($manage_mode && !empty($appointment['id'])) {
                 $appointment_hash = $post_data['appointment_hash'] ?? '';
@@ -397,6 +399,8 @@ class Booking extends EA_Controller
                 if (empty($existing_appointments)) {
                     throw new RuntimeException('Invalid appointment hash or appointment not found.');
                 }
+
+                $managed_customer_id = (int) $existing_appointments[0]['id_users_customer'];
             }
 
             // Validate required appointment fields
@@ -548,9 +552,18 @@ class Booking extends EA_Controller
             // Save customer language (the language which is used to render the booking page).
             $customer['language'] = session('language') ?? config('language');
 
+            $existing_customer_id = $customer['id'] ?? null;
+
             $this->customers_model->only($customer, $this->allowed_customer_fields);
 
-            $customer_id = $this->customers_model->save($customer);
+            // The booking page is not authenticated, so the stored profile of an existing customer is only updated
+            // from the manage link of one of their own appointments, otherwise anyone who knows the e-mail address
+            // could rewrite it.
+            if ($existing_customer_id && $existing_customer_id !== $managed_customer_id) {
+                $customer_id = $existing_customer_id;
+            } else {
+                $customer_id = $this->customers_model->save($customer);
+            }
             $customer = $this->customers_model->find($customer_id);
 
             $appointment['id_users_customer'] = $customer_id;
@@ -627,6 +640,8 @@ class Booking extends EA_Controller
 
         $hour = $appointment_start->format('H:i');
 
+        $this->check_bookable($appointment['id_services'], $appointment['id_users_provider']);
+
         if ($appointment['id_users_provider'] === ANY_PROVIDER) {
             $appointment['id_users_provider'] = $this->search_any_provider($appointment['id_services'], $date, $hour);
 
@@ -658,6 +673,36 @@ class Booking extends EA_Controller
         }
 
         return $is_still_available ? $appointment['id_users_provider'] : null;
+    }
+
+    /**
+     * Make sure the service and provider can be booked from the public booking page.
+     *
+     * Private records are hidden from the booking page, and a provider can only be booked for the services assigned
+     * to them, so requests that bypass the page must not be able to reach them either.
+     *
+     * @param mixed $service_id Service ID.
+     * @param mixed $provider_id Provider ID or ANY_PROVIDER.
+     *
+     * @throws RuntimeException
+     */
+    protected function check_bookable(mixed $service_id, mixed $provider_id): void
+    {
+        $service = $this->services_model->find((int) $service_id);
+
+        if ($service['is_private']) {
+            throw new RuntimeException('The requested service is not available.');
+        }
+
+        if ($provider_id === ANY_PROVIDER) {
+            return;
+        }
+
+        $provider = $this->providers_model->find((int) $provider_id);
+
+        if ($provider['is_private'] || !in_array((int) $service_id, $provider['services'], true)) {
+            throw new RuntimeException('The requested provider is not available for this service.');
+        }
     }
 
     /**
@@ -744,6 +789,8 @@ class Booking extends EA_Controller
             // If manage mode is TRUE then the following we should not consider the selected appointment when
             // calculating the available time periods of the provider.
 
+            $this->check_bookable($service_id, $provider_id);
+
             $exclude_appointment_id = request('manage_mode') ? request('appointment_id') : null;
 
             // If the user has selected the "any-provider" option then we will need to search for an available provider
@@ -829,6 +876,8 @@ class Booking extends EA_Controller
             $selected_date = new DateTime($selected_date_string);
             $number_of_days_in_month = (int) $selected_date->format('t');
             $unavailable_dates = [];
+
+            $this->check_bookable($service_id, $provider_id);
 
             $provider_ids =
                 $provider_id === ANY_PROVIDER ? $this->search_providers_by_service($service_id) : [$provider_id];
