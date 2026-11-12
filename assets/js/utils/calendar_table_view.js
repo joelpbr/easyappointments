@@ -49,6 +49,59 @@ App.Utils.CalendarTableView = (function () {
     let $selectDate;
     let $popoverTarget = null;
     let lastFocusedEventData = null;
+    let lastResponseSignature = null;
+
+    const MIN_PROVIDER_COLUMN_WIDTH = 200; // Pixels
+
+    /**
+     * Get the last filters used by the current user in this browser.
+     *
+     * @return {Object} {providers: String[], services: String[], days: String}, empty when nothing is stored.
+     */
+    function loadPreferences() {
+        try {
+            return JSON.parse(localStorage.getItem('ea-table-view-' + vars('user_id'))) || {};
+        } catch (error) {
+            return {}; // Storage disabled or invalid value.
+        }
+    }
+
+    /**
+     * Remember the current filters of the user in this browser.
+     */
+    function savePreferences() {
+        try {
+            localStorage.setItem(
+                'ea-table-view-' + vars('user_id'),
+                JSON.stringify({
+                    providers: $filterProvider.val(),
+                    services: $filterService.val(),
+                    days: $selectFilterItem.val(),
+                }),
+            );
+        } catch (error) {
+            // Storage disabled, the filters are simply not remembered.
+        }
+    }
+
+    /**
+     * Select the stored values that still exist as options.
+     *
+     * @param {jQuery} $select Select element.
+     * @param {String[]|String|undefined} values Stored values.
+     */
+    function restoreSelection($select, values) {
+        const options = $select
+            .find('option')
+            .toArray()
+            .map((option) => option.value);
+
+        const restored = [].concat(values ?? []).filter((value) => options.includes(String(value)));
+
+        if (restored.length) {
+            $select.val($select.prop('multiple') ? restored : restored[0]);
+        }
+    }
 
     // Helper Functions
 
@@ -888,6 +941,7 @@ App.Utils.CalendarTableView = (function () {
                     end: moment(appointment.end_datetime).toDate(),
                     allDay: false,
                     color: appointment.color,
+                    textColor: App.Utils.CalendarEventContent.getTextColor(appointment.color),
                     display: 'block',
                     data: appointment,
                     classNames: App.Utils.CalendarEventPopover.statusFreesSlot(appointment.status)
@@ -998,7 +1052,8 @@ App.Utils.CalendarTableView = (function () {
 
         const end = moment(view.currentEnd).clone();
 
-        const selDayName = start.format('dddd').toLowerCase();
+        // The working plan uses English weekday names, whatever the user language.
+        const selDayName = start.clone().locale('en').format('dddd').toLowerCase();
 
         const selDayDate = start.format('YYYY-MM-DD');
 
@@ -1193,11 +1248,17 @@ App.Utils.CalendarTableView = (function () {
      * Create table view header container.
      */
     function createHeader() {
+        const preferences = loadPreferences();
+
         $calendarFilter
             .find('select')
             .empty()
             .append(new Option('1 ' + lang('day'), '1'))
-            .append(new Option('3 ' + lang('days'), '3'));
+            .append(new Option('3 ' + lang('days'), '3'))
+            .append(new Option(lang('week'), '7'));
+
+        restoreSelection($selectFilterItem, preferences.days);
+
         const $calendarHeader = $('<div/>', {class: 'calendar-header'}).appendTo('#calendar');
 
         // Previous button
@@ -1250,6 +1311,8 @@ App.Utils.CalendarTableView = (function () {
 
                     const endDateMoment = moment(firstColumnDate).add(parseInt($selectFilterItem.val()) - 1, 'day');
 
+                    savePreferences();
+
                     createView(startDateMoment.toDate(), endDateMoment.toDate());
                 },
             },
@@ -1267,6 +1330,7 @@ App.Utils.CalendarTableView = (function () {
             });
         }
 
+        restoreSelection($filterProvider, preferences.providers);
         App.Utils.UI.initializeDropdown($filterProvider);
 
         // Service filter
@@ -1289,6 +1353,8 @@ App.Utils.CalendarTableView = (function () {
 
                     const endDateMoment = moment(firstColumnDate).add({days: parseInt($selectFilterItem.val()) - 1});
 
+                    savePreferences();
+
                     createView(startDateMoment.toDate(), endDateMoment.toDate());
                 },
             },
@@ -1296,6 +1362,7 @@ App.Utils.CalendarTableView = (function () {
         services.forEach((service) => {
             $filterService.append(new Option(service.name, service.id));
         });
+        restoreSelection($filterService, preferences.services);
         App.Utils.UI.initializeDropdown($filterService);
     }
 
@@ -1304,8 +1371,9 @@ App.Utils.CalendarTableView = (function () {
      *
      * @param {Date} startDate - Start date to be displayed.
      * @param {Date} endDate - End date to be displayed.
+     * @param {Function} [onReady] - Called once the columns are rendered.
      */
-    function createView(startDate, endDate) {
+    function createView(startDate, endDate, onReady) {
         // Disable date navigation
 
         $('#calendar .calendar-header .btn').addClass('disabled').prop('disabled', true);
@@ -1331,6 +1399,8 @@ App.Utils.CalendarTableView = (function () {
         const $wrapper = $('<div/>').appendTo($calendarView);
 
         App.Http.Calendar.getCalendarAppointmentsForTableView(startDate, endDate).done((response) => {
+            lastResponseSignature = JSON.stringify(response);
+
             let currentDate = startDate;
             while (currentDate <= endDate) {
                 createDateColumn($wrapper, currentDate, response);
@@ -1354,6 +1424,43 @@ App.Utils.CalendarTableView = (function () {
                     .find('.calendar-wrapper')
                     .data('fullCalendar')
                     .changeView(providerView[providerId] || 'timeGridDay');
+            });
+
+            if (onReady) {
+                onReady();
+            }
+        });
+    }
+
+    /**
+     * Reload the displayed period when its data changed (automatic refresh).
+     *
+     * The table view rebuilds every column on reload, so the data is compared first to avoid flickering, and the
+     * scroll position of the columns is kept.
+     */
+    function refresh() {
+        const $calendarView = $('#calendar .calendar-view');
+
+        if (!$calendarView.length) {
+            return;
+        }
+
+        const startDate = moment($calendarView.data('startDate')).toDate();
+        const endDate = moment($calendarView.data('endDate')).toDate();
+
+        App.Http.Calendar.getCalendarAppointmentsForTableView(startDate, endDate, true).done((response) => {
+            if (JSON.stringify(response) === lastResponseSignature) {
+                return;
+            }
+
+            const scrollTops = $('#calendar .fc-scroller')
+                .toArray()
+                .map((scroller) => scroller.scrollTop);
+
+            createView(startDate, endDate, () => {
+                $('#calendar .fc-scroller').each((index, scroller) => {
+                    scroller.scrollTop = scrollTops[index] ?? scroller.scrollTop;
+                });
             });
         });
     }
@@ -1455,6 +1562,7 @@ App.Utils.CalendarTableView = (function () {
             slotLabelInterval: '01:00',
             eventTimeFormat: timeFormat,
             eventTextColor: '#333',
+            eventContent: App.Utils.CalendarEventContent.render,
             eventColor: EVENT_COLORS.default,
             slotLabelFormat: slotTimeFormat,
             allDayContent: lang('all_day'),
@@ -1492,6 +1600,23 @@ App.Utils.CalendarTableView = (function () {
      * Set calendar view size to fit the page.
      */
     function setCalendarViewSize() {
+        // The provider columns share the available width, so two or three providers fill the screen, and only scroll
+        // horizontally when they would become narrower than MIN_PROVIDER_COLUMN_WIDTH (e.g. a week of every provider).
+        const $providerColumns = $('.provider-column');
+
+        if ($providerColumns.length) {
+            const columnWidth = Math.max(
+                MIN_PROVIDER_COLUMN_WIDTH,
+                Math.floor($('#calendar').width() / $providerColumns.length) - 1,
+            );
+
+            $providerColumns.css({width: columnWidth, minWidth: columnWidth, maxWidth: columnWidth});
+
+            $providerColumns.find('.calendar-wrapper').each((index, wrapper) => {
+                $(wrapper).data('fullCalendar')?.updateSize();
+            });
+        }
+
         const $dateColumn = $('.date-column');
 
         const $calendarViewDiv = $('.calendar-view > div');
@@ -1547,6 +1672,8 @@ App.Utils.CalendarTableView = (function () {
 
         $calendarToolbar.on('change', '#select-filter-item', () => {
             const dayInterval = $selectFilterItem.val();
+
+            savePreferences();
 
             const currentDate = App.Utils.UI.getDateTimePickerValue($selectDate);
 
@@ -1604,7 +1731,8 @@ App.Utils.CalendarTableView = (function () {
 
                             const workingPlan = JSON.parse(provider.settings.working_plan);
 
-                            const day = moment(date).format('dddd').toLowerCase();
+                            // The working plan uses English weekday names, whatever the user language.
+                            const day = moment(date).locale('en').format('dddd').toLowerCase();
 
                             if (workingPlan[day]) {
                                 createBreaks($providerColumn, workingPlan[day].breaks);
@@ -1684,5 +1812,6 @@ App.Utils.CalendarTableView = (function () {
 
     return {
         initialize,
+        refresh,
     };
 })();

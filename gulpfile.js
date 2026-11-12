@@ -159,7 +159,10 @@ function vendor(done) {
     ]).pipe(gulp.dest('assets/vendor/cookieconsent'));
 
     // fullcalendar
-    gulp.src(['node_modules/fullcalendar/index.global.min.js']).pipe(gulp.dest('assets/vendor/fullcalendar'));
+    gulp.src([
+        'node_modules/fullcalendar/index.global.min.js',
+        'node_modules/@fullcalendar/core/locales-all.global.min.js',
+    ]).pipe(gulp.dest('assets/vendor/fullcalendar'));
 
     // fullcalendar-moment
     gulp.src(['node_modules/@fullcalendar/moment/index.global.min.js']).pipe(
@@ -175,7 +178,9 @@ function vendor(done) {
     );
 
     // moment
-    gulp.src(['node_modules/moment/min/moment.min.js']).pipe(gulp.dest('assets/vendor/moment'));
+    gulp.src(['node_modules/moment/min/moment.min.js', 'node_modules/moment/min/locales.min.js']).pipe(
+        gulp.dest('assets/vendor/moment'),
+    );
 
     // moment-timezone
     gulp.src(['node_modules/moment-timezone/builds/moment-timezone-with-data.min.js']).pipe(

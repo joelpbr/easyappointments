@@ -59,3 +59,27 @@ vistas del calendario).
 | `assets/js/utils/calendar_default_view.js`, `calendar_table_view.js` | Acción «Cancelar cita»; «Eliminar» pide confirmación avisando de que se pierde el historial; los diálogos usan «Cerrar» en vez de «Cancelar» | Evitar confundir cerrar un diálogo con cancelar la cita |
 | `application/views/components/appointments_modal.php`, `assets/js/components/appointments_modal.js` | «Cancelar» pasa a «Cerrar» | Ídem |
 | `application/views/pages/calendar.php` | Carga el módulo nuevo | — |
+
+## Agenda de recepción (fase 3)
+
+Archivos nuevos: `application/helpers/calendar_helper.php` (intervalo de la agenda),
+`application/migrations/072_add_reception_agenda_settings.php` y `assets/js/utils/calendar_event_content.js` (tarjeta de
+la cita y color del texto).
+
+La migración 072 crea el ajuste `calendar_slot_minutes` (15 min), pone la vista partida a administradores y
+secretarías, cambia la semana a lunes y la hora a 24 h si seguían con los valores de fábrica, suaviza dos colores de la
+paleta (Quiropodia y Cirugía) para que el texto tenga un contraste superior a 4,5:1 y da el color de su tratamiento a
+las citas que tenían el azul por defecto.
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/config/constants.php`, `application/config/autoload.php` | Constantes del intervalo y `DEFAULT_APPOINTMENT_COLOR`; carga del helper | — |
+| `application/controllers/Installation.php`, `application/libraries/Instance.php`, `assets/js/pages/admins.js`, `assets/js/pages/secretaries.js` | Administradores y secretarías nuevos empiezan en la vista partida | Pantalla principal de recepción (especificación 5.1) |
+| `application/controllers/Business_settings.php`, `application/views/pages/business_settings.php` | Campo «Intervalo de la agenda» validado entre 5 y 60 minutos | Especificación 6.1 |
+| `application/controllers/Calendar.php` | Pasa el intervalo a JavaScript | — |
+| `application/models/Appointments_model.php` | Al crear la cita o cambiar su servicio, toma el color del servicio salvo que se haya elegido otro | Los bloques se colorean por tratamiento (especificación 5.4); las citas creadas por la API quedaban con el azul por defecto |
+| `assets/js/utils/calendar_default_view.js`, `calendar_table_view.js` | Intervalo configurable; tarjeta de cita propia; color del texto por contraste; `refresh()` para el refresco automático; en la vista partida: opción «Semana», columnas que se reparten el ancho (mínimo 200 px), filtros recordados por usuario en el navegador y nombres de día independientes del idioma al leer el horario | Especificación 5.2 a 5.6 |
+| `assets/js/pages/calendar.js` | Refresco automático cada 30 s y al volver a la pestaña, salvo con un diálogo, popover o arrastre abiertos | Especificación 5.6 |
+| `assets/js/http/calendar_http_client.js` | Modo silencioso para las consultas automáticas | Un fallo puntual no abre el aviso de error cada 30 s |
+| `application/views/pages/calendar.php`, `gulpfile.js` | Carga los idiomas de moment y FullCalendar solo en el calendario | Los nombres de los días salían en inglés en todos los idiomas |
+| `assets/css/backend.scss` | Estilos de la tarjeta | — |

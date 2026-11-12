@@ -206,6 +206,23 @@ body .modal.full-screen .modal-push {
     font-size: 11px;
 }
 
+// Appointment blocks: patient and treatment first, so they stay visible in short appointments.
+#calendar .ea-event {
+    overflow: hidden;
+    padding: 1px 2px;
+    line-height: 1.25;
+}
+
+#calendar .ea-event-line {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#calendar .ea-event-meta {
+    opacity: 0.85;
+}
+
 // Appointments whose status frees the slot (e.g. cancelled) stay visible, but faded.
 #calendar .fc-event.fc-appointment-freed {
     opacity: 0.5;

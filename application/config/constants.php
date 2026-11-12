@@ -106,6 +106,7 @@ const LOGIN_RATE_LIMIT_ATTEMPTS = 5; // Failed login attempts allowed per window
 const LOGIN_RATE_LIMIT_WINDOW = 300; // Seconds
 
 const DEFAULT_COMPANY_COLOR = '#ffffff';
+const DEFAULT_APPOINTMENT_COLOR = '#7cbae8'; // Column default of appointments.color
 
 const LDAP_DEFAULT_FILTER = '(&(objectClass=*)(|(cn={{KEYWORD}})(sn={{KEYWORD}})(mail={{KEYWORD}})(givenName={{KEYWORD}})(uid={{KEYWORD}})))';
 

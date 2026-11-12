@@ -271,10 +271,11 @@ class Appointments_model extends EA_Model
     }
 
     /**
-     * Keep the name of the service at the time of the appointment.
+     * Keep the name and the color of the service at the time of the appointment.
      *
-     * The name is only taken when the appointment is created or its service changes, so renaming a service later does
-     * not rewrite the appointment history. Any service name sent by the caller is ignored.
+     * They are only taken when the appointment is created or its service changes, so changing a service later does
+     * not rewrite the appointment history. Any service name sent by the caller is ignored, and the service color is
+     * used unless the caller chose another one than the default appointment color.
      *
      * @param array $appointment Associative array with the appointment data.
      */
@@ -302,11 +303,17 @@ class Appointments_model extends EA_Model
         }
 
         $service = $this->db
-            ->select('name')
+            ->select('name, color')
             ->get_where('services', ['id' => $appointment['id_services']])
             ->row_array();
 
         $appointment['service_name'] = $service['name'] ?? null;
+
+        $color = strtolower((string) ($appointment['color'] ?? ''));
+
+        if (!empty($service['color']) && ($color === '' || $color === DEFAULT_APPOINTMENT_COLOR)) {
+            $appointment['color'] = $service['color'];
+        }
     }
 
     /**

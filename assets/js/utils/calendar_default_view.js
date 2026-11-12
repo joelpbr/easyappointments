@@ -870,14 +870,15 @@ App.Utils.CalendarDefaultView = (function () {
      * @param {string} filterType - Filter type constant.
      * @param {Date} startDate - View start date.
      * @param {Date} endDate - View end date.
+     * @param {boolean} [silent] - Automatic refresh: no error dialog when the request fails.
      */
-    function refreshCalendarAppointments($calendar, recordId, filterType, startDate, endDate) {
+    function refreshCalendarAppointments($calendar, recordId, filterType, startDate, endDate, silent = false) {
         $('#loading').css('visibility', 'hidden');
 
         const formattedStartDate = moment(startDate).format('YYYY-MM-DD');
         const formattedEndDate = moment(endDate).format('YYYY-MM-DD');
 
-        App.Http.Calendar.getCalendarAppointments(recordId, formattedStartDate, formattedEndDate, filterType)
+        App.Http.Calendar.getCalendarAppointments(recordId, formattedStartDate, formattedEndDate, filterType, silent)
             .done((response) => {
                 // Clear existing events
                 fullCalendar.getEventSources().forEach((source) => source.remove());
@@ -931,6 +932,7 @@ App.Utils.CalendarDefaultView = (function () {
                 end: moment(appointment.end_datetime).toDate(),
                 allDay: false,
                 color: appointment.color,
+                textColor: App.Utils.CalendarEventContent.getTextColor(appointment.color),
                 data: appointment,
                 display: 'block',
                 classNames: App.Utils.CalendarEventPopover.statusFreesSlot(appointment.status)
@@ -1338,6 +1340,7 @@ App.Utils.CalendarDefaultView = (function () {
             slotLabelInterval: '01:00',
             eventTimeFormat: timeFormat,
             eventTextColor: '#333',
+            eventContent: App.Utils.CalendarEventContent.render,
             eventColor: EVENT_COLORS.default,
             slotLabelFormat: slotTimeFormat,
             allDayContent: lang('all_day'),
@@ -1421,8 +1424,27 @@ App.Utils.CalendarDefaultView = (function () {
 
     // Public API
 
+    /**
+     * Reload the events of the displayed period without rebuilding the calendar (automatic refresh).
+     */
+    function refresh() {
+        if (!fullCalendar) {
+            return;
+        }
+
+        refreshCalendarAppointments(
+            $calendar,
+            $selectFilterItem.val(),
+            getSelectedFilterType(),
+            fullCalendar.view.activeStart,
+            fullCalendar.view.activeEnd,
+            true,
+        );
+    }
+
     return {
         initialize,
+        refresh,
         FILTER_TYPE_ALL,
         FILTER_TYPE_PROVIDER,
         FILTER_TYPE_SERVICE,
