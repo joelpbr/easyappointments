@@ -31,6 +31,9 @@ developers to maintain and readjust their custom modifications on the main proje
 - An audit log records who created, changed, cancelled or deleted appointments, services and providers, from the calendar, the API or the booking page, without copying the content of the notes
 - The Spanish interface uses the clinic terms: Tratamiento, Paciente, Profesional and Recepcionista; the appointment form separates the appointment comment from the administrative notes of the patient
 - New "Podología Sabadell" theme with the clinic colors and the Inter font, active by default
+- Appointments are checked against the working plan, breaks, blocked periods, absences and other appointments when they are saved from the calendar, the API or the booking page, with a clear reason; reception can still confirm an exception on purpose, the API cannot
+- Two sessions can no longer book the same slot at the same time
+- "Find slot" in the calendar searches the free slots by treatment, duration, providers, dates, days, morning or afternoon, a preferred time with a margin and a preferred provider, and books the chosen slot with the appointment form already filled in
 - The local development environment now starts with docker compose -f docker-compose.dev.yml up and only includes the application, the database, the asset watcher and Mailpit (phpMyAdmin, Baikal, OpenLDAP, phpLDAPadmin and Swagger UI were removed)
 - The Docker setup now runs MySQL 8.4 and defaults to the Spanish language and the Europe/Madrid time zone, both configurable in .env
 

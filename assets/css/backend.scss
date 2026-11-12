@@ -660,3 +660,8 @@ body .modal.full-screen .modal-push {
         min-width: 0;
     }
 }
+
+// Slot search: the time window pickers stay on one line next to the presets.
+#slot-search-modal .slot-search-time-range .flatpickr-wrapper {
+    width: 6rem;
+}

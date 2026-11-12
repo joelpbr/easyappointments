@@ -168,6 +168,8 @@ paths:
                                 $ref: '#/components/schemas/AppointmentRecord'
                 '401':
                     description: Unauthorized
+                '409':
+                    description: The slot breaks a rule (overlap, outside the working plan, blocked period, absence, inactive provider or service not offered); violations lists the codes and message explains them.
                 '500':
                     description: Internal Server Error
                     content:
@@ -234,6 +236,8 @@ paths:
                                 $ref: '#/components/schemas/AppointmentRecord'
                 '401':
                     description: Unauthorized
+                '409':
+                    description: The new slot breaks a rule, see the POST response.
                 '404':
                     description: Not Found
                 '500':
