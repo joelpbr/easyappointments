@@ -52,6 +52,53 @@ App.Components.AppointmentsModal = (function () {
     const $customField3 = $('#custom-field-3');
     const $customField4 = $('#custom-field-4');
     const $customField5 = $('#custom-field-5');
+    const $appointmentDuration = $('#appointment-duration');
+    const $appointmentFirstVisit = $('#appointment-first-visit');
+    const $toggleMoreFields = $('#toggle-more-fields');
+
+    const MIN_DURATION = 5; // Minutes, matches EVENT_MINIMUM_DURATION.
+
+    /**
+     * Show the duration of the start and end currently selected.
+     */
+    function updateDurationField() {
+        const start = App.Utils.UI.getDateTimePickerValue($startDatetime);
+        const end = App.Utils.UI.getDateTimePickerValue($endDatetime);
+
+        if (start && end) {
+            $appointmentDuration.val(Math.max(0, Math.round((end - start) / 60000)));
+        }
+    }
+
+    /**
+     * Move the end so the appointment lasts the minutes of the duration field.
+     *
+     * @param {Number} [fallbackMinutes] Used when the duration field has no valid value.
+     */
+    function applyDuration(fallbackMinutes) {
+        const start = App.Utils.UI.getDateTimePickerValue($startDatetime);
+        const minutes = parseInt($appointmentDuration.val(), 10);
+        const duration = minutes >= MIN_DURATION ? minutes : fallbackMinutes;
+
+        if (!start || !duration) {
+            return;
+        }
+
+        App.Utils.UI.setDateTimePickerValue($endDatetime, new Date(start.getTime() + duration * 60000));
+        $appointmentDuration.val(duration);
+    }
+
+    /**
+     * Show or hide the secondary fields of the form.
+     *
+     * @param {Boolean} show
+     */
+    function toggleMoreFields(show) {
+        $appointmentsModal.toggleClass('ea-show-more', show);
+        $toggleMoreFields.attr('aria-expanded', String(show));
+        $toggleMoreFields.find('i').toggleClass('fa-chevron-down', !show).toggleClass('fa-chevron-up', show);
+        $toggleMoreFields.find('span').text(lang(show ? 'fewer_details' : 'more_details'));
+    }
 
     const moment = window.moment;
 
@@ -84,6 +131,36 @@ App.Components.AppointmentsModal = (function () {
         });
 
         /**
+         * Event: Duration "Input"
+         *
+         * The end follows the duration, so any number of minutes can be used, even outside the calendar grid.
+         */
+        $appointmentDuration.on('input', () => applyDuration());
+
+        /**
+         * Event: More Details Button "Click"
+         */
+        $toggleMoreFields.on('click', () => toggleMoreFields(!$appointmentsModal.hasClass('ea-show-more')));
+
+        /**
+         * Event: Appointments Modal "Shown"
+         *
+         * The start and end are set from many places (calendar selection, edit, search), so the duration is read once
+         * the modal is visible. The secondary fields are expanded when one of them has a value.
+         */
+        $appointmentsModal.on('shown.bs.modal', () => {
+            updateDurationField();
+
+            const hasMoreData = $appointmentsModal
+                .find('.ea-more-field')
+                .find('input[type=text], input:not([type]), textarea')
+                .toArray()
+                .some((field) => field.value.trim() !== '');
+
+            toggleMoreFields(hasMoreData);
+        });
+
+        /**
          * Event: Manage Appointments Dialog Save Button "Click"
          *
          * Stores the appointment changes or inserts a new appointment depending on the dialog mode.
@@ -112,6 +189,7 @@ App.Components.AppointmentsModal = (function () {
                 meeting_link: $appointmentMeetingLink.val(),
                 color: App.Components.ColorSelection.getColor($appointmentColor),
                 status: $appointmentStatus.val(),
+                is_first_visit: $appointmentFirstVisit.val(),
                 notes: $appointmentNotes.val(),
                 is_unavailability: Number(false),
             };
@@ -291,18 +369,15 @@ App.Components.AppointmentsModal = (function () {
 
             const duration = service ? service.duration : 60;
 
-            const startMoment = moment();
+            // Start at the next slot of the calendar grid, without seconds.
+            const interval = Number(vars('calendar_slot_minutes')) || 15;
 
-            const currentMin = parseInt(startMoment.format('mm'));
+            const startMoment = moment().set({seconds: 0, milliseconds: 0});
 
-            if (currentMin > 0 && currentMin < 15) {
-                startMoment.set({minutes: 15});
-            } else if (currentMin > 15 && currentMin < 30) {
-                startMoment.set({minutes: 30});
-            } else if (currentMin > 30 && currentMin < 45) {
-                startMoment.set({minutes: 45});
-            } else {
-                startMoment.add(1, 'hour').set({minutes: 0});
+            const remainder = startMoment.minutes() % interval;
+
+            if (remainder) {
+                startMoment.add(interval - remainder, 'minutes');
             }
 
             App.Utils.UI.setDateTimePickerValue($startDatetime, startMoment.toDate());
@@ -470,6 +545,7 @@ App.Components.AppointmentsModal = (function () {
             const startDateTimeObject = App.Utils.UI.getDateTimePickerValue($startDatetime);
             const endDateTimeObject = new Date(startDateTimeObject.getTime() + duration * 60000);
             App.Utils.UI.setDateTimePickerValue($endDatetime, endDateTimeObject);
+            $appointmentDuration.val(duration);
 
             // Update the providers select box.
 
@@ -512,6 +588,11 @@ App.Components.AppointmentsModal = (function () {
          * Event: Enter New Customer Button "Click"
          */
         $newCustomer.on('click', () => {
+            // A patient that is registered now has not visited the clinic before.
+            if ($appointmentFirstVisit.val() === '') {
+                $appointmentFirstVisit.val('1');
+            }
+
             $customerId.val('');
             $firstName.val('');
             $lastName.val('');
@@ -545,6 +626,8 @@ App.Components.AppointmentsModal = (function () {
 
         const defaultStatusValue = $appointmentStatus.find('option:first').val();
         $appointmentStatus.val(defaultStatusValue);
+        $appointmentFirstVisit.val('');
+        toggleMoreFields(false);
 
         $language.val(vars('default_language'));
         $timezone.val(vars('default_timezone'));
@@ -592,20 +675,20 @@ App.Components.AppointmentsModal = (function () {
             onClose: () => {
                 const serviceId = $selectService.val();
 
-                // Automatically update the #end-datetime DateTimePicker based on service duration.
                 const service = vars('available_services').find(
                     (availableService) => Number(availableService.id) === Number(serviceId),
                 );
 
-                const startDateTimeObject = App.Utils.UI.getDateTimePickerValue($startDatetime);
-                const endDateTimeObject = new Date(startDateTimeObject.getTime() + service.duration * 60000);
-                App.Utils.UI.setDateTimePickerValue($endDatetime, endDateTimeObject);
+                // Moving the start keeps the chosen duration, or uses the service one when there is none yet.
+                applyDuration(service?.duration);
             },
         });
 
         App.Utils.UI.setDateTimePickerValue($startDatetime, startDatetime);
 
-        App.Utils.UI.initializeDateTimePicker($endDatetime);
+        App.Utils.UI.initializeDateTimePicker($endDatetime, {
+            onClose: () => updateDurationField(),
+        });
         App.Utils.UI.setDateTimePickerValue($endDatetime, endDatetime);
         $appointmentsModal.find('.modal-message').removeClass('alert-danger').text('').addClass('d-none');
     }
@@ -635,6 +718,11 @@ App.Components.AppointmentsModal = (function () {
 
             if (missingRequiredField) {
                 throw new Error(lang('fields_are_required'));
+            }
+
+            if (!(parseInt($appointmentDuration.val(), 10) >= MIN_DURATION)) {
+                $appointmentDuration.addClass('is-invalid');
+                throw new Error(lang('appointment_duration_invalid'));
             }
 
             // Check email address.

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Helper;
 
+use InvalidArgumentException;
 use Tests\TestCase;
 
 class AppointmentStatusHelperTest extends TestCase
@@ -113,5 +114,27 @@ class AppointmentStatusHelperTest extends TestCase
 
         $this->assertCount(5, appointment_statuses());
         $this->assertSame(['cancelled'], appointment_status_free_codes());
+    }
+
+    public function testNormalizeFirstVisitKeepsUnknownAsNull(): void
+    {
+        $this->assertNull(normalize_first_visit(null));
+        $this->assertNull(normalize_first_visit(''));
+    }
+
+    public function testNormalizeFirstVisitAcceptsTheFormAndApiValues(): void
+    {
+        $this->assertSame(1, normalize_first_visit('1'));
+        $this->assertSame(1, normalize_first_visit(true));
+        $this->assertSame(0, normalize_first_visit('0'));
+        $this->assertSame(0, normalize_first_visit(false));
+        $this->assertSame(0, normalize_first_visit(0));
+    }
+
+    public function testNormalizeFirstVisitRejectsOtherValues(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        normalize_first_visit('maybe');
     }
 }

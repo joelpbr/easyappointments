@@ -129,24 +129,6 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <?php component('color_selection', ['attributes' => 'id="appointment-color"']); ?>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="appointment-location" class="form-label">
-                                        <?= lang('location') ?>
-                                    </label>
-                                    <input id="appointment-location" class="form-control">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="appointment-meeting-link" class="form-label">
-                                        <?= lang('meeting_link') ?>
-                                    </label>
-                                    <input id="appointment-meeting-link" class="form-control" placeholder="https://">
-                                </div>
-
-                                <div class="mb-3">
                                     <label for="appointment-status" class="form-label">
                                         <?= lang('status') ?>
                                     </label>
@@ -158,6 +140,35 @@
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label for="appointment-first-visit" class="form-label">
+                                        <?= lang('first_visit') ?>
+                                    </label>
+                                    <select id="appointment-first-visit" class="form-select">
+                                        <option value=""><?= lang('not_specified') ?></option>
+                                        <option value="1"><?= lang('yes') ?></option>
+                                        <option value="0"><?= lang('no') ?></option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3 ea-more-field">
+                                    <?php component('color_selection', ['attributes' => 'id="appointment-color"']); ?>
+                                </div>
+
+                                <div class="mb-3 ea-more-field">
+                                    <label for="appointment-location" class="form-label">
+                                        <?= lang('location') ?>
+                                    </label>
+                                    <input id="appointment-location" class="form-control">
+                                </div>
+
+                                <div class="mb-3 ea-more-field">
+                                    <label for="appointment-meeting-link" class="form-label">
+                                        <?= lang('meeting_link') ?>
+                                    </label>
+                                    <input id="appointment-meeting-link" class="form-control" placeholder="https://">
+                                </div>
                             </div>
 
                             <div class="col-12 col-sm-6">
@@ -168,11 +179,20 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label for="appointment-duration" class="form-label">
+                                        <?= lang('duration_minutes') ?>
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input id="appointment-duration" class="required form-control" type="number" min="5"
+                                           max="1440" step="1">
+                                </div>
+
+                                <div class="mb-3">
                                     <label for="end-datetime" class="form-label"><?= lang('end_date_time') ?></label>
                                     <input id="end-datetime" class="required form-control">
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="mb-3 ea-more-field">
                                     <label class="form-label">
                                         <?= lang('timezone') ?>
                                     </label>
@@ -214,7 +234,13 @@
                         </div>
                     </fieldset>
 
-                    <br>
+                    <div class="mb-3">
+                        <button id="toggle-more-fields" class="btn btn-link btn-sm px-0" type="button"
+                                aria-expanded="false">
+                            <i class="fas fa-chevron-down me-1"></i>
+                            <span><?= lang('more_details') ?></span>
+                        </button>
+                    </div>
 
                     <fieldset>
                         <h5 class="mb-3 fw-light">
@@ -290,7 +316,7 @@
                                            class="<?= $require_phone_number ? 'required' : '' ?> form-control"/>
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="mb-3 ea-more-field">
                                     <label class="form-label" for="language">
                                         <?= lang('language') ?>
                                         <span class="text-danger" hidden>*</span>
@@ -304,11 +330,13 @@
                                     </select>
                                 </div>
 
-                                <?php component('custom_fields'); ?>
+                                <div class="ea-more-field">
+                                    <?php component('custom_fields'); ?>
+                                </div>
 
                             </div>
                             <div class="col-12 col-sm-6">
-                                <div class="mb-3">
+                                <div class="mb-3 <?= $require_address ? '' : 'ea-more-field' ?>">
                                     <label for="address" class="form-label">
                                         <?= lang('address') ?>
                                         <?php if ($require_address): ?>
@@ -320,7 +348,7 @@
                                            maxlength="120"/>
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="mb-3 <?= $require_city ? '' : 'ea-more-field' ?>">
                                     <label for="city" class="form-label">
                                         <?= lang('city') ?>
                                         <?php if ($require_city): ?>
@@ -332,7 +360,7 @@
                                            maxlength="120"/>
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="mb-3 <?= $require_zip_code ? '' : 'ea-more-field' ?>">
                                     <label for="zip-code" class="form-label">
                                         <?= lang('zip_code') ?>
                                         <?php if ($require_zip_code): ?>
@@ -344,7 +372,7 @@
                                            maxlength="120"/>
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="mb-3 ea-more-field">
                                     <label class="form-label" for="timezone">
                                         <?= lang('timezone') ?>
                                         <span class="text-danger" hidden>*</span>

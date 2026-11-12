@@ -149,3 +149,29 @@ if (!function_exists('appointment_status_free_codes')) {
         );
     }
 }
+
+if (!function_exists('normalize_first_visit')) {
+    /**
+     * Normalize the first visit flag of an appointment.
+     *
+     * @param mixed $value 1/0, true/false, "1"/"0", or null/"" when it is not known.
+     *
+     * @return int|null 1 for a first visit, 0 for a returning patient, null when it is not known.
+     *
+     * @throws InvalidArgumentException For any other value.
+     */
+    function normalize_first_visit(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $flag = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+        if ($flag === null) {
+            throw new InvalidArgumentException('The provided first visit value is invalid: ' . print_r($value, true));
+        }
+
+        return (int) $flag;
+    }
+}

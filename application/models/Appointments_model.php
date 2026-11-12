@@ -41,6 +41,7 @@ class Appointments_model extends EA_Model
         'meetingLink' => 'meeting_link',
         'color' => 'color',
         'status' => 'status',
+        'isFirstVisit' => 'is_first_visit',
         'notes' => 'notes',
         'hash' => 'hash',
         'serviceId' => 'id_services',
@@ -62,6 +63,11 @@ class Appointments_model extends EA_Model
      */
     public function save(array $appointment): int
     {
+        // First visit: yes (1), no (0) or not known (NULL). Forms send an empty string for "not known".
+        if (array_key_exists('is_first_visit', $appointment)) {
+            $appointment['is_first_visit'] = normalize_first_visit($appointment['is_first_visit']);
+        }
+
         $this->validate($appointment);
 
         if (empty($appointment['id'])) {
@@ -678,6 +684,7 @@ class Appointments_model extends EA_Model
             'hash' => $appointment['hash'],
             'color' => $appointment['color'],
             'status' => $appointment['status'],
+            'isFirstVisit' => isset($appointment['is_first_visit']) ? (bool) $appointment['is_first_visit'] : null,
             'location' => $appointment['location'],
             'notes' => $appointment['notes'],
             'customerId' => $appointment['id_users_customer'] !== null ? (int) $appointment['id_users_customer'] : null,
@@ -734,6 +741,10 @@ class Appointments_model extends EA_Model
 
         if (array_key_exists('status', $appointment)) {
             $decoded_resource['status'] = $appointment['status'];
+        }
+
+        if (array_key_exists('isFirstVisit', $appointment)) {
+            $decoded_resource['is_first_visit'] = $appointment['isFirstVisit'];
         }
 
         if (array_key_exists('notes', $appointment)) {

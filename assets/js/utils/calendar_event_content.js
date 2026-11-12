@@ -87,6 +87,10 @@ App.Utils.CalendarEventContent = (function () {
 
         const meta = [start.format(timeFormat) + '–' + end.format(timeFormat), end.diff(start, 'minutes') + ' min'];
 
+        if (Number(data.is_first_visit) === 1) {
+            meta.push(lang('first_visit_short'));
+        }
+
         if (data.status && data.status !== DEFAULT_STATUS) {
             meta.push(App.Utils.CalendarEventPopover.getStatusName(data.status));
         }

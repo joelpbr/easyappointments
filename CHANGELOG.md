@@ -27,11 +27,13 @@ developers to maintain and readjust their custom modifications on the main proje
 - The split view remembers the selected providers, services and number of days
 - Weeks start on Monday and times use 24 hours by default
 - Providers can be deactivated: they keep their appointments, but no longer appear in the calendar or the booking page; their last name is now optional
+- The appointment form is shorter: duration in minutes, first visit (yes, no or not specified) and the secondary fields behind "More details"; the patient email is no longer required
 - The local development environment now starts with docker compose -f docker-compose.dev.yml up and only includes the application, the database, the asset watcher and Mailpit (phpMyAdmin, Baikal, OpenLDAP, phpLDAPadmin and Swagger UI were removed)
 - The Docker setup now runs MySQL 8.4 and defaults to the Spanish language and the Europe/Madrid time zone, both configurable in .env
 
 ### Fixed
 
+- A new appointment from the calendar toolbar starts at the next slot of the agenda, without seconds, instead of jumping to the next hour at minutes 0, 15, 30 and 45
 - Deleting a provider that has appointments is now refused instead of silently deleting all of their appointments
 - Appointments created without a color, for example through the API, now take the color of their service instead of the default blue
 - The day names of the calendar are shown in the user language instead of always in English

@@ -53,6 +53,7 @@ class Calendar extends EA_Controller
         'notes',
         'color',
         'status',
+        'is_first_visit',
         'is_unavailability',
         'id_users_provider',
         'id_users_customer',

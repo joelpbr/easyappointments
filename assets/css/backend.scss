@@ -206,6 +206,11 @@ body .modal.full-screen .modal-push {
     font-size: 11px;
 }
 
+// Quick appointment form: the secondary fields stay hidden until "More details" is clicked.
+#appointments-modal:not(.ea-show-more) .ea-more-field {
+    display: none;
+}
+
 // Appointment blocks: patient and treatment first, so they stay visible in short appointments.
 #calendar .ea-event {
     overflow: hidden;

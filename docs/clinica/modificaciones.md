@@ -94,3 +94,18 @@ Migración nueva: `application/migrations/073_add_users_active_state.php` (`user
 | `application/controllers/Booking.php` | `check_bookable()` rechaza profesionales inactivos | No se les pueden dar citas ni con peticiones directas |
 | `application/controllers/Providers.php`, `application/views/pages/providers.php`, `assets/js/pages/providers.js` | Interruptor «Activo», apellido no obligatorio y aviso «Inactivo» en el listado | Gestión desde la interfaz |
 | `openapi.yml` | `isActive` en profesionales | Documentar la API |
+
+## Formulario rápido de cita (fase 3)
+
+Migración nueva: `application/migrations/074_add_quick_appointment_fields.php` (`appointments.is_first_visit`, nulo =
+sin indicar; el email del paciente deja de ser obligatorio).
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/views/components/appointments_modal.php` | Campos «Duración (minutos)» y «Primera visita»; color, ubicación, enlace, idioma, zona horaria, dirección y campos personalizados pasan detrás de «Más datos» (salvo los obligatorios) | Formulario corto para recepción (especificación 9.1 y 9.7) |
+| `assets/js/components/appointments_modal.js` | Duración y fin sincronizados (cualquier número de minutos ≥ 5); «Más datos» se abre solo si alguno de esos campos tiene valor; un paciente nuevo sugiere primera visita «Sí»; «Nueva cita» empieza en el siguiente intervalo de la agenda y sin segundos | Especificación 6.3 y 9.3; el original saltaba a la hora siguiente en los minutos 0, 15, 30 y 45 |
+| `assets/js/utils/calendar_default_view.js`, `calendar_table_view.js`, `calendar_event_content.js` | Cargan la primera visita al editar y la tarjeta muestra «1.ª visita» | Especificación 5.4 |
+| `application/models/Appointments_model.php`, `application/helpers/appointment_status_helper.php` | `normalize_first_visit()`; API `isFirstVisit` | Validar sí/no/sin indicar |
+| `application/controllers/Calendar.php` | `is_first_visit` en los campos permitidos | — |
+| `assets/css/backend.scss` | Oculta los campos secundarios | — |
+| `openapi.yml` | `isFirstVisit` | Documentar la API |
