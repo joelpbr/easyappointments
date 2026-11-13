@@ -55,6 +55,11 @@ class Localization extends EA_Controller
 
             config(['language' => $language]);
 
+            // A logged in user keeps the chosen language in the next sessions too.
+            if (session('user_id')) {
+                $this->db->update('users', ['language' => $language], ['id' => (int) session('user_id')]);
+            }
+
             json_response([
                 'success' => true,
             ]);

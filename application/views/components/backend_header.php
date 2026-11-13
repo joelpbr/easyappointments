@@ -108,6 +108,14 @@
                         <i class="fas fa-info-circle me-2"></i>
                         <?= lang('about') ?>
                     </a>
+                    <div class="dropdown-divider"></div>
+                    <?php foreach (['catalan' => 'Català', 'spanish' => 'Castellano'] as $code => $name): ?>
+                        <a class="dropdown-item ea-change-language <?= config('language') === $code ? 'active' : '' ?>"
+                           href="#" data-language="<?= $code ?>">
+                            <i class="fas fa-language me-2"></i>
+                            <?= $name ?>
+                        </a>
+                    <?php endforeach; ?>
                     <a class="dropdown-item text-danger" href="https://easyappointments.org/premium" target="_blank">
                         <i class="fas fa-crown text-warning me-2"></i>
                         Premium

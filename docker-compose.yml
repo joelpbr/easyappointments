@@ -22,7 +22,7 @@ x-app: &app
     logging: *logging
     environment:
         BASE_URL: ${BASE_URL:?Set BASE_URL in .env}
-        LANGUAGE: ${LANGUAGE:-spanish}
+        LANGUAGE: ${LANGUAGE:-catalan}
         TZ: ${TZ:-Europe/Madrid}
         DEBUG_MODE: 'false'
         DB_HOST: db

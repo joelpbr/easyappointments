@@ -373,3 +373,13 @@ Las aperturas excepcionales (10.8) ya existían como excepciones de horario. Con
 | `assets/js/utils/calendar_appointment_actions.js`, `calendar_event_popover.js`, vistas de agenda | Botón «Falta de asistencia» en la ficha de la cita, solo cuando ya ha empezado y no está cancelada ni marcada: pide confirmación y la guarda como «No presentado», sin enviar mensajes | Registrar la falta en un clic |
 | `application/models/Customers_model.php` | `get_visit_summary()` cuenta también las faltas y la última | Ídem |
 | `assets/js/components/appointments_modal.js`, `appointments_modal.php` | Al elegir un paciente con faltas, aviso «Este paciente tiene N falta(s) de asistencia, la última el …» | Aviso al volver a darle cita |
+
+## Catalán por defecto y castellano
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/language/catalan/translations_lang.php` | Traducidos al catalán los 146 textos nuevos de la clínica, y la terminología de la clínica en los textos originales (Pacient, Tractament, Professional, Recepcionista…) | Petición de la clínica |
+| `application/config/config.php` | Solo se ofrecen catalán y castellano; el idioma del navegador ya no decide: se empieza en catalán | Catalán predeterminado |
+| `application/views/components/backend_header.php`, `assets/js/layouts/backend_layout.js`, `application/controllers/Localization.php` | Cambio Català / Castellano en el menú de usuario, que queda guardado en el usuario | El selector de idioma estaba en el pie, que se quitó |
+| `application/migrations/085_set_catalan_as_default_language.php` | Idioma por defecto catalán; los usuarios con un idioma que ya no se ofrece pasan a catalán | Ídem |
+| `.env.example`, `docker-compose.yml` | `LANGUAGE=catalan` por defecto | Ídem |
