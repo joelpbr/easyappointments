@@ -437,3 +437,9 @@ Tercera corrección, a petición de la clínica: sin ventana emergente, solo el 
 Corrección posterior: el plegado se hace con una hoja de estilo que selecciona las filas del descanso por su hora, en lugar de marcar las filas (FullCalendar las vuelve a dibujar al pasar una columna de lista a calendario, lo que deshacía el plegado y hacía que el botón fallara). Las columnas en modo lista se ignoran: las de calendario siguen plegadas y el botón no desaparece.
 
 Segunda corrección: al abrir o plegar el descanso, FullCalendar no recolocaba las citas (quedaban a la altura de antes). Ahora, tras cambiar el estilo, se cambia una opción de las franjas para que dibuje y mida de nuevo, y cada cita queda en su hora, con o sin columnas en modo lista.
+
+## Filtro de profesionales con selección múltiple
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `assets/js/utils/calendar_table_view.js` | El filtro de profesionales pasa a ser una lista con una casilla por profesional (sin opción «todos»); siempre queda al menos uno marcado; cerrado dice «Professional: tots» si están todos y, si no, los nombres marcados. La selección se recuerda como antes | Petición de la clínica: elegir varios profesionales a la vez |
