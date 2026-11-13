@@ -634,14 +634,35 @@ App.Components.ClinicalRecordModal = (function () {
     }
 
     /**
-     * Remove a placed pathology; it is removed for good when the visit is saved.
+     * Remove a placed pathology, after asking; it is removed for good when the visit is saved.
      *
      * @param {Number} key Key of the marker.
      */
     function removeMarker(key) {
-        feet.markers = feet.markers.filter((marker) => marker.key !== key);
-        renderMarkers();
-        updateSaveButtons();
+        const marker = feet.markers.find((marker) => marker.key === key);
+        const pathology = feet.pathologies.find((pathology) => pathology.id === marker?.pathology_id);
+
+        App.Utils.Message.show(
+            lang('clinical_pathologies'),
+            lang('clinical_remove_marker').replace('%s', pathology?.name || ''),
+            [
+                {
+                    text: lang('cancel'),
+                    className: 'btn btn-secondary',
+                    click: (event, messageModal) => messageModal.hide(),
+                },
+                {
+                    text: lang('clinical_remove'),
+                    className: 'btn btn-danger',
+                    click: (event, messageModal) => {
+                        messageModal.hide();
+                        feet.markers = feet.markers.filter((marker) => marker.key !== key);
+                        renderMarkers();
+                        updateSaveButtons();
+                    },
+                },
+            ],
+        );
     }
 
     /**

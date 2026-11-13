@@ -583,3 +583,5 @@ Cambio posterior: en el popover de una cita, «Tanca» y «Elimina» pasan al t�
 Cambio posterior: en el popover de la cita se intercambian los colores de «Edita» (ahora contorno azul) y «Fitxa» (ahora azul lleno); cada uno mantiene su tamaño, «Fitxa» sigue siendo el más alto.
 
 Cambio posterior: la visita elegida en la lista de la ficha se resalta en azul claro (`#d0e7ff`).
+
+Cambio posterior: al hacer clic en una patología colocada se pide confirmación («Vols treure «Heloma» d'aquesta vista?», Cancel·la / Treu); quitarla sigue siendo un cambio de la visita que se guarda con «Desa la visita».

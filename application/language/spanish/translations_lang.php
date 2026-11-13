@@ -777,4 +777,6 @@ $lang['clinical_no_pathologies'] = 'Todavía no hay patologías en el catálogo.
 $lang['clinical_feet_view'] = 'Vista %s';
 $lang['clinical_feet_hint'] = 'Elige una patología y haz clic en la foto para ponerla; haz clic en ella para quitarla.';
 $lang['clinical_feet_copied'] = 'Dibujo copiado de la visita del %s. Se guarda con esta visita.';
+$lang['clinical_remove_marker'] = '¿Quieres quitar «%s» de esta vista?';
+$lang['clinical_remove'] = 'Quitar';
 // End
