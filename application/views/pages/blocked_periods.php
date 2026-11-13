@@ -15,6 +15,10 @@
                     <i class="fas fa-plus-square me-2"></i>
                     <?= lang('add') ?>
                 </button>
+                <a href="<?= site_url('holidays') ?>" class="btn btn-outline-primary ms-2">
+                    <i class="fas fa-calendar-day me-2"></i>
+                    <?= lang('holidays') ?>
+                </a>
             </div>
 
             <form class="input-append mb-4">

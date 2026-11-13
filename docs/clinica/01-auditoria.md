@@ -270,7 +270,7 @@ pruebas y se integra en `develop`. Aislar el código nuevo reduce los conflictos
 | 3 Agenda multiprofesional | Recepción, vista en tabla predeterminada, intervalos, tratamientos y colores, estados, modal rápido, refresco | 2 | **Hecha**: Escenarios A, B, G, H visibles en la agenda; pruebas 23.1 y 23.2 |
 | 4 Motor de disponibilidad | `Slot_rules`, `Slot_finder`, «Buscar hueco», bloqueo transaccional | 3 | **Hecha**: Escenarios C, D, E, F; pruebas 23.3; búsqueda < 1 s con 50 000 citas |
 | 5 Pacientes | Autocompletado, duplicados, profesional habitual, primera visita, datos fiscales opcionales | 3 | **Hecha**: pruebas 23.4 y escenario M en el navegador; búsqueda de unos 20 ms con 10 000 pacientes |
-| 6 Festivos y ausencias | Tipos, alcance, repetición, festivos, citas afectadas | 4 | Pruebas 23.6; escenarios G y H |
+| 6 Festivos y ausencias | Tipos, alcance, repetición, festivos, citas afectadas | 4 | **Hecha**: escenarios G y H y pruebas 23.6 en el navegador |
 | 7 Importación | Asistente XLSX/CSV, simulación, copia previa, deshacer | 5 + **Excel de la clínica** | Pruebas 23.5; escenario K |
 | 8 WhatsApp | Consentimientos, cola, programación a las 10:00, estados, reintentos, panel | 5 + **cuenta de Meta** | Pruebas 23.7; escenarios I y J |
 | 9 Facturación | Emisores, series, facturas, cobros, PDF | 5 + **decisión D.5 y forma jurídica** | Pruebas 23.8; escenario L |
