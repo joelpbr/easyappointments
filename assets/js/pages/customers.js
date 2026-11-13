@@ -390,6 +390,10 @@ App.Pages.Customers = (function () {
         $language.val(customer.language || 'english');
         $ldapDn.val(customer.ldap_dn);
         $preferredProvider.val(customer.id_users_preferred_provider || '');
+
+        // Only shown for patients who missed some appointment.
+        $('#no-show-count').val(customer.no_show_count || 0);
+        $('#no-show-count-group').prop('hidden', !Number(customer.no_show_count));
         displayFiscalData(customer.id);
         $customField1.val(customer.custom_field_1);
         $customField2.val(customer.custom_field_2);

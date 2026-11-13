@@ -187,7 +187,7 @@ App.Components.AppointmentsModal = (function () {
                             fillCustomer(customer);
 
                             // A patient who missed appointments is not saved at once, so that the warning is seen.
-                            if (Number(customer.no_shows) > 0) {
+                            if (Number(customer.no_show_count) > 0) {
                                 $noShowWarning[0].scrollIntoView({block: 'center'});
 
                                 return;
@@ -750,10 +750,10 @@ App.Components.AppointmentsModal = (function () {
     /**
      * Warn when the chosen patient missed appointments before, so that reception can remind them.
      *
-     * @param {Object|null} customer Patient with no_shows and last_no_show, or null to hide the warning.
+     * @param {Object|null} customer Patient with no_show_count and last_no_show, or null to hide the warning.
      */
     function showNoShowWarning(customer) {
-        const count = Number(customer?.no_shows || 0);
+        const count = Number(customer?.no_show_count || 0);
 
         $noShowWarning.prop('hidden', !count).empty();
 
@@ -766,16 +766,6 @@ App.Components.AppointmentsModal = (function () {
             .replace('%date', moment(customer.last_no_show).format('DD/MM/YYYY'));
 
         $noShowWarning.append($('<i/>', {class: 'fas fa-user-slash me-2'}), document.createTextNode(text));
-
-        // Booking a new appointment for them also shows a dialog that has to be closed, so that it is not missed.
-        if (!$appointmentId.val()) {
-            App.Utils.Message.show(lang('mark_no_show'), $('<p/>', {class: 'mb-0', text}).prop('outerHTML'), [
-                {
-                    text: lang('close'),
-                    click: (event, messageModal) => messageModal.hide(),
-                },
-            ]);
-        }
     }
 
     /**

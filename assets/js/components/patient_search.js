@@ -121,6 +121,12 @@ App.Components.PatientSearch = (function () {
                                 text: [patient.first_name, patient.last_name].filter(Boolean).join(' '),
                             }),
                             $('<small/>', {class: 'ms-2 text-muted', text: patient.phone_number || ''}),
+                            Number(patient.no_show_count) > 0
+                                ? $('<span/>', {
+                                      class: 'badge text-bg-warning ms-2',
+                                      text: lang('no_show_count_badge').replace('%count', patient.no_show_count),
+                                  })
+                                : null,
                         ],
                         patient.id,
                     ),

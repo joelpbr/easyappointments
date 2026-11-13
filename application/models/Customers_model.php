@@ -27,6 +27,7 @@ class Customers_model extends EA_Model
         'id' => 'integer',
         'id_roles' => 'integer',
         'id_users_preferred_provider' => 'integer',
+        'no_show_count' => 'integer',
     ];
 
     /**
@@ -524,7 +525,7 @@ class Customers_model extends EA_Model
         $role_id = $this->get_customer_role_id();
 
         $query = $this->db
-            ->select('users.id, users.first_name, users.last_name, users.phone_number')
+            ->select('users.id, users.first_name, users.last_name, users.phone_number, users.no_show_count')
             ->from('users')
             ->where('users.id_roles', $role_id);
 
@@ -636,8 +637,7 @@ class Customers_model extends EA_Model
      *
      * @param int $customer_id Patient ID.
      *
-     * @return array ['visits' => int, 'last_visit' => 'Y-m-d H:i:s' or null, 'no_shows' => int,
-     * 'last_no_show' => 'Y-m-d H:i:s' or null].
+     * @return array ['visits' => int, 'last_visit' => 'Y-m-d H:i:s' or null, 'last_no_show' => 'Y-m-d H:i:s' or null].
      */
     public function get_visit_summary(int $customer_id): array
     {
@@ -651,8 +651,9 @@ class Customers_model extends EA_Model
             ->get()
             ->row_array();
 
+        // The number of no-shows is kept in users.no_show_count; only the date of the last one is needed here.
         $no_shows = $this->db
-            ->select('COUNT(*) AS no_shows, MAX(start_datetime) AS last_no_show')
+            ->select('MAX(start_datetime) AS last_no_show')
             ->from('appointments')
             ->where('id_users_customer', $customer_id)
             ->where('is_unavailability', false)
@@ -663,7 +664,6 @@ class Customers_model extends EA_Model
         return [
             'visits' => (int) $summary['visits'],
             'last_visit' => $summary['last_visit'],
-            'no_shows' => (int) $no_shows['no_shows'],
             'last_no_show' => $no_shows['last_no_show'],
         ];
     }
@@ -766,6 +766,7 @@ class Customers_model extends EA_Model
             'customField4' => $customer['custom_field_4'],
             'customField5' => $customer['custom_field_5'],
             'ldapDn' => $customer['ldap_dn'],
+            'noShowCount' => (int) ($customer['no_show_count'] ?? 0),
             'preferredProviderId' => isset($customer['id_users_preferred_provider'])
                 ? (int) $customer['id_users_preferred_provider']
                 : null,

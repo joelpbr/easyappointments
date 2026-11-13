@@ -2361,6 +2361,10 @@ components:
                     type: integer
                     nullable: true
                     description: Usual provider of the patient, suggested for new appointments.
+                noShowCount:
+                    type: integer
+                    readOnly: true
+                    description: Number of appointments the patient missed.
             example:
                 id: 1
                 firstName: Steve
@@ -2379,6 +2383,7 @@ components:
                 ldapDn: null
                 notes: This is a test customer.
                 preferredProviderId: 2
+                noShowCount: 0
         CustomerPayload:
             type: object
             properties:
