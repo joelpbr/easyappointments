@@ -447,3 +447,5 @@ Segunda corrección: al abrir o plegar el descanso, FullCalendar no recolocaba l
 Cambio posterior: el botón de la agenda se llama «Bloquejos» y lleva a la lista de bloqueos (para añadir, editar o quitar), en lugar de abrir directamente uno nuevo; se muestra a quien puede ver los bloqueos.
 
 Corrección posterior: el aviso de faltas también aparece al abrir una cita existente de un paciente con faltas (antes solo al elegirlo en la búsqueda, por eso unas veces salía y otras no).
+
+Cambio posterior: en el tema `podologia-sabadell` (el activo), los botones principales usan el azul cian `#029ecb` de fondo y de borde; al pasar el ratón siguen en azul oscuro.
