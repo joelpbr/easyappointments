@@ -154,14 +154,16 @@
                                      the pathologies on the right with the observations under them (clinical_record_modal.js). -->
                                 <div class="ea-clinical-feet mb-3" data-section="feet">
                                     <div class="ea-feet-diagram">
-                                        <div class="ea-feet-picture">
-                                            <img id="clinical-feet-picture" alt="">
+                                        <div class="ea-feet-picture" id="clinical-feet-board">
+                                            <img id="clinical-feet-picture" alt="" draggable="false">
+                                            <div id="clinical-feet-markers" class="ea-feet-markers"></div>
                                         </div>
                                         <div id="clinical-feet-views" class="ea-feet-views" role="group"></div>
                                     </div>
 
                                     <div class="ea-feet-side">
-                                        <div class="form-label"><?= lang('clinical_pathologies') ?></div>
+                                        <div class="form-label mb-0"><?= lang('clinical_pathologies') ?></div>
+                                        <div class="form-text mt-0 mb-2"><?= lang('clinical_feet_hint') ?></div>
                                         <div id="clinical-feet-pathologies" class="list-group ea-feet-pathologies"></div>
                                         <div id="clinical-feet-observations"></div>
                                     </div>

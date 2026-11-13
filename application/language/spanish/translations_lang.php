@@ -775,4 +775,7 @@ $lang['fiscal_same_as_patient_hint'] = 'Los campos vacíos usan los datos del pa
 $lang['clinical_pathologies'] = 'Patologías';
 $lang['clinical_no_pathologies'] = 'Todavía no hay patologías en el catálogo.';
 $lang['clinical_feet_view'] = 'Vista %s';
+$lang['clinical_feet_hint'] = 'Elige una patología y haz clic en la foto para ponerla; haz clic en ella para quitarla.';
+$lang['clinical_remove_marker'] = '¿Quieres quitar «%s» de esta vista?';
+$lang['clinical_remove'] = 'Quitar';
 // End
