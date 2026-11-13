@@ -18,8 +18,8 @@ App.Utils.CalendarTableView = (function () {
     // Constants
 
     const EVENT_COLORS = {
-        unavailability: '#879DB4',
-        notWorking: '#BEBEBE',
+        unavailability: '#7F7F7F',
+        notWorking: '#7F7F7F',
         workingPlanException: '#879DB4',
         default: '#7cbae8',
     };

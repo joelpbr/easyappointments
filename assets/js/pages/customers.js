@@ -691,9 +691,6 @@ App.Pages.Customers = (function () {
     function getFilterHtml(customer) {
         const name = [customer.first_name, customer.last_name].filter(Boolean).join(' ') || '—';
 
-        // Only what the search looks in besides the name: the phone and the document.
-        const info = [customer.phone_number, customer.document_number].filter(Boolean).join(' · ');
-
         return $('<div/>', {
             'class': 'customer-row entry',
             'data-id': customer.id,
@@ -702,9 +699,13 @@ App.Pages.Customers = (function () {
                     'class': 'text-truncate',
                     'text': name,
                 }),
+                // Only what the search looks in besides the name: the phone and the document, in columns.
                 $('<small/>', {
-                    'class': 'text-muted text-nowrap',
-                    'text': info,
+                    'class': 'text-muted ea-patient-row-info',
+                    'html': [
+                        $('<span/>', {'class': 'ea-patient-row-phone', 'text': customer.phone_number || ''}),
+                        $('<span/>', {'class': 'ea-patient-row-document', 'text': customer.document_number || ''}),
+                    ],
                 }),
             ],
         });
