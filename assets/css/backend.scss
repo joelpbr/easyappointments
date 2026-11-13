@@ -765,9 +765,6 @@ body .modal.full-screen .modal-push {
     .calendar-header > .btn {
         flex: 0 0 auto;
         margin: 0 !important;
-        color: black;
-        background-color: #029ecb;
-        border: 0;
     }
 
     .flatpickr-wrapper {
@@ -818,9 +815,6 @@ body .modal.full-screen .modal-push {
         height: 32px;
         min-height: 32px;
         padding: 4px 24px 4px 8px;
-        color: #1f2937;
-        background-color: #ffffff;
-        font-size: 12px;
         line-height: 20px;
         text-overflow: ellipsis;
         cursor: pointer;
@@ -831,6 +825,37 @@ body .modal.full-screen .modal-push {
         align-self: center;
         min-width: max-content;
         white-space: nowrap;
+    }
+
+    // Every control of the bar looks the same: clinic cyan, black text, the same font and no border. Only the
+    // background colour is set, so that the selects keep their arrow.
+    .btn,
+    .form-control,
+    .form-select {
+        color: #000000;
+        background-color: #029ecb;
+        border: 0;
+        font-size: 0.85rem;
+        font-weight: 500;
+
+        &:hover,
+        &:focus,
+        &.active,
+        &.show {
+            color: #000000;
+            background-color: #028bb3;
+        }
+
+        &:disabled,
+        &.disabled {
+            color: #000000;
+            background-color: #029ecb;
+            opacity: 0.6;
+        }
+    }
+
+    .form-control::placeholder {
+        color: rgba(0, 0, 0, 0.6);
     }
 
     @media (max-width: 1199.98px) {

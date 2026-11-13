@@ -451,3 +451,5 @@ Corrección posterior: el aviso de faltas también aparece al abrir una cita exi
 Cambio posterior: en el tema `podologia-sabadell` (el activo), los botones principales usan el azul cian `#029ecb` de fondo y de borde; al pasar el ratón siguen en azul oscuro.
 
 Cambio posterior: los botones de la barra de la agenda (anterior, siguiente y «Migdia») tienen fondo `#029ecb`, texto negro y sin borde.
+
+Cambio posterior: toda la barra de la agenda (selector de días, fecha, flechas, filtros y botones) tiene el mismo aspecto: fondo `#029ecb`, texto negro, la misma letra y sin bordes; al pasar el ratón el fondo se oscurece un poco (`#028bb3`).
