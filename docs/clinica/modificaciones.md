@@ -443,3 +443,5 @@ Segunda corrección: al abrir o plegar el descanso, FullCalendar no recolocaba l
 | Archivo | Cambio | Motivo |
 | --- | --- | --- |
 | `assets/js/utils/calendar_table_view.js` | El filtro de profesionales pasa a ser una lista con una casilla por profesional (sin opción «todos»); siempre queda al menos uno marcado; cerrado dice «Professional: tots» si están todos y, si no, los nombres marcados. La selección se recuerda como antes | Petición de la clínica: elegir varios profesionales a la vez |
+
+Cambio posterior: el botón de la agenda se llama «Bloquejos» y lleva a la lista de bloqueos (para añadir, editar o quitar), en lugar de abrir directamente uno nuevo; se muestra a quien puede ver los bloqueos.

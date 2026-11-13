@@ -86,10 +86,10 @@
                 </div>
             <?php endif; ?>
 
-            <?php if (can('add', PRIV_BLOCKED_PERIODS)): ?>
-                <a id="block-agenda" class="btn btn-light" href="<?= site_url('blocked_periods?new=1') ?>">
+            <?php if (can('view', PRIV_BLOCKED_PERIODS)): ?>
+                <a id="agenda-blocks" class="btn btn-light" href="<?= site_url('blocked_periods') ?>">
                     <i class="fas fa-ban me-2"></i>
-                    <?= lang('block_agenda') ?>
+                    <?= lang('agenda_blocks') ?>
                 </a>
             <?php endif; ?>
 
