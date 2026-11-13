@@ -351,7 +351,7 @@ App.Utils.CalendarEventPopover = (function () {
                 ...createPopoverRow('notes', getEventNotes(info.event)),
                 renderCustomContent(info),
                 $('<hr/>'),
-                createPopoverButtons(
+                createAppointmentActions(
                     displayEdit,
                     displayDelete,
                     statusFreesSlot(data.status) ? 'd-none' : displayEdit,
@@ -364,6 +364,86 @@ App.Utils.CalendarEventPopover = (function () {
                 ),
             ],
         });
+    }
+
+    /**
+     * Create the actions of an appointment: deleting and closing go to the title (see moveHeaderActions()), then
+     * cancelling and the no-show on one line, editing on the next and the clinical record, larger, at the bottom.
+     *
+     * @param {string} displayEdit - CSS class to show/hide the edit button.
+     * @param {string} displayDelete - CSS class to show/hide the delete button.
+     * @param {string} displayCancel - CSS class to show/hide the cancel button.
+     * @param {string} displayNoShow - CSS class to show/hide the no-show button.
+     * @param {string} displayRecord - CSS class to show/hide the clinical record button.
+     * @returns {jQuery} Actions element.
+     */
+    function createAppointmentActions(displayEdit, displayDelete, displayCancel, displayNoShow, displayRecord) {
+        return $('<div/>', {
+            class: 'ea-popover-actions',
+            html: [
+                $('<div/>', {
+                    class: 'ea-popover-header-actions',
+                    hidden: true,
+                    html: [
+                        $('<button/>', {
+                            'type': 'button',
+                            'class': 'delete-popover ea-popover-delete ' + displayDelete,
+                            'title': lang('delete'),
+                            'aria-label': lang('delete'),
+                            'html': $('<i/>', {class: 'fas fa-trash-alt'}),
+                        }),
+                        $('<button/>', {
+                            'type': 'button',
+                            'class': 'close-popover btn-close ea-popover-close',
+                            'title': lang('close'),
+                            'aria-label': lang('close'),
+                        }),
+                    ],
+                }),
+                $('<div/>', {
+                    class: 'd-flex gap-2',
+                    html: [
+                        createPopoverButton(
+                            'cancel-appointment-popover btn btn-outline-danger flex-fill ' + displayCancel,
+                            'fas fa-calendar-times',
+                            'cancel_appointment',
+                        ),
+                        createPopoverButton(
+                            'no-show-popover btn btn-outline-warning flex-fill ' + displayNoShow,
+                            'fas fa-user-slash',
+                            'mark_no_show',
+                        ),
+                    ],
+                }),
+                createPopoverButton('edit-popover btn btn-primary w-100 ' + displayEdit, 'fas fa-edit', 'edit'),
+                createPopoverButton(
+                    'clinical-record-popover btn btn-outline-primary w-100 ea-popover-record ' + displayRecord,
+                    'fas fa-notes-medical',
+                    'open_clinical_record',
+                ),
+            ],
+        });
+    }
+
+    /**
+     * Move the delete and close actions of a popover to its title: the bin on the left and the cross on the right.
+     *
+     * @param {jQuery} $popover The shown popover.
+     */
+    function moveHeaderActions($popover) {
+        const $actions = $popover.find('.ea-popover-header-actions');
+
+        if (!$actions.length) {
+            return;
+        }
+
+        $popover
+            .find('.popover-header')
+            .addClass('ea-popover-header')
+            .prepend($actions.find('.ea-popover-delete'))
+            .append($actions.find('.ea-popover-close'));
+
+        $actions.remove();
     }
 
     /**
@@ -408,5 +488,6 @@ App.Utils.CalendarEventPopover = (function () {
         buildWorkingPlanExceptionPopover,
         buildAppointmentPopover,
         buildBlockedPeriodPopover,
+        moveHeaderActions,
     };
 })();

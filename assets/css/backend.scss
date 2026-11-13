@@ -1579,3 +1579,44 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         }
     }
 }
+
+// Popover of an appointment (see createAppointmentActions() in calendar_event_popover.js): the bin that deletes it on
+// the left of the title and the cross on the right, then cancel and no-show on one line, edit, and the clinical record,
+// taller, at the bottom; every button as wide as the card.
+#calendar .popover {
+    .popover-header.ea-popover-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ea-popover-delete {
+        flex: 0 0 auto;
+        padding: 0 2px;
+        border: 0;
+        background: transparent;
+        color: #dc3545;
+        line-height: 1;
+
+        &:hover {
+            color: #a52834;
+        }
+    }
+
+    .ea-popover-close {
+        flex: 0 0 auto;
+        margin-left: auto;
+        font-size: 0.7rem;
+    }
+
+    .ea-popover-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .popover-body .ea-popover-record {
+        height: 2.8em;
+        font-weight: 600;
+    }
+}
