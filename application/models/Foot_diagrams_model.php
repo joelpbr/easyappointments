@@ -77,16 +77,76 @@ class Foot_diagrams_model extends EA_Model
     }
 
     /**
-     * Place a pathology on a diagram of a visit.
+     * Save the pathologies placed on the diagrams of a visit: the given list is the whole list of the visit, so the
+     * markers it keeps (with their id) stay as they are, the new ones (without id) are added and the others are removed.
+     *
+     * Every new marker is checked before anything is saved.
      *
      * @param int $appointment_id Appointment ID.
+     * @param array $markers Markers with id (kept) or with diagram_id, pathology_id, x1, y1, x2 and y2 (new).
+     *
+     * @throws InvalidArgumentException When a new marker is not valid.
+     */
+    public function sync_markers(int $appointment_id, array $markers): void
+    {
+        $current = array_map(
+            'intval',
+            array_column(
+                $this->db
+                    ->select('id')
+                    ->get_where('appointment_foot_markers', ['id_appointments' => $appointment_id])
+                    ->result_array(),
+                'id',
+            ),
+        );
+
+        $kept = [];
+        $new = [];
+
+        foreach ($markers as $marker) {
+            $id = (int) ($marker['id'] ?? 0);
+
+            if ($id) {
+                // Only the markers of this visit can be kept.
+                if (in_array($id, $current, true)) {
+                    $kept[] = $id;
+                }
+
+                continue;
+            }
+
+            $new[] = $this->clean_marker(is_array($marker) ? $marker : []);
+        }
+
+        foreach (array_diff($current, $kept) as $marker_id) {
+            $this->db->delete('appointment_foot_markers', ['id' => $marker_id]);
+            audit_log('deleted', 'appointment_foot_marker', $marker_id);
+        }
+
+        foreach ($new as $marker) {
+            $this->db->insert(
+                'appointment_foot_markers',
+                [
+                    'create_datetime' => date('Y-m-d H:i:s'),
+                    'update_datetime' => date('Y-m-d H:i:s'),
+                    'id_appointments' => $appointment_id,
+                ] + $marker,
+            );
+
+            audit_log('created', 'appointment_foot_marker', (int) $this->db->insert_id());
+        }
+    }
+
+    /**
+     * Check a new marker.
+     *
      * @param array $marker With diagram_id, pathology_id and the coordinates x1, y1, x2, y2 on the original picture.
      *
-     * @return array The saved marker.
+     * @return array The columns of the marker.
      *
      * @throws InvalidArgumentException When the diagram, the pathology or a coordinate is not valid.
      */
-    public function add_marker(int $appointment_id, array $marker): array
+    private function clean_marker(array $marker): array
     {
         $diagram_id = filter_var($marker['diagram_id'] ?? null, FILTER_VALIDATE_INT);
         $pathology_id = filter_var($marker['pathology_id'] ?? null, FILTER_VALIDATE_INT);
@@ -106,7 +166,7 @@ class Foot_diagrams_model extends EA_Model
         }
 
         // The coordinates are kept exactly as given: whole numbers, possibly negative, never scaled nor rounded.
-        $coordinates = [];
+        $columns = ['id_podology_diagram_types' => $diagram_id, 'id_podology_pathologies' => $pathology_id];
 
         foreach (['x1', 'y1', 'x2', 'y2'] as $field) {
             $value = filter_var($marker[$field] ?? null, FILTER_VALIDATE_INT);
@@ -115,48 +175,10 @@ class Foot_diagrams_model extends EA_Model
                 throw new InvalidArgumentException('The provided coordinate is not a whole number: ' . $field);
             }
 
-            $coordinates[$field] = $value;
+            $columns[$field] = $value;
         }
 
-        $this->db->insert(
-            'appointment_foot_markers',
-            [
-                'create_datetime' => date('Y-m-d H:i:s'),
-                'update_datetime' => date('Y-m-d H:i:s'),
-                'id_appointments' => $appointment_id,
-                'id_podology_diagram_types' => $diagram_id,
-                'id_podology_pathologies' => $pathology_id,
-            ] + $coordinates,
-        );
-
-        $marker_id = (int) $this->db->insert_id();
-
-        audit_log('created', 'appointment_foot_marker', $marker_id);
-
-        return $this->marker_resource(
-            $this->db->get_where('appointment_foot_markers', ['id' => $marker_id])->row_array(),
-        );
-    }
-
-    /**
-     * Remove a pathology placed on a diagram of a visit.
-     *
-     * @param int $appointment_id Appointment ID, so that a marker of another visit is never removed.
-     * @param int $marker_id Marker ID.
-     *
-     * @throws InvalidArgumentException When the marker does not belong to the visit.
-     */
-    public function delete_marker(int $appointment_id, int $marker_id): void
-    {
-        $where = ['id' => $marker_id, 'id_appointments' => $appointment_id];
-
-        if (!$this->db->get_where('appointment_foot_markers', $where)->num_rows()) {
-            throw new InvalidArgumentException('The provided marker does not belong to the visit.');
-        }
-
-        $this->db->delete('appointment_foot_markers', $where);
-
-        audit_log('deleted', 'appointment_foot_marker', $marker_id);
+        return $columns;
     }
 
     /**

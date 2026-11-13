@@ -760,8 +760,8 @@ $lang['clinical_invalid_price'] = 'El precio no es válido.';
 $lang['clinical_invalid_birth_date'] = 'La fecha de nacimiento no es válida.';
 $lang['clinical_record_saved'] = 'Ficha guardada.';
 $lang['clinical_visit_saved'] = 'Visita guardada.';
-$lang['clinical_unsaved_changes'] = 'Hay cambios sin guardar. ¿Quieres cerrar igualmente?';
-$lang['clinical_close_anyway'] = 'Cerrar sin guardar';
+$lang['clinical_unsaved_changes'] = 'Hay cambios sin guardar. ¿Quieres guardarlos?';
+$lang['clinical_dont_save'] = 'No guardar';
 $lang['clinical_choose_visit'] = 'Elige una visita de la lista.';
 $lang['clinical_save_visit'] = 'Guardar la visita';
 $lang['clinical_years_old'] = '%s años';
@@ -776,6 +776,4 @@ $lang['clinical_pathologies'] = 'Patologías';
 $lang['clinical_no_pathologies'] = 'Todavía no hay patologías en el catálogo.';
 $lang['clinical_feet_view'] = 'Vista %s';
 $lang['clinical_feet_hint'] = 'Elige una patología y haz clic en la foto para ponerla; haz clic en ella para quitarla.';
-$lang['clinical_remove_marker'] = '¿Quieres quitar «%s» de esta vista?';
-$lang['clinical_remove'] = 'Quitar';
 // End
