@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- Blocked periods have a type (holidays, closure, vacation, absence...), can apply to some providers instead of the whole clinic and can repeat every week or every year; saving one that falls on appointments lists them to reschedule and asks for confirmation, and the calendar shows them in red with their reason and has a "Block agenda" button
 - The patient record shows the administrative history: number of visits, last visit, cancellations, no-shows and the providers who saw the patient, followed by the coming and the previous appointments with their status
 - Patients have optional fiscal data (document type and number, name or company name, fiscal address, zip code, town, province and country) on the patients page; DNI, NIE and the NIF of entities are checked by their format and check character, passports and foreign documents are saved as typed, and an appointment never asks for them
 - Patients can have a usual provider, set on the patients page and in the API (preferredProviderId); the appointment form shows it under the provider with a button to choose them, and fills in "First visit" from the past visits of the chosen patient
