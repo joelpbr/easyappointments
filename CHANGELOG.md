@@ -22,6 +22,7 @@ developers to maintain and readjust their custom modifications on the main proje
 - Midday breaks are labeled "Mediodía" and out-of-hours periods use red stripes with bold white text outlined in black
 - Treatment dropdowns follow the clinic frequency order, with distinct light backgrounds for readable black text; appointments using the previous treatment colors follow the new palette while custom colors stay unchanged
 - The reception calendar combines date navigation, filters and appointment actions in one toolbar row on desktop, adapting to smaller screens
+- The split view gives more height to the hours: provider and treatment are simple dropdowns, the provider columns scroll together, each column heading shows the provider and the day, the all day row only appears when there is a blocked period or a working plan exception, and the calendar opens at 08:30
 - Cancelled appointments no longer take their slot, so the time can be booked again, and they stay visible but faded in the calendar
 - Cancelling from the link in the confirmation email keeps the appointment as cancelled, with the reason in its notes, instead of deleting it
 - The calendar has a "Cancel appointment" action that keeps the appointment as cancelled, sends the cancellation email and removes it from the synced Google or CalDAV calendar; deleting now asks for a confirmation that explains the history is lost, and the dialogs say "Close" instead of "Cancel"
