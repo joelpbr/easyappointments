@@ -315,25 +315,20 @@ App.Utils.CalendarEventPopover = (function () {
         const data = info.event.extendedProps.data;
         const customer = data.customer;
         const provider = data.provider;
-        const customerName = [customer.first_name, customer.last_name].filter(Boolean).join(' ') || '-';
+        // The patient is the title of the popover, and the status is on the card; the time takes one line.
+        const end = info.event.end || info.event.start;
+        const sameDay = moment(end).isSame(info.event.start, 'day');
+        const endText = sameDay
+            ? moment(end).format(vars('time_format') === 'military' ? 'HH:mm' : 'h:mm a')
+            : formatDateTime(end);
+
         return $('<div/>', {
             html: [
-                ...createPopoverRow('start', formatDateTime(info.event.start)),
-                ...createPopoverRow('end', formatDateTime(info.event.end)),
-                ...createPopoverRow('timezone', vars('timezones')[provider.timezone]),
-                ...createPopoverRow('status', getStatusName(data.status)),
+                ...createPopoverRow('time', formatDateTime(info.event.start) + '–' + endText),
                 ...createPopoverRow('service', data.service.name),
                 $('<strong/>', {class: 'd-inline-block me-2', text: lang('provider')}),
                 renderMapIcon(provider),
                 $('<span/>', {text: provider.first_name + ' ' + provider.last_name}),
-                $('<br/>'),
-                $('<strong/>', {class: 'd-inline-block me-2', text: lang('customer')}),
-                renderMapIcon(customer),
-                $('<span/>', {class: 'd-inline-block', text: customerName}),
-                $('<br/>'),
-                $('<strong/>', {class: 'd-inline-block me-2', text: lang('email')}),
-                renderMailIcon(customer.email),
-                $('<span/>', {class: 'd-inline-block', text: customer.email || '-'}),
                 $('<br/>'),
                 $('<strong/>', {class: 'd-inline-block me-2', text: lang('phone')}),
                 renderPhoneIcon(customer.phone_number),
