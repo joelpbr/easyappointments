@@ -503,3 +503,5 @@ Datos de demostración (13/11/2026): se borran los pacientes y las visitas de pr
 Cambio posterior: a la derecha de la fecha de nacimiento, la ficha muestra la edad («Edat», p. ej. «35 anys»), calculada al momento al escribir o elegir la fecha; no se guarda.
 
 Cambio posterior: nuevo tratamiento «Revisión» (10 min, gratuito, color `#b9e4f0`, ficha «Només observacions»), ofrecido por todos los profesionales y situado justo después de «Quiropodia» en los desplegables (migración `089_add_review_treatment.php` y `Services_model::DROPDOWN_ORDER`).
+
+Cambio posterior: la página de Pacients ya no muestra las notas, el código postal (el de los datos fiscales sigue) ni la zona horaria. Al guardar, las notas y el código postal que ya tenga el paciente se conservan, y la zona horaria es siempre la de la clínica (Europe/Madrid).

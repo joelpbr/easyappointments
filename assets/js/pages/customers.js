@@ -24,8 +24,6 @@ App.Pages.Customers = (function () {
     const $phoneNumber = $('#phone-number');
     const $address = $('#address');
     const $city = $('#city');
-    const $zipCode = $('#zip-code');
-    const $timezone = $('#timezone');
     const $language = $('#language');
     const $ldapDn = $('#ldap-dn');
     const $preferredProvider = $('#preferred-provider');
@@ -37,7 +35,6 @@ App.Pages.Customers = (function () {
     const $customField3 = $('#custom-field-3');
     const $customField4 = $('#custom-field-4');
     const $customField5 = $('#custom-field-5');
-    const $notes = $('#notes');
     const $formMessage = $('#form-message');
     const $customerAppointments = $('#customer-appointments');
     const $recordName = $('#customer-record-name');
@@ -178,9 +175,11 @@ App.Pages.Customers = (function () {
                 phone_number: $phoneNumber.val(),
                 address: $address.val(),
                 city: $city.val(),
-                zip_code: $zipCode.val(),
-                notes: $notes.val(),
-                timezone: $timezone.val(),
+                // The page no longer shows the zip code nor the notes, which are kept as they are, and every patient
+                // is in the clinic's timezone.
+                zip_code: currentCustomer?.zip_code ?? '',
+                notes: currentCustomer?.notes ?? '',
+                timezone: vars('default_timezone') || 'Europe/Madrid',
                 language: $language.val() || 'english',
                 custom_field_1: $customField1.val(),
                 custom_field_2: $customField2.val(),
@@ -333,7 +332,6 @@ App.Pages.Customers = (function () {
     function resetForm() {
         $customers.find('.record-details').find('input, select, textarea').val('').prop('disabled', true);
         $customers.find('.record-details .form-label span').prop('hidden', true);
-        $customers.find('.record-details #timezone').val(vars('default_timezone'));
         $customers.find('.record-details #language').val(vars('default_language'));
 
         $customerAppointments.empty();
@@ -433,9 +431,6 @@ App.Pages.Customers = (function () {
         $phoneNumber.val(customer.phone_number);
         $address.val(customer.address);
         $city.val(customer.city);
-        $zipCode.val(customer.zip_code);
-        $notes.val(customer.notes);
-        $timezone.val(customer.timezone);
         $language.val(customer.language || 'english');
         $ldapDn.val(customer.ldap_dn);
         $preferredProvider.val(customer.id_users_preferred_provider || '');
