@@ -43,7 +43,6 @@ App.Components.AppointmentsModal = (function () {
     const $selectService = $('#select-service');
     const $selectProvider = $('#select-provider');
     const $insertAppointment = $('#insert-appointment');
-    const $newCustomer = $('#new-customer');
     const $customField1 = $('#custom-field-1');
     const $customField2 = $('#custom-field-2');
     const $customField3 = $('#custom-field-3');
@@ -512,31 +511,22 @@ App.Components.AppointmentsModal = (function () {
         });
 
         /**
-         * Event: Enter New Customer Button "Click"
+         * Event: Patient Name "Input"
+         *
+         * Changing the name of the chosen patient means that the appointment is for another person: the patient is let
+         * go, and the typed data is taken as a new patient (the possible duplicates are still checked when saving).
+         * Other fields, such as the phone, update the chosen patient.
          */
-        $newCustomer.on('click', () => {
-            patientSearch.reset();
+        $firstName.add($lastName).on('input', () => {
+            if (!$customerId.val() || $appointmentId.val()) {
+                return;
+            }
+
+            $customerId.val('');
             newPatientConfirmed = false;
             usualProviderId = null;
             updateUsualProviderHint();
             showNoShowWarning(null);
-
-            $customerId.val('');
-            $firstName.val('');
-            $lastName.val('');
-            $email.val('');
-            $phoneNumber.val('');
-            $address.val('');
-            $city.val('');
-            $zipCode.val('');
-            $language.val(vars('default_language'));
-            $timezone.val(vars('default_timezone'));
-            $customerNotes.val('');
-            $customField1.val('');
-            $customField2.val('');
-            $customField3.val('');
-            $customField4.val('');
-            $customField5.val('');
         });
     }
 

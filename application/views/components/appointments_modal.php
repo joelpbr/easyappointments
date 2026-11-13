@@ -243,11 +243,6 @@
                     <fieldset>
                         <h5 class="mb-3 fw-light">
                             <?= lang('customer_details_title') ?>
-                            <button id="new-customer" class="btn btn-outline-secondary btn-sm" type="button"
-                                    data-tippy-content="<?= lang('clear_fields_add_existing_customer_hint') ?>">
-                                <i class="fas fa-plus-square me-2"></i>
-                                <?= lang('new') ?>
-                            </button>
                         </h5>
 
                         <p class="form-text mt-n2 mb-3">

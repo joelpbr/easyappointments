@@ -645,7 +645,6 @@ $lang['fold_midday'] = 'Fold the midday break';
 $lang['midday_has_appointments'] = 'It cannot be folded while it has appointments or reservations.';
 $lang['filter_all_providers'] = 'Provider: all';
 $lang['filter_all_services'] = 'Service: all';
-$lang['create_new_patient'] = 'Create a new patient';
 $lang['patient_search_hint'] = 'To find a patient, type the name, the last name or the phone number and press Enter.';
 $lang['patient_search_too_broad'] = 'Type at least 3 letters, or 6 digits of the phone number.';
 $lang['patient_search_no_results'] = 'No patient matches.';

@@ -645,7 +645,6 @@ $lang['fold_midday'] = 'Plegar el migdia';
 $lang['midday_has_appointments'] = 'No es pot plegar mentre hi hagi cites o reserves.';
 $lang['filter_all_providers'] = 'Professional: tots';
 $lang['filter_all_services'] = 'Tractament: tots';
-$lang['create_new_patient'] = 'Crear un pacient nou';
 $lang['patient_search_hint'] = 'Per cercar un pacient, escriu el nom, el cognom o el telèfon i prem Retorn.';
 $lang['patient_search_too_broad'] = 'Escriu almenys 3 lletres, o 6 xifres del telèfon.';
 $lang['patient_search_no_results'] = 'Cap pacient coincideix.';
