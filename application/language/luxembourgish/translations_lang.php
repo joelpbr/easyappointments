@@ -656,4 +656,7 @@ $lang['same_phone'] = 'Same phone';
 $lang['same_name'] = 'Same name';
 $lang['use_this_patient'] = 'Use this one';
 $lang['create_patient_anyway'] = 'Create the new patient';
+$lang['usual_provider'] = 'Usual provider';
+$lang['use_usual_provider'] = 'Choose';
+$lang['usual_provider_without_service'] = 'does not provide this service';
 // End

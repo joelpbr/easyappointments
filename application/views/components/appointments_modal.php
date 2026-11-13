@@ -126,6 +126,7 @@
                                         <span class="text-danger">*</span>
                                     </label>
                                     <select id="select-provider" class="required form-select"></select>
+                                    <div id="usual-provider-hint" class="form-text" hidden></div>
                                 </div>
 
                                 <div class="mb-3">

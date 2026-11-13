@@ -41,6 +41,7 @@ class Customers extends EA_Controller
         'custom_field_4',
         'custom_field_5',
         'ldap_dn',
+        'id_users_preferred_provider',
     ];
 
     public array $optional_customer_fields = [
@@ -56,6 +57,7 @@ class Customers extends EA_Controller
 
         $this->load->model('appointments_model');
         $this->load->model('customers_model');
+        $this->load->model('providers_model');
         $this->load->model('secretaries_model');
         $this->load->model('roles_model');
 
@@ -135,6 +137,7 @@ class Customers extends EA_Controller
             'require_city' => $require_city,
             'require_zip_code' => $require_zip_code,
             'available_languages' => config('available_languages'),
+            'usual_provider_options' => $this->providers_model->to_options(['is_active' => true]),
         ]);
 
         $this->load->view('pages/customers');
@@ -168,6 +171,9 @@ class Customers extends EA_Controller
             }
 
             $customer = $this->customers_model->find($customer_id);
+
+            // Lets the appointment form tell whether the new appointment is the first visit.
+            $customer += $this->customers_model->get_visit_summary($customer_id);
 
             json_response($customer);
         } catch (Throwable $e) {

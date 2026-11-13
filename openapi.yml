@@ -2348,6 +2348,10 @@ components:
                     type: string
                 notes:
                     type: string
+                preferredProviderId:
+                    type: integer
+                    nullable: true
+                    description: Usual provider of the patient, suggested for new appointments.
             example:
                 id: 1
                 firstName: Steve
@@ -2365,6 +2369,7 @@ components:
                 customField5: Value5
                 ldapDn: null
                 notes: This is a test customer.
+                preferredProviderId: 2
         CustomerPayload:
             type: object
             properties:
@@ -2400,6 +2405,10 @@ components:
                     type: string
                 notes:
                     type: string
+                preferredProviderId:
+                    type: integer
+                    nullable: true
+                    description: Usual provider of the patient, suggested for new appointments.
             example:
                 firstName: Steve
                 lastName: Doe
@@ -2416,6 +2425,7 @@ components:
                 customField5: Value5
                 ldapDn: null
                 notes: This is a test customer.
+                preferredProviderId: 2
         ServiceRecord:
             type: object
             properties:

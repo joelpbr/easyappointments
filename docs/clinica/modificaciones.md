@@ -310,3 +310,14 @@ apellido rechazaba búsquedas habituales como un nombre solo; el límite de 10 r
 | `assets/js/components/patient_duplicates.js` | Nuevo. Antes de crear un paciente, si hay posibles repetidos, pregunta: usar uno de ellos, crear el nuevo igualmente o cerrar sin guardar | Nunca fusionar: un teléfono puede ser de una familia y dos personas pueden llamarse igual |
 | `assets/js/components/appointments_modal.js` | Al guardar una cita con un paciente nuevo, hace la comprobación; si se elige uno existente, rellena sus datos y sigue guardando | Ídem |
 | `assets/js/pages/customers.js`, `application/views/pages/customers.php` | Lo mismo al crear un paciente desde «Pacientes»; elegir uno existente lo abre en lugar de crear otro | Ídem |
+
+## Profesional habitual y primera visita (fase 5)
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/migrations/081_add_patient_usual_provider.php` | `users.id_users_preferred_provider`, opcional, con clave foránea que lo deja vacío si se borra el profesional | Especificación 11.1 |
+| `application/models/Customers_model.php` | Guarda y valida el profesional habitual (debe ser un profesional) y lo expone en la API como `preferredProviderId`; `get_visit_summary()` cuenta las visitas pasadas, sin canceladas ni no presentados, y da la última | Ídem; «primera visita según datos disponibles» |
+| `application/controllers/Customers.php` | Campo permitido; `find` añade `visits` y `last_visit`; la página recibe los profesionales activos | Ídem |
+| `application/views/pages/customers.php`, `assets/js/pages/customers.js` | Selector «Profesional habitual» en la ficha | Ídem |
+| `assets/js/components/appointments_modal.js`, `appointments_modal.php` | Al elegir un paciente, muestra «Profesional habitual: …» bajo el profesional, con «Elegir» si es otro o «no hace este tratamiento»; nunca cambia el profesional por sí solo, porque puede venir de la columna donde se creó la cita. «Primera visita» se rellena con «No» si el paciente ya vino y «Sí» si no, y un paciente nuevo marca siempre «Sí» | Especificación 12.1 y 9.3 |
+| `openapi.yml` | `preferredProviderId` en `CustomerRecord` y `CustomerPayload` | API documentada |

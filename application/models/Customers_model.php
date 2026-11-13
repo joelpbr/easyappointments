@@ -26,6 +26,7 @@ class Customers_model extends EA_Model
     protected array $casts = [
         'id' => 'integer',
         'id_roles' => 'integer',
+        'id_users_preferred_provider' => 'integer',
     ];
 
     /**
@@ -49,6 +50,7 @@ class Customers_model extends EA_Model
         'customField5' => 'custom_field_5',
         'notes' => 'notes',
         'ldapDn' => 'ldap_dn',
+        'preferredProviderId' => 'id_users_preferred_provider',
     ];
 
     /**
@@ -72,6 +74,10 @@ class Customers_model extends EA_Model
 
         if (array_key_exists('phone_number', $customer)) {
             $customer['phone_normalized'] = normalize_phone($customer['phone_number']);
+        }
+
+        if (array_key_exists('id_users_preferred_provider', $customer)) {
+            $customer['id_users_preferred_provider'] = $customer['id_users_preferred_provider'] ?: null;
         }
 
         if (empty($customer['id'])) {
@@ -105,6 +111,23 @@ class Customers_model extends EA_Model
             if (!$count) {
                 throw new InvalidArgumentException(
                     'The provided customer ID does not exist in the database: ' . $customer['id'],
+                );
+            }
+        }
+
+        // The usual provider is optional, but it must be a provider.
+        if (!empty($customer['id_users_preferred_provider'])) {
+            $is_provider = $this->db
+                ->from('users')
+                ->join('roles', 'roles.id = users.id_roles', 'inner')
+                ->where('users.id', $customer['id_users_preferred_provider'])
+                ->where('roles.slug', DB_SLUG_PROVIDER)
+                ->get()
+                ->num_rows();
+
+            if (!$is_provider) {
+                throw new InvalidArgumentException(
+                    'The usual provider does not exist: ' . $customer['id_users_preferred_provider'],
                 );
             }
         }
@@ -609,6 +632,31 @@ class Customers_model extends EA_Model
     }
 
     /**
+     * Count the visits of a patient: their past appointments, except the cancelled ones and the no-shows.
+     *
+     * @param int $customer_id Patient ID.
+     *
+     * @return array ['visits' => int, 'last_visit' => 'Y-m-d H:i:s' or null].
+     */
+    public function get_visit_summary(int $customer_id): array
+    {
+        $summary = $this->db
+            ->select('COUNT(*) AS visits, MAX(start_datetime) AS last_visit')
+            ->from('appointments')
+            ->where('id_users_customer', $customer_id)
+            ->where('is_unavailability', false)
+            ->where('start_datetime <', date('Y-m-d H:i:s'))
+            ->where_not_in('status', [APPOINTMENT_STATUS_CANCELLED, APPOINTMENT_STATUS_NO_SHOW])
+            ->get()
+            ->row_array();
+
+        return [
+            'visits' => (int) $summary['visits'],
+            'last_visit' => $summary['last_visit'],
+        ];
+    }
+
+    /**
      * Keep only the patients with an appointment with some providers.
      *
      * @param CI_DB_query_builder $query Query on the users table.
@@ -706,6 +754,9 @@ class Customers_model extends EA_Model
             'customField4' => $customer['custom_field_4'],
             'customField5' => $customer['custom_field_5'],
             'ldapDn' => $customer['ldap_dn'],
+            'preferredProviderId' => isset($customer['id_users_preferred_provider'])
+                ? (int) $customer['id_users_preferred_provider']
+                : null,
         ];
 
         $customer = $encoded_resource;
@@ -783,6 +834,10 @@ class Customers_model extends EA_Model
 
         if (array_key_exists('ldapDn', $customer)) {
             $decoded_resource['ldap_dn'] = $customer['ldapDn'];
+        }
+
+        if (array_key_exists('preferredProviderId', $customer)) {
+            $decoded_resource['id_users_preferred_provider'] = $customer['preferredProviderId'];
         }
 
         if (array_key_exists('notes', $customer)) {

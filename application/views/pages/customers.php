@@ -123,6 +123,18 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="preferred-provider" class="form-label">
+                            <?= lang('usual_provider') ?>
+                        </label>
+                        <select id="preferred-provider" class="form-select" disabled>
+                            <option value="">—</option>
+                            <?php foreach (vars('usual_provider_options') as $option): ?>
+                                <option value="<?= $option['value'] ?>"><?= e($option['label']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
                         <label for="address" class="form-label">
                             <?= lang('address') ?>
                             <?php if (vars('require_address')): ?>
