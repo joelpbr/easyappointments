@@ -211,6 +211,12 @@ body .modal.full-screen .modal-push {
     display: none;
 }
 
+// The data of a chosen patient is protected until "Edit data" is clicked (see appointments_modal.js).
+#appointments-modal fieldset :is(input, textarea)[readonly],
+#appointments-modal fieldset select:disabled {
+    background-color: var(--bs-secondary-bg);
+}
+
 // On a computer the appointment and the patient sit side by side, each with its fields two by two, so that a new
 // appointment fits on the screen without scrolling. Phones keep the single column.
 @media (min-width: 992px) {

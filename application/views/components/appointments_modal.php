@@ -241,11 +241,37 @@
                     </div>
 
                     <fieldset>
-                        <h5 class="mb-3 fw-light">
+                        <h5 class="mb-2 fw-light">
                             <?= lang('customer_details_title') ?>
                         </h5>
 
-                        <p class="form-text mt-n2 mb-3">
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                            <div class="btn-group btn-group-sm" role="group"
+                                 aria-label="<?= lang('customer_details_title') ?>">
+                                <input type="radio" class="btn-check" name="patient-mode" id="patient-mode-existing"
+                                       value="existing" autocomplete="off" checked>
+                                <label class="btn btn-outline-primary" for="patient-mode-existing">
+                                    <?= lang('existing_patient') ?>
+                                </label>
+                                <input type="radio" class="btn-check" name="patient-mode" id="patient-mode-new"
+                                       value="new" autocomplete="off">
+                                <label class="btn btn-outline-primary" for="patient-mode-new">
+                                    <?= lang('new_patient') ?>
+                                </label>
+                            </div>
+
+                            <div id="chosen-patient-actions" hidden>
+                                <button id="unlock-patient" type="button" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-lock me-1"></i>
+                                    <span><?= lang('edit_patient_data') ?></span>
+                                </button>
+                                <button id="change-patient" type="button" class="btn btn-sm btn-link">
+                                    <?= lang('change_patient') ?>
+                                </button>
+                            </div>
+                        </div>
+
+                        <p id="patient-search-hint" class="form-text mt-0 mb-2">
                             <i class="fas fa-search me-1"></i>
                             <?= lang('patient_search_hint') ?>
                         </p>

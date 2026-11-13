@@ -51,6 +51,9 @@ App.Components.AppointmentsModal = (function () {
     const $appointmentDuration = $('#appointment-duration');
     const $appointmentPrice = $('#appointment-price');
     const $noShowWarning = $('#no-show-warning');
+    const $chosenPatientActions = $('#chosen-patient-actions');
+    const $unlockPatient = $('#unlock-patient');
+    const $patientSearchHint = $('#patient-search-hint');
     const $toggleMoreFields = $('#toggle-more-fields');
     const $usualProviderHint = $('#usual-provider-hint');
 
@@ -170,6 +173,19 @@ App.Components.AppointmentsModal = (function () {
         $saveAppointment.on('click', () => {
             // Before doing anything the appointment data need to be validated.
             if (!App.Components.AppointmentsModal.validateAppointmentForm()) {
+                return;
+            }
+
+            // An existing patient has to be chosen from the search results.
+            if (getPatientMode() === 'existing' && !$customerId.val()) {
+                $appointmentsModal
+                    .find('.modal-message')
+                    .text(lang('choose_existing_patient'))
+                    .addClass('alert-danger')
+                    .removeClass('d-none');
+                $appointmentsModal.find('.modal-body').scrollTop(0);
+                $firstName.trigger('focus');
+
                 return;
             }
 
@@ -511,22 +527,33 @@ App.Components.AppointmentsModal = (function () {
         });
 
         /**
-         * Event: Patient Name "Input"
+         * Event: Patient Mode "Change"
          *
-         * Changing the name of the chosen patient means that the appointment is for another person: the patient is let
-         * go, and the typed data is taken as a new patient (the possible duplicates are still checked when saving).
-         * Other fields, such as the phone, update the chosen patient.
+         * A new patient is typed freely (the possible duplicates are checked when saving); an existing one has to be
+         * chosen from the search results.
          */
-        $firstName.add($lastName).on('input', () => {
-            if (!$customerId.val() || $appointmentId.val()) {
-                return;
+        $appointmentsModal.on('change', 'input[name="patient-mode"]', () => {
+            if (getPatientMode() === 'new' && $customerId.val()) {
+                clearPatient();
             }
 
-            $customerId.val('');
-            newPatientConfirmed = false;
-            usualProviderId = null;
-            updateUsualProviderHint();
-            showNoShowWarning(null);
+            updatePatientState();
+        });
+
+        /**
+         * Event: Edit The Chosen Patient "Click"
+         *
+         * The data of a chosen patient is protected, so that it is not changed by mistake.
+         */
+        $unlockPatient.on('click', () => setPatientLocked(!isPatientLocked()));
+
+        /**
+         * Event: Change The Chosen Patient "Click"
+         */
+        $('#change-patient').on('click', () => {
+            clearPatient();
+            updatePatientState();
+            $firstName.trigger('focus');
         });
     }
 
@@ -538,12 +565,15 @@ App.Components.AppointmentsModal = (function () {
      */
     function resetModal() {
         newPatientConfirmed = false;
+        $('#patient-mode-existing').prop('checked', true);
+        setPatientLocked(false);
         usualProviderId = null;
         updateUsualProviderHint();
         showNoShowWarning(null);
 
         // Empty form fields.
-        $appointmentsModal.find('input, textarea').val('');
+        // The patient mode switch keeps its values.
+        $appointmentsModal.find('input:not(.btn-check), textarea').val('');
         $appointmentsModal.find('.modal-message').addClass('.d-none');
         $appointmentsModal.find('.is-invalid').removeClass('is-invalid');
 
@@ -710,10 +740,90 @@ App.Components.AppointmentsModal = (function () {
         $customField4.val(customer.custom_field_4);
         $customField5.val(customer.custom_field_5);
         $appointmentsModal.find('.is-invalid').removeClass('is-invalid');
+        $appointmentsModal.find('.modal-message').addClass('d-none');
 
         usualProviderId = customer.id_users_preferred_provider || null;
         updateUsualProviderHint();
         showNoShowWarning(customer);
+
+        $('#patient-mode-existing').prop('checked', true);
+        setPatientLocked(true);
+        updatePatientState();
+    }
+
+    /**
+     * Get whether the appointment is for an existing or a new patient.
+     *
+     * @return {String} "existing" or "new".
+     */
+    function getPatientMode() {
+        return $appointmentsModal.find('input[name="patient-mode"]:checked').val();
+    }
+
+    /**
+     * Get the fields of the patient section.
+     *
+     * @return {jQuery}
+     */
+    function getPatientFields() {
+        return $customerId.closest('fieldset').find('input:not([type=hidden]):not(.btn-check), select, textarea');
+    }
+
+    /**
+     * Check whether the data of the chosen patient is protected.
+     *
+     * @return {Boolean}
+     */
+    function isPatientLocked() {
+        return $firstName.prop('readonly');
+    }
+
+    /**
+     * Protect the data of the chosen patient, or allow changing it.
+     *
+     * @param {Boolean} locked
+     */
+    function setPatientLocked(locked) {
+        const $fields = getPatientFields();
+
+        $fields.filter('input, textarea').prop('readonly', locked);
+        $fields.filter('select').prop('disabled', locked);
+
+        $unlockPatient.toggleClass('active', !locked);
+        $unlockPatient.find('i').toggleClass('fa-lock', locked).toggleClass('fa-lock-open', !locked);
+        $unlockPatient.find('span').text(lang(locked ? 'edit_patient_data' : 'protect_patient_data'));
+    }
+
+    /**
+     * Empty the patient fields and let the chosen patient go.
+     */
+    function clearPatient() {
+        setPatientLocked(false);
+        patientSearch.reset();
+        newPatientConfirmed = false;
+        usualProviderId = null;
+        updateUsualProviderHint();
+        showNoShowWarning(null);
+
+        $customerId.val('');
+        getPatientFields().filter('input, textarea').val('');
+        $language.val(vars('default_language'));
+        $timezone.val(vars('default_timezone'));
+    }
+
+    /**
+     * Show the search hint while an existing patient is being looked for, and the actions of the chosen patient.
+     */
+    function updatePatientState() {
+        const existing = getPatientMode() === 'existing';
+        const chosen = Boolean($customerId.val());
+
+        $patientSearchHint.prop('hidden', !existing || chosen);
+        $chosenPatientActions.prop('hidden', !existing || !chosen);
+
+        if (!chosen) {
+            setPatientLocked(false);
+        }
     }
 
     /**
@@ -785,13 +895,21 @@ App.Components.AppointmentsModal = (function () {
         // is the first visit of the patient is worked out when it is saved.
         $appointmentsModal.on('show.bs.modal', () => {
             $('#appointment-status-group').prop('hidden', !$appointmentId.val());
+
+            // An appointment that is being edited already has its patient, which stays protected.
+            if ($customerId.val()) {
+                $('#patient-mode-existing').prop('checked', true);
+                setPatientLocked(true);
+            }
+
+            updatePatientState();
         });
 
         patientSearch = App.Components.PatientSearch.attach({
             $firstName,
             $lastName,
             $phoneNumber,
-            isEnabled: () => !$customerId.val(),
+            isEnabled: () => getPatientMode() === 'existing' && !$customerId.val(),
             onSelect: (customerId) => App.Http.Customers.find(customerId).done(fillCustomer),
         });
     }
