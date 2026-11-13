@@ -12,28 +12,28 @@
  * Patient search.
  *
  * Pressing Enter in the name, the last name or the phone field of a new patient looks for the existing patients. The
- * search must be specific (the first name and the last name, or six digits of the phone number), never runs while
- * typing, and shows up to 10 patients, with the option to keep creating a new one.
+ * search needs three letters or six digits of the phone number, never runs while typing, and shows up to 10
+ * patients, with the option to keep creating a new one.
  */
 App.Components.PatientSearch = (function () {
-    const MIN_WORD_LETTERS = 2; // Same rule as is_specific_patient_search() on the server.
+    const MIN_LETTERS = 3; // Same rule as is_specific_patient_search() on the server.
     const MIN_PHONE_DIGITS = 6;
 
     /**
-     * Check whether a search says clearly who is being looked for.
+     * Check whether a search is worth running.
      *
      * @param {String} keyword
      *
      * @return {Boolean}
      */
     function isSpecific(keyword) {
-        if (!/\p{L}/u.test(keyword)) {
+        const letters = (keyword.match(/\p{L}/gu) || []).length;
+
+        if (!letters) {
             return keyword.replace(/\D/g, '').length >= MIN_PHONE_DIGITS;
         }
 
-        const words = keyword.trim().split(/\s+/u);
-
-        return words.length >= 2 && words.every((word) => word.length >= MIN_WORD_LETTERS);
+        return letters >= MIN_LETTERS;
     }
 
     /**
@@ -166,8 +166,14 @@ App.Components.PatientSearch = (function () {
             // The results belong to the text that was searched.
             $input.on('input', close);
 
-            // Only hide the list: a search started in another field keeps going.
-            $input.on('blur', () => setTimeout(() => $list.hide().empty(), 150));
+            // Only hide the list of this field: a search started in another field keeps going.
+            $input.on('blur', () =>
+                setTimeout(() => {
+                    if ($list.parent().is($input.parent()) && !$input.is(':focus')) {
+                        $list.hide().empty();
+                    }
+                }, 150),
+            );
         });
 
         // Keep the focus in the field, so that clicking an option does not close the list first.

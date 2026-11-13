@@ -11,18 +11,18 @@ class PatientSearchHelperTest extends TestCase
         require_once APPPATH . 'helpers/patient_search_helper.php';
     }
 
-    public function testTheFirstNameAndTheLastNameAreNeeded(): void
+    public function testThreeLettersAreEnoughEvenInOneWord(): void
     {
-        $this->assertTrue(is_specific_patient_search('María García'));
+        $this->assertTrue(is_specific_patient_search('lucia'));
+        $this->assertTrue(is_specific_patient_search('Lucía'));
         $this->assertTrue(is_specific_patient_search('ma ga'));
-        $this->assertTrue(is_specific_patient_search('  Mª   José  '));
+        $this->assertTrue(is_specific_patient_search('Mª José'));
     }
 
-    public function testASingleWordOrOneLetterWordsAreTooBroad(): void
+    public function testFewerThanThreeLettersAreTooBroad(): void
     {
-        $this->assertFalse(is_specific_patient_search('María'));
+        $this->assertFalse(is_specific_patient_search('lu'));
         $this->assertFalse(is_specific_patient_search('m g'));
-        $this->assertFalse(is_specific_patient_search('María G'));
         $this->assertFalse(is_specific_patient_search(''));
     }
 

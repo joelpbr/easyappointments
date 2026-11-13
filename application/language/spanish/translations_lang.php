@@ -646,8 +646,8 @@ $lang['midday_has_appointments'] = 'No se puede contraer mientras haya visitas o
 $lang['filter_all_providers'] = 'Profesional: todos';
 $lang['filter_all_services'] = 'Tratamiento: todos';
 $lang['create_new_patient'] = 'Crear paciente nuevo';
-$lang['patient_search_hint'] = 'Para buscar un paciente, escribe nombre y apellido, o el teléfono, y pulsa Intro.';
-$lang['patient_search_too_broad'] = 'Escribe al menos 2 letras del nombre y del apellido, o 6 cifras del teléfono.';
+$lang['patient_search_hint'] = 'Para buscar un paciente, escribe el nombre, el apellido o el teléfono y pulsa Intro.';
+$lang['patient_search_too_broad'] = 'Escribe al menos 3 letras, o 6 cifras del teléfono.';
 $lang['patient_search_no_results'] = 'Ningún paciente coincide.';
 $lang['patient_search_more_results'] = 'Hay más coincidencias: añade más letras para afinar.';
 // End

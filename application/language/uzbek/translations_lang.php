@@ -646,8 +646,8 @@ $lang['midday_has_appointments'] = 'It cannot be folded while it has appointment
 $lang['filter_all_providers'] = 'Provider: all';
 $lang['filter_all_services'] = 'Service: all';
 $lang['create_new_patient'] = 'Create a new patient';
-$lang['patient_search_hint'] = 'To find a patient, type the first name and the last name, or the phone number, and press Enter.';
-$lang['patient_search_too_broad'] = 'Type at least 2 letters of the first name and of the last name, or 6 digits of the phone number.';
+$lang['patient_search_hint'] = 'To find a patient, type the name, the last name or the phone number and press Enter.';
+$lang['patient_search_too_broad'] = 'Type at least 3 letters, or 6 digits of the phone number.';
 $lang['patient_search_no_results'] = 'No patient matches.';
 $lang['patient_search_more_results'] = 'There are more matches: add more letters to narrow the search.';
 // End
