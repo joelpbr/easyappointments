@@ -26,6 +26,7 @@ App.Components.ClinicalRecordModal = (function () {
     const $documentType = $('#clinical-document-type');
     const $documentNumber = $('#clinical-document-number');
     const $birthDate = $('#clinical-birth-date');
+    const $age = $('#clinical-age');
     const $patientSave = $('#clinical-record-save');
     const $visitEmpty = $('#clinical-visit-empty');
     const $visitDetail = $('#clinical-visit-detail');
@@ -159,9 +160,14 @@ App.Components.ClinicalRecordModal = (function () {
         const data = getPatientData();
         const name = [data.customer.first_name, data.customer.last_name].filter(Boolean).join(' ');
         const parts = [];
+        const age = data.record.birth_date
+            ? lang('clinical_years_old').replace('%s', moment().diff(data.record.birth_date, 'years'))
+            : '';
 
-        if (data.record.birth_date) {
-            parts.push(lang('clinical_years_old').replace('%s', moment().diff(data.record.birth_date, 'years')));
+        $age.val(age);
+
+        if (age) {
+            parts.push(age);
         }
 
         if (data.document_number) {
@@ -549,7 +555,8 @@ App.Components.ClinicalRecordModal = (function () {
             return;
         }
 
-        App.Utils.UI.initializeDatePicker($birthDate, {maxDate: 'today'});
+        // The age next to the date of birth follows it while it is typed or picked.
+        App.Utils.UI.initializeDatePicker($birthDate, {maxDate: 'today', onChange: () => updateHeader()});
 
         $patientSave.on('click', savePatient);
         $('#clinical-visit-save').on('click', saveVisit);

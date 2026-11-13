@@ -1161,6 +1161,13 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         }
     }
 
+    .ea-clinical-age {
+        background-color: #e9ecef;
+        text-align: center;
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
     .ea-clinical-document-type {
         flex: 0 0 auto;
         width: auto;

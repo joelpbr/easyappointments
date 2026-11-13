@@ -791,4 +791,5 @@ $lang['clinical_save_visit'] = 'Guardar la visita';
 $lang['clinical_years_old'] = '%s años';
 $lang['clinical_new_patient'] = 'Paciente nuevo';
 $lang['clinical_record_fields_hint'] = 'El nombre, los apellidos, el teléfono, la dirección y el NIF/NIE se editan en la ficha.';
+$lang['clinical_age'] = 'Edad';
 // End
