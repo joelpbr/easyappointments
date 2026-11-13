@@ -92,12 +92,12 @@ App.Http.Customers = (function () {
      * @param {Number} [limit]
      * @param {Number} [offset]
      * @param {String} [orderBy]
-     * @param {String} [field] Search by one field (first_name, last_name, document, phone): the response is then
+     * @param {Boolean} [withCount] Search the name, last names, phone and document, and respond with
      * {customers, count, total}.
      *
      * @return {Object}
      */
-    function search(keyword, limit = null, offset = null, orderBy = null, field = null) {
+    function search(keyword, limit = null, offset = null, orderBy = null, withCount = false) {
         const url = App.Utils.Url.siteUrl('customers/search');
 
         const data = {
@@ -106,7 +106,7 @@ App.Http.Customers = (function () {
             limit,
             offset,
             order_by: orderBy || undefined,
-            field: field || undefined,
+            with_count: withCount ? 1 : undefined,
         };
 
         return $.post(url, data);

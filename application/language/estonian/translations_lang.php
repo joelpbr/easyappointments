@@ -792,11 +792,7 @@ $lang['clinical_years_old'] = '%s years old';
 $lang['clinical_new_patient'] = 'New patient';
 $lang['clinical_record_fields_hint'] = 'The name, phone, address and NIF/NIE are edited in the record.';
 $lang['clinical_age'] = 'Age';
-$lang['search_by'] = 'Search by';
-$lang['patient_search_example_first_name'] = 'E.g. Maria';
-$lang['patient_search_example_last_name'] = 'E.g. Garcia Lopez';
-$lang['patient_search_example_document'] = 'E.g. 12345678Z';
-$lang['patient_search_example_phone'] = 'E.g. 600 123 456';
 $lang['patients_total'] = '%s patients';
 $lang['patients_found'] = '%s of %s patients';
+$lang['patient_search_placeholder'] = 'Name, last names, phone or ID';
 // End
