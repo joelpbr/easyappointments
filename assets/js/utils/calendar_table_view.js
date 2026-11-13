@@ -1394,6 +1394,7 @@ App.Utils.CalendarTableView = (function () {
             .append(new Option(lang('week'), '7'));
 
         restoreSelection($selectFilterItem, preferences.days);
+        App.Utils.UI.initializeSelectDropdown($selectFilterItem);
 
         // Keep navigation and filters inside the same toolbar as the actions.
         $calendarToolbar.removeClass('row py-3').addClass('ea-unified-toolbar').prependTo($calendar);
@@ -1518,6 +1519,7 @@ App.Utils.CalendarTableView = (function () {
         });
         $filterService.prepend(new Option(lang('filter_all_services'), '', true, true));
         restoreSelection($filterService, preferences.services);
+        App.Utils.UI.initializeSelectDropdown($filterService);
     }
 
     /**

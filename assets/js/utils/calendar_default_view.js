@@ -1378,6 +1378,8 @@ App.Utils.CalendarDefaultView = (function () {
             $selectFilterItem.find('optgroup:eq(0) option[value="' + vars('user_id') + '"]').prop('selected', true);
         }
 
+        App.Utils.UI.initializeSelectDropdown($selectFilterItem);
+
         addEventListeners();
 
         // Restore saved filter selection
