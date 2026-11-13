@@ -449,3 +449,5 @@ Cambio posterior: el botón de la agenda se llama «Bloquejos» y lleva a la lis
 Corrección posterior: el aviso de faltas también aparece al abrir una cita existente de un paciente con faltas (antes solo al elegirlo en la búsqueda, por eso unas veces salía y otras no).
 
 Cambio posterior: en el tema `podologia-sabadell` (el activo), los botones principales usan el azul cian `#029ecb` de fondo y de borde; al pasar el ratón siguen en azul oscuro.
+
+Cambio posterior: los botones de la barra de la agenda (anterior, siguiente y «Migdia») tienen fondo `#029ecb` y texto negro.
