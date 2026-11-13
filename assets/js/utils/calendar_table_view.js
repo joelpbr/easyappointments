@@ -957,7 +957,8 @@ App.Utils.CalendarTableView = (function () {
     }
 
     /**
-     * Handle calendar selection (drag to create).
+     * Handle calendar selection (drag to create): open a new appointment in the selected time. Absences are blocked
+     * periods ("Blocks" button), so there is no unavailability to choose.
      *
      * @param {Object} info - FullCalendar selection info.
      * @param {Object} fullCalendar - FullCalendar instance.
@@ -970,71 +971,35 @@ App.Utils.CalendarTableView = (function () {
         const $providerColumn = $(info.jsEvent.target).parents('.provider-column');
         const providerId = $providerColumn.data('provider').id;
 
-        const buttons = [
-            {
-                text: lang('unavailability'),
-                click: (event, messageModal) => {
-                    $('#insert-unavailability').trigger('click');
+        $('#insert-appointment').trigger('click');
 
-                    if (providerId) {
-                        $('#unavailability-provider').val(providerId);
-                    } else {
-                        $('#unavailability-provider option:first').prop('selected', true);
-                    }
+        const provider = vars('available_providers').find((provider) => Number(provider.id) === Number(providerId));
 
-                    $('#unavailability-provider').trigger('change');
-                    App.Utils.UI.setDateTimePickerValue($('#unavailability-start'), info.start);
-                    App.Utils.UI.setDateTimePickerValue($('#unavailability-end'), info.end);
-                    messageModal.hide();
-                },
-            },
-            {
-                text: lang('appointment'),
-                click: (event, messageModal) => {
-                    $('#insert-appointment').trigger('click');
-                    const provider = vars('available_providers').find(
-                        (provider) => Number(provider.id) === Number(providerId),
-                    );
+        const service = vars('available_services').find((service) => provider.services.indexOf(service.id) !== -1);
 
-                    const service = vars('available_services').find(
-                        (service) => provider.services.indexOf(service.id) !== -1,
-                    );
+        if (service) {
+            $selectService.val(service.id);
+        }
 
-                    if (service) {
-                        $selectService.val(service.id);
-                    }
+        if (!$selectService.val()) {
+            $selectService.find('option:first').prop('selected', true);
+        }
 
-                    if (!$selectService.val()) {
-                        $selectService.find('option:first').prop('selected', true);
-                    }
+        $selectService.trigger('change');
 
-                    $selectService.trigger('change');
-                    if (provider) {
-                        $selectProvider.val(provider.id);
-                    }
+        if (provider) {
+            $selectProvider.val(provider.id);
+        }
 
-                    if (!$selectProvider.val()) {
-                        $('#select-provider option:first').prop('selected', true);
-                    }
+        if (!$selectProvider.val()) {
+            $('#select-provider option:first').prop('selected', true);
+        }
 
-                    $selectProvider.trigger('change');
+        $selectProvider.trigger('change');
 
-                    // Preselect time
+        App.Utils.UI.setDateTimePickerValue($('#start-datetime'), info.start);
+        App.Utils.UI.setDateTimePickerValue($('#end-datetime'), App.Pages.Calendar.getSelectionEndDate(info));
 
-                    App.Utils.UI.setDateTimePickerValue($('#start-datetime'), info.start);
-                    App.Utils.UI.setDateTimePickerValue(
-                        $('#end-datetime'),
-                        App.Pages.Calendar.getSelectionEndDate(info),
-                    );
-                    messageModal.hide();
-                },
-            },
-        ];
-        App.Utils.Message.show(lang('add_new_event'), lang('what_kind_of_event'), buttons);
-        $('#message-modal .modal-footer')
-            .addClass('justify-content-between')
-            .find('.btn')
-            .css('width', 'calc(50% - 10px)');
         fullCalendar.unselect();
 
         return false;
@@ -2096,7 +2061,8 @@ App.Utils.CalendarTableView = (function () {
             .toDate();
 
         createView(startDate, endDate);
-        $('#insert-working-plan-exception').hide();
+        // Absences and closures are blocked periods: the unavailabilities of the stock calendar are only shown.
+        $('#insert-working-plan-exception, #insert-unavailability').closest('li').hide();
         addEventListeners();
 
         setInterval(markEndedListEvents, 60000);

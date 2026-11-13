@@ -745,44 +745,11 @@ App.Utils.CalendarDefaultView = (function () {
     function onSelect(info) {
         if (info.allDay) return;
 
-        const buttons = [
-            {
-                text: lang('unavailability'),
-                click: (event, messageModal) => {
-                    $('#insert-unavailability').trigger('click');
-                    const $providerSelect = $('#unavailability-provider');
-                    if (isProviderFilter()) {
-                        $providerSelect.val($selectFilterItem.val());
-                    } else {
-                        $providerSelect.find('option:first').prop('selected', true);
-                    }
-                    $providerSelect.trigger('change');
-                    App.Utils.UI.setDateTimePickerValue($('#unavailability-start'), info.start);
-                    App.Utils.UI.setDateTimePickerValue($('#unavailability-end'), info.end);
-                    messageModal.hide();
-                },
-            },
-            {
-                text: lang('appointment'),
-                click: (event, messageModal) => {
-                    $('#insert-appointment').trigger('click');
-                    preselectServiceAndProvider();
-                    App.Utils.UI.setDateTimePickerValue($('#start-datetime'), info.start);
-                    App.Utils.UI.setDateTimePickerValue(
-                        $('#end-datetime'),
-                        App.Pages.Calendar.getSelectionEndDate(info),
-                    );
-                    messageModal.hide();
-                },
-            },
-        ];
-
-        App.Utils.Message.show(lang('add_new_event'), lang('what_kind_of_event'), buttons);
-
-        $('#message-modal .modal-footer')
-            .addClass('justify-content-between')
-            .find('.btn')
-            .css('width', 'calc(50% - 10px)');
+        // Absences are blocked periods ("Blocks" button), so a selection is always a new appointment.
+        $('#insert-appointment').trigger('click');
+        preselectServiceAndProvider();
+        App.Utils.UI.setDateTimePickerValue($('#start-datetime'), info.start);
+        App.Utils.UI.setDateTimePickerValue($('#end-datetime'), App.Pages.Calendar.getSelectionEndDate(info));
 
         fullCalendar.unselect();
 
@@ -1381,6 +1348,9 @@ App.Utils.CalendarDefaultView = (function () {
         populateFilterDropdown();
 
         $('#insert-working-plan-exception').hide();
+
+        // Absences and closures are blocked periods: the unavailabilities of the stock calendar are only shown.
+        $('#insert-unavailability').closest('li').hide();
 
         // Select provider if user is a provider
         if (vars('role_slug') === App.Layouts.Backend.DB_SLUG_PROVIDER) {
