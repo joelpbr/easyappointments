@@ -517,3 +517,5 @@ Cambio posterior: la lista de Pacients muestra una línea por paciente (unos 34 
 Cambio posterior: todo el tiempo fuera de horario (madrugada, noche, mediodía, días sin trabajo, festivos, bloqueos e indisponibilidades «No disponible») usa el mismo fondo gris `#7f7f7f` con las rayas diagonales; el texto de las indisponibilidades va en blanco con sombra para leerse sobre el gris.
 
 Cambio posterior: la lista de Pacients alterna filas blancas y gris claro (`#f1f3f5`, más oscuro al pasar el ratón) y muestra el teléfono y el DNI en dos columnas alineadas y más separadas.
+
+Cambio posterior: todo lo que está fuera de horario tiene exactamente el mismo aspecto que el mediodía (fondo `#7f7f7f` con rayas, sin borde, texto blanco en negrita y cursiva, sin contorno ni sombra), también las indisponibilidades «No disponible», que antes tenían borde y otro tamaño de letra. Una sola regla en `backend.scss`.
