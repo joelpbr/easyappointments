@@ -117,9 +117,6 @@ class Booking extends EA_Controller
         $company_logo = setting('company_logo');
         $company_color = setting('company_color');
         $disable_booking = setting('disable_booking');
-        $google_analytics_code = setting('google_analytics_code');
-        $matomo_analytics_url = setting('matomo_analytics_url');
-        $matomo_analytics_site_id = setting('matomo_analytics_site_id');
 
         if ($disable_booking) {
             $disable_booking_message = setting('disable_booking_message');
@@ -130,9 +127,6 @@ class Booking extends EA_Controller
                 'message_title' => lang('booking_is_disabled'),
                 'message_text' => $disable_booking_message,
                 'message_icon' => base_url('assets/img/error.png'),
-                'google_analytics_code' => $google_analytics_code,
-                'matomo_analytics_url' => $matomo_analytics_url,
-                'matomo_analytics_site_id' => $matomo_analytics_site_id,
                 'display_login_button' => setting('display_login_button'),
                 'legal_notice_url' => setting('legal_notice_url'),
                 'imprint_url' => setting('imprint_url'),
@@ -215,9 +209,6 @@ class Booking extends EA_Controller
                     'message_title' => lang('appointment_not_found'),
                     'message_text' => lang('appointment_does_not_exist_in_db'),
                     'message_icon' => base_url('assets/img/error.png'),
-                    'google_analytics_code' => $google_analytics_code,
-                    'matomo_analytics_url' => $matomo_analytics_url,
-                    'matomo_analytics_site_id' => $matomo_analytics_site_id,
                     'display_login_button' => $display_login_button,
                     'legal_notice_url' => $legal_notice_url,
                     'imprint_url' => $imprint_url,
@@ -254,9 +245,6 @@ class Booking extends EA_Controller
                         '{$limit}' => sprintf('%02d:%02d', $hours, $minutes),
                     ]),
                     'message_icon' => base_url('assets/img/error.png'),
-                    'google_analytics_code' => $google_analytics_code,
-                    'matomo_analytics_url' => $matomo_analytics_url,
-                    'matomo_analytics_site_id' => $matomo_analytics_site_id,
                     'display_login_button' => $display_login_button,
                     'legal_notice_url' => $legal_notice_url,
                     'imprint_url' => $imprint_url,
@@ -335,9 +323,6 @@ class Booking extends EA_Controller
             'display_delete_personal_information' => $display_delete_personal_information,
             'legal_notice_url' => $legal_notice_url,
             'imprint_url' => $imprint_url,
-            'google_analytics_code' => $google_analytics_code,
-            'matomo_analytics_url' => $matomo_analytics_url,
-            'matomo_analytics_site_id' => $matomo_analytics_site_id,
             'timezones' => $timezones,
             'grouped_timezones' => $grouped_timezones,
             'manage_mode' => $manage_mode,
