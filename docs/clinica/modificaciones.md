@@ -300,3 +300,13 @@ Medido con 10.000 pacientes ficticios (borrados después): unos 20 ms por búsqu
 
 Corrección posterior: bastan 3 letras, también en una sola palabra («lucia»), o 6 cifras del teléfono. Exigir nombre y
 apellido rechazaba búsquedas habituales como un nombre solo; el límite de 10 resultados ya evita listas enormes.
+
+## Posibles pacientes repetidos (fase 5)
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/models/Customers_model.php` | `find_possible_duplicates()`: pacientes con el mismo teléfono normalizado o el mismo nombre y apellidos (sin distinguir mayúsculas ni tildes), indicando cuál de las dos cosas coincide; la restricción por profesionales pasa a `restrict_to_providers()`, compartida con la búsqueda | Especificación 12.3 |
+| `application/controllers/Customers.php` | `duplicates`, con los mismos permisos que la búsqueda | Ídem |
+| `assets/js/components/patient_duplicates.js` | Nuevo. Antes de crear un paciente, si hay posibles repetidos, pregunta: usar uno de ellos, crear el nuevo igualmente o cerrar sin guardar | Nunca fusionar: un teléfono puede ser de una familia y dos personas pueden llamarse igual |
+| `assets/js/components/appointments_modal.js` | Al guardar una cita con un paciente nuevo, hace la comprobación; si se elige uno existente, rellena sus datos y sigue guardando | Ídem |
+| `assets/js/pages/customers.js`, `application/views/pages/customers.php` | Lo mismo al crear un paciente desde «Pacientes»; elegir uno existente lo abre en lugar de crear otro | Ídem |

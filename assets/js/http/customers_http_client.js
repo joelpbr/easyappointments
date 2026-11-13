@@ -123,6 +123,29 @@ App.Http.Customers = (function () {
     }
 
     /**
+     * Find the patients that might be the same person as a new patient (same phone number or same name).
+     *
+     * @param {Object} customer Patient data (first_name, last_name, phone_number and, when editing, id).
+     *
+     * @return {Object}
+     */
+    function duplicates(customer) {
+        const url = App.Utils.Url.siteUrl('customers/duplicates');
+
+        const data = {
+            csrf_token: vars('csrf_token'),
+            customer: {
+                id: customer.id || '',
+                first_name: customer.first_name || '',
+                last_name: customer.last_name || '',
+                phone_number: customer.phone_number || '',
+            },
+        };
+
+        return $.post(url, data);
+    }
+
+    /**
      * Find a customer.
      *
      * @param {Number} customerId
@@ -137,6 +160,7 @@ App.Http.Customers = (function () {
 
     return {
         quickSearch,
+        duplicates,
         save,
         store,
         update,

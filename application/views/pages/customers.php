@@ -222,6 +222,7 @@
 <?php section('scripts'); ?>
 
 <script src="<?= asset_url('assets/js/http/customers_http_client.js') ?>"></script>
+<script src="<?= asset_url('assets/js/components/patient_duplicates.js') ?>"></script>
 <script src="<?= asset_url('assets/js/pages/customers.js') ?>"></script>
 
 <?php end_section('scripts'); ?>

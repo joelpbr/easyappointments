@@ -650,4 +650,10 @@ $lang['patient_search_hint'] = 'Para buscar un paciente, escribe el nombre, el a
 $lang['patient_search_too_broad'] = 'Escribe al menos 3 letras, o 6 cifras del teléfono.';
 $lang['patient_search_no_results'] = 'Ningún paciente coincide.';
 $lang['patient_search_more_results'] = 'Hay más coincidencias: añade más letras para afinar.';
+$lang['possible_duplicates_title'] = 'Posible paciente repetido';
+$lang['possible_duplicates_intro'] = 'Estos pacientes tienen el mismo teléfono o el mismo nombre. Usa uno de ellos, o crea el paciente nuevo si es otra persona (por ejemplo, familiares que comparten teléfono).';
+$lang['same_phone'] = 'Mismo teléfono';
+$lang['same_name'] = 'Mismo nombre';
+$lang['use_this_patient'] = 'Usar este';
+$lang['create_patient_anyway'] = 'Crear el paciente nuevo';
 // End
