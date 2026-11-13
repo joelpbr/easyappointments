@@ -23,7 +23,7 @@ class Settings_api_v1 extends EA_Controller
      *
      * @var string[]
      */
-    private const PROTECTED_SETTINGS = ['api_token', 'google_client_secret', 'ldap_password', 'altcha_hmac_key'];
+    private const PROTECTED_SETTINGS = ['api_token', 'google_client_secret', 'altcha_hmac_key'];
 
     /**
      * Settings_api_v1 constructor.

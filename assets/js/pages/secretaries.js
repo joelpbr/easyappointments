@@ -29,7 +29,6 @@ App.Pages.Secretaries = (function () {
     const $notes = $('#notes');
     const $language = $('#language');
     const $timezone = $('#timezone');
-    const $ldapDn = $('#ldap-dn');
     const $username = $('#username');
     const $password = $('#password');
     const $passwordConfirmation = $('#password-confirm');
@@ -209,7 +208,6 @@ App.Pages.Secretaries = (function () {
                 notes: $notes.val(),
                 language: $language.val(),
                 timezone: $timezone.val(),
-                ldap_dn: $ldapDn.val(),
                 settings: {
                     username: $username.val(),
                     notifications: Number($notifications.prop('checked')),
@@ -412,7 +410,6 @@ App.Pages.Secretaries = (function () {
         $notes.val(secretary.notes);
         $language.val(secretary.language);
         $timezone.val(secretary.timezone);
-        $ldapDn.val(secretary.ldap_dn);
 
         $username.val(secretary.settings.username);
         $calendarView.val(secretary.settings.calendar_view);

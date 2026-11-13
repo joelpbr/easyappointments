@@ -44,7 +44,6 @@ class Users_model extends EA_Model
         'zip' => 'zip_code',
         'timezone' => 'timezone',
         'language' => 'language',
-        'ldapDn' => 'ldap_dn',
         'notes' => 'notes',
         'roleId' => 'id_roles',
     ];

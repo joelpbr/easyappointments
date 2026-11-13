@@ -62,7 +62,6 @@ class Providers_model extends EA_Model
         'notes' => 'notes',
         'isPrivate' => 'is_private',
         'isActive' => 'is_active',
-        'ldapDn' => 'ldap_dn',
         'roleId' => 'id_roles',
     ];
 
@@ -913,7 +912,6 @@ class Providers_model extends EA_Model
             'notes' => $provider['notes'],
             'isPrivate' => $provider['is_private'],
             'isActive' => (bool) ($provider['is_active'] ?? true),
-            'ldapDn' => $provider['ldap_dn'],
             'timezone' => $provider['timezone'],
             'language' => $provider['language'],
         ];
@@ -1038,10 +1036,6 @@ class Providers_model extends EA_Model
 
         if (array_key_exists('isActive', $provider)) {
             $decoded_resource['is_active'] = (bool) $provider['isActive'];
-        }
-
-        if (array_key_exists('ldapDn', $provider)) {
-            $decoded_resource['ldap_dn'] = $provider['ldapDn'];
         }
 
         if (array_key_exists('settings', $provider)) {

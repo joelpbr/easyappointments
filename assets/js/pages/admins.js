@@ -29,7 +29,6 @@ App.Pages.Admins = (function () {
     const $notes = $('#notes');
     const $language = $('#language');
     const $timezone = $('#timezone');
-    const $ldapDn = $('#ldap-dn');
     const $username = $('#username');
     const $password = $('#password');
     const $passwordConfirmation = $('#password-confirm');
@@ -201,7 +200,6 @@ App.Pages.Admins = (function () {
                 notes: $notes.val(),
                 language: $language.val(),
                 timezone: $timezone.val(),
-                ldap_dn: $ldapDn.val(),
                 settings: {
                     username: $username.val(),
                     notifications: Number($notifications.prop('checked')),
@@ -383,7 +381,6 @@ App.Pages.Admins = (function () {
         $notes.val(admin.notes);
         $language.val(admin.language);
         $timezone.val(admin.timezone);
-        $ldapDn.val(admin.ldap_dn);
 
         $username.val(admin.settings.username);
         $calendarView.val(admin.settings.calendar_view);

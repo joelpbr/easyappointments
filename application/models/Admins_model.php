@@ -45,7 +45,6 @@ class Admins_model extends EA_Model
         'timezone' => 'timezone',
         'language' => 'language',
         'notes' => 'notes',
-        'ldapDn' => 'ldap_dn',
         'roleId' => 'id_roles',
     ];
 
@@ -597,7 +596,6 @@ class Admins_model extends EA_Model
             'notes' => $admin['notes'],
             'timezone' => $admin['timezone'],
             'language' => $admin['language'],
-            'ldapDn' => $admin['ldap_dn'],
             'settings' => [
                 'username' => $admin['settings']['username'],
                 'notifications' => filter_var($admin['settings']['notifications'], FILTER_VALIDATE_BOOLEAN),
@@ -668,10 +666,6 @@ class Admins_model extends EA_Model
 
         if (array_key_exists('language', $admin)) {
             $decoded_resource['language'] = $admin['language'];
-        }
-
-        if (array_key_exists('ldapDn', $admin)) {
-            $decoded_resource['ldap_dn'] = $admin['ldapDn'];
         }
 
         if (array_key_exists('settings', $admin)) {

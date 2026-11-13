@@ -204,15 +204,6 @@
                         </select>
                     </div>
 
-                    <?php if (setting('ldap_is_active')): ?>
-                        <div class="mb-3">
-                            <label for="ldap-dn" class="form-label">
-                                <?= lang('ldap_dn') ?>
-                            </label>
-                            <input type="text" id="ldap-dn" class="form-control" maxlength="100" disabled/>
-                        </div>
-                    <?php endif; ?>
-
                     <?php component('custom_fields', [
                         'disabled' => true,
                     ]); ?>

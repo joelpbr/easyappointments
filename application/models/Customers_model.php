@@ -50,7 +50,6 @@ class Customers_model extends EA_Model
         'customField4' => 'custom_field_4',
         'customField5' => 'custom_field_5',
         'notes' => 'notes',
-        'ldapDn' => 'ldap_dn',
         'preferredProviderId' => 'id_users_preferred_provider',
     ];
 
@@ -890,7 +889,6 @@ class Customers_model extends EA_Model
             'customField3' => $customer['custom_field_3'],
             'customField4' => $customer['custom_field_4'],
             'customField5' => $customer['custom_field_5'],
-            'ldapDn' => $customer['ldap_dn'],
             'noShowCount' => (int) ($customer['no_show_count'] ?? 0),
             'preferredProviderId' => isset($customer['id_users_preferred_provider'])
                 ? (int) $customer['id_users_preferred_provider']
@@ -968,10 +966,6 @@ class Customers_model extends EA_Model
 
         if (array_key_exists('customField5', $customer)) {
             $decoded_resource['custom_field_5'] = $customer['customField5'];
-        }
-
-        if (array_key_exists('ldapDn', $customer)) {
-            $decoded_resource['ldap_dn'] = $customer['ldapDn'];
         }
 
         if (array_key_exists('preferredProviderId', $customer)) {

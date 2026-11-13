@@ -40,7 +40,6 @@ class Customers extends EA_Controller
         'custom_field_3',
         'custom_field_4',
         'custom_field_5',
-        'ldap_dn',
         'id_users_preferred_provider',
     ];
 

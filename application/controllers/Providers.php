@@ -37,7 +37,6 @@ class Providers extends EA_Controller
         'language',
         'is_private',
         'is_active',
-        'ldap_dn',
         'id_roles',
         'settings',
         'services',

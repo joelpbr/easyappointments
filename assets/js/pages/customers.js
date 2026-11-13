@@ -25,7 +25,6 @@ App.Pages.Customers = (function () {
     const $address = $('#address');
     const $city = $('#city');
     const $language = $('#language');
-    const $ldapDn = $('#ldap-dn');
     const $preferredProvider = $('#preferred-provider');
     const $fiscalFields = $('#fiscal-data [data-fiscal]');
     const $fiscalDocumentType = $('#fiscal-document-type');
@@ -188,7 +187,6 @@ App.Pages.Customers = (function () {
                 custom_field_3: $customField3.val(),
                 custom_field_4: $customField4.val(),
                 custom_field_5: $customField5.val(),
-                ldap_dn: $ldapDn.val(),
                 id_users_preferred_provider: $preferredProvider.val(),
             };
 
@@ -452,7 +450,6 @@ App.Pages.Customers = (function () {
         $address.val(customer.address);
         $city.val(customer.city);
         $language.val(customer.language || 'english');
-        $ldapDn.val(customer.ldap_dn);
         $preferredProvider.val(customer.id_users_preferred_provider || '');
 
         // Only shown for patients who missed some appointment.

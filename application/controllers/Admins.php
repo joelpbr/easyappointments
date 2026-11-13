@@ -34,7 +34,6 @@ class Admins extends EA_Controller
         'notes',
         'timezone',
         'language',
-        'ldap_dn',
         'settings',
     ];
 

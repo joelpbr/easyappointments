@@ -108,29 +108,8 @@ const LOGIN_RATE_LIMIT_WINDOW = 300; // Seconds
 const DEFAULT_COMPANY_COLOR = '#ffffff';
 const DEFAULT_APPOINTMENT_COLOR = '#7cbae8'; // Column default of appointments.color
 
+// LDAP was removed; these two are kept for migration 057, which still runs on new installations.
 const LDAP_DEFAULT_FILTER = '(&(objectClass=*)(|(cn={{KEYWORD}})(sn={{KEYWORD}})(mail={{KEYWORD}})(givenName={{KEYWORD}})(uid={{KEYWORD}})))';
-
-const LDAP_WHITELISTED_ATTRIBUTES = [
-    'givenname',
-    'cn',
-    'dn',
-    'sn',
-    'mail',
-    'telephonenumber',
-    'description',
-    'member',
-    'objectclass',
-    'objectcategory',
-    'instancetype',
-    'whencreated',
-    'name',
-    'samaccountname',
-    'samaccounttype',
-    'objectcategory',
-    'memberof',
-    'distinguishedname',
-    'uid',
-];
 
 const LDAP_DEFAULT_FIELD_MAPPING = [
     'first_name' => 'givenname',

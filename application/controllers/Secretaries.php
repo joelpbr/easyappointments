@@ -37,7 +37,6 @@ class Secretaries extends EA_Controller
         'timezone',
         'language',
         'is_private',
-        'ldap_dn',
         'id_roles',
         'settings',
         'providers',
