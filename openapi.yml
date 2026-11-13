@@ -3130,12 +3130,31 @@ components:
                     type: string
                 notes:
                     type: string
+                type:
+                    type: string
+                    enum: [holiday_national, holiday_regional, holiday_local, clinic_closure, bridge, vacation, day_off, personal_absence, meeting, training, break, extraordinary, other]
+                providerIds:
+                    type: array
+                    items:
+                        type: integer
+                    description: Providers the period applies to; empty to close the whole clinic.
+                recurrence:
+                    type: string
+                    enum: [none, weekly, yearly]
+                recurrenceUntil:
+                    type: string
+                    nullable: true
+                    description: Last date of the repetition (Y-m-d), or null to repeat with no end.
             example:
                 id: 1
                 name: Test blocked period
                 start: '2025-07-01 08:00:00'
                 end: '2021-07-31 18:00:00'
                 notes: This is a test blocked period.
+                type: vacation
+                providerIds: [4]
+                recurrence: none
+                recurrenceUntil: null
         BlockedPeriodPayload:
             type: object
             properties:
@@ -3147,11 +3166,30 @@ components:
                     type: string
                 notes:
                     type: string
+                type:
+                    type: string
+                    enum: [holiday_national, holiday_regional, holiday_local, clinic_closure, bridge, vacation, day_off, personal_absence, meeting, training, break, extraordinary, other]
+                providerIds:
+                    type: array
+                    items:
+                        type: integer
+                    description: Providers the period applies to; empty to close the whole clinic.
+                recurrence:
+                    type: string
+                    enum: [none, weekly, yearly]
+                recurrenceUntil:
+                    type: string
+                    nullable: true
+                    description: Last date of the repetition (Y-m-d), or null to repeat with no end.
             example:
                 name: Test blocked period
                 start: '2021-01-01 17:00:00'
                 end: '2021-01-01 18:00:00'
                 notes: This is a test blocked period.
+                type: clinic_closure
+                providerIds: []
+                recurrence: none
+                recurrenceUntil: null
         WorkingPlanExceptionRecord:
             type: object
             properties:

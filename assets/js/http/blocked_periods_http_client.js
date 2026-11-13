@@ -22,8 +22,8 @@ App.Http.BlockedPeriods = (function () {
      *
      * @return {Object}
      */
-    function save(blockedPeriod) {
-        return blockedPeriod.id ? update(blockedPeriod) : store(blockedPeriod);
+    function save(blockedPeriod, confirmed = false) {
+        return blockedPeriod.id ? update(blockedPeriod, confirmed) : store(blockedPeriod, confirmed);
     }
 
     /**
@@ -33,12 +33,13 @@ App.Http.BlockedPeriods = (function () {
      *
      * @return {Object}
      */
-    function store(blockedPeriod) {
+    function store(blockedPeriod, confirmed = false) {
         const url = App.Utils.Url.siteUrl('blocked_periods/store');
 
         const data = {
             csrf_token: vars('csrf_token'),
             blocked_period: blockedPeriod,
+            confirmed: confirmed ? 1 : 0,
         };
 
         return $.post(url, data);
@@ -51,12 +52,13 @@ App.Http.BlockedPeriods = (function () {
      *
      * @return {Object}
      */
-    function update(blockedPeriod) {
+    function update(blockedPeriod, confirmed = false) {
         const url = App.Utils.Url.siteUrl('blocked_periods/update');
 
         const data = {
             csrf_token: vars('csrf_token'),
             blocked_period: blockedPeriod,
+            confirmed: confirmed ? 1 : 0,
         };
 
         return $.post(url, data);

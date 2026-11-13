@@ -86,6 +86,13 @@
                 </div>
             <?php endif; ?>
 
+            <?php if (can('add', PRIV_BLOCKED_PERIODS)): ?>
+                <a id="block-agenda" class="btn btn-light" href="<?= site_url('blocked_periods?new=1') ?>">
+                    <i class="fas fa-ban me-2"></i>
+                    <?= lang('block_agenda') ?>
+                </a>
+            <?php endif; ?>
+
             <button id="reload-appointments" class="btn btn-light"
                     data-tippy-content="<?= lang('reload_appointments_hint') ?>">
                 <i class="fas fa-sync-alt"></i>
@@ -175,6 +182,7 @@
 <script src="<?= asset_url('assets/js/utils/calendar_appointment_actions.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_event_content.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_past_time.js') ?>"></script>
+<script src="<?= asset_url('assets/js/utils/calendar_blocked_periods.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/calendar_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/customers_http_client.js') ?>"></script>
 <?php if (vars('calendar_view') === CALENDAR_VIEW_DEFAULT): ?>
