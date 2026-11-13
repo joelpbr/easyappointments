@@ -45,7 +45,7 @@ App.Components.PatientSearch = (function () {
      * @param {jQuery} options.$phoneNumber
      * @param {Function} options.isEnabled Whether to search (e.g. no patient is selected yet).
      * @param {Function} options.onSelect Called with the ID of the chosen patient.
-     * @param {Function} options.onCreate Called when the user keeps creating a new patient.
+     * @param {Function} [options.onCreate] Called when the user keeps creating a new patient.
      *
      * @return {Object} {reset}
      */
@@ -77,7 +77,7 @@ App.Components.PatientSearch = (function () {
             if (patientId) {
                 onSelect(patientId);
             } else {
-                onCreate();
+                onCreate?.();
             }
         };
 

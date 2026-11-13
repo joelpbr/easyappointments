@@ -395,3 +395,11 @@ Tercera corrección, a petición de la clínica: sin ventana emergente, solo el 
 | Archivo | Cambio | Motivo |
 | --- | --- | --- |
 | `application/views/components/appointments_modal.php`, `assets/css/backend.scss` | En ordenador (≥ 992 px) el formulario es más ancho, con la cita a la izquierda y el paciente a la derecha, los campos de dos en dos, comentario y observaciones de dos líneas y márgenes más pequeños; en el móvil sigue en una columna | Que una cita nueva quepa en pantalla sin scroll (antes 1.216 px de alto; ahora cabe en 1366×768) |
+
+## Estado y primera visita automáticos al crear una cita
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/views/components/appointments_modal.php`, `assets/js/components/appointments_modal.js`, vistas de agenda | El estado solo se muestra al editar una cita: una nueva empieza siempre como «Programada». Se quita el campo «Primera visita» del formulario | Petición de la clínica: no son decisiones de recepción al dar cita |
+| `application/models/Appointments_model.php` | `set_first_visit()`: al crear una cita sin indicarlo, es primera visita si el paciente no tiene ninguna cita anterior; un paciente elegido de la lista o que coincide con uno existente la tiene, uno creado ahora no | Ídem; la API puede seguir indicándolo |
+| `assets/js/components/patient_search.js` | `onCreate` pasa a ser opcional | Ya no hay nada que marcar al crear un paciente |
