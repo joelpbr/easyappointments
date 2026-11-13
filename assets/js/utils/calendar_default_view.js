@@ -905,8 +905,6 @@ App.Utils.CalendarDefaultView = (function () {
 
                 fullCalendar.addEventSource(events);
 
-                App.Utils.CalendarDayTotal.show(response.appointments);
-
                 App.Utils.CalendarPastTime.update(fullCalendar);
             })
             .always(() => {
@@ -1246,7 +1244,7 @@ App.Utils.CalendarDefaultView = (function () {
 
         switch (vars('date_format')) {
             case 'DMY':
-                columnFormat = 'ddd D/M';
+                columnFormat = 'dddd D/M';
                 break;
             case 'MDY':
             case 'YMD':
@@ -1348,6 +1346,12 @@ App.Utils.CalendarDefaultView = (function () {
                 day: lang('day'),
                 week: lang('week'),
                 month: lang('month'),
+            },
+            // Full day names: the date in the day and week views, only the weekday in the month view.
+            views: {
+                timeGridDay: {dayHeaderFormat: columnFormat},
+                timeGridWeek: {dayHeaderFormat: columnFormat},
+                dayGridMonth: {dayHeaderFormat: 'dddd'},
             },
             windowResize: onWindowResize,
             datesSet: onDatesSet,

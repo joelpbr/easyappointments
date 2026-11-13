@@ -80,7 +80,13 @@ App.Utils.CalendarEventContent = (function () {
         }
 
         const patient = [data.customer.first_name, data.customer.last_name].filter(Boolean).join(' ');
-        const treatment = data.service_name || data.service?.name || '';
+        const treatmentName = data.service_name || data.service?.name || '';
+
+        // The price of this appointment, which can differ from the treatment price: "Quiropodia (30€)".
+        const treatment =
+            treatmentName && data.price !== null && data.price !== undefined && data.price !== ''
+                ? treatmentName + ' (' + App.Utils.CalendarDayTotal.format(data.price) + ')'
+                : treatmentName;
         const start = moment(arg.event.start);
         const end = moment(arg.event.end);
         const timeFormat = vars('time_format') === 'regular' ? 'h:mm a' : 'HH:mm';

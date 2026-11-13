@@ -93,8 +93,6 @@
                 </a>
             <?php endif; ?>
 
-            <span id="day-total" class="badge text-bg-light fs-6 fw-semibold align-middle" hidden></span>
-
             <button id="reload-appointments" class="btn btn-light"
                     data-tippy-content="<?= lang('reload_appointments_hint') ?>">
                 <i class="fas fa-sync-alt"></i>

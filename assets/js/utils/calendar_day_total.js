@@ -9,17 +9,27 @@
  * ---------------------------------------------------------------------------- */
 
 /**
- * Calendar day total.
+ * Calendar amounts.
  *
- * Shows in the toolbar the sum of the prices of the appointments displayed, for each day: cancelled appointments,
- * no-shows and any status that frees the slot do not count.
+ * Formats the prices of the appointments ("30€", "45,50€") and adds up those of a provider in a day, shown next to
+ * their name in the split view: cancelled appointments, no-shows and any status that frees the slot do not count.
  */
 App.Utils.CalendarDayTotal = (function () {
-    const $dayTotal = $('#day-total');
-    const money = new Intl.NumberFormat('es-ES', {style: 'currency', currency: 'EUR', useGrouping: 'always'});
+    const number = new Intl.NumberFormat('es-ES', {maximumFractionDigits: 2, useGrouping: 'always'});
 
     /**
-     * Check whether an appointment counts for the total.
+     * Format an amount in euros, without decimals when it has none (e.g. "30€", "1.080€", "45,5€").
+     *
+     * @param {Number|String|null} amount
+     *
+     * @return {String}
+     */
+    function format(amount) {
+        return number.format(Number(amount || 0)) + '€';
+    }
+
+    /**
+     * Check whether an appointment counts for the totals.
      *
      * @param {Object} appointment
      *
@@ -36,34 +46,20 @@ App.Utils.CalendarDayTotal = (function () {
     }
 
     /**
-     * Show the totals of some appointments.
+     * Add up the prices of some appointments, leaving out those that do not count.
      *
-     * @param {Array} appointments Appointments of the displayed period, with price, status and start_datetime.
-     * @param {Function|null} filter Optional extra condition (e.g. only the displayed providers).
+     * @param {Array} appointments
+     *
+     * @return {Number}
      */
-    function show(appointments, filter = null) {
-        const totals = {};
-
-        (appointments || [])
-            .filter((appointment) => counts(appointment) && (!filter || filter(appointment)))
-            .forEach((appointment) => {
-                const day = appointment.start_datetime.slice(0, 10);
-
-                totals[day] = (totals[day] || 0) + Number(appointment.price || 0);
-            });
-
-        const days = Object.keys(totals).sort();
-        const sum = days.reduce((total, day) => total + totals[day], 0);
-
-        $dayTotal.prop('hidden', !$dayTotal.length);
-        $dayTotal.text(lang('day_total') + ': ' + money.format(sum));
-        $dayTotal.attr(
-            'title',
-            days.map((day) => moment(day).format('ddd D/M') + ': ' + money.format(totals[day])).join('\n'),
-        );
+    function sum(appointments) {
+        return (appointments || [])
+            .filter(counts)
+            .reduce((total, appointment) => total + Number(appointment.price || 0), 0);
     }
 
     return {
-        show,
+        format,
+        sum,
     };
 })();

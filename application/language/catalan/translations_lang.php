@@ -743,4 +743,7 @@ $lang['edit_patient_data'] = 'Editar dades';
 $lang['protect_patient_data'] = 'Protegir dades';
 $lang['change_patient'] = 'Canviar de pacient';
 $lang['choose_existing_patient'] = 'Cerca el pacient i tria\'l de la llista, o marca\'l com a pacient nou.';
+$lang['tomorrow'] = 'Demà';
+$lang['day_after_tomorrow'] = 'Demà passat';
+$lang['next_weekday'] = 'pròxim %s';
 // End
