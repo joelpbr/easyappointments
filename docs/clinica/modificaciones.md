@@ -581,3 +581,5 @@ Cambio posterior: el popover de una cita en la agenda ya no muestra correo, paci
 Cambio posterior: en el popover de una cita, «Tanca» y «Elimina» pasan al título (papelera roja a la izquierda que pide confirmación para eliminar, X a la derecha para cerrar); debajo, «Cancel·lar la cita» y «Falta d'assistència» en una línea, «Edita» en la siguiente y «Fitxa» abajo, más alto; todos del ancho de la tarjeta. `createAppointmentActions()` y `moveHeaderActions()` en `calendar_event_popover.js`.
 
 Cambio posterior: en el popover de la cita se intercambian los colores de «Edita» (ahora contorno azul) y «Fitxa» (ahora azul lleno); cada uno mantiene su tamaño, «Fitxa» sigue siendo el más alto.
+
+Cambio posterior: la visita elegida en la lista de la ficha se resalta en azul claro (`#d0e7ff`).
