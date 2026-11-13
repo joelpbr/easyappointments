@@ -19,26 +19,29 @@ App.Http.Customers = (function () {
      * Save (create or update) a customer.
      *
      * @param {Object} customer
+     * @param {Object|null} fiscal Optional fiscal data of the patient, saved with them.
      *
      * @return {Object}
      */
-    function save(customer) {
-        return customer.id ? update(customer) : store(customer);
+    function save(customer, fiscal = null) {
+        return customer.id ? update(customer, fiscal) : store(customer, fiscal);
     }
 
     /**
      * Create a customer.
      *
      * @param {Object} customer
+     * @param {Object|null} fiscal Optional fiscal data of the patient.
      *
      * @return {Object}
      */
-    function store(customer) {
+    function store(customer, fiscal = null) {
         const url = App.Utils.Url.siteUrl('customers/store');
 
         const data = {
             csrf_token: vars('csrf_token'),
             customer: customer,
+            fiscal: fiscal || undefined,
         };
 
         return $.post(url, data);
@@ -48,15 +51,17 @@ App.Http.Customers = (function () {
      * Update a customer.
      *
      * @param {Object} customer
+     * @param {Object|null} fiscal Optional fiscal data of the patient.
      *
      * @return {Object}
      */
-    function update(customer) {
+    function update(customer, fiscal = null) {
         const url = App.Utils.Url.siteUrl('customers/update');
 
         const data = {
             csrf_token: vars('csrf_token'),
             customer: customer,
+            fiscal: fiscal || undefined,
         };
 
         return $.post(url, data);

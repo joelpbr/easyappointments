@@ -321,3 +321,13 @@ apellido rechazaba búsquedas habituales como un nombre solo; el límite de 10 r
 | `application/views/pages/customers.php`, `assets/js/pages/customers.js` | Selector «Profesional habitual» en la ficha | Ídem |
 | `assets/js/components/appointments_modal.js`, `appointments_modal.php` | Al elegir un paciente, muestra «Profesional habitual: …» bajo el profesional, con «Elegir» si es otro o «no hace este tratamiento»; nunca cambia el profesional por sí solo, porque puede venir de la columna donde se creó la cita. «Primera visita» se rellena con «No» si el paciente ya vino y «Sí» si no, y un paciente nuevo marca siempre «Sí» | Especificación 12.1 y 9.3 |
 | `openapi.yml` | `preferredProviderId` en `CustomerRecord` y `CustomerPayload` | API documentada |
+
+## Datos fiscales del paciente (fase 5)
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/migrations/082_create_fiscal_parties_table.php` | Tabla `fiscal_parties`, unida al paciente, con `relationship` («patient» para sus propios datos, «other» para otra persona o entidad que paga) | Especificación 11.2 y 11.4: paciente y destinatario de la factura no siempre coinciden |
+| `application/helpers/fiscal_id_helper.php` | `validate_fiscal_id()`: DNI y NIE por su letra, NIF de entidades por su dígito o letra de control; distingue formato incorrecto, carácter de control incorrecto y documentos que no se pueden verificar (pasaporte, extranjero, otro) | Especificación 11.3 |
+| `application/models/Fiscal_parties_model.php` | Valida sin exigir nada (un número necesita su tipo; código postal español de 5 cifras), guarda el número normalizado, borra el registro si se vacía y anota en la auditoría qué campos cambian, nunca su contenido | No bloquear el alta sin DNI; no guardar datos sensibles en el registro |
+| `application/controllers/Customers.php` | `store` y `update` aceptan `fiscal` y lo validan antes de guardar al paciente; `find` lo devuelve | Guardar todo de una vez |
+| `application/views/pages/customers.php`, `assets/js/pages/customers.js`, `assets/js/http/customers_http_client.js` | Sección «Datos fiscales» en la ficha, con una indicación de qué documentos se comprueban | Escenario M |

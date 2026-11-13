@@ -29,6 +29,9 @@ App.Pages.Customers = (function () {
     const $language = $('#language');
     const $ldapDn = $('#ldap-dn');
     const $preferredProvider = $('#preferred-provider');
+    const $fiscalFields = $('#fiscal-data [data-fiscal]');
+    const $fiscalDocumentType = $('#fiscal-document-type');
+    const $fiscalDocumentHint = $('#fiscal-document-hint');
     const $customField1 = $('#custom-field-1');
     const $customField2 = $('#custom-field-2');
     const $customField3 = $('#custom-field-3');
@@ -135,6 +138,11 @@ App.Pages.Customers = (function () {
         });
 
         /**
+         * Event: Fiscal Document Type "Change"
+         */
+        $fiscalDocumentType.on('change', updateFiscalDocumentHint);
+
+        /**
          * Event: Save Add/Edit Customer Operation "Click"
          */
         $customers.on('click', '#save-customer', () => {
@@ -219,7 +227,7 @@ App.Pages.Customers = (function () {
      * @param {Object} customer Contains the customer data.
      */
     function save(customer) {
-        App.Http.Customers.save(customer).then((response) => {
+        App.Http.Customers.save(customer, getFiscalData()).then((response) => {
             App.Layouts.Backend.displayNotification(lang('customer_saved'));
             App.Pages.Customers.resetForm();
             $('#customers-page').removeClass('editing');
@@ -315,6 +323,59 @@ App.Pages.Customers = (function () {
      *
      * @param {Object} customer Contains the customer record data.
      */
+    /**
+     * Get the fiscal data typed in the form.
+     *
+     * @return {Object}
+     */
+    function getFiscalData() {
+        const fiscal = {};
+
+        $fiscalFields.each((index, field) => {
+            fiscal[$(field).data('fiscal')] = $(field).val();
+        });
+
+        return fiscal;
+    }
+
+    /**
+     * Load the fiscal data of a patient, which the patient list does not include.
+     *
+     * @param {Number} customerId
+     */
+    function displayFiscalData(customerId) {
+        $fiscalFields.val('');
+        updateFiscalDocumentHint();
+
+        App.Http.Customers.find(customerId).done((customer) => {
+            // Another patient might have been opened in the meantime.
+            if (Number($id.val()) !== Number(customerId)) {
+                return;
+            }
+
+            $fiscalFields.each((index, field) => {
+                $(field).val(customer.fiscal?.[$(field).data('fiscal')] || '');
+            });
+
+            updateFiscalDocumentHint();
+        });
+    }
+
+    /**
+     * Say which documents are checked: DNI, NIE and NIF are; passports and foreign documents cannot be.
+     */
+    function updateFiscalDocumentHint() {
+        const type = $fiscalDocumentType.val();
+
+        $fiscalDocumentHint.text(
+            ['dni', 'nie', 'nif'].includes(type)
+                ? lang('fiscal_document_checked')
+                : type
+                  ? lang('fiscal_document_not_checked')
+                  : '',
+        );
+    }
+
     function display(customer) {
         $id.val(customer.id);
         $firstName.val(customer.first_name);
@@ -329,6 +390,7 @@ App.Pages.Customers = (function () {
         $language.val(customer.language || 'english');
         $ldapDn.val(customer.ldap_dn);
         $preferredProvider.val(customer.id_users_preferred_provider || '');
+        displayFiscalData(customer.id);
         $customField1.val(customer.custom_field_1);
         $customField2.val(customer.custom_field_2);
         $customField3.val(customer.custom_field_3);
