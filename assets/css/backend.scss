@@ -341,6 +341,23 @@ body .modal.full-screen .modal-push {
     opacity: 0.85;
 }
 
+// Short appointments (10-15 minutes) have room for one line only: the patient and treatment, then the time and the
+// rest on the same line, cut with an ellipsis. The tooltip still shows everything.
+#calendar .fc-timegrid-event-short .ea-event {
+    overflow: hidden;
+    padding: 1px 2px 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#calendar .fc-timegrid-event-short .ea-event-line {
+    display: inline;
+}
+
+#calendar .fc-timegrid-event-short .ea-event-meta::before {
+    content: ' · ';
+}
+
 // Appointments whose status frees the slot (e.g. cancelled) stay visible, but faded.
 #calendar .fc-event.fc-appointment-freed {
     opacity: 0.5;
