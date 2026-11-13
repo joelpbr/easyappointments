@@ -501,3 +501,5 @@ Cambio posterior: el aviso rojo de alergias no sale cuando el texto dice que no 
 Datos de demostración (13/11/2026): se borran los pacientes y las visitas de prueba y se generan 636 pacientes y 763 visitas del 26/10 al 03/12 (71% quiropodias, 15% exploraciones, el resto otros tratamientos; el 20% de los pacientes vienen dos veces con al menos 3 semanas entre visitas), con todos los datos rellenados (contacto, NIF/NIE válidos, ficha clínica y notas de las visitas realizadas). Los emails usan dominios reservados example.com/.net/.org. Copia previa en storage/backups/easyappointments-backup-2026-11-13-181816.gz.
 
 Cambio posterior: a la derecha de la fecha de nacimiento, la ficha muestra la edad («Edat», p. ej. «35 anys»), calculada al momento al escribir o elegir la fecha; no se guarda.
+
+Cambio posterior: nuevo tratamiento «Revisión» (10 min, gratuito, color `#b9e4f0`, ficha «Només observacions»), ofrecido por todos los profesionales y situado justo después de «Quiropodia» en los desplegables (migración `089_add_review_treatment.php` y `Services_model::DROPDOWN_ORDER`).
