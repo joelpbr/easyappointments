@@ -343,9 +343,20 @@ body .modal.full-screen .modal-push {
 
 // Short appointments (10-15 minutes) have room for one line only: the patient and treatment, then the time and the
 // rest on the same line, cut with an ellipsis. The tooltip still shows everything.
+// A 10 minute card leaves 14px inside its border: a slightly smaller line fits it, centered also in 15 minute cards.
+#calendar .fc-timegrid-event-short .fc-event-main {
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
 #calendar .fc-timegrid-event-short .ea-event {
+    flex: 1 1 auto;
+    min-width: 0;
     overflow: hidden;
-    padding: 1px 2px 0;
+    padding: 0 3px;
+    font-size: 10px;
+    line-height: 12px;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
