@@ -257,8 +257,8 @@ Más tarde el tono pasó a rayas rojas (ver «Mediodía plegable»).
 
 | Archivo | Cambio | Motivo |
 | --- | --- | --- |
-| `assets/js/utils/calendar_table_view.js` | La barra de la agenda se mueve dentro del calendario y reúne navegación, filtros y acciones; los filtros de profesional y tratamiento pasan a desplegables simples con «todos»; las columnas comparten el scroll vertical (`synchronizeColumnScroll()`), su cabecera muestra profesional y día, y la fila «Todo el día» solo aparece cuando alguna columna tiene un bloqueo o una excepción (`syncAllDaySlot()`) | Más altura para las horas, que es lo que usa recepción |
-| `assets/js/utils/calendar_midday.js` | El botón de mediodía de cada día va en la barra y, con varios días, lleva el nombre del día | Ídem |
+| `assets/js/utils/calendar_table_view.js` | La barra de la agenda se mueve dentro del calendario y reúne navegación, filtros y acciones; los filtros de profesional y tratamiento pasan a desplegables simples con «todos»; las columnas crecen a toda su altura y la vista tiene un único scroll, con la misma barra sea cual sea el número de columnas; la cabecera de cada columna, fija al hacer scroll, muestra profesional, día y el cambio Lista / Calendario, y la fila «Todo el día» solo aparece cuando alguna columna tiene un bloqueo o una excepción (`syncAllDaySlot()`) | Más altura para las horas, que es lo que usa recepción |
+| `assets/js/utils/calendar_midday.js` | Un único botón de mediodía en la barra pliega o abre el descanso común de todas las columnas a la vez, para que las horas sigan alineadas; no se puede plegar si alguna columna tiene visitas en ese intervalo | Ídem |
 | `assets/js/utils/calendar_default_view.js`, `calendar_table_view.js` | El calendario abre a las 08:30 | La clínica abre a las 9:00 |
 | `assets/css/backend.scss` | Estilos de la barra única y de las columnas; se quitan las reglas de Select2 y de las etiquetas de los filtros, que ya no se usan | Ídem |
 | `application/language/*/translations_lang.php` | `filter_all_providers`, `filter_all_services` | Textos traducibles |
