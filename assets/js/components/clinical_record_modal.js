@@ -11,19 +11,24 @@
 /**
  * Clinical record modal component.
  *
- * Shows the record of a patient (details, medical history, allergies) with their visits. Each visit opens its own
- * record in a side panel, whose fields depend on the record template of its treatment (see the
- * Clinical_record_templates library). Saving a silicone or surgery visit can change its price, so the caller is told
- * to reload the calendar.
+ * Shows the record of a patient in three tabs: details, medical history (with allergies) and visits. The visits tab
+ * lists the visits on the left and shows the record of the chosen one on the right, with the fields of the record
+ * template of its treatment (see the Clinical_record_templates library). Saving a silicone or surgery visit can change
+ * its price, so the caller is told to reload the calendar.
  */
 App.Components.ClinicalRecordModal = (function () {
     const $modal = $('#clinical-record-modal');
     const $title = $('#clinical-record-title');
+    const $summary = $('#clinical-record-summary');
+    const $allergiesAlert = $('#clinical-record-allergies-alert');
     const $visits = $('#clinical-visits');
+    const $visitsCount = $('#clinical-visits-count');
     const $documentType = $('#clinical-document-type');
     const $documentNumber = $('#clinical-document-number');
     const $birthDate = $('#clinical-birth-date');
-    const $panel = $('#clinical-visit-panel');
+    const $patientSave = $('#clinical-record-save');
+    const $visitEmpty = $('#clinical-visit-empty');
+    const $visitDetail = $('#clinical-visit-detail');
     const $visitTitle = $('#clinical-visit-title');
     const $visitSubtitle = $('#clinical-visit-subtitle');
     const $orthosis = $('#clinical-visit-orthosis');
@@ -33,6 +38,7 @@ App.Components.ClinicalRecordModal = (function () {
     let customerId = null;
     let currentAppointmentId = null;
     let visitAppointmentId = null;
+    let visitPrice = null;
     let onChange = () => {};
     let savedPatient = '';
     let savedVisit = '';
@@ -41,10 +47,12 @@ App.Components.ClinicalRecordModal = (function () {
     /**
      * Open the record of a patient.
      *
+     * Opened from a visit of the calendar, it shows the visits tab with that visit; otherwise the details tab.
+     *
      * @param {Number} patientId Patient ID.
      * @param {Object} [options]
-     * @param {Number} [options.appointmentId] Visit from which the record is opened, marked in the list.
-     * @param {Function} [options.onChange] Called after a visit record changed the price of its visit.
+     * @param {Number} [options.appointmentId] Visit from which the record is opened.
+     * @param {Function} [options.onChange] Called after the record changed something the calendar shows.
      */
     function open(patientId, options = {}) {
         customerId = Number(patientId);
@@ -52,10 +60,42 @@ App.Components.ClinicalRecordModal = (function () {
         onChange = options.onChange || (() => {});
 
         App.Http.ClinicalRecords.findPatient(customerId).done((response) => {
-            fillPatient(response);
             closingConfirmed = false;
+            visitAppointmentId = null;
+            savedVisit = '';
+            $visitDetail.prop('hidden', true);
+            $visitEmpty.prop('hidden', false);
+
+            fillPatient(response);
+            renderVisits(response.appointments);
+
+            showTab(currentAppointmentId ? 'visits' : 'details');
+
+            if (currentAppointmentId) {
+                loadVisit(currentAppointmentId);
+            }
+
             bootstrap.Modal.getOrCreateInstance($modal[0]).show();
         });
+    }
+
+    /**
+     * Show a tab of the record.
+     *
+     * @param {String} tab "details", "history" or "visits".
+     */
+    function showTab(tab) {
+        bootstrap.Tab.getOrCreateInstance($modal.find('[data-tab="' + tab + '"]')[0]).show();
+        updateFooter(tab);
+    }
+
+    /**
+     * The footer saves the patient (details and history); a visit has its own save button.
+     *
+     * @param {String} tab
+     */
+    function updateFooter(tab) {
+        $patientSave.prop('hidden', tab === 'visits');
     }
 
     /**
@@ -66,15 +106,11 @@ App.Components.ClinicalRecordModal = (function () {
     function fillPatient(response) {
         const customer = response.customer;
 
-        $title.text(
-            lang('clinical_record') + ': ' + [customer.first_name, customer.last_name].filter(Boolean).join(' '),
-        );
-
         $modal.find('[data-customer]').each((index, element) => {
             $(element).val(customer[element.dataset.customer] ?? '');
         });
 
-        $modal.find('.modal-body > .row [data-record]').each((index, element) => {
+        $modal.find('.tab-pane [data-record]').each((index, element) => {
             $(element).val(response.record[element.dataset.record] ?? '');
         });
 
@@ -83,9 +119,39 @@ App.Components.ClinicalRecordModal = (function () {
 
         $birthDate[0]._flatpickr.setDate(response.record.birth_date || null, false, 'Y-m-d');
 
-        renderVisits(response.appointments);
+        updateHeader();
 
         savedPatient = JSON.stringify(getPatientData());
+    }
+
+    /**
+     * Show the patient in the header: name, age, document and phone, and the allergies when there are some.
+     */
+    function updateHeader() {
+        const data = getPatientData();
+        const name = [data.customer.first_name, data.customer.last_name].filter(Boolean).join(' ');
+        const parts = [];
+
+        if (data.record.birth_date) {
+            parts.push(lang('clinical_years_old').replace('%s', moment().diff(data.record.birth_date, 'years')));
+        }
+
+        if (data.document_number) {
+            const type = $documentType.find('option:selected').text();
+
+            parts.push((data.document_type ? type + ' ' : '') + data.document_number);
+        }
+
+        if (data.customer.phone_number) {
+            parts.push(data.customer.phone_number);
+        }
+
+        $title.text(name || lang('clinical_record'));
+        $summary.text(parts.join(' · '));
+
+        const allergies = (data.record.allergies || '').trim();
+
+        $allergiesAlert.prop('hidden', !allergies).find('span').text(allergies);
     }
 
     /**
@@ -95,59 +161,68 @@ App.Components.ClinicalRecordModal = (function () {
      */
     function renderVisits(appointments) {
         $visits.empty();
+        $visitsCount.text(appointments.length || '');
 
         if (!appointments.length) {
-            $('<div/>', {class: 'text-muted', text: lang('clinical_no_visits')}).appendTo($visits);
+            $('<div/>', {class: 'text-muted p-3', text: lang('clinical_no_visits')}).appendTo($visits);
 
             return;
         }
 
         appointments.forEach((appointment) => {
             const isCurrent = appointment.id === currentAppointmentId;
-            const price = appointment.price !== null ? ' (' + formatPrice(appointment.price) + ')' : '';
 
             $('<button/>', {
                 'type': 'button',
                 'class':
-                    'list-group-item list-group-item-action d-flex align-items-center gap-2 ea-clinical-visit' +
-                    (isCurrent ? ' active' : ''),
+                    'list-group-item list-group-item-action ea-clinical-visit' +
+                    (appointment.id === visitAppointmentId ? ' active' : ''),
                 'data-appointment-id': appointment.id,
                 'html': [
                     $('<div/>', {
-                        class: 'flex-grow-1',
+                        class: 'd-flex justify-content-between align-items-baseline gap-2',
                         html: [
-                            $('<div/>', {
-                                html: [
-                                    $('<strong/>', {text: appointment.service_name + price}),
-                                    isCurrent
-                                        ? $('<span/>', {
-                                              class: 'badge bg-light text-dark ms-2',
-                                              text: lang('clinical_current_visit'),
-                                          })
-                                        : null,
-                                ],
+                            $('<span/>', {
+                                class: 'ea-clinical-visit-date',
+                                text: App.Utils.Date.format(
+                                    appointment.start_datetime,
+                                    vars('date_format'),
+                                    vars('time_format'),
+                                    true,
+                                ),
                             }),
-                            $('<small/>', {
-                                text: [
-                                    App.Utils.Date.format(
-                                        appointment.start_datetime,
-                                        vars('date_format'),
-                                        vars('time_format'),
-                                        true,
-                                    ),
-                                    appointment.provider_name,
-                                    App.Utils.CalendarEventPopover?.getStatusName(appointment.status) ||
-                                        appointment.status,
-                                ]
-                                    .filter(Boolean)
-                                    .join(' · '),
-                            }),
+                            appointment.price !== null
+                                ? $('<span/>', {class: 'ea-clinical-visit-price', text: formatPrice(appointment.price)})
+                                : null,
                         ],
                     }),
-                    appointment.has_record
-                        ? $('<i/>', {'class': 'fas fa-file-medical', 'title': lang('clinical_has_notes')})
-                        : null,
-                    $('<span/>', {class: 'btn btn-sm btn-outline-primary', text: lang('clinical_open_visit')}),
+                    $('<div/>', {
+                        class: 'd-flex align-items-center gap-2',
+                        html: [
+                            $('<strong/>', {class: 'text-truncate', text: appointment.service_name}),
+                            appointment.has_record
+                                ? $('<i/>', {
+                                      'class': 'fas fa-file-medical ea-clinical-visit-notes',
+                                      'title': lang('clinical_has_notes'),
+                                  })
+                                : null,
+                            isCurrent
+                                ? $('<span/>', {
+                                      class: 'badge ea-clinical-visit-current ms-auto',
+                                      text: lang('clinical_current_visit'),
+                                  })
+                                : null,
+                        ],
+                    }),
+                    $('<small/>', {
+                        class: 'ea-clinical-visit-meta',
+                        text: [
+                            appointment.provider_name,
+                            App.Utils.CalendarEventPopover?.getStatusName(appointment.status) || appointment.status,
+                        ]
+                            .filter(Boolean)
+                            .join(' · '),
+                    }),
                 ],
             }).appendTo($visits);
         });
@@ -177,11 +252,11 @@ App.Components.ClinicalRecordModal = (function () {
             customer[element.dataset.customer] = $(element).val();
         });
 
-        $modal.find('.modal-body > .row [data-record]').each((index, element) => {
+        $modal.find('.tab-pane [data-record]').each((index, element) => {
             record[element.dataset.record] = $(element).val();
         });
 
-        const birthDate = $birthDate[0]._flatpickr.selectedDates[0];
+        const birthDate = $birthDate[0]._flatpickr?.selectedDates[0];
 
         record.birth_date = birthDate ? moment(birthDate).format('YYYY-MM-DD') : '';
 
@@ -201,34 +276,48 @@ App.Components.ClinicalRecordModal = (function () {
 
         App.Http.ClinicalRecords.savePatient(customerId, data).done(() => {
             savedPatient = JSON.stringify(data);
+            updateHeader();
             App.Layouts.Backend.displayNotification(lang('clinical_record_saved'));
             onChange();
         });
     }
 
     /**
-     * Open the record of a visit in the side panel.
+     * Choose a visit of the list, asking first when the shown one has changes that are not saved.
      *
      * @param {Number} appointmentId
      */
-    function openVisit(appointmentId) {
-        const show = () =>
-            App.Http.ClinicalRecords.findAppointment(appointmentId).done((response) => {
-                fillVisit(response);
-                bootstrap.Offcanvas.getOrCreateInstance($panel[0]).show();
-            });
+    function chooseVisit(appointmentId) {
+        if (appointmentId === visitAppointmentId) {
+            return;
+        }
 
         if (isVisitDirty()) {
-            confirmClose(show);
+            confirmDiscard(() => loadVisit(appointmentId));
 
             return;
         }
 
-        show();
+        loadVisit(appointmentId);
     }
 
     /**
-     * Fill the side panel with the record of a visit, showing only the fields of its template.
+     * Load the record of a visit into the detail.
+     *
+     * @param {Number} appointmentId
+     */
+    function loadVisit(appointmentId) {
+        App.Http.ClinicalRecords.findAppointment(appointmentId).done((response) => {
+            fillVisit(response);
+
+            $visits.find('.ea-clinical-visit').each((index, element) => {
+                element.classList.toggle('active', Number(element.dataset.appointmentId) === appointmentId);
+            });
+        });
+    }
+
+    /**
+     * Fill the detail with the record of a visit, showing only the fields of its template.
      *
      * @param {Object} response
      */
@@ -237,23 +326,25 @@ App.Components.ClinicalRecordModal = (function () {
         const fields = response.fields;
 
         visitAppointmentId = appointment.id;
+        visitPrice = appointment.price;
 
         $visitTitle.text(appointment.service_name);
-        $visitSubtitle.text(
-            App.Utils.Date.format(appointment.start_datetime, vars('date_format'), vars('time_format'), true) +
-                (appointment.price !== null ? ' · ' + formatPrice(appointment.price) : ''),
-        );
+        updateVisitSubtitle(appointment.start_datetime);
 
-        $panel.find('[data-section="feet"]').prop('hidden', !response.has_feet);
+        $visitDetail.find('[data-section="feet"]').prop('hidden', !response.has_feet);
 
-        $panel.find('[data-field]').each((index, element) => {
+        $visitDetail.find('[data-field]').each((index, element) => {
             const field = element.dataset.field;
-            const visible = field === 'surgery_price' ? response.template === 'surgery' : fields.includes(field);
 
-            element.hidden = !visible;
+            element.hidden = field === 'surgery_price' ? response.template !== 'surgery' : !fields.includes(field);
         });
 
-        $panel.find('[data-visit]').each((index, element) => {
+        // The row of the orthosis and the surgery price only takes space when one of them is shown.
+        $visitDetail.find('.row:has([data-field])').each((index, row) => {
+            row.hidden = !$(row).children('[data-field]:not([hidden])').length;
+        });
+
+        $visitDetail.find('[data-visit]').each((index, element) => {
             $(element).val(response.record[element.dataset.visit] ?? '');
         });
 
@@ -264,45 +355,66 @@ App.Components.ClinicalRecordModal = (function () {
         // A visit with only observations gets a large box.
         $observations.attr('rows', response.template === 'notes' ? 12 : 4);
 
-        $panel.find('.offcanvas-body').scrollTop(0);
+        $visitEmpty.prop('hidden', true);
+        $visitDetail.prop('hidden', false).data('start', appointment.start_datetime);
+        $visitDetail.closest('.ea-clinical-visit-column').scrollTop(0);
 
         savedVisit = JSON.stringify(getVisitData());
     }
 
     /**
-     * Get the visit record from the side panel.
+     * Show the date and the price of the visit under its treatment.
+     *
+     * @param {String} startDatetime
+     */
+    function updateVisitSubtitle(startDatetime) {
+        const price = $orthosis.closest('[data-field]').prop('hidden')
+            ? visitPrice
+            : ($orthosis.find('option:selected').data('price') ?? visitPrice);
+
+        $visitSubtitle.text(
+            App.Utils.Date.format(startDatetime, vars('date_format'), vars('time_format'), true) +
+                (price !== null && price !== undefined ? ' · ' + formatPrice(price) : ''),
+        );
+    }
+
+    /**
+     * Get the visit record from the detail.
      *
      * @return {Object}
      */
     function getVisitData() {
         const record = {};
 
-        $panel.find('[data-field]:not([hidden]) [data-visit]').each((index, element) => {
+        $visitDetail.find('[data-field]:not([hidden]) [data-visit]').each((index, element) => {
             record[element.dataset.visit] = $(element).val();
         });
 
         return {
             record,
-            surgeryPrice: $panel.find('[data-field="surgery_price"]').prop('hidden') ? '' : $surgeryPrice.val(),
+            surgeryPrice: $surgeryPrice.closest('[data-field]').prop('hidden') ? '' : $surgeryPrice.val(),
         };
     }
 
     /**
-     * Save the visit record of the side panel.
+     * Save the visit record of the detail.
      */
     function saveVisit() {
         const data = getVisitData();
 
-        App.Http.ClinicalRecords.saveAppointment(visitAppointmentId, data.record, data.surgeryPrice).done(() => {
-            savedVisit = JSON.stringify(data);
-            App.Layouts.Backend.displayNotification(lang('clinical_visit_saved'));
-            bootstrap.Offcanvas.getOrCreateInstance($panel[0]).hide();
+        App.Http.ClinicalRecords.saveAppointment(visitAppointmentId, data.record, data.surgeryPrice).done(
+            (response) => {
+                savedVisit = JSON.stringify(data);
+                visitPrice = response.price !== null ? Number(response.price) : null;
+                updateVisitSubtitle($visitDetail.data('start'));
+                App.Layouts.Backend.displayNotification(lang('clinical_visit_saved'));
 
-            // The list shows the new price and which visits have notes.
-            App.Http.ClinicalRecords.findPatient(customerId).done((response) => renderVisits(response.appointments));
+                // The list shows the new price and which visits have notes.
+                App.Http.ClinicalRecords.findPatient(customerId).done((patient) => renderVisits(patient.appointments));
 
-            onChange();
-        });
+                onChange();
+            },
+        );
     }
 
     /**
@@ -315,20 +427,20 @@ App.Components.ClinicalRecordModal = (function () {
     }
 
     /**
-     * Whether the visit panel has changes that are not saved.
+     * Whether the shown visit has changes that are not saved.
      *
      * @return {Boolean}
      */
     function isVisitDirty() {
-        return $panel.hasClass('show') && JSON.stringify(getVisitData()) !== savedVisit;
+        return visitAppointmentId !== null && JSON.stringify(getVisitData()) !== savedVisit;
     }
 
     /**
      * Ask before losing the changes that are not saved.
      *
-     * @param {Function} close Called when the user chooses to close anyway.
+     * @param {Function} discard Called when the user chooses to go on without saving.
      */
-    function confirmClose(close) {
+    function confirmDiscard(discard) {
         App.Utils.Message.show(lang('clinical_record'), lang('clinical_unsaved_changes'), [
             {
                 text: lang('cancel'),
@@ -340,7 +452,7 @@ App.Components.ClinicalRecordModal = (function () {
                 className: 'btn btn-danger',
                 click: (event, messageModal) => {
                     messageModal.hide();
-                    close();
+                    discard();
                 },
             },
         ]);
@@ -356,23 +468,16 @@ App.Components.ClinicalRecordModal = (function () {
 
         App.Utils.UI.initializeDatePicker($birthDate, {maxDate: 'today'});
 
-        $('#clinical-record-save').on('click', savePatient);
+        $patientSave.on('click', savePatient);
         $('#clinical-visit-save').on('click', saveVisit);
 
         $visits.on('click', '.ea-clinical-visit', (event) => {
-            openVisit(Number(event.currentTarget.dataset.appointmentId));
+            chooseVisit(Number(event.currentTarget.dataset.appointmentId));
         });
 
-        // The visit panel lives inside the record, so it closes with it.
-        $panel.on('hide.bs.offcanvas', (event) => {
-            if (isVisitDirty() && !closingConfirmed) {
-                event.preventDefault();
-                confirmClose(() => {
-                    savedVisit = JSON.stringify(getVisitData());
-                    bootstrap.Offcanvas.getOrCreateInstance($panel[0]).hide();
-                });
-            }
-        });
+        $modal.on('shown.bs.tab', '[data-tab]', (event) => updateFooter(event.target.dataset.tab));
+
+        $orthosis.on('change', () => updateVisitSubtitle($visitDetail.data('start')));
 
         $modal.on('hide.bs.modal', (event) => {
             if (event.target !== $modal[0] || closingConfirmed) {
@@ -381,7 +486,7 @@ App.Components.ClinicalRecordModal = (function () {
 
             if (isPatientDirty() || isVisitDirty()) {
                 event.preventDefault();
-                confirmClose(() => {
+                confirmDiscard(() => {
                     closingConfirmed = true;
                     bootstrap.Modal.getOrCreateInstance($modal[0]).hide();
                 });
@@ -389,20 +494,9 @@ App.Components.ClinicalRecordModal = (function () {
         });
 
         $modal.on('hidden.bs.modal', (event) => {
-            if (event.target !== $modal[0]) {
-                return;
-            }
-
-            bootstrap.Offcanvas.getOrCreateInstance($panel[0]).hide();
-            customerId = null;
-        });
-
-        // The silicone orthosis shows the price that the visit will have.
-        $orthosis.on('change', () => {
-            const price = $orthosis.find('option:selected').data('price');
-
-            if (price !== undefined) {
-                $visitSubtitle.text($visitSubtitle.text().replace(/ · [^·]*€$/, '') + ' · ' + formatPrice(price));
+            if (event.target === $modal[0]) {
+                customerId = null;
+                visitAppointmentId = null;
             }
         });
     }
