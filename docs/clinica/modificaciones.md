@@ -416,3 +416,11 @@ Tercera corrección, a petición de la clínica: sin ventana emergente, solo el 
 | Archivo | Cambio | Motivo |
 | --- | --- | --- |
 | `application/views/components/appointments_modal.php`, `assets/js/components/appointments_modal.js`, `backend.scss` | Selector «Paciente existente / Paciente nuevo» en «Datos del paciente» (existente por defecto). Existente: hay que buscarlo y elegirlo (si no, no se guarda y lo dice); sus datos quedan protegidos (en gris) hasta pulsar «Editar datos», y «Cambiar de paciente» lo suelta. Nuevo: se escribe libremente, sin búsqueda, y al guardar se avisa si el teléfono o el nombre coinciden con otro paciente, con la opción de usar ese o seguir como nuevo. Al editar una cita, su paciente queda protegido | Petición de la clínica: dejar claro si el paciente es nuevo y no cambiar los datos de uno existente por error |
+
+## Logo de la clínica y favicon
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `assets/img/logo.png`, `logo-192.png`, `logo-16x16.png`, `favicon.ico` | Generados a partir del logo nuevo de la clínica (1254 px): logo de 512 px para la reserva y los correos, 192 px para la cabecera y el icono de la página, y un `favicon.ico` de 16, 32 y 48 px | Logo propio en lugar del de Easy!Appointments |
+| `application/views/components/backend_header.php` | Logo de la clínica cargado con `asset_url()` y nombre «Clínica Podològica» | Que el navegador no siga mostrando una versión antigua |
+| `application/views/layouts/*.php` | Icono de 192 px y `apple-touch-icon` | Icono al guardar la página en el móvil |

@@ -18,7 +18,8 @@
     <title><?= lang('page_title') . ' ' . e(vars('company_name')) ?> | Easy!Appointments</title>
 
     <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
-    <link rel="icon" sizes="192x192" href="<?= asset_url('assets/img/logo.png') ?>">
+    <link rel="icon" sizes="192x192" href="<?= asset_url('assets/img/logo-192.png') ?>">
+    <link rel="apple-touch-icon" href="<?= asset_url('assets/img/logo-192.png') ?>">
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/cookieconsent/cookieconsent.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/flatpickr/flatpickr.min.css') ?>">

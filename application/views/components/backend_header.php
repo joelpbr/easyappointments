@@ -9,11 +9,9 @@
 
 <nav id="header" class="navbar navbar-expand-md navbar-dark bg-primary p-0">
     <div id="header-logo" class="navbar-brand p-1 lh-1">
-        <img src="<?= base_url(
-            'https://www.podologiasabadell.com/img/logo.webp',
-        ) ?>" alt="logo" class="float-start me-2" style="width: 45px; height: 45px;">
+        <img src="<?= asset_url('assets/img/logo-192.png') ?>" alt="logo" class="float-start me-2"
+             style="width: 45px; height: 45px;">
         <h6 class="mb-1 mt-1 fw-bold text-white" style="font-size: 15px;">Clínica Podològica</h6>
-        <small class="d-block text-white-50" style="font-size: 12px;">Online Appointment Scheduler</small>
     </div>
 
     <button type="button" class="navbar-toggler me-1" data-bs-toggle="collapse" data-bs-target="#header-menu">
