@@ -105,6 +105,24 @@ App.Http.Customers = (function () {
     }
 
     /**
+     * Find the patients that match a typed name or phone number (few fields, up to 10 patients).
+     *
+     * @param {String} keyword
+     *
+     * @return {Object}
+     */
+    function autocomplete(keyword) {
+        const url = App.Utils.Url.siteUrl('customers/autocomplete');
+
+        const data = {
+            csrf_token: vars('csrf_token'),
+            keyword,
+        };
+
+        return $.post(url, data);
+    }
+
+    /**
      * Find a customer.
      *
      * @param {Number} customerId
@@ -114,15 +132,11 @@ App.Http.Customers = (function () {
     function find(customerId) {
         const url = App.Utils.Url.siteUrl('customers/find');
 
-        const data = {
-            csrf_token: vars('csrf_token'),
-            customer_id: customerId,
-        };
-
-        return $.post(url, data);
+        return $.get(url, {customer_id: customerId});
     }
 
     return {
+        autocomplete,
         save,
         store,
         update,

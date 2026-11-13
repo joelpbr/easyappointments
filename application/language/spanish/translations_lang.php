@@ -645,4 +645,5 @@ $lang['fold_midday'] = 'Contraer el mediodía';
 $lang['midday_has_appointments'] = 'No se puede contraer mientras haya visitas o reservas.';
 $lang['filter_all_providers'] = 'Profesional: todos';
 $lang['filter_all_services'] = 'Tratamiento: todos';
+$lang['create_new_patient'] = 'Crear paciente nuevo';
 // End

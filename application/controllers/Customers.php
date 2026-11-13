@@ -250,6 +250,56 @@ class Customers extends EA_Controller
     }
 
     /**
+     * Find the patients that match the typed text, for the autocomplete of the appointment form.
+     */
+    public function autocomplete(): void
+    {
+        try {
+            method('post');
+
+            if (cannot('view', PRIV_CUSTOMERS)) {
+                abort(403, 'Forbidden');
+            }
+
+            check('keyword', 'string|null');
+
+            json_response(
+                $this->customers_model->autocomplete(
+                    (string) request('keyword', ''),
+                    10,
+                    $this->visible_provider_ids(),
+                ),
+            );
+        } catch (Throwable $e) {
+            json_exception($e);
+        }
+    }
+
+    /**
+     * Get the providers whose patients the current user can see, following the "limit customer access" setting.
+     *
+     * @return array|null Provider IDs, or null when the user can see every patient.
+     */
+    private function visible_provider_ids(): ?array
+    {
+        $role_slug = session('role_slug');
+
+        if ($role_slug === DB_SLUG_ADMIN || !setting('limit_customer_access')) {
+            return null;
+        }
+
+        if ($role_slug === DB_SLUG_PROVIDER) {
+            return [(int) session('user_id')];
+        }
+
+        if ($role_slug === DB_SLUG_SECRETARY) {
+            return $this->secretaries_model->find(session('user_id'))['providers'];
+        }
+
+        return [];
+    }
+
+    /**
      * Store a new customer.
      */
     public function store(): void

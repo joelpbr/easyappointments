@@ -270,3 +270,16 @@ Más tarde el tono pasó a rayas rojas (ver «Mediodía plegable»).
 | `application/views/components/backend_footer.php`, `application/views/layouts/backend_layout.php` | Se elimina el pie (créditos de Easy!Appointments, selector de idioma, enlace a la página de reservas y saludo) | Más altura para la agenda. La licencia y los créditos siguen en «Acerca de» |
 | `assets/js/layouts/backend_layout.js`, `assets/js/pages/account.js` | Se quita el código del selector de idioma y del saludo del pie | Ya no existen |
 | `assets/js/utils/calendar_table_view.js`, `calendar_default_view.js` | La altura de la agenda deja de descontar el pie | Ídem |
+
+## Autocompletado de pacientes (fase 5)
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/migrations/080_add_patient_search_fields.php` | `users.phone_normalized`, rellenado para los pacientes existentes, e índices en nombre, apellidos y teléfono normalizado | Búsqueda rápida y detección de duplicados por teléfono (especificación 11.1, 12.4) |
+| `application/helpers/phone_helper.php` | `normalize_phone()`: quita separadores, convierte 00 en +, y añade +34 a los números españoles de 9 cifras | Encontrar un teléfono se escriba como se escriba |
+| `application/models/Customers_model.php` | `save()` guarda el teléfono normalizado; `autocomplete()` busca por el principio del nombre, de los apellidos o de cualquiera de sus palabras (cada palabra escrita debe coincidir), o por cifras del teléfono, y devuelve solo id, nombre, apellidos y teléfono de 10 pacientes como máximo | Especificación 12.1, 12.4 y 12.5 |
+| `application/controllers/Customers.php` | `autocomplete` con el permiso de ver pacientes; con «limitar el acceso a los pacientes», cada profesional solo ve los suyos y recepción los de sus profesionales | Respetar los permisos (12.5) |
+| `assets/js/components/patient_autocomplete.js` | Nuevo. Sugiere pacientes al escribir nombre, apellidos o teléfono de un paciente nuevo, con teclado (flechas, Intro, Escape) y la opción «Crear paciente nuevo» | Especificación 12.1 y 12.2, sin salir de la agenda |
+| `assets/js/components/appointments_modal.js`, `appointments_modal.php` | Usa el autocompletado; se quita el botón «Seleccionar» y su lista | La lista partía de los pacientes cargados con la página |
+| `application/controllers/Calendar.php` | Deja de cargar 50 pacientes en la página | No descargar pacientes al navegador (12.4) |
+| `assets/js/http/customers_http_client.js` | `autocomplete()`; `find()` usa GET como exige el controlador | `find()` fallaba siempre con POST |
