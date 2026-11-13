@@ -424,3 +424,12 @@ Tercera corrección, a petición de la clínica: sin ventana emergente, solo el 
 | `assets/img/logo.png`, `logo-192.png`, `logo-16x16.png`, `favicon.ico` | Generados a partir del logo nuevo de la clínica (1254 px): logo de 512 px para la reserva y los correos, 192 px para la cabecera y el icono de la página, y un `favicon.ico` de 16, 32 y 48 px | Logo propio en lugar del de Easy!Appointments |
 | `application/views/components/backend_header.php` | Logo de la clínica cargado con `asset_url()` y nombre «Clínica Podològica» | Que el navegador no siga mostrando una versión antigua |
 | `application/views/layouts/*.php` | Icono de 192 px y `apple-touch-icon` | Icono al guardar la página en el móvil |
+
+## Días, sumas por profesional y columnas en lista
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `assets/js/utils/calendar_table_view.js`, `calendar_default_view.js`, `backend.scss` | Días con el nombre completo; en la vista partida, en relación con hoy («Avui, divendres 13/11», «Demà», «Demà passat», «Pròxim dijous 19/11» solo dentro de la semana que viene), en una segunda línea bajo el nombre; las vistas de semana y mes también con el nombre completo | Petición de la clínica |
+| `assets/js/utils/calendar_table_view.js` | Botón «Avui» en el calendario desplegable de la fecha | Ídem |
+| `assets/js/utils/calendar_table_view.js`, `backend.scss` | Una columna en modo lista se queda fija y tiene su propio scroll (la rueda sobre ella no mueve las demás), mientras las columnas en modo calendario siguen con el scroll compartido | Ídem |
+| `assets/js/utils/calendar_day_total.js`, `calendar_table_view.js`, `calendar_event_content.js`, `calendar.php` | Se quita el «Total» de la barra; cada profesional muestra la suma de su día junto al nombre («Sebas (330€)»), y cada tarjeta el precio de esa cita junto al tratamiento («Quiropodia (30€)») | Ídem; el precio puede ser distinto del del tratamiento |

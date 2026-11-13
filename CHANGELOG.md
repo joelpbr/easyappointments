@@ -8,7 +8,7 @@ developers to maintain and readjust their custom modifications on the main proje
 ### Added
 
 - A "No-show" button on appointments that already started marks that the patient did not come, without notifying anybody; each patient keeps their number of no-shows, shown only when there are some in the appointment details of the calendar, the patient record and a warning of the appointment form
-- Each appointment has a price, taken from its treatment and editable in the appointment form, and the calendar toolbar shows the total of the displayed appointments, without cancellations and no-shows, with the amount of each day
+- Each appointment has a price, taken from its treatment and editable in the appointment form; the calendar cards show it next to the treatment, e.g. "Quiropodia (30€)", and the split view shows next to each provider what their day adds up to, e.g. "Sebas (330€)", without cancellations and no-shows
 - A holidays page lists the national and regional holidays of each year (Catalonia or Madrid, with Easter calculated) and the local ones added by hand, and closes the clinic on the chosen days; a holiday never closes it by itself
 - Blocked periods have a type (holidays, closure, vacation, absence...), can apply to some providers instead of the whole clinic and can repeat every week or every year; saving one that falls on appointments lists them to reschedule and asks for confirmation, and the calendar shows them in red with their reason and has a "Block agenda" button
 - The patient record shows the administrative history: number of visits, last visit, cancellations, no-shows and the providers who saw the patient, followed by the coming and the previous appointments with their status
@@ -28,6 +28,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- The split view names the days in full and in relation to today ("Today, Friday 13/11", "Tomorrow", "Day after tomorrow", "Next Thursday 19/11"), under the provider name; the date picker has a "Today" button; a column in list mode scrolls by itself while the calendar columns keep scrolling together
 - The clinic logo replaces the Easy!Appointments one in the header, the booking page, the emails and the browser icon (favicon)
 - The patient section of the appointment form says whether the patient is existing or new: an existing patient has to be chosen from the search and their data is protected until "Edit data" is clicked, while a new patient is typed freely and saving warns when the phone or the name match an existing patient
 - The appointment form has no "New" patient button nor "Create a new patient" search option: when the patient is not found you keep typing, and changing the name of a chosen patient takes the data as a new patient

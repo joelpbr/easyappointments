@@ -743,4 +743,7 @@ $lang['edit_patient_data'] = 'Editar datos';
 $lang['protect_patient_data'] = 'Proteger datos';
 $lang['change_patient'] = 'Cambiar de paciente';
 $lang['choose_existing_patient'] = 'Busca el paciente y elígelo de la lista, o márcalo como paciente nuevo.';
+$lang['tomorrow'] = 'Mañana';
+$lang['day_after_tomorrow'] = 'Pasado mañana';
+$lang['next_weekday'] = 'próximo %s';
 // End

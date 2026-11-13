@@ -103,6 +103,76 @@ App.Utils.CalendarTableView = (function () {
     }
 
     /**
+     * Show next to the provider name what their appointments of the column day add up to, e.g. "Sebas (330€)". It
+     * follows the treatment filter, like the appointments shown.
+     *
+     * @param {jQuery} $providerColumn
+     * @param {Array} appointments Appointments of the displayed period.
+     */
+    function showProviderDayTotal($providerColumn, appointments) {
+        const providerId = Number($providerColumn.data('provider').id);
+        const day = moment($providerColumn.closest('.date-column').data('date')).format('YYYY-MM-DD');
+        const serviceId = Number($filterService.val()) || null;
+
+        const total = App.Utils.CalendarDayTotal.sum(
+            (appointments || []).filter(
+                (appointment) =>
+                    Number(appointment.id_users_provider) === providerId &&
+                    appointment.start_datetime.startsWith(day) &&
+                    (!serviceId || Number(appointment.id_services) === serviceId),
+            ),
+        );
+
+        $providerColumn.find('.ea-provider-total').text(' (' + App.Utils.CalendarDayTotal.format(total) + ')');
+    }
+
+    /**
+     * Name a day in relation to today: "Today, Friday 13/11", "Tomorrow, …", "Day after tomorrow, …", "next Thursday
+     * 19/11" for the rest of the coming week, and just "Thursday 26/11" for other days.
+     *
+     * @param {Date} date
+     *
+     * @return {String}
+     */
+    function getRelativeDayLabel(date) {
+        const text = getRelativeDayText(date);
+
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    /**
+     * Get the label of getRelativeDayLabel(), before its first letter is turned into a capital.
+     *
+     * @param {Date} date
+     *
+     * @return {String}
+     */
+    function getRelativeDayText(date) {
+        const day = moment(date).startOf('day');
+        const days = day.diff(moment().startOf('day'), 'days');
+        const label = day.format('dddd D/M');
+
+        if (days === 0) {
+            return lang('today') + ', ' + label;
+        }
+
+        if (days === 1) {
+            return lang('tomorrow') + ', ' + label;
+        }
+
+        if (days === 2) {
+            return lang('day_after_tomorrow') + ', ' + label;
+        }
+
+        // Only within the coming week is it really the next day with that name.
+        if (days > 2 && days < 7) {
+            return lang('next_weekday').replace('%s', label);
+        }
+
+        return label;
+    }
+
+    /**
      * Get the display name of a provider, whose last name is optional.
      *
      * @param {Object} provider
@@ -202,7 +272,7 @@ App.Utils.CalendarTableView = (function () {
         let columnFormat, timeFormat, slotTimeFormat;
         switch (vars('date_format')) {
             case 'DMY':
-                columnFormat = 'ddd D/M';
+                columnFormat = 'dddd D/M';
                 break;
             case 'MDY':
             case 'YMD':
@@ -913,6 +983,7 @@ App.Utils.CalendarTableView = (function () {
     function createAppointments($providerColumn, appointments) {
         $providerColumn.data('middayAppointments', appointments);
         App.Utils.CalendarMidday.schedule();
+        showProviderDayTotal($providerColumn, appointments);
         if (!appointments.length) {
             return;
         }
@@ -1282,6 +1353,20 @@ App.Utils.CalendarTableView = (function () {
             html: [$('<span/>', {class: 'fas fa-chevron-right'})],
         }).appendTo($calendarHeader);
         App.Utils.UI.initializeDatePicker($calendarHeader.find('.select-date'), {
+            // A "Today" button under the month goes straight to today.
+            onReady(selectedDates, dateString, instance) {
+                $('<button/>', {
+                    type: 'button',
+                    class: 'btn btn-sm btn-primary w-100 mt-1 ea-picker-today',
+                    text: lang('today'),
+                    on: {
+                        click: () => {
+                            instance.setDate(new Date(), true);
+                            instance.close();
+                        },
+                    },
+                }).appendTo(instance.calendarContainer);
+            },
             onChange(selectedDates) {
                 const startDate = selectedDates[0];
 
@@ -1405,19 +1490,6 @@ App.Utils.CalendarTableView = (function () {
                 createDateColumn($wrapper, currentDate, response);
                 currentDate = moment(currentDate).add({days: 1}).toDate();
             }
-
-            // The total follows the displayed providers and the treatment filter.
-            const providerIds = $('.provider-column')
-                .map((index, column) => Number($(column).data('provider').id))
-                .get();
-            const serviceId = Number($filterService.val()) || null;
-
-            App.Utils.CalendarDayTotal.show(
-                response.appointments,
-                (appointment) =>
-                    providerIds.includes(Number(appointment.id_users_provider)) &&
-                    (!serviceId || Number(appointment.id_services) === serviceId),
-            );
 
             // Activate calendar navigation
 
@@ -1608,6 +1680,7 @@ App.Utils.CalendarTableView = (function () {
             },
             datesSet: (info) => {
                 updateViewButtons($providerColumn, info.view.type);
+                fitListView(info.view.calendar);
                 App.Utils.CalendarMidday.schedule();
             },
         });
@@ -1616,7 +1689,7 @@ App.Utils.CalendarTableView = (function () {
         $wrapper.data('fullCalendar', fullCalendar);
         fullCalendar.gotoDate(goToDate);
         const providerName = getProviderName(provider);
-        const dayLabel = moment(goToDate).format('ddd D/M');
+        const dayLabel = getRelativeDayLabel(goToDate);
         // The list and calendar switch lives in the heading, which stays visible while the view scrolls.
         const $viewButtons = $('<div/>', {class: 'btn-group ea-provider-views', role: 'group'});
 
@@ -1642,7 +1715,10 @@ App.Utils.CalendarTableView = (function () {
             class: 'ea-provider-heading',
             title: providerName + ' · ' + dayLabel,
             html: [
-                $('<span/>', {class: 'ea-provider-name', text: providerName}),
+                $('<span/>', {
+                    class: 'ea-provider-name',
+                    html: [document.createTextNode(providerName), $('<span/>', {class: 'ea-provider-total'})],
+                }),
                 $('<span/>', {class: 'ea-provider-date', text: dayLabel}),
                 $viewButtons,
             ],
@@ -1717,6 +1793,29 @@ App.Utils.CalendarTableView = (function () {
         $calendarView.outerHeight(
             getCalendarHeight() + ($calendarView.find('.ea-provider-heading').outerHeight() || 0),
         );
+
+        getCalendars().forEach(fitListView);
+    }
+
+    /**
+     * Give a column in list mode the height of the visible area, so that it scrolls by itself, while the columns in
+     * calendar mode grow to their whole height and scroll together.
+     *
+     * @param {Object} calendar FullCalendar instance of a provider column.
+     */
+    function fitListView(calendar) {
+        const calendarView = document.querySelector('#calendar .calendar-view');
+
+        if (!calendarView) {
+            return;
+        }
+
+        const headingHeight = calendarView.querySelector('.ea-provider-heading')?.offsetHeight ?? 0;
+        const height = calendar.view.type === 'listDay' ? calendarView.clientHeight - headingHeight : 'auto';
+
+        if (calendar.getOption('height') !== height) {
+            calendar.setOption('height', height);
+        }
     }
 
     // Event Listeners
@@ -1830,6 +1929,27 @@ App.Utils.CalendarTableView = (function () {
                 }
             });
         });
+
+        // The mouse wheel over a column in list mode only scrolls that list, never the calendar columns around it.
+        document.querySelector('#calendar').addEventListener(
+            'wheel',
+            (event) => {
+                const list = event.target.closest?.('.provider-column:has(.fc-list)');
+
+                if (!list) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const scroller = list.querySelector('.fc-scroller');
+
+                if (scroller) {
+                    scroller.scrollTop += event.deltaY;
+                }
+            },
+            {passive: false},
+        );
 
         // Window resize
 
