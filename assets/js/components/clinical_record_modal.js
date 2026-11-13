@@ -139,6 +139,9 @@ App.Components.ClinicalRecordModal = (function () {
      */
     function updateFooter(tab) {
         $patientSave.prop('hidden', tab === 'visits');
+
+        // In the visits tab the chosen visit is a column on the right, from under the header.
+        $modal.toggleClass('ea-visits-mode', tab === 'visits');
     }
 
     /**
@@ -453,7 +456,7 @@ App.Components.ClinicalRecordModal = (function () {
 
         $visitEmpty.prop('hidden', true);
         $visitDetail.prop('hidden', false).data('start', appointment.start_datetime);
-        $visitDetail.closest('.ea-clinical-visit-column').scrollTop(0);
+        $('#clinical-visit-column').scrollTop(0);
 
         savedVisit = JSON.stringify(getVisitData());
     }

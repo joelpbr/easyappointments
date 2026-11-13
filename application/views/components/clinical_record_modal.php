@@ -134,123 +134,110 @@
                 </div>
 
                 <div class="tab-pane fade" id="clinical-tab-visits" role="tabpanel">
-                    <div class="row g-0 ea-clinical-visits-layout">
-                        <div class="col-md-4 ea-clinical-visits-column">
-                            <div id="clinical-visits" class="list-group list-group-flush ea-clinical-visits"></div>
-                        </div>
-
-                        <div class="col-md-8 ea-clinical-visit-column">
-                            <div id="clinical-visit-empty" class="ea-clinical-visit-empty">
-                                <i class="fas fa-file-medical mb-2"></i>
-                                <div><?= lang('clinical_choose_visit') ?></div>
-                            </div>
-
-                            <div id="clinical-visit-detail" hidden>
-                                <div class="ea-clinical-visit-heading">
-                                    <h4 class="mb-0" id="clinical-visit-title"></h4>
-                                    <div class="text-muted small" id="clinical-visit-subtitle"></div>
-                                </div>
-
-                                <!-- Foot diagrams: the picture of the chosen view on the left, with the four views under it, and
-                                     the pathologies on the right with the observations under them (clinical_record_modal.js). -->
-                                <div class="ea-clinical-feet mb-3" data-section="feet">
-                                    <div class="ea-feet-diagram">
-                                        <div class="ea-feet-picture" id="clinical-feet-board">
-                                            <img id="clinical-feet-picture" alt="" draggable="false">
-                                            <div id="clinical-feet-markers" class="ea-feet-markers"></div>
-                                        </div>
-                                        <div id="clinical-feet-views" class="ea-feet-views" role="group"></div>
-                                    </div>
-
-                                    <div class="ea-feet-side">
-                                        <div class="form-label mb-0"><?= lang('clinical_pathologies') ?></div>
-                                        <div class="form-text mt-0 mb-2"><?= lang('clinical_feet_hint') ?></div>
-                                        <div id="clinical-feet-pathologies" class="list-group ea-feet-pathologies"></div>
-                                        <div id="clinical-feet-observations"></div>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3" data-field="reason">
-                                    <label class="form-label" for="clinical-visit-reason"><?= lang(
-                                        'clinical_reason',
-                                    ) ?></label>
-                                    <textarea id="clinical-visit-reason" class="form-control" rows="2"
-                                              data-visit="reason"></textarea>
-                                </div>
-
-                                <div class="mb-3" data-field="diagnosis">
-                                    <label class="form-label" for="clinical-visit-diagnosis"><?= lang(
-                                        'clinical_diagnosis',
-                                    ) ?></label>
-                                    <textarea id="clinical-visit-diagnosis" class="form-control" rows="2"
-                                              data-visit="diagnosis"></textarea>
-                                </div>
-
-                                <div class="mb-3" data-field="treatment">
-                                    <label class="form-label" for="clinical-visit-treatment"><?= lang(
-                                        'clinical_treatment',
-                                    ) ?></label>
-                                    <textarea id="clinical-visit-treatment" class="form-control" rows="2"
-                                              data-visit="treatment"></textarea>
-                                </div>
-
-                                <div class="row g-3 mb-3">
-                                    <div class="col-sm-8" data-field="orthosis">
-                                        <label class="form-label" for="clinical-visit-orthosis"><?= lang(
-                                            'clinical_orthosis',
-                                        ) ?></label>
-                                        <select id="clinical-visit-orthosis" class="form-select" data-visit="orthosis">
-                                            <option value="">—</option>
-                                            <?php foreach (
-                                                Clinical_record_templates::ORTHOSES
-                                                as $orthosis => $price
-                                            ): ?>
-                                                <option value="<?= $orthosis ?>" data-price="<?= $price ?>">
-                                                    <?= lang('clinical_orthosis_' . $orthosis) ?> (<?= rtrim(
-     rtrim(number_format($price, 2, ',', ''), '0'),
-     ',',
- ) ?>€)
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                        <div class="form-text"><?= lang('clinical_price_hint') ?></div>
-                                    </div>
-
-                                    <div class="col-sm-5" data-field="surgery_price">
-                                        <label class="form-label" for="clinical-visit-surgery-price"><?= lang(
-                                            'clinical_surgery_price',
-                                        ) ?></label>
-                                        <div class="input-group">
-                                            <input id="clinical-visit-surgery-price" class="form-control"
-                                                   inputmode="decimal">
-                                            <span class="input-group-text">€</span>
-                                        </div>
-                                        <div class="form-text"><?= lang('clinical_price_hint') ?></div>
-                                    </div>
-                                </div>
-
-                                <!-- The observations come back here when the visit has no foot diagrams. -->
-                                <div id="clinical-observations-home" hidden></div>
-
-                                <div class="mb-3" data-field="observations">
-                                    <label class="form-label" for="clinical-visit-observations"><?= lang(
-                                        'clinical_observations',
-                                    ) ?></label>
-                                    <textarea id="clinical-visit-observations" class="form-control" rows="4"
-                                              data-visit="observations"></textarea>
-                                </div>
-
-                                <div class="d-flex justify-content-end">
-                                    <button type="button" id="clinical-visit-save" class="btn btn-primary">
-                                        <i class="fas fa-check-square me-2"></i>
-                                        <?= lang('clinical_save_visit') ?>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div id="clinical-visits" class="list-group list-group-flush ea-clinical-visits"></div>
                 </div>
             </div>
+
+            <!-- The chosen visit: in the visits tab, a column on the right from under the header, next to the tabs and the
+                 list of visits, so that it gets the whole height (see the ea-visits-mode styles). -->
+            <section id="clinical-visit-column" class="ea-clinical-visit-column">
+                <div id="clinical-visit-empty" class="ea-clinical-visit-empty">
+                    <i class="fas fa-file-medical mb-2"></i>
+                    <div><?= lang('clinical_choose_visit') ?></div>
+                </div>
+
+                <div id="clinical-visit-detail" hidden>
+                    <div class="ea-clinical-visit-heading">
+                        <h4 id="clinical-visit-title"></h4>
+                        <span class="text-muted small" id="clinical-visit-subtitle"></span>
+                        <button type="button" id="clinical-visit-save" class="btn btn-primary btn-sm ms-auto">
+                            <i class="fas fa-check-square me-2"></i>
+                            <?= lang('clinical_save_visit') ?>
+                        </button>
+                    </div>
+
+                    <!-- Foot diagrams: the picture of the chosen view on the left, with the four views under it, and
+                         the pathologies on the right with the observations under them (clinical_record_modal.js). -->
+                    <div class="ea-clinical-feet mb-3" data-section="feet">
+                        <div class="ea-feet-diagram">
+                            <div class="ea-feet-picture" id="clinical-feet-board">
+                                <img id="clinical-feet-picture" alt="" draggable="false">
+                                <div id="clinical-feet-markers" class="ea-feet-markers"></div>
+                            </div>
+                            <div id="clinical-feet-views" class="ea-feet-views" role="group"></div>
+                        </div>
+
+                        <div class="ea-feet-side">
+                            <div class="form-label mb-0"><?= lang('clinical_pathologies') ?></div>
+                            <div id="clinical-feet-pathologies" class="list-group ea-feet-pathologies"></div>
+                            <div id="clinical-feet-observations"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3" data-field="reason">
+                        <label class="form-label" for="clinical-visit-reason"><?= lang('clinical_reason') ?></label>
+                        <textarea id="clinical-visit-reason" class="form-control" rows="2"
+                                  data-visit="reason"></textarea>
+                    </div>
+
+                    <div class="mb-3" data-field="diagnosis">
+                        <label class="form-label" for="clinical-visit-diagnosis"><?= lang(
+                            'clinical_diagnosis',
+                        ) ?></label>
+                        <textarea id="clinical-visit-diagnosis" class="form-control" rows="2"
+                                  data-visit="diagnosis"></textarea>
+                    </div>
+
+                    <div class="mb-3" data-field="treatment">
+                        <label class="form-label" for="clinical-visit-treatment"><?= lang(
+                            'clinical_treatment',
+                        ) ?></label>
+                        <textarea id="clinical-visit-treatment" class="form-control" rows="2"
+                                  data-visit="treatment"></textarea>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-8" data-field="orthosis">
+                            <label class="form-label" for="clinical-visit-orthosis"><?= lang(
+                                'clinical_orthosis',
+                            ) ?></label>
+                            <select id="clinical-visit-orthosis" class="form-select" data-visit="orthosis">
+                                <option value="">—</option>
+                                <?php foreach (Clinical_record_templates::ORTHOSES as $orthosis => $price): ?>
+                                    <?php $price_label = rtrim(rtrim(number_format($price, 2, ',', ''), '0'), ','); ?>
+                                    <option value="<?= $orthosis ?>" data-price="<?= $price ?>">
+                                        <?= lang('clinical_orthosis_' . $orthosis) ?> (<?= $price_label ?>€)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="form-text"><?= lang('clinical_price_hint') ?></div>
+                        </div>
+
+                        <div class="col-sm-5" data-field="surgery_price">
+                            <label class="form-label" for="clinical-visit-surgery-price"><?= lang(
+                                'clinical_surgery_price',
+                            ) ?></label>
+                            <div class="input-group">
+                                <input id="clinical-visit-surgery-price" class="form-control"
+                                       inputmode="decimal">
+                                <span class="input-group-text">€</span>
+                            </div>
+                            <div class="form-text"><?= lang('clinical_price_hint') ?></div>
+                        </div>
+                    </div>
+
+                    <!-- The observations come back here when the visit has no foot diagrams. -->
+                    <div id="clinical-observations-home" hidden></div>
+
+                    <div class="mb-3" data-field="observations">
+                        <label class="form-label" for="clinical-visit-observations"><?= lang(
+                            'clinical_observations',
+                        ) ?></label>
+                        <textarea id="clinical-visit-observations" class="form-control" rows="4"
+                                  data-visit="observations"></textarea>
+                    </div>
+                </div>
+            </section>
 
         </div>
     </div>
