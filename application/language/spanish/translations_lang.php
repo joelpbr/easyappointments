@@ -734,4 +734,7 @@ $lang['holiday_name_missing'] = 'Escribe el nombre del festivo.';
 $lang['appointment_price'] = 'Precio (€)';
 $lang['appointment_price_invalid'] = 'El precio debe ser un importe positivo.';
 $lang['day_total'] = 'Total';
+$lang['mark_no_show'] = 'Falta de asistencia';
+$lang['mark_no_show_question'] = 'El paciente no vino a esta cita. Se guarda como «No presentado» y la próxima vez que se le dé cita aparecerá un aviso. No se envía ningún mensaje.';
+$lang['no_show_warning'] = 'Este paciente tiene %count falta(s) de asistencia, la última el %date.';
 // End

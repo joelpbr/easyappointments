@@ -734,4 +734,7 @@ $lang['holiday_name_missing'] = 'Type the name of the holiday.';
 $lang['appointment_price'] = 'Price (€)';
 $lang['appointment_price_invalid'] = 'The price must be a positive amount.';
 $lang['day_total'] = 'Total';
+$lang['mark_no_show'] = 'Mark no-show';
+$lang['mark_no_show_question'] = 'The patient did not come to this appointment. It is kept as a no-show, and the next time the patient is booked a warning will remind it. Nobody is notified.';
+$lang['no_show_warning'] = 'This patient missed %count appointment(s), the last one on %date.';
 // End

@@ -636,7 +636,8 @@ class Customers_model extends EA_Model
      *
      * @param int $customer_id Patient ID.
      *
-     * @return array ['visits' => int, 'last_visit' => 'Y-m-d H:i:s' or null].
+     * @return array ['visits' => int, 'last_visit' => 'Y-m-d H:i:s' or null, 'no_shows' => int,
+     * 'last_no_show' => 'Y-m-d H:i:s' or null].
      */
     public function get_visit_summary(int $customer_id): array
     {
@@ -650,9 +651,20 @@ class Customers_model extends EA_Model
             ->get()
             ->row_array();
 
+        $no_shows = $this->db
+            ->select('COUNT(*) AS no_shows, MAX(start_datetime) AS last_no_show')
+            ->from('appointments')
+            ->where('id_users_customer', $customer_id)
+            ->where('is_unavailability', false)
+            ->where('status', APPOINTMENT_STATUS_NO_SHOW)
+            ->get()
+            ->row_array();
+
         return [
             'visits' => (int) $summary['visits'],
             'last_visit' => $summary['last_visit'],
+            'no_shows' => (int) $no_shows['no_shows'],
+            'last_no_show' => $no_shows['last_no_show'],
         ];
     }
 

@@ -1215,6 +1215,12 @@ App.Utils.CalendarDefaultView = (function () {
         // Popover delete button
         $calendarPage.on('click', '.delete-popover', onDeletePopoverClick);
         $calendarPage.on('click', '.cancel-appointment-popover', onCancelAppointmentPopoverClick);
+        $calendarPage.on('click', '.no-show-popover', () => {
+            closePopover();
+            App.Utils.CalendarAppointmentActions.markNoShow(lastFocusedEventData.extendedProps.data, () =>
+                $reloadAppointments.trigger('click'),
+            );
+        });
 
         // Filter change
         $selectFilterItem.on('change', () => {

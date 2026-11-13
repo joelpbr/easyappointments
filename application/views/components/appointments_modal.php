@@ -266,6 +266,8 @@
                             <?= lang('patient_search_hint') ?>
                         </p>
 
+                        <div id="no-show-warning" class="alert alert-warning py-2" role="alert" hidden></div>
+
                         <input id="customer-id" type="hidden">
 
                         <div class="row">
