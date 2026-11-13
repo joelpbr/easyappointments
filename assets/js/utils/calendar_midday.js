@@ -5,6 +5,7 @@ App.Utils.CalendarMidday = (() => {
     const MIDDAY_TO = 16 * 60;
     let open = false;
     let fold = null;
+    let appliedFold = '';
     let pending = false;
     const minutes = (date) => date.getHours() * 60 + date.getMinutes();
     const overlap = (start, end, from, to) => start < to && end > from;
@@ -133,15 +134,15 @@ App.Utils.CalendarMidday = (() => {
             return;
         }
 
-        const range =
-            calendars.length && calendars.every((calendar) => calendar.view.type === 'timeGridDay')
-                ? getSharedRange(calendars)
-                : undefined;
+        // Columns in list mode have no hours: the break is folded in the calendar columns only.
+        const gridColumns = providerColumns.filter((column, index) => calendars[index].view.type === 'timeGridDay');
+        const gridCalendars = calendars.filter((calendar) => calendar.view.type === 'timeGridDay');
+        const range = gridCalendars.length ? getSharedRange(gridCalendars) : undefined;
 
         fold = null;
 
         if (range) {
-            const occupied = providerColumns.some((column) => isOccupied(column, range));
+            const occupied = gridColumns.some((column) => isOccupied(column, range));
             const folded = !occupied && !open;
             const hint = occupied
                 ? lang('midday_has_appointments')
@@ -171,29 +172,48 @@ App.Utils.CalendarMidday = (() => {
             button?.remove();
         }
 
-        calendars.forEach((calendar) => {
-            let changed = false;
+        applyFold(gridCalendars);
+    }
 
-            calendar.el.querySelectorAll('.fc-timegrid-slots tr').forEach((row) => {
-                const time = row.querySelector('[data-time]')?.getAttribute('data-time');
+    /**
+     * Fold the rows of the break with a style sheet that selects them by their time.
+     *
+     * The rows are not changed: FullCalendar draws them again whenever a column changes (e.g. from list to calendar
+     * mode), which used to drop the fold and make the button flicker. A style keeps applying to the new rows.
+     *
+     * @param {Array} calendars FullCalendar instances in calendar (time grid) mode.
+     */
+    function applyFold(calendars) {
+        const key = fold ? fold.join('-') : '';
+        let style = document.getElementById('ea-midday-fold-style');
 
-                if (!time) {
-                    return;
-                }
+        if (!style) {
+            style = document.createElement('style');
+            style.id = 'ea-midday-fold-style';
+            document.head.append(style);
+        }
 
-                const [hour, minute] = time.split(':').map(Number);
-                const collapse = Boolean(fold) && hour * 60 + minute >= fold[0] && hour * 60 + minute < fold[1];
+        if (key !== appliedFold) {
+            const slot = Number(vars('calendar_slot_minutes')) || 15;
+            const rows = [];
 
-                changed = changed || row.classList.contains('ea-midday-folded') !== collapse;
-                row.classList.toggle('ea-midday-folded', collapse);
-            });
-
-            // FullCalendar must recalculate hit coordinates after changing the slot heights.
-            if (changed) {
-                calendar.updateSize();
-                calendar.setOption('slotLaneClassNames', fold ? ['ea-midday-layout-folded'] : []);
+            for (let time = fold?.[0] ?? 0; fold && time < fold[1]; time += slot) {
+                rows.push('#calendar .fc-timegrid-slots tr:has(> td[data-time="' + clock(time) + ':00"])');
             }
-        });
+
+            style.textContent = rows.length
+                ? rows.map((row) => row + ' > td').join(',\n') +
+                  ' { height: 2px !important; min-height: 0 !important; padding: 0 !important; border-top: 0;' +
+                  ' border-bottom: 0; line-height: 0; pointer-events: none; }\n' +
+                  rows.map((row) => row + ' .fc-timegrid-slot-label-frame').join(',\n') +
+                  ' { display: none; }'
+                : '';
+
+            appliedFold = key;
+
+            // FullCalendar must measure the slots again, so that clicks and drags land on the right time.
+            calendars.forEach((calendar) => calendar.updateSize());
+        }
     }
 
     /**

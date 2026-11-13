@@ -376,22 +376,7 @@ body .modal.full-screen .modal-push {
     }
 }
 
-// Folded midday break (see calendar_midday.js).
-#calendar .fc-timegrid-slots tr.ea-midday-folded,
-#calendar .fc-timegrid-slots tr.ea-midday-folded > td {
-    height: 2px !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    border-top: 0;
-    border-bottom: 0;
-    line-height: 0;
-    pointer-events: none;
-}
-
-#calendar .ea-midday-folded .fc-timegrid-slot-label-frame,
-#calendar .ea-midday-folded .fc-timegrid-slot-label-cushion {
-    display: none;
-}
+// The folded midday break is styled by calendar_midday.js, which selects the rows of the break by their time.
 
 #calendar-page .fc-daygrid-day-top {
     font-size: 11px;
