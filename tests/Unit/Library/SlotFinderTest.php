@@ -36,12 +36,29 @@ class SlotFinderTest extends TestCase
         );
     }
 
-    public function testStartsAreAlignedWhenAPeriodBeginsOffTheGrid(): void
+    public function testAPeriodThatBeginsOffTheGridOffersItsExactStartAndThenTheGrid(): void
     {
         // e.g. after an appointment that ended at 09:25.
         $slots = Slot_finder::slots_in_periods('2026-11-16', [['start' => '09:25', 'end' => '10:30']], 25, 15);
 
-        $this->assertSame(['09:30', '09:45', '10:00'], $this->starts($slots));
+        $this->assertSame(['09:25', '09:30', '09:45', '10:00'], $this->starts($slots));
+    }
+
+    public function testAGapThatOnlyFitsOffTheGridIsFound(): void
+    {
+        // A 10 minutes gap between two appointments (10:40 to 10:50) fits a 10 minutes visit.
+        $slots = Slot_finder::slots_in_periods('2026-11-16', [['start' => '10:40', 'end' => '10:50']], 10, 15);
+
+        $this->assertSame(['10:40'], $this->starts($slots));
+        $this->assertSame('2026-11-16 10:50:00', $slots[0]['end']);
+    }
+
+    public function testAnOffTheGridGapThatIsTooShortIsSkipped(): void
+    {
+        $this->assertSame(
+            [],
+            Slot_finder::slots_in_periods('2026-11-16', [['start' => '10:40', 'end' => '10:48']], 10, 15),
+        );
     }
 
     public function testTheSlotsOfSeveralPeriodsAreSortedByTime(): void

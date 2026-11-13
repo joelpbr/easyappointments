@@ -118,8 +118,9 @@ class Slot_finder
     /**
      * Get the start times that fit a duration in the free periods of a day.
      *
-     * Starts are aligned to the calendar grid (e.g. 09:00, 09:15...), and the whole duration must fit before the
-     * period ends, so a 45 minutes appointment is never offered in a 30 minutes gap.
+     * Starts are aligned to the calendar grid (e.g. 09:00, 09:15...), plus the exact start of a period that begins off
+     * the grid (e.g. 10:40 after an appointment that ends then), so every gap that fits the duration is found. The
+     * whole duration must fit before the period ends, so a 45 minutes appointment is never offered in a 30 minutes gap.
      *
      * @param string $date Date (Y-m-d).
      * @param array $periods Free periods: [['start' => 'H:i', 'end' => 'H:i'], ...].
@@ -143,6 +144,15 @@ class Slot_finder
             $start = clone $period_start;
 
             if ($remainder) {
+                $end = (clone $period_start)->modify('+' . $duration . ' minutes');
+
+                if ($end <= $period_end) {
+                    $slots[] = [
+                        'start' => $period_start->format('Y-m-d H:i:s'),
+                        'end' => $end->format('Y-m-d H:i:s'),
+                    ];
+                }
+
                 $start->modify('+' . ($interval - $remainder) . ' minutes');
             }
 

@@ -226,3 +226,10 @@ comparadas byte a byte.
 | `assets/js/utils/calendar_table_view.js`, `calendar_default_view.js` | Llaman a `CalendarPastTime.update()` tras cargar los eventos y exponen `getCalendars()` | Ídem |
 | `assets/js/pages/calendar.js`, `application/views/pages/calendar.php` | Arrancan el refresco por minuto e incluyen el script | Ídem |
 | `assets/css/backend.scss` | El tiempo libre pasa a blanco (se quita el amarillo de «hoy» de FullCalendar) y ese amarillo (`#f7f2cf`) marca el tiempo pasado, por encima del tono de fuera de horario | Ídem |
+
+## Huecos fuera de la cuadrícula en el buscador
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/libraries/Slot_finder.php` | `slots_in_periods()` ofrece también el inicio exacto de un periodo libre que no cae en la cuadrícula (p. ej. 10:40), además de las horas de la cuadrícula | Un hueco es un hueco: si quedan 10 minutos libres dentro del horario y se buscan 10, debe encontrarse aunque no empiece en punto |
+| `tests/Unit/Library/SlotFinderTest.php` | Casos del hueco de 10 minutos que solo cabe fuera de la cuadrícula y del hueco demasiado corto | — |

@@ -38,6 +38,7 @@ developers to maintain and readjust their custom modifications on the main proje
 - Appointments are checked against the working plan, breaks, blocked periods, absences and other appointments when they are saved from the calendar, the API or the booking page, with a clear reason; reception can still confirm an exception on purpose, the API cannot
 - Two sessions can no longer book the same slot at the same time
 - "Find slot" in the calendar searches the free slots by treatment, duration, providers, dates, days, morning or afternoon, a preferred time with a margin and a preferred provider, and books the chosen slot with the appointment form already filled in
+- "Find slot" also finds gaps that do not start on the calendar grid, e.g. 10 free minutes from 10:40 after a visit that ends then, as long as they are inside the working hours
 - Every time outside the working hours (before opening, breaks, after closing and days off) is shown in the same reddish tone and labeled "Fuera de horario"
 - Free time in the calendar is white, and the time that has already passed is shaded in yellow, moving forward every minute
 - The local development environment now starts with docker compose -f docker-compose.dev.yml up and only includes the application, the database, the asset watcher and Mailpit (phpMyAdmin, Baikal, OpenLDAP, phpLDAPadmin and Swagger UI were removed)
