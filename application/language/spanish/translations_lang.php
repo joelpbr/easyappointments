@@ -786,4 +786,8 @@ $lang['clinical_record_saved'] = 'Ficha guardada.';
 $lang['clinical_visit_saved'] = 'Visita guardada.';
 $lang['clinical_unsaved_changes'] = 'Hay cambios sin guardar. ¿Quieres cerrar igualmente?';
 $lang['clinical_close_anyway'] = 'Cerrar sin guardar';
+$lang['clinical_history_tab'] = 'Antecedentes';
+$lang['clinical_choose_visit'] = 'Elige una visita de la lista.';
+$lang['clinical_save_visit'] = 'Guardar la visita';
+$lang['clinical_years_old'] = '%s años';
 // End

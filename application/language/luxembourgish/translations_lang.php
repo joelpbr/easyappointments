@@ -786,4 +786,8 @@ $lang['clinical_record_saved'] = 'Record saved.';
 $lang['clinical_visit_saved'] = 'Visit saved.';
 $lang['clinical_unsaved_changes'] = 'There are unsaved changes. Close anyway?';
 $lang['clinical_close_anyway'] = 'Close without saving';
+$lang['clinical_history_tab'] = 'Medical history';
+$lang['clinical_choose_visit'] = 'Choose a visit from the list.';
+$lang['clinical_save_visit'] = 'Save visit';
+$lang['clinical_years_old'] = '%s years old';
 // End
