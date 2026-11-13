@@ -522,19 +522,7 @@ class Customers_model extends EA_Model
             }
         }
 
-        if ($provider_ids !== null) {
-            $query->where(
-                'EXISTS (SELECT 1 FROM ' .
-                    $this->db->dbprefix('appointments') .
-                    ' AS appointments WHERE appointments.id_users_customer = ' .
-                    $this->db->dbprefix('users') .
-                    '.id AND appointments.id_users_provider IN (' .
-                    implode(',', array_map('intval', $provider_ids)) .
-                    '))',
-                null,
-                false,
-            );
-        }
+        $this->restrict_to_providers($query, $provider_ids);
 
         $customers = $query
             ->order_by('users.first_name ASC, users.last_name ASC, users.id ASC')
@@ -547,6 +535,102 @@ class Customers_model extends EA_Model
         }
 
         return $customers;
+    }
+
+    /**
+     * Find the patients that might be the same person as a new patient: the same phone number (whatever its format)
+     * or the same first and last name (ignoring case and accents).
+     *
+     * They are never merged: a phone can be shared by a family, and two people can have the same name.
+     *
+     * @param array $customer New patient data (first_name, last_name, phone_number and, when editing, id).
+     * @param array|null $provider_ids Only patients with an appointment with these providers (null: every patient).
+     * @param int $limit Maximum number of patients.
+     *
+     * @return array Patients with id, first_name, last_name, phone_number, same_phone and same_name.
+     */
+    public function find_possible_duplicates(array $customer, ?array $provider_ids = null, int $limit = 5): array
+    {
+        $phone = normalize_phone($customer['phone_number'] ?? null);
+        $first_name = trim((string) ($customer['first_name'] ?? ''));
+        $last_name = trim((string) ($customer['last_name'] ?? ''));
+        $has_name = $first_name !== '' && $last_name !== '';
+
+        if ((!$phone && !$has_name) || $provider_ids === []) {
+            return [];
+        }
+
+        // Resolved first: it runs its own query, which would reset the one being built.
+        $role_id = $this->get_customer_role_id();
+
+        // Raw SQL expressions, so the table needs its prefix.
+        $users = $this->db->dbprefix('users');
+
+        $same_phone = $phone ? $users . '.phone_normalized = ' . $this->db->escape($phone) : '0';
+
+        $same_name = $has_name
+            ? '(' .
+                $users .
+                '.first_name = ' .
+                $this->db->escape($first_name) .
+                ' AND ' .
+                $users .
+                '.last_name = ' .
+                $this->db->escape($last_name) .
+                ')'
+            : '0';
+
+        $query = $this->db
+            ->select('users.id, users.first_name, users.last_name, users.phone_number')
+            ->select($same_phone . ' AS same_phone, ' . $same_name . ' AS same_name', false)
+            ->from('users')
+            ->where('users.id_roles', $role_id)
+            ->where('(' . $same_phone . ' OR ' . $same_name . ')', null, false);
+
+        if (!empty($customer['id'])) {
+            $query->where('users.id !=', (int) $customer['id']);
+        }
+
+        $this->restrict_to_providers($query, $provider_ids);
+
+        $customers = $query
+            ->order_by('users.first_name ASC, users.last_name ASC, users.id ASC')
+            ->limit($limit)
+            ->get()
+            ->result_array();
+
+        foreach ($customers as &$duplicate) {
+            $this->cast($duplicate);
+            $duplicate['same_phone'] = (bool) $duplicate['same_phone'];
+            $duplicate['same_name'] = (bool) $duplicate['same_name'];
+        }
+
+        return $customers;
+    }
+
+    /**
+     * Keep only the patients with an appointment with some providers.
+     *
+     * @param CI_DB_query_builder $query Query on the users table.
+     * @param array|null $provider_ids Provider IDs (null: no restriction).
+     */
+    private function restrict_to_providers(CI_DB_query_builder $query, ?array $provider_ids): void
+    {
+        if ($provider_ids === null) {
+            return;
+        }
+
+        $query->where(
+            'EXISTS (SELECT 1 FROM ' .
+                $this->db->dbprefix('appointments') .
+                ' AS appointments WHERE appointments.id_users_customer = ' .
+                $this->db->dbprefix('users') .
+                '.id AND appointments.id_users_provider IN (' .
+                implode(',', array_map('intval', $provider_ids)) .
+                '))',
+            null,
+            false,
+        );
     }
 
     /**

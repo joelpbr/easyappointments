@@ -56,6 +56,7 @@ App.Components.AppointmentsModal = (function () {
     const MIN_DURATION = 5; // Minutes, matches EVENT_MINIMUM_DURATION.
 
     let patientSearch = null;
+    let newPatientConfirmed = false;
 
     /**
      * Show the duration of the start and end currently selected.
@@ -167,6 +168,27 @@ App.Components.AppointmentsModal = (function () {
         $saveAppointment.on('click', () => {
             // Before doing anything the appointment data need to be validated.
             if (!App.Components.AppointmentsModal.validateAppointmentForm()) {
+                return;
+            }
+
+            // A new patient might already exist: ask first, then save again with the answer.
+            if (!$customerId.val() && !newPatientConfirmed) {
+                App.Components.PatientDuplicates.confirmNewPatient({
+                    first_name: $firstName.val(),
+                    last_name: $lastName.val(),
+                    phone_number: $phoneNumber.val(),
+                }).then((choice) => {
+                    if (choice?.id) {
+                        App.Http.Customers.find(choice.id).done((customer) => {
+                            fillCustomer(customer);
+                            $saveAppointment.trigger('click');
+                        });
+                    } else if (choice?.create) {
+                        newPatientConfirmed = true;
+                        $saveAppointment.trigger('click');
+                    }
+                });
+
                 return;
             }
 
@@ -469,6 +491,7 @@ App.Components.AppointmentsModal = (function () {
         $newCustomer.on('click', () => {
             markAsNewPatient();
             patientSearch.reset();
+            newPatientConfirmed = false;
 
             $customerId.val('');
             $firstName.val('');
@@ -496,6 +519,8 @@ App.Components.AppointmentsModal = (function () {
      * any modification might be necessary in order to bring the dialog to the desired state.
      */
     function resetModal() {
+        newPatientConfirmed = false;
+
         // Empty form fields.
         $appointmentsModal.find('input, textarea').val('');
         $appointmentsModal.find('.modal-message').addClass('.d-none');

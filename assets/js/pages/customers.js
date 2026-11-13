@@ -164,7 +164,26 @@ App.Pages.Customers = (function () {
                 return;
             }
 
-            App.Pages.Customers.save(customer);
+            if (customer.id) {
+                App.Pages.Customers.save(customer);
+
+                return;
+            }
+
+            // A new patient might already exist: show the existing one instead, or create it anyway.
+            App.Components.PatientDuplicates.confirmNewPatient(customer).then((choice) => {
+                if (choice?.create) {
+                    App.Pages.Customers.save(customer);
+                } else if (choice?.id) {
+                    App.Pages.Customers.resetForm();
+                    $('#customers-page').removeClass('editing');
+                    App.Pages.Customers.filter(
+                        [choice.patient.first_name, choice.patient.last_name].join(' ').trim(),
+                        choice.id,
+                        true,
+                    );
+                }
+            });
         });
 
         /**

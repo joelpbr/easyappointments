@@ -293,6 +293,38 @@ class Customers extends EA_Controller
     }
 
     /**
+     * Find the patients that might be the same person as the patient being created or edited.
+     */
+    public function duplicates(): void
+    {
+        try {
+            method('post');
+
+            if (cannot('view', PRIV_CUSTOMERS)) {
+                abort(403, 'Forbidden');
+            }
+
+            check('customer', 'array');
+
+            $customer = request('customer', []);
+
+            json_response(
+                $this->customers_model->find_possible_duplicates(
+                    [
+                        'id' => $customer['id'] ?? null,
+                        'first_name' => (string) ($customer['first_name'] ?? ''),
+                        'last_name' => (string) ($customer['last_name'] ?? ''),
+                        'phone_number' => (string) ($customer['phone_number'] ?? ''),
+                    ],
+                    $this->visible_provider_ids(),
+                ),
+            );
+        } catch (Throwable $e) {
+            json_exception($e);
+        }
+    }
+
+    /**
      * Get the providers whose patients the current user can see, following the "limit customer access" setting.
      *
      * @return array|null Provider IDs, or null when the user can see every patient.

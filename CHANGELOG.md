@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- Creating a patient whose phone number (in any format) or first and last name (ignoring accents and case) match an existing one asks whether to use the existing patient or create the new one anyway, in the appointment form and on the patients page; patients are never merged
 - The appointment form finds existing patients when Enter is pressed after typing at least three letters of their name or six digits of their phone number, without accents mattering and whatever the phone format; it shows up to 10 patients, asks to narrow broader searches and offers to create a new patient, and the calendar no longer loads the patient list in advance
 - The reception calendar folds the shared midday break by default, with a toggle beside the date; visits and reservations keep the interval open, including visits hidden by treatment filters
 - Wallet and Infiltración are available as clinic treatments, assigned to the existing providers

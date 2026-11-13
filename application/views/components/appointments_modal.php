@@ -406,6 +406,7 @@
 <?php section('scripts'); ?>
 
 <script src="<?= asset_url('assets/js/components/patient_search.js') ?>"></script>
+<script src="<?= asset_url('assets/js/components/patient_duplicates.js') ?>"></script>
 <script src="<?= asset_url('assets/js/components/appointments_modal.js') ?>"></script>
 
 <?php end_section('scripts'); ?>
