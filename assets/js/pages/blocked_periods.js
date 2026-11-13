@@ -495,11 +495,6 @@ App.Pages.BlockedPeriods = (function () {
         App.Pages.BlockedPeriods.addEventListeners();
         App.Utils.UI.initializeDateTimePicker($startDateTime);
         App.Utils.UI.initializeDateTimePicker($endDateTime);
-
-        // Coming from the "Block agenda" button of the calendar: start a new blocked period.
-        if (new URLSearchParams(window.location.search).has('new')) {
-            $('#add-blocked-period').trigger('click');
-        }
     }
 
     document.addEventListener('DOMContentLoaded', initialize);
