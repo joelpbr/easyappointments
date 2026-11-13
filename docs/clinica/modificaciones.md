@@ -521,3 +521,5 @@ Cambio posterior: la lista de Pacients alterna filas blancas y gris claro (`#f1f
 Cambio posterior: todo lo que está fuera de horario tiene exactamente el mismo aspecto que el mediodía (fondo `#7f7f7f` con rayas, sin borde, texto blanco en negrita y cursiva, sin contorno ni sombra), también las indisponibilidades «No disponible», que antes tenían borde y otro tamaño de letra. Una sola regla en `backend.scss`.
 
 Cambio posterior: la etiqueta «Migdia» queda centrada en la franja plegada del mediodía (antes el margen la empujaba abajo y se cortaba); lo mismo para las etiquetas del resto de franjas fuera de horario.
+
+Cambio posterior: las visitas cortas (10-15 minutos) muestran todo en una sola línea («Paciente · Tratamiento (precio) · hora · duración · estado»), cortada con puntos suspensivos si no cabe, en lugar de dos líneas que se salían de la tarjeta; al pasar el ratón se sigue viendo todo.
