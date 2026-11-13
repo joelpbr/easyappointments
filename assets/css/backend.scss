@@ -411,6 +411,12 @@ body .modal.full-screen .modal-push {
         font-weight: bold;
         font-style: italic;
     }
+
+    // The label sits in the middle of the folded midday strip (20px high), which the default margin pushed down.
+    &.fc-bg-event .fc-event-title {
+        margin: 2px 6px;
+        line-height: 16px;
+    }
 }
 
 // The folded midday break is styled by calendar_midday.js, which selects the rows of the break by their time.
