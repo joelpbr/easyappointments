@@ -791,4 +791,5 @@ $lang['clinical_save_visit'] = 'Save visit';
 $lang['clinical_years_old'] = '%s years old';
 $lang['clinical_new_patient'] = 'New patient';
 $lang['clinical_record_fields_hint'] = 'The name, phone, address and NIF/NIE are edited in the record.';
+$lang['clinical_age'] = 'Age';
 // End

@@ -78,12 +78,17 @@
                             ) ?></label>
                             <input id="clinical-birth-date" class="form-control" data-record="birth_date">
                         </div>
+                        <!-- Calculated from the date of birth, not saved. -->
+                        <div class="col-md-1">
+                            <label class="form-label" for="clinical-age"><?= lang('clinical_age') ?></label>
+                            <input id="clinical-age" class="form-control ea-clinical-age" readonly tabindex="-1">
+                        </div>
                         <div class="col-md-3">
                             <label class="form-label" for="clinical-phone-number"><?= lang('phone_number') ?></label>
                             <input id="clinical-phone-number" class="form-control" data-customer="phone_number"
                                    maxlength="128">
                         </div>
-                        <div class="col-md-7">
+                        <div class="col-md-6">
                             <label class="form-label" for="clinical-address"><?= lang('address') ?></label>
                             <input id="clinical-address" class="form-control" data-customer="address" maxlength="256">
                         </div>
