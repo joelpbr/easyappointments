@@ -31,6 +31,7 @@ class Services_model extends EA_Model
      */
     private const DROPDOWN_ORDER = [
         'Quiropodia',
+        'Revisión',
         'Exploración',
         'Entrega SP',
         'Revisión SP',
