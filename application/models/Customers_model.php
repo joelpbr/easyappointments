@@ -525,7 +525,7 @@ class Customers_model extends EA_Model
         $role_id = $this->get_customer_role_id();
 
         $query = $this->db
-            ->select('users.id, users.first_name, users.last_name, users.phone_number, users.no_show_count')
+            ->select('users.id, users.first_name, users.last_name, users.phone_number')
             ->from('users')
             ->where('users.id_roles', $role_id);
 
