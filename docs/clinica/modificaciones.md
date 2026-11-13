@@ -283,3 +283,17 @@ Más tarde el tono pasó a rayas rojas (ver «Mediodía plegable»).
 | `assets/js/components/appointments_modal.js`, `appointments_modal.php` | Usa el autocompletado; se quita el botón «Seleccionar» y su lista | La lista partía de los pacientes cargados con la página |
 | `application/controllers/Calendar.php` | Deja de cargar 50 pacientes en la página | No descargar pacientes al navegador (12.4) |
 | `assets/js/http/customers_http_client.js` | `autocomplete()`; `find()` usa GET como exige el controlador | `find()` fallaba siempre con POST |
+
+## Búsqueda de pacientes con Intro (fase 5)
+
+Sustituye al autocompletado mientras se escribe: con unos 10.000 pacientes, unas pocas letras coinciden con demasiados.
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/helpers/patient_search_helper.php` | `is_specific_patient_search()`: una búsqueda necesita al menos dos palabras de dos letras (nombre y apellido) o seis cifras del teléfono | Que se sepa a quién se busca |
+| `application/models/Customers_model.php` | `autocomplete()` pasa a `quick_search()` y no busca si la búsqueda no es concreta | Ídem, también en el servidor |
+| `application/controllers/Customers.php` | `quick_search` devuelve 10 pacientes como máximo y si hay más coincidencias (`more`) | Pedir que se afine en lugar de listar cientos |
+| `assets/js/components/patient_search.js` | Sustituye a `patient_autocomplete.js`: busca solo al pulsar Intro, avisa si la búsqueda es demasiado amplia, sin consultar al servidor, y cierra los resultados al seguir escribiendo | Petición de la clínica |
+| `application/views/components/appointments_modal.php` | Indicación de cómo buscar bajo «Detalles del paciente» | Ídem |
+
+Medido con 10.000 pacientes ficticios (borrados después): unos 20 ms por búsqueda, incluida la petición.

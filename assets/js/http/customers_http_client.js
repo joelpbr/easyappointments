@@ -105,14 +105,14 @@ App.Http.Customers = (function () {
     }
 
     /**
-     * Find the patients that match a typed name or phone number (few fields, up to 10 patients).
+     * Find the patients that match a specific search: the first name and the last name, or six digits of the phone.
      *
      * @param {String} keyword
      *
-     * @return {Object}
+     * @return {Object} {specific, patients (up to 10, few fields), more}
      */
-    function autocomplete(keyword) {
-        const url = App.Utils.Url.siteUrl('customers/autocomplete');
+    function quickSearch(keyword) {
+        const url = App.Utils.Url.siteUrl('customers/quick_search');
 
         const data = {
             csrf_token: vars('csrf_token'),
@@ -136,7 +136,7 @@ App.Http.Customers = (function () {
     }
 
     return {
-        autocomplete,
+        quickSearch,
         save,
         store,
         update,

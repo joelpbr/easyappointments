@@ -55,7 +55,7 @@ App.Components.AppointmentsModal = (function () {
 
     const MIN_DURATION = 5; // Minutes, matches EVENT_MINIMUM_DURATION.
 
-    let patientAutocomplete = null;
+    let patientSearch = null;
 
     /**
      * Show the duration of the start and end currently selected.
@@ -468,7 +468,7 @@ App.Components.AppointmentsModal = (function () {
          */
         $newCustomer.on('click', () => {
             markAsNewPatient();
-            patientAutocomplete.reset();
+            patientSearch.reset();
 
             $customerId.val('');
             $firstName.val('');
@@ -532,7 +532,7 @@ App.Components.AppointmentsModal = (function () {
             }
         });
 
-        patientAutocomplete.reset();
+        patientSearch.reset();
 
         // Setup start and datetimepickers.
         // Get the selected service duration. It will be needed in order to calculate the appointment end datetime.
@@ -682,7 +682,7 @@ App.Components.AppointmentsModal = (function () {
     function initialize() {
         addEventListeners();
 
-        patientAutocomplete = App.Components.PatientAutocomplete.attach({
+        patientSearch = App.Components.PatientSearch.attach({
             $firstName,
             $lastName,
             $phoneNumber,

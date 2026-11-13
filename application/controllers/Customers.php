@@ -20,6 +20,8 @@
  */
 class Customers extends EA_Controller
 {
+    private const QUICK_SEARCH_LIMIT = 10;
+
     public array $allowed_customer_fields = [
         'id',
         'first_name',
@@ -250,9 +252,12 @@ class Customers extends EA_Controller
     }
 
     /**
-     * Find the patients that match the typed text, for the autocomplete of the appointment form.
+     * Find the patients that match a specific search, for the patient search of the appointment form.
+     *
+     * A broad search (e.g. a single name) is not run. Up to QUICK_SEARCH_LIMIT patients are returned, and "more" tells
+     * when there are other matches, so that the search can be narrowed.
      */
-    public function autocomplete(): void
+    public function quick_search(): void
     {
         try {
             method('post');
@@ -263,13 +268,25 @@ class Customers extends EA_Controller
 
             check('keyword', 'string|null');
 
-            json_response(
-                $this->customers_model->autocomplete(
-                    (string) request('keyword', ''),
-                    10,
-                    $this->visible_provider_ids(),
-                ),
+            $keyword = (string) request('keyword', '');
+
+            if (!is_specific_patient_search($keyword)) {
+                json_response(['specific' => false, 'patients' => [], 'more' => false]);
+
+                return;
+            }
+
+            $patients = $this->customers_model->quick_search(
+                $keyword,
+                self::QUICK_SEARCH_LIMIT + 1,
+                $this->visible_provider_ids(),
             );
+
+            json_response([
+                'specific' => true,
+                'patients' => array_slice($patients, 0, self::QUICK_SEARCH_LIMIT),
+                'more' => count($patients) > self::QUICK_SEARCH_LIMIT,
+            ]);
         } catch (Throwable $e) {
             json_exception($e);
         }
