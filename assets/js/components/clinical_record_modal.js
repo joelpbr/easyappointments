@@ -179,7 +179,13 @@ App.Components.ClinicalRecordModal = (function () {
 
         const allergies = (data.record.allergies || '').trim();
 
-        $allergiesAlert.prop('hidden', !allergies).find('span').text(allergies);
+        // "No known allergies" and the like ("No refereix al·lèrgies", "Sin alergias", "Cap", "Ninguna") is no warning.
+        const noAllergies = /^(no\b|sense\b|sin\b|cap\b|ninguna|ningú|nada|res\b|-+$)/i.test(allergies);
+
+        $allergiesAlert
+            .prop('hidden', !allergies || noAllergies)
+            .find('span')
+            .text(allergies);
     }
 
     /**
