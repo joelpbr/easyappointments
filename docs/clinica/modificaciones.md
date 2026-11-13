@@ -513,3 +513,7 @@ Cambio posterior: la búsqueda de la página de Pacients busca en un solo campo 
 Cambio posterior: la búsqueda de Pacients deja el desplegable y busca a la vez en nombre, apellidos, teléfono y NIF/NIE: cada palabra escrita tiene que coincidir con alguno («mar gar», «vidal 614»); un texto sin letras se busca como teléfono o número de documento en cualquier formato. `Customers_model::search_patients()`.
 
 Cambio posterior: la lista de Pacients muestra una línea por paciente (unos 34 px en lugar de unos 80): el nombre a la izquierda y, a la derecha, solo lo que también se busca, el teléfono y el DNI/NIE (sin email). Cabe más del doble de pacientes a la vista.
+
+Cambio posterior: todo el tiempo fuera de horario (madrugada, noche, mediodía, días sin trabajo, festivos, bloqueos e indisponibilidades «No disponible») usa el mismo fondo gris `#7f7f7f` con las rayas diagonales; el texto de las indisponibilidades va en blanco con sombra para leerse sobre el gris.
+
+Cambio posterior: la lista de Pacients alterna filas blancas y gris claro (`#f1f3f5`, más oscuro al pasar el ratón) y muestra el teléfono y el DNI en dos columnas alineadas y más separadas.
