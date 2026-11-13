@@ -461,3 +461,5 @@ Cambio posterior: la barra de la agenda vuelve a fondo blanco (texto negro, mism
 Cambio posterior: la barra de desplazamiento vertical de la agenda se oculta (se sigue desplazando con la rueda o el dedo), así no ocupa ancho y las columnas caben sin desplazamiento horizontal.
 
 Cambio posterior: en el modo lista de la agenda se quita el punto de color y el día de arriba (ya está en la cabecera del profesional); cada fila tiene el color de su tratamiento, como las tarjetas del modo calendario, y las citas que ya han acabado llevan encima las rayas de las horas fuera de horario, manteniendo su color (se revisa cada minuto, `markEndedListEvents()`).
+
+Cambio posterior: nuevo tratamiento «Revisión SP» (30 min, 40 €, color `#f7d6ae`), ofrecido por todos los profesionales y situado entre «Entrega SP» y «Cura» en los desplegables (migración `087_add_sp_review_treatment.php` y `Services_model::DROPDOWN_ORDER`).

@@ -33,6 +33,7 @@ class Services_model extends EA_Model
         'Quiropodia',
         'Exploración',
         'Entrega SP',
+        'Revisión SP',
         'Cura',
         'Cura PV',
         'Wallet',
