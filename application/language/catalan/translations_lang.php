@@ -795,4 +795,5 @@ $lang['clinical_age'] = 'Edat';
 $lang['patients_total'] = '%s pacients';
 $lang['patients_found'] = '%s de %s pacients';
 $lang['patient_search_placeholder'] = 'Nom, cognoms, telèfon o DNI';
+$lang['fiscal_same_as_patient_hint'] = 'Els camps buits fan servir les dades del pacient (en gris).';
 // End

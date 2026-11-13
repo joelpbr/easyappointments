@@ -219,7 +219,10 @@
 
                     <fieldset id="fiscal-data" class="mb-3">
                         <h5 class="mt-4 mb-1 fw-light"><?= lang('fiscal_data') ?></h5>
-                        <p class="form-text mt-0 mb-3"><?= lang('fiscal_data_hint') ?></p>
+                        <p class="form-text mt-0 mb-3">
+                            <?= lang('fiscal_data_hint') ?>
+                            <?= lang('fiscal_same_as_patient_hint') ?>
+                        </p>
 
                         <?php if (!vars('clinical_records')): ?>
                         <div class="mb-3">

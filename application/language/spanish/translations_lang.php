@@ -795,4 +795,5 @@ $lang['clinical_age'] = 'Edad';
 $lang['patients_total'] = '%s pacientes';
 $lang['patients_found'] = '%s de %s pacientes';
 $lang['patient_search_placeholder'] = 'Nombre, apellidos, teléfono o DNI';
+$lang['fiscal_same_as_patient_hint'] = 'Los campos vacíos usan los datos del paciente (en gris).';
 // End

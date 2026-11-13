@@ -17,11 +17,25 @@
  * them to book an appointment, and they can be added or corrected later. See the fiscal_parties migration for the
  * difference between the patient and other invoice recipients.
  *
+ * The patient's own row keeps only what differs from the patient: an empty name, address, zip code, city or province
+ * means the patient's one, and an empty country means Spain (see PATIENT_FIELDS). So changing the address of the
+ * patient also changes the address of their invoices, unless they asked for another one.
+ *
  * @package Models
  */
 class Fiscal_parties_model extends EA_Model
 {
     public const RELATIONSHIP_PATIENT = 'patient';
+
+    /**
+     * Fiscal fields that default to a field of the patient (users) when they are empty.
+     */
+    public const PATIENT_FIELDS = [
+        'address' => 'address',
+        'zip_code' => 'zip_code',
+        'city' => 'city',
+        'province' => 'state',
+    ];
 
     public const FIELDS = [
         'document_type',
@@ -119,6 +133,8 @@ class Fiscal_parties_model extends EA_Model
 
         $this->validate($data);
 
+        $data = $this->without_patient_values($customer_id, $data);
+
         if (in_array($data['document_type'], ['dni', 'nie', 'nif'], true)) {
             $data['document_number'] = normalize_fiscal_id($data['document_number']);
         }
@@ -159,6 +175,47 @@ class Fiscal_parties_model extends EA_Model
 
         $this->db->insert('fiscal_parties', $record + $where + ['create_datetime' => date('Y-m-d H:i:s')]);
         audit_log('created', 'fiscal_party', (int) $this->db->insert_id(), $changes);
+    }
+
+    /**
+     * Empty the fields that only repeat the patient's data, so that the row keeps what differs from the patient.
+     *
+     * @param int $customer_id Patient ID.
+     * @param array $data The FIELDS.
+     *
+     * @return array The FIELDS.
+     */
+    private function without_patient_values(int $customer_id, array $data): array
+    {
+        $patient = $this->db
+            ->select('first_name, last_name, address, zip_code, city, state')
+            ->get_where('users', ['id' => $customer_id])
+            ->row_array();
+
+        if (!$patient) {
+            return $data;
+        }
+
+        $same = fn(string $value, ?string $patient_value): bool => mb_strtolower($value) ===
+            mb_strtolower(trim((string) $patient_value));
+
+        $full_name = trim($patient['first_name'] . ' ' . $patient['last_name']);
+
+        if ($same($data['name'], $full_name)) {
+            $data['name'] = '';
+        }
+
+        foreach (self::PATIENT_FIELDS as $field => $patient_field) {
+            if ($same($data[$field], $patient[$patient_field])) {
+                $data[$field] = '';
+            }
+        }
+
+        if ($data['country'] !== '' && $this->is_spain($data['country'])) {
+            $data['country'] = '';
+        }
+
+        return $data;
     }
 
     /**
