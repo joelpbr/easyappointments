@@ -489,3 +489,5 @@ Tipos de ficha (asignados por la migración, editables en Tractaments):
 El NIF/NIE de la ficha es el número de documento de los datos fiscales: se guarda una sola vez. El dibujo de los pies es de momento un marcador `[DIBUJO PIES]`.
 
 Cambio posterior: la ficha clínica deja el panel lateral y pasa a pestañas («Dades», «Antecedents» con antecedentes y alergias, «Visites»). En «Visites» la lista de visitas queda a la izquierda y la ficha de la visita elegida a la derecha, dentro de la misma ventana, con su propio botón «Desa la visita». La cabecera muestra el paciente con edad, documento y teléfono, y un aviso rojo con las alergias cuando tiene. Abierta desde una cita de la agenda, se abre en «Visites» con esa visita; si se cambia de visita o se cierra con cambios sin guardar, pregunta antes.
+
+Cambio posterior: la ficha queda con dos pestañas, «Dades» y «Visites»; los antecedentes médicos y las alergias pasan a «Dades», uno al lado del otro debajo de los datos.

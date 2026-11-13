@@ -786,7 +786,6 @@ $lang['clinical_record_saved'] = 'Fitxa desada.';
 $lang['clinical_visit_saved'] = 'Visita desada.';
 $lang['clinical_unsaved_changes'] = 'Hi ha canvis sense desar. Vols tancar igualment?';
 $lang['clinical_close_anyway'] = 'Tancar sense desar';
-$lang['clinical_history_tab'] = 'Antecedents';
 $lang['clinical_choose_visit'] = 'Tria una visita de la llista.';
 $lang['clinical_save_visit'] = 'Desa la visita';
 $lang['clinical_years_old'] = '%s anys';

@@ -2,9 +2,9 @@
 /**
  * Local variables.
  *
- * Clinical record of a patient (see clinical_record_modal.js): a header with the patient, and three tabs: details,
- * medical history and visits. The visits tab lists the visits on the left and shows the record of the chosen one on
- * the right. Only rendered for admins and providers.
+ * Clinical record of a patient (see clinical_record_modal.js): a header with the patient, and two tabs: details
+ * (with the medical history and allergies) and visits. The visits tab lists the visits on the left and shows the
+ * record of the chosen one on the right. Only rendered for admins and providers.
  */
 ?>
 
@@ -33,12 +33,6 @@
                     <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#clinical-tab-details"
                             type="button" role="tab" data-tab="details">
                         <i class="fas fa-id-card me-2"></i><?= lang('clinical_patient_data') ?>
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#clinical-tab-history" type="button"
-                            role="tab" data-tab="history">
-                        <i class="fas fa-notes-medical me-2"></i><?= lang('clinical_history_tab') ?>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
@@ -114,23 +108,21 @@
                             <input id="clinical-physical-activity" class="form-control"
                                    data-record="physical_activity" maxlength="256">
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="clinical-medical-history"><?= lang(
+                                'clinical_medical_history',
+                            ) ?></label>
+                            <textarea id="clinical-medical-history" class="form-control" rows="5"
+                                      data-record="medical_history"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="clinical-allergies"><?= lang('clinical_allergies') ?></label>
+                            <textarea id="clinical-allergies" class="form-control" rows="5"
+                                      data-record="allergies"></textarea>
+                        </div>
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="clinical-tab-history" role="tabpanel">
-                    <div class="mb-3">
-                        <label class="form-label" for="clinical-medical-history"><?= lang(
-                            'clinical_medical_history',
-                        ) ?></label>
-                        <textarea id="clinical-medical-history" class="form-control" rows="9"
-                                  data-record="medical_history"></textarea>
-                    </div>
-                    <div>
-                        <label class="form-label" for="clinical-allergies"><?= lang('clinical_allergies') ?></label>
-                        <textarea id="clinical-allergies" class="form-control" rows="4"
-                                  data-record="allergies"></textarea>
-                    </div>
-                </div>
 
                 <div class="tab-pane fade" id="clinical-tab-visits" role="tabpanel">
                     <div class="row g-0 ea-clinical-visits-layout">

@@ -1064,7 +1064,7 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
 }
 
 // Clinical record of a patient (see clinical_record_modal.js): a header with the patient, the allergies when there are
-// some, and tabs for the details, the medical history and the visits (list on the left, chosen visit on the right).
+// some, and two tabs: the details (with the medical history) and the visits (list on the left, chosen visit on the right).
 #clinical-record-modal {
     // A fixed height that fits the screen: the tabs scroll inside, so the window never jumps nor overflows.
     .modal-content {
