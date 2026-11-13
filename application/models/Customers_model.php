@@ -476,23 +476,24 @@ class Customers_model extends EA_Model
     }
 
     /**
-     * Find the patients whose name, last name or phone number start with the typed text, for the autocomplete.
+     * Find the patients whose name, last name or phone number match a specific search (see
+     * is_specific_patient_search()), for the patient search of the appointment form.
      *
      * Every word must start the first name, the last name or one of their words, so "mar gar" finds "María García"
-     * and "María Gómez García". A text made of digits searches the normalized phone numbers instead. Only the fields
+     * and "María Gómez García". A text without letters searches the normalized phone numbers instead. Only the fields
      * needed to recognize a patient are returned.
      *
      * @param string $keyword Typed text.
      * @param int $limit Maximum number of patients.
      * @param array|null $provider_ids Only patients with an appointment with these providers (null: every patient).
      *
-     * @return array Patients with id, first_name, last_name and phone_number.
+     * @return array Patients with id, first_name, last_name and phone_number (none for a broad search).
      */
-    public function autocomplete(string $keyword, int $limit = 10, ?array $provider_ids = null): array
+    public function quick_search(string $keyword, int $limit = 10, ?array $provider_ids = null): array
     {
         $keyword = trim($keyword);
 
-        if (mb_strlen($keyword) < 2 || $provider_ids === []) {
+        if (!is_specific_patient_search($keyword) || $provider_ids === []) {
             return [];
         }
 
@@ -506,7 +507,7 @@ class Customers_model extends EA_Model
 
         $digits = preg_replace('/\D/', '', $keyword);
 
-        if (!preg_match('/\p{L}/u', $keyword) && strlen($digits) >= 3) {
+        if (!preg_match('/\p{L}/u', $keyword)) {
             // The national number may be typed without the prefix, so the digits can be anywhere in it.
             $query->like('users.phone_normalized', $digits);
         } else {

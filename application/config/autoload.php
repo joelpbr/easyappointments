@@ -80,6 +80,7 @@ $autoload['helper'] = [
     'language',
     'password',
     'path',
+    'patient_search',
     'permission',
     'phone',
     'rate_limit',

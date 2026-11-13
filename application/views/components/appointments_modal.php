@@ -252,6 +252,11 @@
                             </button>
                         </h5>
 
+                        <p class="form-text mt-n2 mb-3">
+                            <i class="fas fa-search me-1"></i>
+                            <?= lang('patient_search_hint') ?>
+                        </p>
+
                         <input id="customer-id" type="hidden">
 
                         <div class="row">
@@ -400,7 +405,7 @@
 
 <?php section('scripts'); ?>
 
-<script src="<?= asset_url('assets/js/components/patient_autocomplete.js') ?>"></script>
+<script src="<?= asset_url('assets/js/components/patient_search.js') ?>"></script>
 <script src="<?= asset_url('assets/js/components/appointments_modal.js') ?>"></script>
 
 <?php end_section('scripts'); ?>

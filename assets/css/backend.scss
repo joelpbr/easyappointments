@@ -873,7 +873,7 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     margin-left: 10px;
 }
 
-// Patient suggestions under the name and phone fields of the appointment form (see patient_autocomplete.js).
+// Patient search results under the name and phone fields of the appointment form (see patient_search.js).
 #appointments-modal .mb-3:has(> .ea-patient-suggestions) {
     position: relative;
 }
