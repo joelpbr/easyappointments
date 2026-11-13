@@ -19,7 +19,6 @@ App.Utils.CalendarTableView = (function () {
 
     const EVENT_COLORS = {
         unavailability: '#879DB4',
-        blockedPeriod: '#d65069',
         notWorking: '#BEBEBE',
         workingPlanException: '#879DB4',
         default: '#7cbae8',
@@ -994,25 +993,15 @@ App.Utils.CalendarTableView = (function () {
      * @param {Array} blockedPeriods - Blocked period data array.
      */
     function createBlockedPeriods($providerColumn, blockedPeriods) {
-        if (!blockedPeriods?.length) {
-            return;
+        // Only the periods of the whole clinic and those of this provider.
+        const calendarEvents = App.Utils.CalendarBlockedPeriods.events(
+            blockedPeriods,
+            $providerColumn.data('provider').id,
+        );
+
+        if (calendarEvents.length) {
+            $providerColumn.find('.calendar-wrapper').data('fullCalendar').addEventSource(calendarEvents);
         }
-
-        const calendarEvents = blockedPeriods.map((blockedPeriod) => ({
-            title: blockedPeriod.name,
-            start: moment(blockedPeriod.start_datetime).toDate(),
-            end: moment(blockedPeriod.end_datetime).toDate(),
-            allDay: true,
-            backgroundColor: EVENT_COLORS.blockedPeriod,
-            borderColor: EVENT_COLORS.blockedPeriod,
-            textColor: '#ffffff',
-            display: 'block',
-            editable: false,
-            className: 'fc-blocked-period fc-unavailability',
-            data: blockedPeriod,
-        }));
-
-        $providerColumn.find('.calendar-wrapper').data('fullCalendar').addEventSource(calendarEvents);
     }
 
     /**

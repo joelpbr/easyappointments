@@ -22,6 +22,11 @@ App.Pages.BlockedPeriods = (function () {
     const $startDateTime = $('#start-date-time');
     const $endDateTime = $('#end-date-time');
     const $notes = $('#notes');
+    const $type = $('#type');
+    const $providerIds = $('#provider-ids');
+    const $recurrence = $('#recurrence');
+    const $recurrenceUntil = $('#recurrence-until');
+    const $recurrenceUntilGroup = $('#recurrence-until-group');
     const moment = window.moment;
 
     let filterResults = {};
@@ -145,10 +150,20 @@ App.Pages.BlockedPeriods = (function () {
             const endDateTimeObject = App.Utils.UI.getDateTimePickerValue($endDateTime);
             const endDateTimeMoment = moment(endDateTimeObject);
 
+            const providerIds = $providerIds
+                .find('input:checked')
+                .map((index, input) => input.value)
+                .get();
+
             const blockedPeriod = {
                 name: $name.val(),
+                type: $type.val(),
                 start_datetime: startDateTimeMoment.format('YYYY-MM-DD HH:mm:ss'),
                 end_datetime: endDateTimeMoment.format('YYYY-MM-DD HH:mm:ss'),
+                recurrence: $recurrence.val(),
+                recurrence_until: $recurrence.val() === 'none' ? '' : $recurrenceUntil.val(),
+                // An empty list is not sent by a form post, so "none" is sent as an empty value.
+                provider_ids: providerIds.length ? providerIds : '',
                 notes: $notes.val(),
             };
 
@@ -173,6 +188,13 @@ App.Pages.BlockedPeriods = (function () {
             if (id !== '') {
                 App.Pages.BlockedPeriods.select(id, true);
             }
+        });
+
+        /**
+         * Event: Recurrence "Change"
+         */
+        $recurrence.on('change', () => {
+            $recurrenceUntilGroup.prop('hidden', $recurrence.val() === 'none');
         });
 
         $blockedPeriods.on('focus', '#start-date-time', () => {
@@ -246,14 +268,72 @@ App.Pages.BlockedPeriods = (function () {
      *
      * @param {Object} blockedPeriod Contains the blocked-period data.
      */
-    function save(blockedPeriod) {
-        App.Http.BlockedPeriods.save(blockedPeriod).then((response) => {
+    function save(blockedPeriod, confirmed = false) {
+        App.Http.BlockedPeriods.save(blockedPeriod, confirmed).then((response) => {
+            if (response.affected) {
+                confirmAffectedAppointments(blockedPeriod, response.affected);
+
+                return;
+            }
+
             App.Layouts.Backend.displayNotification(lang('blocked_period_saved'));
             App.Pages.BlockedPeriods.resetForm();
             $('#blocked-periods-page').removeClass('editing');
             $filterBlockedPeriods.find('.key').val('');
             App.Pages.BlockedPeriods.filter('', response.id, true);
         });
+    }
+
+    /**
+     * List the appointments that a blocked period falls on, with a link to reschedule each of them, and save the period
+     * only when the user confirms. The appointments are never cancelled by it.
+     *
+     * @param {Object} blockedPeriod
+     * @param {Array} appointments
+     */
+    function confirmAffectedAppointments(blockedPeriod, appointments) {
+        const $body = $('<div/>').append(
+            $('<p/>', {text: lang('blocked_period_affected_intro')}),
+            $('<ul/>', {class: 'list-unstyled mb-0'}).append(
+                appointments.map((appointment) =>
+                    $('<li/>', {class: 'py-1 border-bottom'}).append(
+                        $('<strong/>', {
+                            text: App.Utils.Date.format(
+                                moment(appointment.start_datetime).toDate(),
+                                vars('date_format'),
+                                vars('time_format'),
+                                true,
+                            ),
+                        }),
+                        document.createTextNode(
+                            ' · ' +
+                                [appointment.customer_name, appointment.provider_name].filter(Boolean).join(' · ') +
+                                ' ',
+                        ),
+                        $('<a/>', {
+                            href: App.Utils.Url.siteUrl('calendar/reschedule/' + appointment.hash),
+                            target: '_blank',
+                            text: lang('reschedule'),
+                        }),
+                    ),
+                ),
+            ),
+        );
+
+        App.Utils.Message.show(lang('blocked_period_affected_title'), $body.html(), [
+            {
+                text: lang('close'),
+                className: 'btn btn-outline-secondary',
+                click: (event, messageModal) => messageModal.hide(),
+            },
+            {
+                text: lang('blocked_period_block_anyway'),
+                click: (event, messageModal) => {
+                    messageModal.hide();
+                    save(blockedPeriod, true);
+                },
+            },
+        ]);
     }
 
     /**
@@ -281,6 +361,16 @@ App.Pages.BlockedPeriods = (function () {
         App.Utils.UI.setDateTimePickerValue($startDateTime, new Date(blockedPeriod.start_datetime));
         App.Utils.UI.setDateTimePickerValue($endDateTime, new Date(blockedPeriod.end_datetime));
         $notes.val(blockedPeriod.notes);
+        $type.val(blockedPeriod.type || 'other');
+        $recurrence.val(blockedPeriod.recurrence || 'none');
+        $recurrenceUntil.val(blockedPeriod.recurrence_until || '');
+        $recurrenceUntilGroup.prop('hidden', $recurrence.val() === 'none');
+
+        const providerIds = (blockedPeriod.provider_ids || []).map(Number);
+
+        $providerIds.find('input').each((index, input) => {
+            input.checked = providerIds.includes(Number(input.value));
+        });
     }
 
     /**
@@ -332,7 +422,12 @@ App.Pages.BlockedPeriods = (function () {
 
         $blockedPeriods.find('.add-edit-delete-group').show();
         $blockedPeriods.find('.save-cancel-group').hide();
-        $blockedPeriods.find('.record-details').find('input, select, textarea').val('').prop('disabled', true);
+        $blockedPeriods.find('.record-details').find('input:not([type=checkbox]), select, textarea').val('');
+        $blockedPeriods.find('.record-details').find('input, select, textarea').prop('disabled', true);
+        $providerIds.find('input').prop('checked', false);
+        $type.val('other');
+        $recurrence.val('none');
+        $recurrenceUntilGroup.prop('hidden', true);
         $blockedPeriods.find('.record-details .form-label span').prop('hidden', true);
         $('#edit-blocked-period, #delete-blocked-period').prop('disabled', true);
 
@@ -358,6 +453,13 @@ App.Pages.BlockedPeriods = (function () {
                     'text': blockedPeriod.name,
                 }),
                 $('<br/>'),
+                $('<small/>', {
+                    'class': 'text-muted',
+                    'text':
+                        lang('blocked_period_type_' + (blockedPeriod.type || 'other')) +
+                        ' · ' +
+                        moment(blockedPeriod.start_datetime).format('DD/MM/YYYY'),
+                }),
             ],
         });
     }
@@ -393,6 +495,11 @@ App.Pages.BlockedPeriods = (function () {
         App.Pages.BlockedPeriods.addEventListeners();
         App.Utils.UI.initializeDateTimePicker($startDateTime);
         App.Utils.UI.initializeDateTimePicker($endDateTime);
+
+        // Coming from the "Block agenda" button of the calendar: start a new blocked period.
+        if (new URLSearchParams(window.location.search).has('new')) {
+            $('#add-blocked-period').trigger('click');
+        }
     }
 
     document.addEventListener('DOMContentLoaded', initialize);

@@ -67,7 +67,7 @@ class Availability
         $exclude_appointment_id =
             $exclude_appointment_id !== null && $exclude_appointment_id !== '' ? (int) $exclude_appointment_id : null;
 
-        if ($this->CI->blocked_periods_model->is_entire_date_blocked($date)) {
+        if ($this->CI->blocked_periods_model->is_entire_date_blocked($date, (int) $provider['id'])) {
             return [];
         }
 
@@ -135,7 +135,7 @@ class Availability
             ],
         ];
 
-        $blocked_periods = $this->CI->blocked_periods_model->get_for_period($date, $date);
+        $blocked_periods = $this->CI->blocked_periods_model->get_for_period($date, $date, (int) $provider['id']);
 
         $periods = $this->remove_breaks($date, $periods, $date_working_plan['breaks']);
         $periods = $this->remove_unavailability_events($periods, $unavailability_events);
@@ -345,7 +345,7 @@ class Availability
             'events' => array_merge(
                 $this->CI->appointments_model->get_slot_occupying($where),
                 $this->CI->unavailabilities_model->get($where),
-                $this->CI->blocked_periods_model->get_for_period($date_from, $date_to),
+                $this->CI->blocked_periods_model->get_for_period($date_from, $date_to, (int) $provider['id']),
             ),
         ];
     }
@@ -423,7 +423,7 @@ class Availability
                 array_merge(
                     $this->CI->appointments_model->get_slot_occupying($where),
                     $this->CI->unavailabilities_model->get($where),
-                    $this->CI->blocked_periods_model->get_for_period($date, $date),
+                    $this->CI->blocked_periods_model->get_for_period($date, $date, (int) $provider['id']),
                 ),
             );
         }

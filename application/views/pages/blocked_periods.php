@@ -79,6 +79,33 @@
             </div>
 
             <div class="mb-3">
+                <label class="form-label" for="type">
+                    <?= lang('blocked_period_type') ?>
+                </label>
+                <select id="type" class="form-select" disabled>
+                    <?php foreach (Blocked_periods_model::TYPES as $type): ?>
+                        <option value="<?= $type ?>"><?= lang('blocked_period_type_' . $type) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <span class="form-label d-block"><?= lang('blocked_period_providers') ?></span>
+                <div id="provider-ids" class="border rounded p-2">
+                    <?php foreach (vars('provider_options') as $option): ?>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="<?= $option['value'] ?>"
+                                   id="provider-<?= $option['value'] ?>" disabled>
+                            <label class="form-check-label" for="provider-<?= $option['value'] ?>">
+                                <?= e($option['label']) ?>
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                <div class="form-text"><?= lang('blocked_period_providers_hint') ?></div>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label" for="start-date-time">
                     <?= lang('start') ?>
                     <span class="text-danger" hidden>*</span>
@@ -92,6 +119,27 @@
                     <span class="text-danger" hidden>*</span>
                 </label>
                 <input id="end-date-time" class="form-control required" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="recurrence">
+                    <?= lang('blocked_period_recurrence') ?>
+                </label>
+                <select id="recurrence" class="form-select" disabled>
+                    <?php foreach (Blocked_periods_model::RECURRENCES as $recurrence): ?>
+                        <option value="<?= $recurrence ?>">
+                            <?= lang('blocked_period_recurrence_' . $recurrence) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="mb-3" id="recurrence-until-group" hidden>
+                <label class="form-label" for="recurrence-until">
+                    <?= lang('blocked_period_recurrence_until') ?>
+                </label>
+                <input id="recurrence-until" type="date" class="form-control" disabled>
+                <div class="form-text"><?= lang('blocked_period_recurrence_until_hint') ?></div>
             </div>
 
             <div class="mb-3">

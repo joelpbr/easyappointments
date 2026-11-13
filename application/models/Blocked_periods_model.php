@@ -21,6 +21,32 @@
 class Blocked_periods_model extends EA_Model
 {
     /**
+     * Kinds of blocked periods (specification 10.1).
+     */
+    public const TYPES = [
+        'holiday_national',
+        'holiday_regional',
+        'holiday_local',
+        'clinic_closure',
+        'bridge',
+        'vacation',
+        'day_off',
+        'personal_absence',
+        'meeting',
+        'training',
+        'break',
+        'extraordinary',
+        'other',
+    ];
+
+    public const RECURRENCES = ['none', 'weekly', 'yearly'];
+
+    /**
+     * Repetitions are expanded at most this many times, which covers more than ten years of weekly periods.
+     */
+    private const MAX_OCCURRENCES = 600;
+
+    /**
      * @var array
      */
     protected array $casts = [
@@ -36,6 +62,9 @@ class Blocked_periods_model extends EA_Model
         'start' => 'start_datetime',
         'end' => 'end_datetime',
         'notes' => 'notes',
+        'type' => 'type',
+        'recurrence' => 'recurrence',
+        'recurrenceUntil' => 'recurrence_until',
     ];
 
     /**
@@ -52,11 +81,33 @@ class Blocked_periods_model extends EA_Model
     {
         $this->validate($blocked_period);
 
-        if (empty($blocked_period['id'])) {
-            return $this->insert($blocked_period);
-        } else {
-            return $this->update($blocked_period);
+        // The providers are kept in their own table; without providers the period closes the whole clinic.
+        $provider_ids = array_key_exists('provider_ids', $blocked_period)
+            ? self::provider_ids($blocked_period['provider_ids'])
+            : null;
+
+        unset($blocked_period['provider_ids']);
+
+        if (array_key_exists('recurrence_until', $blocked_period)) {
+            $blocked_period['recurrence_until'] = $blocked_period['recurrence_until'] ?: null;
         }
+
+        $blocked_period_id = empty($blocked_period['id'])
+            ? $this->insert($blocked_period)
+            : $this->update($blocked_period);
+
+        if ($provider_ids !== null) {
+            $this->db->delete('blocked_periods_providers', ['id_blocked_periods' => $blocked_period_id]);
+
+            foreach ($provider_ids as $provider_id) {
+                $this->db->insert('blocked_periods_providers', [
+                    'id_blocked_periods' => $blocked_period_id,
+                    'id_users_provider' => $provider_id,
+                ]);
+            }
+        }
+
+        return $blocked_period_id;
     }
 
     /**
@@ -104,6 +155,48 @@ class Blocked_periods_model extends EA_Model
 
         if ($start_date_time_object >= $end_date_time_object) {
             throw new InvalidArgumentException('The start must be before the end date time value.');
+        }
+
+        if (isset($blocked_period['type']) && !in_array($blocked_period['type'], self::TYPES, true)) {
+            throw new InvalidArgumentException('Unknown blocked-period type: ' . $blocked_period['type']);
+        }
+
+        $recurrence = $blocked_period['recurrence'] ?? 'none';
+
+        if (!in_array($recurrence, self::RECURRENCES, true)) {
+            throw new InvalidArgumentException('Unknown blocked-period recurrence: ' . $recurrence);
+        }
+
+        $until = $blocked_period['recurrence_until'] ?? null;
+
+        if ($until) {
+            if (!validate_datetime($until . ' 00:00:00')) {
+                throw new InvalidArgumentException('The repetition end date is invalid.');
+            }
+
+            if ($until < $start_date_time_object->format('Y-m-d')) {
+                throw new InvalidArgumentException(lang('blocked_period_until_before_start'));
+            }
+        }
+
+        // A weekly repetition only makes sense for periods shorter than a week.
+        if ($recurrence === 'weekly' && $start_date_time_object->diff($end_date_time_object)->days >= 7) {
+            throw new InvalidArgumentException(lang('blocked_period_weekly_too_long'));
+        }
+
+        $provider_ids = self::provider_ids($blocked_period['provider_ids'] ?? []);
+
+        if ($provider_ids) {
+            $count = $this->db
+                ->from('users')
+                ->join('roles', 'roles.id = users.id_roles', 'inner')
+                ->where('roles.slug', DB_SLUG_PROVIDER)
+                ->where_in('users.id', $provider_ids)
+                ->count_all_results();
+
+            if ($count !== count($provider_ids)) {
+                throw new InvalidArgumentException('Some of the providers of the blocked period do not exist.');
+            }
         }
     }
 
@@ -181,6 +274,8 @@ class Blocked_periods_model extends EA_Model
 
         $this->cast($blocked_period);
 
+        $this->attach_provider_ids($blocked_period);
+
         return $blocked_period;
     }
 
@@ -254,6 +349,7 @@ class Blocked_periods_model extends EA_Model
 
         foreach ($blocked_periods as &$blocked_period) {
             $this->cast($blocked_period);
+            $this->attach_provider_ids($blocked_period);
         }
 
         return $blocked_periods;
@@ -319,6 +415,7 @@ class Blocked_periods_model extends EA_Model
 
         foreach ($blocked_periods as &$blocked_period) {
             $this->cast($blocked_period);
+            $this->attach_provider_ids($blocked_period);
         }
 
         return $blocked_periods;
@@ -350,6 +447,10 @@ class Blocked_periods_model extends EA_Model
             'start' => array_key_exists('start_datetime', $blocked_period) ? $blocked_period['start_datetime'] : null,
             'end' => array_key_exists('end_datetime', $blocked_period) ? $blocked_period['end_datetime'] : null,
             'notes' => array_key_exists('notes', $blocked_period) ? $blocked_period['notes'] : null,
+            'type' => $blocked_period['type'] ?? 'other',
+            'providerIds' => array_map('intval', $blocked_period['provider_ids'] ?? []),
+            'recurrence' => $blocked_period['recurrence'] ?? 'none',
+            'recurrenceUntil' => $blocked_period['recurrence_until'] ?? null,
         ];
 
         $blocked_period = $encoded_resource;
@@ -385,43 +486,226 @@ class Blocked_periods_model extends EA_Model
             $decoded_resource['notes'] = $blocked_period['notes'];
         }
 
+        if (array_key_exists('type', $blocked_period)) {
+            $decoded_resource['type'] = $blocked_period['type'];
+        }
+
+        if (array_key_exists('providerIds', $blocked_period)) {
+            $decoded_resource['provider_ids'] = (array) $blocked_period['providerIds'];
+        }
+
+        if (array_key_exists('recurrence', $blocked_period)) {
+            $decoded_resource['recurrence'] = $blocked_period['recurrence'];
+        }
+
+        if (array_key_exists('recurrenceUntil', $blocked_period)) {
+            $decoded_resource['recurrence_until'] = $blocked_period['recurrenceUntil'];
+        }
+
         $blocked_period = $decoded_resource;
     }
 
     /**
-     * Get all the blocked periods that are within the provided period.
+     * Get the blocked periods that fall within some dates, with their repetitions expanded.
      *
-     * @param string $start_date
-     * @param string $end_date
+     * Every occurrence is returned with its own start_datetime and end_datetime, and with provider_ids (empty when the
+     * period closes the whole clinic).
+     *
+     * @param string $start_date First date (Y-m-d).
+     * @param string $end_date Last date (Y-m-d).
+     * @param int|null $provider_id Only the periods that apply to this provider (null: all of them).
      *
      * @return array
      */
-    public function get_for_period(string $start_date, string $end_date): array
+    public function get_for_period(string $start_date, string $end_date, ?int $provider_id = null): array
     {
-        return $this->query()
-            //
+        $from = $start_date . ' 00:00:00';
+        $to = $end_date . ' 23:59:59';
+
+        $blocked_periods = $this->query()
+            ->where('start_datetime <=', $to)
             ->group_start()
-            ->where('DATE(start_datetime) <=', $start_date)
-            ->where('DATE(end_datetime) >=', $end_date)
+            ->group_start()
+            ->where('recurrence', 'none')
+            ->where('end_datetime >=', $from)
             ->group_end()
-            //
             ->or_group_start()
-            ->where('DATE(start_datetime) >=', $start_date)
-            ->where('DATE(end_datetime) <=', $end_date)
+            ->where('recurrence !=', 'none')
+            ->group_start()
+            ->where('recurrence_until IS NULL')
+            ->or_where('recurrence_until >=', $start_date)
             ->group_end()
-            //
-            ->or_group_start()
-            ->where('DATE(end_datetime) >', $start_date)
-            ->where('DATE(end_datetime) <', $end_date)
             ->group_end()
-            //
-            ->or_group_start()
-            ->where('DATE(start_datetime) >', $start_date)
-            ->where('DATE(start_datetime) <', $end_date)
             ->group_end()
-            //
             ->get()
             ->result_array();
+
+        $occurrences = [];
+
+        foreach ($blocked_periods as $blocked_period) {
+            $this->cast($blocked_period);
+            $this->attach_provider_ids($blocked_period);
+
+            if (
+                $provider_id &&
+                $blocked_period['provider_ids'] &&
+                !in_array($provider_id, $blocked_period['provider_ids'])
+            ) {
+                continue;
+            }
+
+            array_push($occurrences, ...self::expand_occurrences($blocked_period, $from, $to));
+        }
+
+        return $occurrences;
+    }
+
+    /**
+     * Get the occurrences of a blocked period that overlap a time range.
+     *
+     * A period without repetition is its only occurrence. A weekly or yearly period repeats with the same duration
+     * until its recurrence_until date (included), or forever.
+     *
+     * @param array $blocked_period Blocked period with start_datetime, end_datetime, recurrence and recurrence_until.
+     * @param string $from Start of the range (Y-m-d H:i:s).
+     * @param string $to End of the range (Y-m-d H:i:s).
+     *
+     * @return array Copies of the period with the start_datetime and end_datetime of each occurrence.
+     */
+    public static function expand_occurrences(array $blocked_period, string $from, string $to): array
+    {
+        $unit = ['weekly' => 'week', 'yearly' => 'year'][$blocked_period['recurrence'] ?? 'none'] ?? null;
+        $start = new DateTime($blocked_period['start_datetime']);
+        $end = new DateTime($blocked_period['end_datetime']);
+        $duration = $start->diff($end);
+        $until = !empty($blocked_period['recurrence_until']) ? $blocked_period['recurrence_until'] . ' 23:59:59' : null;
+        $occurrences = [];
+
+        for ($index = 0; $index < ($unit ? self::MAX_OCCURRENCES : 1); $index++) {
+            // Each occurrence is counted from the first one, so a yearly period on the 31st never drifts.
+            $occurrence_start = $unit ? (clone $start)->modify('+' . $index . ' ' . $unit) : clone $start;
+            $occurrence_end = (clone $occurrence_start)->add($duration);
+
+            if (
+                $occurrence_start->format('Y-m-d H:i:s') > $to ||
+                ($until && $occurrence_start->format('Y-m-d H:i:s') > $until)
+            ) {
+                break;
+            }
+
+            if ($occurrence_end->format('Y-m-d H:i:s') >= $from) {
+                $occurrences[] = array_merge($blocked_period, [
+                    'start_datetime' => $occurrence_start->format('Y-m-d H:i:s'),
+                    'end_datetime' => $occurrence_end->format('Y-m-d H:i:s'),
+                ]);
+            }
+        }
+
+        return $occurrences;
+    }
+
+    /**
+     * Find the appointments that a blocked period would fall on, so that they can be rescheduled first.
+     *
+     * Cancelled appointments do not count. A repetition without end date is checked for one year.
+     *
+     * @param array $blocked_period Blocked period to save (with provider_ids, recurrence and recurrence_until).
+     *
+     * @return array Appointments with id, hash, start_datetime, end_datetime, provider_name and customer_name.
+     */
+    public function get_affected_appointments(array $blocked_period): array
+    {
+        $start = $blocked_period['start_datetime'];
+        $last = !empty($blocked_period['recurrence_until'])
+            ? $blocked_period['recurrence_until'] . ' 23:59:59'
+            : (($blocked_period['recurrence'] ?? 'none') === 'none'
+                ? $blocked_period['end_datetime']
+                : date('Y-m-d H:i:s', strtotime($start . ' +1 year')));
+
+        $occurrences = self::expand_occurrences($blocked_period, $start, $last);
+
+        if (!$occurrences) {
+            return [];
+        }
+
+        $provider_ids = self::provider_ids($blocked_period['provider_ids'] ?? []);
+
+        // Read first: it runs its own query, which would reset the one being built.
+        $free_codes = appointment_status_free_codes();
+
+        $query = $this->db
+            ->select(
+                'appointments.id, appointments.hash, appointments.start_datetime, appointments.end_datetime, ' .
+                    "CONCAT_WS(' ', providers.first_name, providers.last_name) AS provider_name, " .
+                    "CONCAT_WS(' ', customers.first_name, customers.last_name) AS customer_name",
+                false,
+            )
+            // Aliased, so that the hand written select above needs no table prefix.
+            ->from('appointments AS appointments')
+            ->join('users AS providers', 'providers.id = appointments.id_users_provider', 'inner')
+            ->join('users AS customers', 'customers.id = appointments.id_users_customer', 'left')
+            ->where('appointments.is_unavailability', false)
+            ->where('appointments.start_datetime <', end($occurrences)['end_datetime'])
+            ->where('appointments.end_datetime >', $occurrences[0]['start_datetime'])
+            ->order_by('appointments.start_datetime');
+
+        if ($free_codes) {
+            $query->where_not_in('appointments.status', $free_codes);
+        }
+
+        if ($provider_ids) {
+            $query->where_in('appointments.id_users_provider', $provider_ids);
+        }
+
+        $appointments = $query->get()->result_array();
+
+        return array_values(
+            array_filter($appointments, function (array $appointment) use ($occurrences): bool {
+                foreach ($occurrences as $occurrence) {
+                    if (
+                        $appointment['start_datetime'] < $occurrence['end_datetime'] &&
+                        $appointment['end_datetime'] > $occurrence['start_datetime']
+                    ) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }),
+        );
+    }
+
+    /**
+     * Clean a list of provider IDs, as sent by a form (it may be empty or hold empty values).
+     *
+     * @param mixed $provider_ids
+     *
+     * @return array Unique positive IDs.
+     */
+    private static function provider_ids(mixed $provider_ids): array
+    {
+        return array_values(array_unique(array_filter(array_map('intval', (array) $provider_ids))));
+    }
+
+    /**
+     * Add the IDs of the providers a blocked period applies to (empty for the whole clinic).
+     *
+     * @param array $blocked_period
+     */
+    private function attach_provider_ids(array &$blocked_period): void
+    {
+        $blocked_period['provider_ids'] = empty($blocked_period['id'])
+            ? []
+            : array_map(
+                'intval',
+                array_column(
+                    $this->db
+                        ->select('id_users_provider')
+                        ->get_where('blocked_periods_providers', ['id_blocked_periods' => $blocked_period['id']])
+                        ->result_array(),
+                    'id_users_provider',
+                ),
+            );
     }
 
     /**
@@ -435,21 +719,27 @@ class Blocked_periods_model extends EA_Model
     }
 
     /**
-     * Check if a date is entirely covered by a single blocked period.
+     * Check if a date is entirely covered by a single blocked period (or occurrence of one).
      *
      * Periods that only cover a part of the date are removed from the available hours separately.
      *
      * @param string $date
+     * @param int|null $provider_id Only consider the periods that apply to this provider (null: all of them).
      *
      * @return bool
      */
-    public function is_entire_date_blocked(string $date): bool
+    public function is_entire_date_blocked(string $date, ?int $provider_id = null): bool
     {
         // A period that ends at 23:59 counts as covering the rest of the day, as the date pickers have minute precision.
-        return $this->query()
-            ->where('start_datetime <=', $date . ' 00:00:00')
-            ->where('end_datetime >=', $date . ' 23:59:00')
-            ->get()
-            ->num_rows() > 0;
+        foreach ($this->get_for_period($date, $date, $provider_id) as $occurrence) {
+            if (
+                $occurrence['start_datetime'] <= $date . ' 00:00:00' &&
+                $occurrence['end_datetime'] >= $date . ' 23:59:00'
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -20,7 +20,17 @@
  */
 class Blocked_periods extends EA_Controller
 {
-    public array $allowed_blocked_period_fields = ['id', 'name', 'start_datetime', 'end_datetime', 'notes'];
+    public array $allowed_blocked_period_fields = [
+        'id',
+        'name',
+        'type',
+        'start_datetime',
+        'end_datetime',
+        'recurrence',
+        'recurrence_until',
+        'provider_ids',
+        'notes',
+    ];
 
     public array $optional_blocked_period_fields = [
         //
@@ -34,6 +44,7 @@ class Blocked_periods extends EA_Controller
         parent::__construct();
 
         $this->load->model('blocked_periods_model');
+        $this->load->model('providers_model');
         $this->load->model('roles_model');
 
         $this->load->library('accounts');
@@ -81,6 +92,7 @@ class Blocked_periods extends EA_Controller
             'user_display_name' => $this->accounts->get_user_display_name($user_id),
             'timezones' => $this->timezones->to_array(),
             'privileges' => $this->roles_model->get_permissions_by_slug($role_slug),
+            'provider_options' => $this->providers_model->to_options(['is_active' => true]),
         ]);
 
         $this->load->view('pages/blocked_periods');
@@ -138,6 +150,19 @@ class Blocked_periods extends EA_Controller
             $this->blocked_periods_model->only($blocked_period, $this->allowed_blocked_period_fields);
 
             $this->blocked_periods_model->optional($blocked_period, $this->optional_blocked_period_fields);
+
+            $this->blocked_periods_model->validate($blocked_period);
+
+            // Appointments are never cancelled by a blocked period: they are listed first, to be rescheduled.
+            if (!filter_var(request('confirmed'), FILTER_VALIDATE_BOOLEAN)) {
+                $affected = $this->blocked_periods_model->get_affected_appointments($blocked_period);
+
+                if ($affected) {
+                    json_response(['success' => false, 'affected' => $affected]);
+
+                    return;
+                }
+            }
 
             $blocked_period_id = $this->blocked_periods_model->save($blocked_period);
 
@@ -206,6 +231,19 @@ class Blocked_periods extends EA_Controller
             $this->blocked_periods_model->only($blocked_period, $this->allowed_blocked_period_fields);
 
             $this->blocked_periods_model->optional($blocked_period, $this->optional_blocked_period_fields);
+
+            $this->blocked_periods_model->validate($blocked_period);
+
+            // Appointments are never cancelled by a blocked period: they are listed first, to be rescheduled.
+            if (!filter_var(request('confirmed'), FILTER_VALIDATE_BOOLEAN)) {
+                $affected = $this->blocked_periods_model->get_affected_appointments($blocked_period);
+
+                if ($affected) {
+                    json_response(['success' => false, 'affected' => $affected]);
+
+                    return;
+                }
+            }
 
             $blocked_period_id = $this->blocked_periods_model->save($blocked_period);
 

@@ -26,7 +26,6 @@ App.Utils.CalendarDefaultView = (function () {
     const FILTER_TYPE_SERVICE = 'service';
     const EVENT_COLORS = {
         unavailability: '#879DB4',
-        blockedPeriod: '#d65069',
         notWorking: '#BEBEBE',
         default: '#7cbae8',
     };
@@ -894,7 +893,12 @@ App.Utils.CalendarDefaultView = (function () {
                 events.push(...createUnavailabilityEvents(response.unavailabilities));
 
                 // Add blocked periods
-                events.push(...createBlockedPeriodEvents(response.blocked_periods));
+                events.push(
+                    ...App.Utils.CalendarBlockedPeriods.events(
+                        response.blocked_periods,
+                        filterType === FILTER_TYPE_PROVIDER ? recordId : null,
+                    ),
+                );
 
                 // Add working plan events (only for day/week views)
                 if (fullCalendar.view.type !== 'dayGridMonth') {
@@ -972,30 +976,6 @@ App.Utils.CalendarDefaultView = (function () {
                 display: 'block',
             };
         });
-    }
-
-    /**
-     * Create blocked period calendar events.
-     *
-     * @param {Array} blockedPeriods - Blocked period data array.
-     * @returns {Array} Calendar event objects.
-     */
-    function createBlockedPeriodEvents(blockedPeriods) {
-        if (!blockedPeriods) return [];
-
-        return blockedPeriods.map((blockedPeriod) => ({
-            title: blockedPeriod.name,
-            start: moment(blockedPeriod.start_datetime).toDate(),
-            end: moment(blockedPeriod.end_datetime).toDate(),
-            allDay: true,
-            backgroundColor: EVENT_COLORS.blockedPeriod,
-            borderColor: EVENT_COLORS.blockedPeriod,
-            textColor: '#ffffff',
-            editable: false,
-            className: 'fc-blocked-period fc-unavailability',
-            data: blockedPeriod,
-            display: 'block',
-        }));
     }
 
     /**

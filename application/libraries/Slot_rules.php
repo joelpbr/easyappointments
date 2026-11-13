@@ -103,7 +103,7 @@ class Slot_rules
             $violations[] = self::OVERLAP_UNAVAILABILITY;
         }
 
-        if ($this->overlaps_blocked_periods($start, $end)) {
+        if ($this->overlaps_blocked_periods($provider_id, $start, $end)) {
             $violations[] = self::BLOCKED_PERIOD;
         }
 
@@ -247,13 +247,14 @@ class Slot_rules
     }
 
     /**
-     * Check for blocked periods (whole clinic) in the period.
+     * Check for blocked periods of the whole clinic or of the provider (and their repetitions) in the period.
      */
-    protected function overlaps_blocked_periods(DateTime $start, DateTime $end): bool
+    protected function overlaps_blocked_periods(int $provider_id, DateTime $start, DateTime $end): bool
     {
         $blocked_periods = $this->CI->blocked_periods_model->get_for_period(
             $start->format('Y-m-d'),
             $end->format('Y-m-d'),
+            $provider_id,
         );
 
         foreach ($blocked_periods as $blocked_period) {
