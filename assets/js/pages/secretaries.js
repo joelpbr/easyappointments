@@ -474,7 +474,6 @@ App.Pages.Secretaries = (function () {
 
         let info = secretary.email;
 
-
         info = secretary.phone_number ? info + ', ' + secretary.phone_number : info;
 
         return $('<div/>', {

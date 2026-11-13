@@ -431,7 +431,6 @@ App.Pages.Admins = (function () {
 
         let info = admin.email;
 
-
         info = admin.phone_number ? info + ', ' + admin.phone_number : info;
 
         return $('<div/>', {

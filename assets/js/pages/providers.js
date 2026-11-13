@@ -550,7 +550,6 @@ App.Pages.Providers = (function () {
 
         let info = provider.email;
 
-
         info = provider.phone_number ? info + ', ' + provider.phone_number : info;
 
         info = provider.is_active === false ? info + ' - ' + lang('inactive') : info;
