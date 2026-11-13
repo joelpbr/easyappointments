@@ -268,6 +268,7 @@ class Appointments_model extends EA_Model
 
         $this->set_service_name($appointment);
         $this->set_price($appointment);
+        $this->set_first_visit($appointment);
 
         if (!$this->db->insert('appointments', $appointment)) {
             throw new RuntimeException('Could not insert appointment.');
@@ -371,6 +372,33 @@ class Appointments_model extends EA_Model
         if (!empty($service['color']) && ($color === '' || $color === DEFAULT_APPOINTMENT_COLOR)) {
             $appointment['color'] = $service['color'];
         }
+    }
+
+    /**
+     * Work out whether a new appointment is the first visit of its patient, unless the caller says so: it is when the
+     * patient has no earlier appointment. A patient chosen from the list, or matching an existing one, has; a patient
+     * created now has not.
+     *
+     * @param array $appointment Associative array with the appointment data.
+     */
+    protected function set_first_visit(array &$appointment): void
+    {
+        if (
+            !empty($appointment['is_unavailability']) ||
+            empty($appointment['id_users_customer']) ||
+            (array_key_exists('is_first_visit', $appointment) && $appointment['is_first_visit'] !== null)
+        ) {
+            return;
+        }
+
+        $earlier = $this->db
+            ->from('appointments')
+            ->where('id_users_customer', $appointment['id_users_customer'])
+            ->where('is_unavailability', false)
+            ->where('start_datetime <', $appointment['start_datetime'])
+            ->count_all_results();
+
+        $appointment['is_first_visit'] = $earlier ? 0 : 1;
     }
 
     /**

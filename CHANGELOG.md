@@ -28,6 +28,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- New appointments always start as scheduled, without a status field, and whether they are the first visit is worked out when saving: it is when the patient has no earlier appointment, so a patient chosen from the list or matching an existing one is not new
 - The application works in Catalan by default, with the clinic terminology, and Spanish can be chosen in the user menu, which keeps the choice; other languages are no longer offered and the browser language no longer decides
 - The management pages no longer show the footer (Easy!Appointments credits, language selector and greeting), so the calendar uses that height; the license and credits remain under About
 - Midday breaks are labeled "Mediodía" and out-of-hours periods use red stripes with bold white text outlined in black

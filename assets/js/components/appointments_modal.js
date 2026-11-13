@@ -52,7 +52,6 @@ App.Components.AppointmentsModal = (function () {
     const $appointmentDuration = $('#appointment-duration');
     const $appointmentPrice = $('#appointment-price');
     const $noShowWarning = $('#no-show-warning');
-    const $appointmentFirstVisit = $('#appointment-first-visit');
     const $toggleMoreFields = $('#toggle-more-fields');
     const $usualProviderHint = $('#usual-provider-hint');
 
@@ -222,7 +221,6 @@ App.Components.AppointmentsModal = (function () {
                 meeting_link: $appointmentMeetingLink.val(),
                 color: App.Components.ColorSelection.getColor($appointmentColor),
                 status: $appointmentStatus.val(),
-                is_first_visit: $appointmentFirstVisit.val(),
                 price: $appointmentPrice.val(),
                 notes: $appointmentNotes.val(),
                 is_unavailability: Number(false),
@@ -517,7 +515,6 @@ App.Components.AppointmentsModal = (function () {
          * Event: Enter New Customer Button "Click"
          */
         $newCustomer.on('click', () => {
-            markAsNewPatient();
             patientSearch.reset();
             newPatientConfirmed = false;
             usualProviderId = null;
@@ -562,7 +559,6 @@ App.Components.AppointmentsModal = (function () {
 
         const defaultStatusValue = $appointmentStatus.find('option:first').val();
         $appointmentStatus.val(defaultStatusValue);
-        $appointmentFirstVisit.val('');
         toggleMoreFields(false);
 
         $language.val(vars('default_language'));
@@ -702,18 +698,6 @@ App.Components.AppointmentsModal = (function () {
     }
 
     /**
-     * Initialize the module.
-     */
-    /**
-     * A patient that is registered now has not visited the clinic before, so a new appointment is their first visit.
-     */
-    function markAsNewPatient() {
-        if (!$appointmentId.val()) {
-            $appointmentFirstVisit.val('1');
-        }
-    }
-
-    /**
      * Fill the patient fields with an existing patient.
      *
      * @param {Object} customer
@@ -740,11 +724,6 @@ App.Components.AppointmentsModal = (function () {
         usualProviderId = customer.id_users_preferred_provider || null;
         updateUsualProviderHint();
         showNoShowWarning(customer);
-
-        // For a new appointment, the visits of the patient tell whether it is the first one.
-        if (!$appointmentId.val() && customer.visits !== undefined) {
-            $appointmentFirstVisit.val(customer.visits > 0 ? '0' : '1');
-        }
     }
 
     /**
@@ -806,8 +785,17 @@ App.Components.AppointmentsModal = (function () {
         }
     }
 
+    /**
+     * Initialize the module.
+     */
     function initialize() {
         addEventListeners();
+
+        // The status is only chosen when editing: a new appointment starts with the first one (scheduled). Whether it
+        // is the first visit of the patient is worked out when it is saved.
+        $appointmentsModal.on('show.bs.modal', () => {
+            $('#appointment-status-group').prop('hidden', !$appointmentId.val());
+        });
 
         patientSearch = App.Components.PatientSearch.attach({
             $firstName,
@@ -815,7 +803,6 @@ App.Components.AppointmentsModal = (function () {
             $phoneNumber,
             isEnabled: () => !$customerId.val(),
             onSelect: (customerId) => App.Http.Customers.find(customerId).done(fillCustomer),
-            onCreate: markAsNewPatient,
         });
     }
 

@@ -129,7 +129,7 @@
                                     <div id="usual-provider-hint" class="form-text" hidden></div>
                                 </div>
 
-                                <div class="mb-3">
+                                <div id="appointment-status-group" class="mb-3">
                                     <label for="appointment-status" class="form-label">
                                         <?= lang('status') ?>
                                     </label>
@@ -139,17 +139,6 @@
                                                 <?= e($appointment_status['name']) ?>
                                             </option>
                                         <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="appointment-first-visit" class="form-label">
-                                        <?= lang('first_visit') ?>
-                                    </label>
-                                    <select id="appointment-first-visit" class="form-select">
-                                        <option value=""><?= lang('not_specified') ?></option>
-                                        <option value="1"><?= lang('yes') ?></option>
-                                        <option value="0"><?= lang('no') ?></option>
                                     </select>
                                 </div>
 
