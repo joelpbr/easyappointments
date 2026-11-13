@@ -262,3 +262,11 @@ Más tarde el tono pasó a rayas rojas (ver «Mediodía plegable»).
 | `assets/js/utils/calendar_default_view.js`, `calendar_table_view.js` | El calendario abre a las 08:30 | La clínica abre a las 9:00 |
 | `assets/css/backend.scss` | Estilos de la barra única y de las columnas; se quitan las reglas de Select2 y de las etiquetas de los filtros, que ya no se usan | Ídem |
 | `application/language/*/translations_lang.php` | `filter_all_providers`, `filter_all_services` | Textos traducibles |
+
+## Sin pie de página en la gestión
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/views/components/backend_footer.php`, `application/views/layouts/backend_layout.php` | Se elimina el pie (créditos de Easy!Appointments, selector de idioma, enlace a la página de reservas y saludo) | Más altura para la agenda. La licencia y los créditos siguen en «Acerca de» |
+| `assets/js/layouts/backend_layout.js`, `assets/js/pages/account.js` | Se quita el código del selector de idioma y del saludo del pie | Ya no existen |
+| `assets/js/utils/calendar_table_view.js`, `calendar_default_view.js` | La altura de la agenda deja de descontar el pie | Ídem |

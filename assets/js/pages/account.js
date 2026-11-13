@@ -35,7 +35,6 @@ App.Pages.Account = (function () {
     const $calendarView = $('#calendar-view');
     const notifications = $('#notifications');
     const $saveSettings = $('#save-settings');
-    const $footerUserDisplayName = $('#footer-user-display-name');
     let savedEmail = '';
     let savedUsername = '';
 
@@ -179,8 +178,6 @@ App.Pages.Account = (function () {
             $retypePassword.val('');
             savedEmail = account.email;
             savedUsername = account.settings.username;
-
-            $footerUserDisplayName.text('Hello, ' + $firstName.val() + ' ' + $lastName.val() + '!');
         });
     }
 
