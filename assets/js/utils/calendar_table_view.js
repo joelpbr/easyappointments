@@ -1746,6 +1746,18 @@ App.Utils.CalendarTableView = (function () {
             select: (info) => onSelect(info, fullCalendar),
             selectAllow: App.Utils.CalendarMidday.allows,
             eventAllow: App.Utils.CalendarMidday.allows,
+            // In list mode each row takes the colour of its service, as the cards of the calendar mode do, and is marked
+            // once its appointment has ended (see markEndedListEvents()).
+            eventDidMount: (info) => {
+                if (info.view.type === 'listDay') {
+                    info.el.style.setProperty(
+                        '--ea-list-event-color',
+                        info.event.backgroundColor || info.event.borderColor || EVENT_COLORS.default,
+                    );
+                    info.el.dataset.end = (info.event.end || info.event.start).getTime();
+                    markEndedListEvents();
+                }
+            },
             eventsSet: () => {
                 syncAllDaySlot();
                 App.Utils.CalendarMidday.schedule();
@@ -1867,6 +1879,18 @@ App.Utils.CalendarTableView = (function () {
         );
 
         getCalendars().forEach(fitListView);
+    }
+
+    /**
+     * Mark the rows of the lists whose appointment has already ended, also those of today, which FullCalendar only
+     * marks as past from the next day on.
+     */
+    function markEndedListEvents() {
+        const now = Date.now();
+
+        document.querySelectorAll('#calendar .fc-list-event[data-end]').forEach((row) => {
+            row.classList.toggle('ea-list-event-ended', Number(row.dataset.end) <= now);
+        });
     }
 
     /**
@@ -2065,6 +2089,9 @@ App.Utils.CalendarTableView = (function () {
         createView(startDate, endDate);
         $('#insert-working-plan-exception').hide();
         addEventListeners();
+
+        setInterval(markEndedListEvents, 60000);
+
         // Hide Google Calendar Sync buttons (not supported in table view)
         $('#enable-sync, #google-sync').hide();
 
