@@ -2065,6 +2065,15 @@ App.Utils.CalendarTableView = (function () {
 
         $calendar.on('click', '.delete-popover', onDeletePopoverClick);
         $calendar.on('click', '.cancel-appointment-popover', onCancelAppointmentPopoverClick);
+        $calendar.on('click', '.clinical-record-popover', () => {
+            const data = lastFocusedEventData.extendedProps.data;
+
+            closePopover();
+            App.Components.ClinicalRecordModal.open(data.id_users_customer, {
+                appointmentId: data.id,
+                onChange: () => $reloadAppointments.trigger('click'),
+            });
+        });
         $calendar.on('click', '.no-show-popover', () => {
             closePopover();
             App.Utils.CalendarAppointmentActions.markNoShow(lastFocusedEventData.extendedProps.data, () =>

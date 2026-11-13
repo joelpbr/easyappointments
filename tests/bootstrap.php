@@ -17,8 +17,10 @@ require_once APPPATH . 'helpers/array_helper.php';
 require_once APPPATH . 'helpers/validation_helper.php';
 
 // Minimal CodeIgniter stand-ins, so the permission helper can be tested without booting the framework.
+define('DB_SLUG_ADMIN', 'admin');
 define('DB_SLUG_PROVIDER', 'provider');
 define('DB_SLUG_SECRETARY', 'secretary');
+define('DB_SLUG_CUSTOMER', 'customer');
 
 $GLOBALS['ea_test_session'] = [];
 $GLOBALS['ea_test_records'] = [];

@@ -30,6 +30,7 @@ App.Pages.Services = (function () {
     const $description = $('#description');
     const $filterServices = $('#filter-services');
     const $color = $('#color');
+    const $recordTemplate = $('#record-template');
     let filterResults = {};
     let filterLimit = 20;
 
@@ -121,6 +122,7 @@ App.Pages.Services = (function () {
             $('#select-all-providers, #select-none-providers').prop('disabled', false);
 
             // Default values
+            $recordTemplate.val('notes');
             $name.val('Service');
             $duration.val('30');
             $price.val('0');
@@ -158,6 +160,7 @@ App.Pages.Services = (function () {
                 description: $description.val(),
                 location: $location.val(),
                 color: App.Components.ColorSelection.getColor($color),
+                record_template: $recordTemplate.val() || 'notes',
                 slot_interval: $slotInterval.val(),
                 attendants_number: $attendantsNumber.val(),
                 is_private: Number($isPrivate.prop('checked')),
@@ -371,6 +374,7 @@ App.Pages.Services = (function () {
         $isPrivate.prop('checked', service.is_private);
         $isActive.prop('checked', service.is_active);
         App.Components.ColorSelection.setColor($color, service.color);
+        $recordTemplate.val(service.record_template || 'notes');
 
         const serviceCategoryId = service.id_service_categories !== null ? service.id_service_categories : '';
         $serviceCategoryId.val(serviceCategoryId);

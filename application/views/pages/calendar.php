@@ -164,6 +164,10 @@
 
 <?php component('working_plan_exceptions_modal'); ?>
 
+<?php if (vars('clinical_records')): ?>
+    <?php component('clinical_record_modal'); ?>
+<?php endif; ?>
+
 <?php end_section('content'); ?>
 
 <?php section('scripts'); ?>

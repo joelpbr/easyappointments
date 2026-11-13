@@ -23,7 +23,7 @@ class Services_model extends EA_Model
     /**
      * Fields whose changes are recorded in the audit log.
      */
-    private const AUDITED_FIELDS = ['name', 'duration', 'price', 'color', 'is_private', 'is_active'];
+    private const AUDITED_FIELDS = ['name', 'duration', 'price', 'color', 'record_template', 'is_private', 'is_active'];
 
     /**
      * Clinic treatments in the order of the dropdowns, from the most to the least frequent. Other services follow,
@@ -69,6 +69,7 @@ class Services_model extends EA_Model
         'description' => 'description',
         'location' => 'location',
         'color' => 'color',
+        'recordTemplate' => 'record_template',
         'slotInterval' => 'slot_interval',
         'attendantsNumber' => 'attendants_number',
         'isPrivate' => 'is_private',
@@ -137,6 +138,17 @@ class Services_model extends EA_Model
         // Make sure the color is a hex value, as it is rendered into the calendar markup.
         if (!empty($service['color']) && !validate_color((string) $service['color'])) {
             throw new InvalidArgumentException('The provided service color is invalid: ' . $service['color']);
+        }
+
+        // The record template sets the clinical record of the visits of the service (see Clinical_record_templates).
+        if (isset($service['record_template'])) {
+            $this->load->library('clinical_record_templates');
+
+            if (!array_key_exists($service['record_template'], Clinical_record_templates::TEMPLATES)) {
+                throw new InvalidArgumentException(
+                    'The provided record template is invalid: ' . $service['record_template'],
+                );
+            }
         }
 
         // Make sure the duration value is valid.
@@ -580,6 +592,7 @@ class Services_model extends EA_Model
             'description' => $service['description'],
             'location' => $service['location'],
             'color' => $service['color'],
+            'recordTemplate' => $service['record_template'] ?? 'notes',
             'slotInterval' => (int) $service['slot_interval'],
             'attendantsNumber' => (int) $service['attendants_number'],
             'isPrivate' => (bool) $service['is_private'],
@@ -623,6 +636,10 @@ class Services_model extends EA_Model
 
         if (array_key_exists('currency', $service)) {
             $decoded_resource['currency'] = $service['currency'];
+        }
+
+        if (array_key_exists('recordTemplate', $service)) {
+            $decoded_resource['record_template'] = $service['recordTemplate'];
         }
 
         if (array_key_exists('description', $service)) {

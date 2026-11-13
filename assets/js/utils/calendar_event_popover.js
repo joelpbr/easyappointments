@@ -177,9 +177,16 @@ App.Utils.CalendarEventPopover = (function () {
      * @param {string} displayDelete - CSS class to show/hide delete button.
      * @param {string} [displayCancel] - CSS class to show/hide the cancel appointment button.
      * @param {string} [displayNoShow] - CSS class to show/hide the no-show button.
+     * @param {string} [displayRecord] - CSS class to show/hide the clinical record button.
      * @returns {jQuery} Button container element.
      */
-    function createPopoverButtons(displayEdit, displayDelete, displayCancel = 'd-none', displayNoShow = 'd-none') {
+    function createPopoverButtons(
+        displayEdit,
+        displayDelete,
+        displayCancel = 'd-none',
+        displayNoShow = 'd-none',
+        displayRecord = 'd-none',
+    ) {
         return $('<div/>', {
             class: 'd-flex flex-wrap justify-content-center gap-2',
             html: [
@@ -198,6 +205,11 @@ App.Utils.CalendarEventPopover = (function () {
                     'no-show-popover btn btn-outline-warning ' + displayNoShow,
                     'fas fa-user-slash',
                     'mark_no_show',
+                ),
+                createPopoverButton(
+                    'clinical-record-popover btn btn-outline-primary ' + displayRecord,
+                    'fas fa-notes-medical',
+                    'open_clinical_record',
                 ),
                 createPopoverButton('edit-popover btn btn-primary ' + displayEdit, 'fas fa-edit', 'edit'),
             ],
@@ -365,6 +377,8 @@ App.Utils.CalendarEventPopover = (function () {
                     statusFreesSlot(data.status) || data.status === 'no_show' || moment(data.start_datetime).isAfter()
                         ? 'd-none'
                         : displayEdit,
+                    // Only admins and providers see the clinical record of the patient.
+                    vars('clinical_records') && data.id_users_customer ? '' : 'd-none',
                 ),
             ],
         });

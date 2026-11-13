@@ -28,6 +28,7 @@ class Services extends EA_Controller
         'currency',
         'description',
         'color',
+        'record_template',
         'location',
         'slot_interval',
         'attendants_number',
@@ -53,6 +54,7 @@ class Services extends EA_Controller
         $this->load->model('roles_model');
 
         $this->load->library('accounts');
+        $this->load->library('clinical_record_templates');
         $this->load->library('timezones');
         $this->load->library('webhooks_client');
     }

@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- Admins and providers can open the clinical record of a patient from the appointment details in the calendar: details (name, NIF/NIE, date of birth, address, phone, referral, profession, physical activity), medical history and allergies, and the list of their visits; each visit opens its own record in a side panel with the fields of its treatment (feet drawing, observations, reason, diagnosis, treatment), where choosing a silicone orthosis or typing the price of a surgery sets the price of the visit; each treatment has a record type on the services page, secretaries never see the records and the audit log notes every time one is opened
 - The "Revisión SP" treatment (30 minutes, 40 €) is available to every provider and listed after "Entrega SP" in the treatment dropdowns
 - A "No-show" button on appointments that already started marks that the patient did not come, without notifying anybody; each patient keeps their number of no-shows, shown only when there are some in the appointment details of the calendar, the patient record and a warning of the appointment form
 - Each appointment has a price, taken from its treatment and editable in the appointment form; the calendar cards show it next to the treatment, e.g. "Quiropodia (30€)", and the split view shows next to each provider what their day adds up to, e.g. "Sebas (330€)", without cancellations and no-shows
