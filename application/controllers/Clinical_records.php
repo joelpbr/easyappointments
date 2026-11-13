@@ -36,6 +36,7 @@ class Clinical_records extends EA_Controller
         $this->load->model('appointment_records_model');
         $this->load->model('customers_model');
         $this->load->model('fiscal_parties_model');
+        $this->load->model('foot_diagrams_model');
         $this->load->model('patient_records_model');
 
         $this->load->library('clinical_record_templates');
@@ -150,6 +151,8 @@ class Clinical_records extends EA_Controller
 
             audit_log('viewed', 'appointment_record', (int) $appointment['id']);
 
+            $has_feet = in_array($template, Clinical_record_templates::TEMPLATES_WITH_FEET, true);
+
             json_response([
                 'appointment' => [
                     'id' => (int) $appointment['id'],
@@ -159,8 +162,16 @@ class Clinical_records extends EA_Controller
                 ],
                 'template' => $template,
                 'fields' => Clinical_record_templates::TEMPLATES[$template],
-                'has_feet' => in_array($template, Clinical_record_templates::TEMPLATES_WITH_FEET, true),
+                'has_feet' => $has_feet,
                 'record' => $this->appointment_records_model->find_by_appointment((int) $appointment['id']),
+                // The four foot diagrams, the catalog of pathologies and the ones placed on this visit.
+                'feet' => $has_feet
+                    ? [
+                        'diagrams' => $this->foot_diagrams_model->get_diagram_types(),
+                        'pathologies' => $this->foot_diagrams_model->get_pathologies(),
+                        'markers' => $this->foot_diagrams_model->get_markers((int) $appointment['id']),
+                    ]
+                    : null,
             ]);
         } catch (Throwable $e) {
             json_exception($e);

@@ -772,4 +772,7 @@ $lang['patients_total'] = '%s pacientes';
 $lang['patients_found'] = '%s de %s pacientes';
 $lang['patient_search_placeholder'] = 'Nombre, apellidos, teléfono o DNI';
 $lang['fiscal_same_as_patient_hint'] = 'Los campos vacíos usan los datos del paciente (en gris).';
+$lang['clinical_pathologies'] = 'Patologías';
+$lang['clinical_no_pathologies'] = 'Todavía no hay patologías en el catálogo.';
+$lang['clinical_feet_view'] = 'Vista %s';
 // End
