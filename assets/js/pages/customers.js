@@ -476,6 +476,7 @@ App.Pages.Customers = (function () {
 
             IDENTITY_FIELDS.forEach((field) => (currentCustomer[field] = customer[field]));
             currentFiscal = customer.fiscal || {};
+            currentCustomer.document_number = currentFiscal.document_number || '';
             showIdentity(currentCustomer);
 
             const $row = $filterCustomers.find('.entry[data-id="' + customerId + '"]');
@@ -636,7 +637,7 @@ App.Pages.Customers = (function () {
             $filterCustomers.find('.results').empty();
 
             response.forEach((customer) => {
-                $('#filter-customers .results').append(App.Pages.Customers.getFilterHtml(customer)).append($('<hr/>'));
+                $('#filter-customers .results').append(App.Pages.Customers.getFilterHtml(customer));
             });
 
             if (!response.length) {
@@ -688,28 +689,23 @@ App.Pages.Customers = (function () {
     }
 
     function getFilterHtml(customer) {
-        const name = (customer.first_name || '[No First Name]') + ' ' + (customer.last_name || '[No Last Name]');
+        const name = [customer.first_name, customer.last_name].filter(Boolean).join(' ') || '—';
 
-        let info = customer.email || '[No Email]';
-
-        info = customer.phone_number ? info + ', ' + customer.phone_number : info;
-
-        // The document helps to tell apart patients with the same name.
-        info = customer.document_number ? info + ', ' + customer.document_number : info;
+        // Only what the search looks in besides the name: the phone and the document.
+        const info = [customer.phone_number, customer.document_number].filter(Boolean).join(' · ');
 
         return $('<div/>', {
             'class': 'customer-row entry',
             'data-id': customer.id,
             'html': [
                 $('<strong/>', {
+                    'class': 'text-truncate',
                     'text': name,
                 }),
-                $('<br/>'),
                 $('<small/>', {
-                    'class': 'text-muted',
+                    'class': 'text-muted text-nowrap',
                     'text': info,
                 }),
-                $('<br/>'),
             ],
         });
     }
