@@ -331,3 +331,13 @@ apellido rechazaba búsquedas habituales como un nombre solo; el límite de 10 r
 | `application/models/Fiscal_parties_model.php` | Valida sin exigir nada (un número necesita su tipo; código postal español de 5 cifras), guarda el número normalizado, borra el registro si se vacía y anota en la auditoría qué campos cambian, nunca su contenido | No bloquear el alta sin DNI; no guardar datos sensibles en el registro |
 | `application/controllers/Customers.php` | `store` y `update` aceptan `fiscal` y lo validan antes de guardar al paciente; `find` lo devuelve | Guardar todo de una vez |
 | `application/views/pages/customers.php`, `assets/js/pages/customers.js`, `assets/js/http/customers_http_client.js` | Sección «Datos fiscales» en la ficha, con una indicación de qué documentos se comprueban | Escenario M |
+
+## Historial administrativo en la ficha (fase 5)
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `assets/js/pages/customers.js` | La lista plana de citas pasa a un historial: resumen (visitas, última visita, canceladas, no presentados, profesionales que le han atendido) y, debajo, «Próximas citas» y «Citas anteriores» con su estado y el nombre del tratamiento en el momento de la cita. Cada profesional y recepción siguen viendo solo las citas de sus profesionales | Especificación 11.5. Las facturas relacionadas llegarán con la fase de facturación |
+| `application/controllers/Customers.php` | La página recibe los estados de cita para mostrar sus nombres | Ídem |
+| `assets/css/backend.scss` | Estilo del resumen | Ídem |
+
+Con este bloque la fase 5 queda terminada.

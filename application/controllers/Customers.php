@@ -119,6 +119,7 @@ class Customers extends EA_Controller
             'time_format' => $time_format,
             'timezones' => $this->timezones->to_array(),
             'secretary_providers' => $secretary_providers,
+            'appointment_statuses' => appointment_statuses(),
             'default_language' => setting('default_language'),
             'default_timezone' => setting('default_timezone'),
         ]);
