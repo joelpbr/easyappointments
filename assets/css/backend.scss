@@ -910,11 +910,17 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     }
 }
 
-// Every column grows to its whole height and the view scrolls them together, with a single scrollbar.
+// Every column grows to its whole height and the view scrolls them together. The scrollbar is hidden (the view
+// still scrolls with the wheel or touch), so that it takes no width and the columns fit without horizontal scroll.
 #calendar:has(.ea-unified-toolbar) .calendar-view {
     margin: 0;
     padding: 0;
     overflow-y: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
 
     // The date is in the toolbar and in each provider heading.
     .date-column {
