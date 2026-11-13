@@ -26,6 +26,25 @@ class Services_model extends EA_Model
     private const AUDITED_FIELDS = ['name', 'duration', 'price', 'color', 'is_private', 'is_active'];
 
     /**
+     * Clinic treatments in the order of the dropdowns, from the most to the least frequent. Other services follow,
+     * sorted by name.
+     */
+    private const DROPDOWN_ORDER = [
+        'Quiropodia',
+        'Exploración',
+        'Entrega SP',
+        'Cura',
+        'Cura PV',
+        'Wallet',
+        'Infiltración',
+        'Silicona',
+        'Ortonixia',
+        'Moldes',
+        'Cirugía',
+        'Otro',
+    ];
+
+    /**
      * @var array
      */
     protected array $casts = [
@@ -487,11 +506,7 @@ class Services_model extends EA_Model
             $this->db->where($where);
         }
 
-        $services = $this->db
-            ->select('id, name')
-            ->from('services')
-            ->get()
-            ->result_array();
+        $services = $this->db->select('id, name')->from('services')->get()->result_array();
 
         $options = [];
 
@@ -506,32 +521,17 @@ class Services_model extends EA_Model
     }
 
     /**
-     * Apply the clinic's service order to dropdown queries.
+     * Sort the next services query in the order of the dropdowns (see DROPDOWN_ORDER).
      */
     private function order_dropdown_services(): void
     {
-        $names = [
-            'Quiropodia',
-            'Exploración',
-            'Entrega SP',
-            'Cura',
-            'Cura PV',
-            'Wallet',
-            'Infiltración',
-            'Silicona',
-            'Ortonixia',
-            'Moldes',
-            'Cirugía',
-            'Otro',
-        ];
-
         $order = 'CASE ' . $this->db->protect_identifiers('services.name');
 
-        foreach ($names as $position => $name) {
+        foreach (self::DROPDOWN_ORDER as $position => $name) {
             $order .= ' WHEN ' . $this->db->escape($name) . ' THEN ' . $position;
         }
 
-        $this->db->order_by($order . ' ELSE ' . count($names) . ' END', 'ASC', false);
+        $this->db->order_by($order . ' ELSE ' . count(self::DROPDOWN_ORDER) . ' END', 'ASC', false);
         $this->db->order_by('services.name ASC, services.id ASC');
     }
 

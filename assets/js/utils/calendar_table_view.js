@@ -1158,9 +1158,11 @@ App.Utils.CalendarTableView = (function () {
 
             const breakEnd = moment(start.format('YYYY-MM-DD') + ' ' + breakPeriod.end);
 
+            const isMidday = App.Utils.CalendarMidday.isMiddayBreak(breakPeriod);
+
             calendarEventSource.push({
-                title: breakPeriod.start < '16:00' && breakPeriod.end > '12:00' ? 'Mediodía' : lang('not_working'),
-                middayBreak: true,
+                title: isMidday ? lang('midday') : lang('not_working'),
+                middayBreak: isMidday,
                 start: breakStart.toDate(),
                 end: breakEnd.toDate(),
                 allDay: false,

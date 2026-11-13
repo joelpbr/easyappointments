@@ -639,4 +639,8 @@ $lang['slot_search_any_provider_hint'] = 'Déjalo vacío para buscar en todos lo
 $lang['slot_search_no_results'] = 'No hay huecos libres con estos criterios. Prueba con más días, otra franja o un margen más amplio.';
 $lang['slot_search_invalid_range'] = 'El rango de fechas debe empezar antes de terminar y abarcar como máximo 92 días.';
 $lang['until'] = 'Hasta';
+$lang['midday'] = 'Mediodía';
+$lang['open_midday'] = 'Abrir el mediodía';
+$lang['fold_midday'] = 'Contraer el mediodía';
+$lang['midday_has_appointments'] = 'No se puede contraer mientras haya visitas o reservas.';
 // End
