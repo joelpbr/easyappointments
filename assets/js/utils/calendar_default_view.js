@@ -25,8 +25,8 @@ App.Utils.CalendarDefaultView = (function () {
     const FILTER_TYPE_PROVIDER = 'provider';
     const FILTER_TYPE_SERVICE = 'service';
     const EVENT_COLORS = {
-        unavailability: '#879DB4',
-        notWorking: '#BEBEBE',
+        unavailability: '#7F7F7F',
+        notWorking: '#7F7F7F',
         default: '#7cbae8',
     };
 
