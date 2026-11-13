@@ -982,6 +982,24 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         top: 38px;
     }
 
+    // The list shows the rows only: no day heading (the day is in the column heading) and no colour dot. Each row has
+    // the colour of its service (see eventDidMount in calendar_table_view.js), also under the mouse, and the
+    // appointments that have already ended get the stripes of the hours out of work over that colour.
+    .provider-column .fc-list-day,
+    .provider-column .fc-list-event-graphic {
+        display: none;
+    }
+
+    .provider-column .fc-list-event > td,
+    .provider-column .fc-list-event:hover > td {
+        background-color: var(--ea-list-event-color, #7cbae8);
+    }
+
+    .provider-column .fc-list-event.ea-list-event-ended > td {
+        background-image: url('../img/unavailability.jpg');
+        background-blend-mode: multiply;
+    }
+
     // On touch screens too, reaching the end of the list does not scroll the calendar columns.
     .provider-column .fc-list .fc-scroller,
     .provider-column:has(.fc-list) .fc-scroller {

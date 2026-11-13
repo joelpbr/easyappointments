@@ -459,3 +459,5 @@ Cambio posterior: los desplegables de la barra de la agenda («1 Dia», «Tracta
 Cambio posterior: la barra de la agenda vuelve a fondo blanco (texto negro, misma letra, sin bordes; gris claro `#e9ecef` al pasar el ratón); solo las dos flechas de cambiar de día mantienen el fondo `#029ecb`.
 
 Cambio posterior: la barra de desplazamiento vertical de la agenda se oculta (se sigue desplazando con la rueda o el dedo), así no ocupa ancho y las columnas caben sin desplazamiento horizontal.
+
+Cambio posterior: en el modo lista de la agenda se quita el punto de color y el día de arriba (ya está en la cabecera del profesional); cada fila tiene el color de su tratamiento, como las tarjetas del modo calendario, y las citas que ya han acabado llevan encima las rayas de las horas fuera de horario, manteniendo su color (se revisa cada minuto, `markEndedListEvents()`).
