@@ -40,7 +40,6 @@ App.Utils.CalendarDefaultView = (function () {
     const $appointmentsModal = $('#appointments-modal');
     const $unavailabilitiesModal = $('#unavailabilities-modal');
     const $header = $('#header');
-    const $footer = $('#footer');
     const $notification = $('#notification');
     const $calendarToolbar = $('#calendar-toolbar');
 
@@ -59,7 +58,7 @@ App.Utils.CalendarDefaultView = (function () {
      * @returns {number} Calendar height in pixels (minimum 700px).
      */
     function getCalendarHeight() {
-        const offset = $footer.outerHeight() + $header.outerHeight() + $calendarToolbar.outerHeight() + 35;
+        const offset = $header.outerHeight() + $calendarToolbar.outerHeight() + 35;
         const height = window.innerHeight - offset;
 
         return Math.max(height, 700);

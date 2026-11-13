@@ -38,7 +38,6 @@ App.Utils.CalendarTableView = (function () {
     const $appointmentsModal = $('#appointments-modal');
     const $unavailabilitiesModal = $('#unavailabilities-modal');
     const $header = $('#header');
-    const $footer = $('#footer');
 
     // Module State
 
@@ -123,7 +122,7 @@ App.Utils.CalendarTableView = (function () {
      * @returns {number} Calendar height in pixels (minimum 700px).
      */
     function getCalendarHeight() {
-        const offset = $footer.outerHeight() + $header.outerHeight() + $calendarToolbar.outerHeight() + 65;
+        const offset = $header.outerHeight() + $calendarToolbar.outerHeight() + 50;
         const height = window.innerHeight - offset;
 
         return Math.max(height, 700);
@@ -619,8 +618,6 @@ App.Utils.CalendarTableView = (function () {
             App.Layouts.Backend.displayNotification(lang('appointment_updated'), [
                 {label: lang('undo'), function: undoFunction},
             ]);
-
-            $footer.css('position', 'static');
             info.event.setProp('data', eventData);
         };
         showNotifyUsersDialog(appointment, successCallback, () => info.revert());
@@ -657,8 +654,6 @@ App.Utils.CalendarTableView = (function () {
             App.Layouts.Backend.displayNotification(lang('unavailability_updated'), [
                 {label: lang('undo'), function: undoFunction},
             ]);
-
-            $footer.css('position', 'static');
 
             info.event.setProp('data', eventData);
         };
@@ -726,7 +721,6 @@ App.Utils.CalendarTableView = (function () {
             App.Layouts.Backend.displayNotification(lang('appointment_updated'), [
                 {label: lang('undo'), function: undoFunction},
             ]);
-            $footer.css('position', 'static');
         };
         showNotifyUsersDialog(appointment, successCallback, () => info.revert());
     }
@@ -766,7 +760,6 @@ App.Utils.CalendarTableView = (function () {
             App.Layouts.Backend.displayNotification(lang('unavailability_updated'), [
                 {label: lang('undo'), function: undoFunction},
             ]);
-            $footer.css('position', 'static');
         };
         App.Http.Calendar.saveUnavailability(unavailability, successCallback, null, false, () => info.revert());
     }

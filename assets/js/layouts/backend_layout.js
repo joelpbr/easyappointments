@@ -15,10 +15,8 @@
  * This module implements the backend layout functionality.
  */
 window.App.Layouts.Backend = (function () {
-    const $selectLanguage = $('#select-language');
     const $notification = $('#notification');
     const $loading = $('#loading');
-    const $footer = $('#footer');
 
     const DB_SLUG_ADMIN = 'admin';
     const DB_SLUG_PROVIDER = 'provider';
@@ -94,8 +92,6 @@ window.App.Layouts.Backend = (function () {
         });
 
         tippy('[data-tippy-content]');
-
-        App.Utils.Lang.enableLanguageSelection($selectLanguage);
     }
 
     document.addEventListener('DOMContentLoaded', initialize);
