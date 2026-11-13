@@ -103,6 +103,17 @@ App.Utils.CalendarTableView = (function () {
         }
     }
 
+    /**
+     * Get the display name of a provider, whose last name is optional.
+     *
+     * @param {Object} provider
+     *
+     * @return {String}
+     */
+    function getProviderName(provider) {
+        return [provider.first_name, provider.last_name].filter(Boolean).join(' ');
+    }
+
     // Helper Functions
 
     /**
@@ -111,12 +122,7 @@ App.Utils.CalendarTableView = (function () {
      * @returns {number} Calendar height in pixels (minimum 700px).
      */
     function getCalendarHeight() {
-        const offset =
-            $footer.outerHeight() +
-            $header.outerHeight() +
-            $calendarToolbar.outerHeight() +
-            $('.calendar-header').outerHeight() +
-            65;
+        const offset = $footer.outerHeight() + $header.outerHeight() + $calendarToolbar.outerHeight() + 65;
         const height = window.innerHeight - offset;
 
         return Math.max(height, 700);
@@ -922,7 +928,7 @@ App.Utils.CalendarTableView = (function () {
 
         const providerId = $providerColumn.data('provider').id;
 
-        const filterServiceIds = $filterService.val().map((id) => Number(id));
+        const filterServiceIds = [$filterService.val()].filter(Boolean).map(Number);
 
         const calendarEvents = appointments
             .filter((appointment) => {
@@ -1269,7 +1275,9 @@ App.Utils.CalendarTableView = (function () {
 
         restoreSelection($selectFilterItem, preferences.days);
 
-        const $calendarHeader = $('<div/>', {class: 'calendar-header'}).appendTo('#calendar');
+        // Keep navigation and filters inside the same toolbar as the actions.
+        $calendarToolbar.removeClass('row py-3').addClass('ea-unified-toolbar').prependTo($calendar);
+        const $calendarHeader = $('<div/>', {class: 'calendar-header'}).insertBefore('#calendar-actions');
 
         // Previous button
 
@@ -1309,10 +1317,10 @@ App.Utils.CalendarTableView = (function () {
         // Provider filter
 
         const $providerFilterGroup = $('<div/>', {class: 'filter-group'}).appendTo($calendarHeader);
-        $('<label/>', {text: lang('provider')}).appendTo($providerFilterGroup);
         $filterProvider = $('<select/>', {
             id: 'filter-provider',
-            multiple: 'multiple',
+            'aria-label': lang('provider'),
+            class: 'form-select ea-simple-filter',
             on: {
                 change: () => {
                     const firstColumnDate = $('.calendar-view .date-column:first').data('date');
@@ -1330,18 +1338,18 @@ App.Utils.CalendarTableView = (function () {
 
         if (vars('role_slug') !== App.Layouts.Backend.DB_SLUG_PROVIDER) {
             providers.forEach((provider) => {
-                $filterProvider.append(new Option(provider.first_name + ' ' + provider.last_name, provider.id));
+                $filterProvider.append(new Option(getProviderName(provider), provider.id));
             });
         } else {
             providers.forEach((provider) => {
                 if (Number(provider.id) === Number(vars('user_id'))) {
-                    $filterProvider.append(new Option(provider.first_name + ' ' + provider.last_name, provider.id));
+                    $filterProvider.append(new Option(getProviderName(provider), provider.id));
                 }
             });
         }
 
+        $filterProvider.prepend(new Option(lang('filter_all_providers'), '', true, true));
         restoreSelection($filterProvider, preferences.providers);
-        App.Utils.UI.initializeDropdown($filterProvider);
 
         // Service filter
 
@@ -1351,10 +1359,10 @@ App.Utils.CalendarTableView = (function () {
             return vars('role_slug') === App.Layouts.Backend.DB_SLUG_ADMIN || provider;
         });
         const $serviceFilterGroup = $('<div/>', {class: 'filter-group'}).appendTo($calendarHeader);
-        $('<label/>', {text: lang('service')}).appendTo($serviceFilterGroup);
         $filterService = $('<select/>', {
             id: 'filter-service',
-            multiple: 'multiple',
+            'aria-label': lang('service'),
+            class: 'form-select ea-simple-filter',
             on: {
                 change: () => {
                     const firstColumnDate = $('.calendar-view .date-column:first').data('date');
@@ -1372,8 +1380,8 @@ App.Utils.CalendarTableView = (function () {
         services.forEach((service) => {
             $filterService.append(new Option(service.name, service.id));
         });
+        $filterService.prepend(new Option(lang('filter_all_services'), '', true, true));
         restoreSelection($filterService, preferences.services);
-        App.Utils.UI.initializeDropdown($filterService);
     }
 
     /**
@@ -1417,7 +1425,7 @@ App.Utils.CalendarTableView = (function () {
                 currentDate = moment(currentDate).add({days: 1}).toDate();
             }
 
-            setCalendarViewSize();
+            requestAnimationFrame(setCalendarViewSize);
 
             // Activate calendar navigation
 
@@ -1490,9 +1498,9 @@ App.Utils.CalendarTableView = (function () {
             class: 'date-column-title',
             text: App.Utils.Date.format(date, vars('date_format'), vars('time_format')),
         }).appendTo($dateColumn);
-        const filterProviderIds = $filterProvider.val().map((id) => Number(id));
+        const filterProviderIds = [$filterProvider.val()].filter(Boolean).map(Number);
 
-        const filterServiceIds = $filterService.val().map((id) => Number(id));
+        const filterServiceIds = [$filterService.val()].filter(Boolean).map(Number);
 
         let providers = vars('available_providers').filter((provider) => {
             const servedServiceIds = provider.services.filter((serviceId) => {
@@ -1568,15 +1576,17 @@ App.Utils.CalendarTableView = (function () {
             firstDay: firstWeekdayNumber,
             slotDuration: {minutes: vars('calendar_slot_minutes')},
             snapDuration: {minutes: vars('calendar_slot_minutes')},
-            scrollTime: '07:00:00',
+            scrollTime: '08:30:00',
             slotLabelInterval: '01:00',
             eventTimeFormat: timeFormat,
             eventTextColor: '#333',
             eventContent: App.Utils.CalendarEventContent.render,
             eventColor: EVENT_COLORS.default,
             slotLabelFormat: slotTimeFormat,
+            allDaySlot: false,
             allDayContent: lang('all_day'),
             dayHeaderFormat: columnFormat,
+            dayHeaders: false,
             selectable: true,
             selectHelper: true,
             themeSystem: 'bootstrap5',
@@ -1600,14 +1610,85 @@ App.Utils.CalendarTableView = (function () {
             select: (info) => onSelect(info, fullCalendar),
             selectAllow: (info) => App.Utils.CalendarMidday.allows($providerColumn[0], info),
             eventAllow: (info) => App.Utils.CalendarMidday.allows($providerColumn[0], info),
-            eventsSet: () => App.Utils.CalendarMidday.schedule(),
+            eventsSet: () => {
+                syncAllDaySlot();
+                App.Utils.CalendarMidday.schedule();
+            },
             datesSet: () => App.Utils.CalendarMidday.schedule(),
         });
 
         fullCalendar.render();
         $wrapper.data('fullCalendar', fullCalendar);
         fullCalendar.gotoDate(goToDate);
-        $('<h6/>', {text: provider.first_name + ' ' + provider.last_name}).prependTo($providerColumn);
+        const providerName = getProviderName(provider);
+        const dayLabel = moment(goToDate).format('ddd D/M');
+        $('<h6/>', {
+            class: 'ea-provider-heading',
+            title: providerName + ' · ' + dayLabel,
+            html: [
+                $('<span/>', {class: 'ea-provider-name', text: providerName}),
+                $('<span/>', {class: 'ea-provider-date', text: dayLabel}),
+            ],
+        }).prependTo($providerColumn);
+    }
+
+    /**
+     * Share one vertical scroll position across the provider time grids, so the hours stay aligned. Only the last
+     * column shows its scrollbar.
+     */
+    function synchronizeColumnScroll() {
+        const view = document.querySelector('#calendar .calendar-view');
+
+        if (!view) {
+            return;
+        }
+
+        const getScrollers = () =>
+            [...view.querySelectorAll('.fc-timegrid-body')].map((body) => body.closest('.fc-scroller')).filter(Boolean);
+
+        const scrollers = getScrollers();
+
+        scrollers.forEach((scroller, index) =>
+            scroller.classList.toggle('ea-linked-scroll', index < scrollers.length - 1),
+        );
+
+        if (!view.eaScrollListener) {
+            view.eaScrollListener = true;
+
+            // Scroll events do not bubble, so the listener captures them from every column.
+            view.addEventListener(
+                'scroll',
+                (event) => {
+                    const source = event.target;
+                    const linked = getScrollers();
+
+                    // Only the hour grids are linked, and the value set by this listener identifies the scroll events
+                    // it causes, avoiding a feedback loop.
+                    if (!linked.includes(source) || source.eaLinkedTop === source.scrollTop) {
+                        return;
+                    }
+
+                    linked.forEach((scroller) => {
+                        scroller.eaLinkedTop = Math.min(
+                            source.scrollTop,
+                            Math.max(0, scroller.scrollHeight - scroller.clientHeight),
+                        );
+
+                        if (scroller.scrollTop !== scroller.eaLinkedTop) {
+                            scroller.scrollTop = scroller.eaLinkedTop;
+                        }
+                    });
+                },
+                true,
+            );
+        }
+
+        const top = scrollers[0]?.scrollTop ?? 0;
+
+        scrollers.forEach((scroller) => {
+            scroller.scrollTop = top;
+            scroller.eaLinkedTop = scroller.scrollTop;
+        });
     }
 
     /**
@@ -1631,19 +1712,17 @@ App.Utils.CalendarTableView = (function () {
             });
         }
 
-        const $dateColumn = $('.date-column');
-
-        const $calendarViewDiv = $('.calendar-view > div');
-
-        $calendarViewDiv.css('min-width', '1000%');
-        let width = 0;
-        $dateColumn.each((index, dateColumn) => {
-            width += $(dateColumn).outerWidth();
+        $('.date-column').each((index, column) => {
+            const count = $(column).find('.provider-column').length;
+            column.style.gridTemplateColumns = 'repeat(' + Math.max(1, count) + ', auto)';
         });
-        $calendarViewDiv.css('min-width', width + 200);
-        const dateColumnHeight = $dateColumn.outerHeight();
-
-        $('.calendar-wrapper').height(getCalendarHeight());
+        $('.calendar-view > div').css('min-width', '100%');
+        const height = getCalendarHeight();
+        $providerColumns.find('.calendar-wrapper').each((index, wrapper) => {
+            const calendar = $(wrapper).data('fullCalendar');
+            if (calendar && calendar.getOption('height') !== height) calendar.setOption('height', height);
+        });
+        requestAnimationFrame(synchronizeColumnScroll);
     }
 
     // Event Listeners
@@ -1820,6 +1899,19 @@ App.Utils.CalendarTableView = (function () {
             createView(startDateTimeObject, endDateTimeObject);
             populateAppointmentModal(appointment);
         }
+    }
+
+    /**
+     * Show the all day row (blocked periods and working plan exceptions) only when a column has all day events, in
+     * every column so that their hours stay aligned.
+     */
+    function syncAllDaySlot() {
+        const calendars = getCalendars();
+        const show = calendars.some((calendar) => calendar.getEvents().some((event) => event.allDay));
+
+        calendars
+            .filter((calendar) => calendar.getOption('allDaySlot') !== show)
+            .forEach((calendar) => calendar.setOption('allDaySlot', show));
     }
 
     // Public API

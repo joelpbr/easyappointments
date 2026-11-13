@@ -28,6 +28,9 @@ App.Utils.CalendarMidday = (() => {
         pending = true;
         requestAnimationFrame(() => {
             pending = false;
+            document.querySelectorAll('.ea-midday-toggle').forEach((button) => {
+                if (!button.middayColumn?.isConnected) button.remove();
+            });
             document.querySelectorAll('#calendar .date-column').forEach(update);
         });
     }
@@ -54,7 +57,7 @@ App.Utils.CalendarMidday = (() => {
             .map(([a, b]) => [Math.ceil(a / slot) * slot, Math.floor(b / slot) * slot])
             .filter(([a, b]) => b - a >= slot * 2)
             .sort((a, b) => b[1] - b[0] - (a[1] - a[0]))[0];
-        let button = column.querySelector('.ea-midday-toggle');
+        let button = $(column).data('middayButton');
         let folded = false;
         if (range && calendars.every((calendar) => calendar.view.type === 'timeGridDay')) {
             const date = new Date($(column).data('date'));
@@ -94,7 +97,9 @@ App.Utils.CalendarMidday = (() => {
                 button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'btn btn-sm btn-outline-secondary ea-midday-toggle';
-                column.querySelector('.date-column-title').after(button);
+                document.querySelector('#calendar-toolbar .calendar-header').append(button);
+                button.middayColumn = column;
+                $(column).data('middayButton', button);
             }
             button.disabled = occupied;
             button.setAttribute('aria-expanded', String(!folded));
@@ -103,10 +108,14 @@ App.Utils.CalendarMidday = (() => {
                 : folded
                   ? lang('open_midday')
                   : lang('fold_midday');
-            button.setAttribute('aria-label', hint);
-            button.title = hint;
-            button.textContent =
-                lang('midday') + ' ' + (folded ? '▾' : '▴') + ' · ' + clock(range[0]) + '–' + clock(range[1]);
+            // Every day has its own button in the toolbar, so they name the day when several are shown.
+            const day =
+                document.querySelectorAll('#calendar .date-column').length > 1 ? moment(date).format('ddd') : '';
+            button.textContent = [lang('midday'), day, folded ? '▾' : '▴'].filter(Boolean).join(' ');
+            button.title = [moment(date).format('DD/MM/YYYY'), clock(range[0]) + '–' + clock(range[1]), hint].join(
+                ' · ',
+            );
+            button.setAttribute('aria-label', button.title);
             button.onclick = () => {
                 if (folded) expanded.add(key);
                 else expanded.delete(key);
@@ -115,6 +124,7 @@ App.Utils.CalendarMidday = (() => {
             $(column).data('middayFold', folded ? {from, to} : null);
         } else {
             button?.remove();
+            $(column).removeData('middayButton');
             $(column).data('middayFold', null);
         }
         calendars.forEach((calendar) => {
