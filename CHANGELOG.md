@@ -28,6 +28,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- The provider filter of the split view is a list with a check box per provider, so that several can be shown at once; it reads "Provider: all" when every provider is chosen and at least one always stays chosen
 - The split view names the days in full and in relation to today ("Today, Friday 13/11", "Tomorrow", "Day after tomorrow", "Next Thursday 19/11"), under the provider name; the date picker has a "Today" button; a column in list mode scrolls by itself while the calendar columns keep scrolling together
 - The clinic logo replaces the Easy!Appointments one in the header, the booking page, the emails and the browser icon (favicon)
 - The patient section of the appointment form says whether the patient is existing or new: an existing patient has to be chosen from the search and their data is protected until "Edit data" is clicked, while a new patient is typed freely and saving warns when the phone or the name match an existing patient

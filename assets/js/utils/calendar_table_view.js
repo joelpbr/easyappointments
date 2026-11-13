@@ -103,6 +103,74 @@ App.Utils.CalendarTableView = (function () {
     }
 
     /**
+     * Create the provider filter: a button that shows the chosen providers ("Provider: all" when every one is chosen)
+     * and opens a list with a check box per provider. At least one provider stays chosen.
+     *
+     * @param {jQuery} $group Filter group that holds the hidden multiple select.
+     */
+    function createProviderFilterList($group) {
+        const $button = $('<button/>', {
+            type: 'button',
+            class: 'form-select ea-simple-filter text-start',
+            'data-bs-toggle': 'dropdown',
+            'data-bs-auto-close': 'outside',
+            'aria-expanded': 'false',
+            'aria-label': lang('provider'),
+        }).appendTo($group);
+
+        const $menu = $('<div/>', {class: 'dropdown-menu ea-provider-filter-menu'}).appendTo($group);
+
+        const updateLabel = () => {
+            const $options = $filterProvider.find('option');
+            const $chosen = $options.filter(':selected');
+
+            $button.text(
+                $chosen.length === $options.length
+                    ? lang('filter_all_providers')
+                    : $chosen
+                          .map((index, option) => option.text)
+                          .get()
+                          .join(', '),
+            );
+        };
+
+        $filterProvider.find('option').each((index, option) => {
+            $('<label/>', {
+                class: 'dropdown-item d-flex align-items-center gap-2',
+                html: [
+                    $('<input/>', {
+                        type: 'checkbox',
+                        class: 'form-check-input m-0',
+                        value: option.value,
+                        checked: option.selected,
+                    }),
+                    $('<span/>', {text: option.text}),
+                ],
+            }).appendTo($menu);
+        });
+
+        $menu.on('change', 'input', (event) => {
+            const $checked = $menu.find('input:checked');
+
+            // At least one provider has to be shown.
+            if (!$checked.length) {
+                event.target.checked = true;
+
+                return;
+            }
+
+            $filterProvider.find('option').each((index, option) => {
+                option.selected = $menu.find('input[value="' + option.value + '"]').prop('checked');
+            });
+
+            updateLabel();
+            $filterProvider.trigger('change');
+        });
+
+        updateLabel();
+    }
+
+    /**
      * Show next to the provider name what their appointments of the column day add up to, e.g. "Sebas (330€)". It
      * follows the treatment filter, like the appointments shown.
      *
@@ -1382,11 +1450,12 @@ App.Utils.CalendarTableView = (function () {
 
         // Provider filter
 
-        const $providerFilterGroup = $('<div/>', {class: 'filter-group'}).appendTo($calendarHeader);
+        // A list with a check box per provider; the hidden multiple select keeps the selection and the preferences.
+        const $providerFilterGroup = $('<div/>', {class: 'filter-group dropdown'}).appendTo($calendarHeader);
         $filterProvider = $('<select/>', {
             id: 'filter-provider',
-            'aria-label': lang('provider'),
-            class: 'form-select ea-simple-filter',
+            multiple: 'multiple',
+            hidden: true,
             on: {
                 change: () => {
                     const firstColumnDate = $('.calendar-view .date-column:first').data('date');
@@ -1414,8 +1483,9 @@ App.Utils.CalendarTableView = (function () {
             });
         }
 
-        $filterProvider.prepend(new Option(lang('filter_all_providers'), '', true, true));
+        $filterProvider.find('option').prop('selected', true);
         restoreSelection($filterProvider, preferences.providers);
+        createProviderFilterList($providerFilterGroup);
 
         // Service filter
 
@@ -1567,7 +1637,7 @@ App.Utils.CalendarTableView = (function () {
             class: 'date-column-title',
             text: App.Utils.Date.format(date, vars('date_format'), vars('time_format')),
         }).appendTo($dateColumn);
-        const filterProviderIds = [$filterProvider.val()].filter(Boolean).map(Number);
+        const filterProviderIds = ($filterProvider.val() || []).map(Number);
 
         const filterServiceIds = [$filterService.val()].filter(Boolean).map(Number);
 
