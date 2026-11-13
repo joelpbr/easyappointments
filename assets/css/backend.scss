@@ -810,9 +810,11 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     }
 }
 
+// Every column grows to its whole height and the view scrolls them together, with a single scrollbar.
 #calendar:has(.ea-unified-toolbar) .calendar-view {
     margin: 0;
     padding: 0;
+    overflow-y: auto;
 
     // The date is in the toolbar and in each provider heading.
     .date-column {
@@ -828,12 +830,16 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         position: relative;
     }
 
+    // The headings, with the list and calendar switch, stay visible while the view scrolls.
     .provider-column .ea-provider-heading {
+        position: sticky;
+        top: 0;
+        z-index: 5;
         display: flex;
         align-items: center;
         gap: 8px;
         height: 30px;
-        padding: 5px 120px 5px 6px;
+        padding: 0 3px 0 6px;
         font-size: 12px;
         line-height: 20px;
     }
@@ -850,29 +856,14 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         font-weight: normal;
     }
 
-    // The list / calendar switch of each column sits on its heading.
-    .provider-column .fc-header-toolbar {
-        position: absolute;
-        top: 2px;
-        right: 3px;
-        z-index: 4;
-        margin: 0 !important;
+    .ea-provider-views {
+        flex: 0 0 auto;
     }
 
-    .fc-header-toolbar .btn,
-    .fc-header-toolbar .fc-button {
+    .ea-provider-views .btn {
         padding: 2px 5px;
         font-size: 11px;
         line-height: 20px;
-    }
-}
-
-// The columns scroll together, so only the last one shows its scrollbar.
-#calendar .fc-scroller.ea-linked-scroll {
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-        display: none;
     }
 }
 

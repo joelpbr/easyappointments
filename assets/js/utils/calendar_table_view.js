@@ -52,6 +52,7 @@ App.Utils.CalendarTableView = (function () {
     let lastResponseSignature = null;
 
     const MIN_PROVIDER_COLUMN_WIDTH = 200; // Pixels
+    const START_TIME = '08:30:00'; // First time shown when a period is opened
 
     /**
      * Get the last filters used by the current user in this browser.
@@ -1425,8 +1426,6 @@ App.Utils.CalendarTableView = (function () {
                 currentDate = moment(currentDate).add({days: 1}).toDate();
             }
 
-            requestAnimationFrame(setCalendarViewSize);
-
             // Activate calendar navigation
 
             $('#calendar .calendar-header .btn').removeClass('disabled').prop('disabled', false);
@@ -1444,9 +1443,15 @@ App.Utils.CalendarTableView = (function () {
                     .changeView(providerView[providerId] || 'timeGridDay');
             });
 
-            if (onReady) {
-                onReady();
-            }
+            requestAnimationFrame(() => {
+                setCalendarViewSize();
+
+                if (onReady) {
+                    onReady();
+                } else {
+                    scrollToStartTime();
+                }
+            });
         });
     }
 
@@ -1471,14 +1476,13 @@ App.Utils.CalendarTableView = (function () {
                 return;
             }
 
-            const scrollTops = $('#calendar .fc-scroller')
-                .toArray()
-                .map((scroller) => scroller.scrollTop);
+            const {scrollTop, scrollLeft} = $calendarView[0];
 
             createView(startDate, endDate, () => {
-                $('#calendar .fc-scroller').each((index, scroller) => {
-                    scroller.scrollTop = scrollTops[index] ?? scroller.scrollTop;
-                });
+                const calendarView = document.querySelector('#calendar .calendar-view');
+
+                calendarView.scrollTop = scrollTop;
+                calendarView.scrollLeft = scrollLeft;
             });
         });
     }
@@ -1571,12 +1575,11 @@ App.Utils.CalendarTableView = (function () {
             locale: vars('language_code'),
             initialView: 'timeGridDay',
             nowIndicator: true,
-            height: getCalendarHeight(),
+            height: 'auto',
             editable: true,
             firstDay: firstWeekdayNumber,
             slotDuration: {minutes: vars('calendar_slot_minutes')},
             snapDuration: {minutes: vars('calendar_slot_minutes')},
-            scrollTime: '08:30:00',
             slotLabelInterval: '01:00',
             eventTimeFormat: timeFormat,
             eventTextColor: '#333',
@@ -1591,11 +1594,7 @@ App.Utils.CalendarTableView = (function () {
             selectHelper: true,
             themeSystem: 'bootstrap5',
             selectLongPressDelay: 100,
-            headerToolbar: {
-                left: 'listDay,timeGridDay',
-                center: '',
-                right: '',
-            },
+            headerToolbar: false,
             buttonText: {
                 today: lang('today'),
                 day: lang('day'),
@@ -1608,13 +1607,16 @@ App.Utils.CalendarTableView = (function () {
             eventResize: onEventResize,
             eventDrop: onEventDrop,
             select: (info) => onSelect(info, fullCalendar),
-            selectAllow: (info) => App.Utils.CalendarMidday.allows($providerColumn[0], info),
-            eventAllow: (info) => App.Utils.CalendarMidday.allows($providerColumn[0], info),
+            selectAllow: App.Utils.CalendarMidday.allows,
+            eventAllow: App.Utils.CalendarMidday.allows,
             eventsSet: () => {
                 syncAllDaySlot();
                 App.Utils.CalendarMidday.schedule();
             },
-            datesSet: () => App.Utils.CalendarMidday.schedule(),
+            datesSet: (info) => {
+                updateViewButtons($providerColumn, info.view.type);
+                App.Utils.CalendarMidday.schedule();
+            },
         });
 
         fullCalendar.render();
@@ -1622,73 +1624,70 @@ App.Utils.CalendarTableView = (function () {
         fullCalendar.gotoDate(goToDate);
         const providerName = getProviderName(provider);
         const dayLabel = moment(goToDate).format('ddd D/M');
+        // The list and calendar switch lives in the heading, which stays visible while the view scrolls.
+        const $viewButtons = $('<div/>', {class: 'btn-group ea-provider-views', role: 'group'});
+
+        [
+            ['listDay', lang('list')],
+            ['timeGridDay', lang('calendar')],
+        ].forEach(([viewType, text]) => {
+            $('<button/>', {
+                type: 'button',
+                class: 'btn btn-primary',
+                text,
+                'data-view': viewType,
+                on: {
+                    click: () => {
+                        fullCalendar.changeView(viewType);
+                        setCalendarViewSize();
+                    },
+                },
+            }).appendTo($viewButtons);
+        });
+
         $('<h6/>', {
             class: 'ea-provider-heading',
             title: providerName + ' · ' + dayLabel,
             html: [
                 $('<span/>', {class: 'ea-provider-name', text: providerName}),
                 $('<span/>', {class: 'ea-provider-date', text: dayLabel}),
+                $viewButtons,
             ],
         }).prependTo($providerColumn);
+
+        updateViewButtons($providerColumn, fullCalendar.view.type);
     }
 
     /**
-     * Share one vertical scroll position across the provider time grids, so the hours stay aligned. Only the last
-     * column shows its scrollbar.
+     * Mark the active view in the heading of a provider column.
+     *
+     * @param {jQuery} $providerColumn
+     * @param {String} viewType
      */
-    function synchronizeColumnScroll() {
-        const view = document.querySelector('#calendar .calendar-view');
+    function updateViewButtons($providerColumn, viewType) {
+        $providerColumn.find('.ea-provider-views .btn').each((index, button) => {
+            button.classList.toggle('active', button.dataset.view === viewType);
+        });
+    }
 
-        if (!view) {
+    /**
+     * Scroll the view to START_TIME, or to the first time after it on the grid.
+     */
+    function scrollToStartTime() {
+        const calendarView = document.querySelector('#calendar .calendar-view');
+
+        const lane = [...(calendarView?.querySelectorAll('.fc-timegrid-slot-lane[data-time]') ?? [])].find(
+            (slot) => slot.dataset.time >= START_TIME,
+        );
+
+        if (!lane) {
             return;
         }
 
-        const getScrollers = () =>
-            [...view.querySelectorAll('.fc-timegrid-body')].map((body) => body.closest('.fc-scroller')).filter(Boolean);
+        const headingHeight = calendarView.querySelector('.ea-provider-heading')?.offsetHeight ?? 0;
 
-        const scrollers = getScrollers();
-
-        scrollers.forEach((scroller, index) =>
-            scroller.classList.toggle('ea-linked-scroll', index < scrollers.length - 1),
-        );
-
-        if (!view.eaScrollListener) {
-            view.eaScrollListener = true;
-
-            // Scroll events do not bubble, so the listener captures them from every column.
-            view.addEventListener(
-                'scroll',
-                (event) => {
-                    const source = event.target;
-                    const linked = getScrollers();
-
-                    // Only the hour grids are linked, and the value set by this listener identifies the scroll events
-                    // it causes, avoiding a feedback loop.
-                    if (!linked.includes(source) || source.eaLinkedTop === source.scrollTop) {
-                        return;
-                    }
-
-                    linked.forEach((scroller) => {
-                        scroller.eaLinkedTop = Math.min(
-                            source.scrollTop,
-                            Math.max(0, scroller.scrollHeight - scroller.clientHeight),
-                        );
-
-                        if (scroller.scrollTop !== scroller.eaLinkedTop) {
-                            scroller.scrollTop = scroller.eaLinkedTop;
-                        }
-                    });
-                },
-                true,
-            );
-        }
-
-        const top = scrollers[0]?.scrollTop ?? 0;
-
-        scrollers.forEach((scroller) => {
-            scroller.scrollTop = top;
-            scroller.eaLinkedTop = scroller.scrollTop;
-        });
+        calendarView.scrollTop +=
+            lane.getBoundingClientRect().top - calendarView.getBoundingClientRect().top - headingHeight;
     }
 
     /**
@@ -1702,7 +1701,8 @@ App.Utils.CalendarTableView = (function () {
         if ($providerColumns.length) {
             const columnWidth = Math.max(
                 MIN_PROVIDER_COLUMN_WIDTH,
-                Math.floor($('#calendar').width() / $providerColumns.length) - 1,
+                // The width inside the scroll, without its scrollbar.
+                Math.floor($('#calendar .calendar-view').prop('clientWidth') / $providerColumns.length) - 1,
             );
 
             $providerColumns.css({width: columnWidth, minWidth: columnWidth, maxWidth: columnWidth});
@@ -1717,12 +1717,13 @@ App.Utils.CalendarTableView = (function () {
             column.style.gridTemplateColumns = 'repeat(' + Math.max(1, count) + ', auto)';
         });
         $('.calendar-view > div').css('min-width', '100%');
-        const height = getCalendarHeight();
-        $providerColumns.find('.calendar-wrapper').each((index, wrapper) => {
-            const calendar = $(wrapper).data('fullCalendar');
-            if (calendar && calendar.getOption('height') !== height) calendar.setOption('height', height);
-        });
-        requestAnimationFrame(synchronizeColumnScroll);
+
+        // One scroll for every column, as high as the calendars used to be plus the provider headings.
+        const $calendarView = $('#calendar .calendar-view');
+
+        $calendarView.outerHeight(
+            getCalendarHeight() + ($calendarView.find('.ea-provider-heading').outerHeight() || 0),
+        );
     }
 
     // Event Listeners
@@ -1855,12 +1856,6 @@ App.Utils.CalendarTableView = (function () {
 
         $calendar.on('click', '.delete-popover', onDeletePopoverClick);
         $calendar.on('click', '.cancel-appointment-popover', onCancelAppointmentPopoverClick);
-
-        // listDay button
-        $calendar.on('click', '.fc-listDay-button', setCalendarViewSize);
-
-        // timeGridDay button
-        $calendar.on('click', '.fc-timeGridDay-button', setCalendarViewSize);
     }
 
     // Initialization
