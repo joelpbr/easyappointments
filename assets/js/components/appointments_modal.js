@@ -52,11 +52,13 @@ App.Components.AppointmentsModal = (function () {
     const $appointmentDuration = $('#appointment-duration');
     const $appointmentFirstVisit = $('#appointment-first-visit');
     const $toggleMoreFields = $('#toggle-more-fields');
+    const $usualProviderHint = $('#usual-provider-hint');
 
     const MIN_DURATION = 5; // Minutes, matches EVENT_MINIMUM_DURATION.
 
     let patientSearch = null;
     let newPatientConfirmed = false;
+    let usualProviderId = null;
 
     /**
      * Show the duration of the start and end currently selected.
@@ -476,6 +478,8 @@ App.Components.AppointmentsModal = (function () {
                     $selectProvider.val(providerId);
                 }
             });
+
+            updateUsualProviderHint();
         });
 
         /**
@@ -483,6 +487,14 @@ App.Components.AppointmentsModal = (function () {
          */
         $selectProvider.on('change', () => {
             updateTimezone();
+            updateUsualProviderHint();
+        });
+
+        /**
+         * Event: Choose The Usual Provider "Click"
+         */
+        $usualProviderHint.on('click', 'button', () => {
+            $selectProvider.val(usualProviderId).trigger('change');
         });
 
         /**
@@ -492,6 +504,8 @@ App.Components.AppointmentsModal = (function () {
             markAsNewPatient();
             patientSearch.reset();
             newPatientConfirmed = false;
+            usualProviderId = null;
+            updateUsualProviderHint();
 
             $customerId.val('');
             $firstName.val('');
@@ -520,6 +534,8 @@ App.Components.AppointmentsModal = (function () {
      */
     function resetModal() {
         newPatientConfirmed = false;
+        usualProviderId = null;
+        updateUsualProviderHint();
 
         // Empty form fields.
         $appointmentsModal.find('input, textarea').val('');
@@ -671,10 +687,10 @@ App.Components.AppointmentsModal = (function () {
      * Initialize the module.
      */
     /**
-     * A patient that is registered now has not visited the clinic before.
+     * A patient that is registered now has not visited the clinic before, so a new appointment is their first visit.
      */
     function markAsNewPatient() {
-        if ($appointmentFirstVisit.val() === '') {
+        if (!$appointmentId.val()) {
             $appointmentFirstVisit.val('1');
         }
     }
@@ -702,6 +718,52 @@ App.Components.AppointmentsModal = (function () {
         $customField4.val(customer.custom_field_4);
         $customField5.val(customer.custom_field_5);
         $appointmentsModal.find('.is-invalid').removeClass('is-invalid');
+
+        usualProviderId = customer.id_users_preferred_provider || null;
+        updateUsualProviderHint();
+
+        // For a new appointment, the visits of the patient tell whether it is the first one.
+        if (!$appointmentId.val() && customer.visits !== undefined) {
+            $appointmentFirstVisit.val(customer.visits > 0 ? '0' : '1');
+        }
+    }
+
+    /**
+     * Show the usual provider of the selected patient under the provider field, with a button to choose them when
+     * another provider is selected. The selected provider is never changed by itself: it may come from the column
+     * where the appointment was created.
+     */
+    function updateUsualProviderHint() {
+        const provider = vars('available_providers').find(
+            (availableProvider) => Number(availableProvider.id) === Number(usualProviderId),
+        );
+
+        $usualProviderHint.empty().prop('hidden', !provider);
+
+        if (!provider) {
+            return;
+        }
+
+        $usualProviderHint.append(
+            $('<i/>', {class: 'fas fa-user-check me-1'}),
+            document.createTextNode(
+                lang('usual_provider') + ': ' + [provider.first_name, provider.last_name].filter(Boolean).join(' '),
+            ),
+        );
+
+        if (Number($selectProvider.val()) === Number(provider.id)) {
+            return;
+        }
+
+        if ($selectProvider.find('option[value="' + provider.id + '"]').length) {
+            $('<button/>', {
+                type: 'button',
+                class: 'btn btn-link btn-sm p-0 ms-2 align-baseline',
+                text: lang('use_usual_provider'),
+            }).appendTo($usualProviderHint);
+        } else {
+            $usualProviderHint.append(document.createTextNode(' · ' + lang('usual_provider_without_service')));
+        }
     }
 
     function initialize() {

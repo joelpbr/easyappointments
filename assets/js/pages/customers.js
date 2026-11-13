@@ -28,6 +28,7 @@ App.Pages.Customers = (function () {
     const $timezone = $('#timezone');
     const $language = $('#language');
     const $ldapDn = $('#ldap-dn');
+    const $preferredProvider = $('#preferred-provider');
     const $customField1 = $('#custom-field-1');
     const $customField2 = $('#custom-field-2');
     const $customField3 = $('#custom-field-3');
@@ -154,6 +155,7 @@ App.Pages.Customers = (function () {
                 custom_field_4: $customField4.val(),
                 custom_field_5: $customField5.val(),
                 ldap_dn: $ldapDn.val(),
+                id_users_preferred_provider: $preferredProvider.val(),
             };
 
             if ($id.val()) {
@@ -326,6 +328,7 @@ App.Pages.Customers = (function () {
         $timezone.val(customer.timezone);
         $language.val(customer.language || 'english');
         $ldapDn.val(customer.ldap_dn);
+        $preferredProvider.val(customer.id_users_preferred_provider || '');
         $customField1.val(customer.custom_field_1);
         $customField2.val(customer.custom_field_2);
         $customField3.val(customer.custom_field_3);
