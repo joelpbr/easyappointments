@@ -383,3 +383,5 @@ Las aperturas excepcionales (10.8) ya existían como excepciones de horario. Con
 | `application/views/components/backend_header.php`, `assets/js/layouts/backend_layout.js`, `application/controllers/Localization.php` | Cambio Català / Castellano en el menú de usuario, que queda guardado en el usuario | El selector de idioma estaba en el pie, que se quitó |
 | `application/migrations/085_set_catalan_as_default_language.php` | Idioma por defecto catalán; los usuarios con un idioma que ya no se ofrece pasan a catalán | Ídem |
 | `.env.example`, `docker-compose.yml` | `LANGUAGE=catalan` por defecto | Ídem |
+
+Corrección posterior: al elegir un paciente con faltas en el aviso de «Posible paciente repetido», la cita ya no se guarda sola: el formulario queda abierto con el aviso visible, porque si no se cerraba sin que se viera.
