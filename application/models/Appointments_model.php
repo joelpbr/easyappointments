@@ -275,6 +275,8 @@ class Appointments_model extends EA_Model
 
         $appointment_id = (int) $this->db->insert_id();
 
+        $this->update_no_show_count($appointment['id_users_customer'] ?? null);
+
         audit_log(
             'created',
             'appointment',
@@ -308,6 +310,12 @@ class Appointments_model extends EA_Model
         }
 
         $changes = audit_changes($before, $appointment, self::AUDITED_FIELDS, self::REDACTED_FIELDS);
+
+        $this->update_no_show_count($before['id_users_customer'] ?? null);
+
+        if (($appointment['id_users_customer'] ?? null) != ($before['id_users_customer'] ?? null)) {
+            $this->update_no_show_count($appointment['id_users_customer'] ?? null);
+        }
 
         if ($changes) {
             $is_cancellation =
@@ -363,6 +371,28 @@ class Appointments_model extends EA_Model
         if (!empty($service['color']) && ($color === '' || $color === DEFAULT_APPOINTMENT_COLOR)) {
             $appointment['color'] = $service['color'];
         }
+    }
+
+    /**
+     * Keep the number of no-shows of a patient up to date (users.no_show_count), after one of their appointments
+     * is saved or deleted.
+     *
+     * @param int|string|null $customer_id
+     */
+    protected function update_no_show_count(int|string|null $customer_id): void
+    {
+        if (!$customer_id) {
+            return;
+        }
+
+        $this->db->query(
+            'UPDATE `' .
+                $this->db->dbprefix('users') .
+                '` SET no_show_count = (SELECT COUNT(*) FROM `' .
+                $this->db->dbprefix('appointments') .
+                '` WHERE id_users_customer = ? AND status = ?) WHERE id = ?',
+            [(int) $customer_id, APPOINTMENT_STATUS_NO_SHOW, (int) $customer_id],
+        );
     }
 
     /**
@@ -540,6 +570,8 @@ class Appointments_model extends EA_Model
             [];
 
         $this->db->delete('appointments', ['id' => $appointment_id, 'is_unavailability' => false]);
+
+        $this->update_no_show_count($before['id_users_customer'] ?? null);
 
         if ($before) {
             // Keep what the appointment was, so a deletion can still be traced.

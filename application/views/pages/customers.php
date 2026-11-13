@@ -122,6 +122,12 @@
                                class="<?= vars('require_phone_number') ? 'required' : '' ?> form-control" disabled/>
                     </div>
 
+                    <div id="no-show-count-group" class="mb-3" hidden>
+                        <label for="no-show-count" class="form-label"><?= lang('no_show_count') ?></label>
+                        <input type="text" id="no-show-count" class="form-control text-warning-emphasis fw-semibold"
+                               readonly/>
+                    </div>
+
                     <div class="mb-3">
                         <label for="preferred-provider" class="form-label">
                             <?= lang('usual_provider') ?>

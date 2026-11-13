@@ -387,3 +387,5 @@ Las aperturas excepcionales (10.8) ya existían como excepciones de horario. Con
 Corrección posterior: al elegir un paciente con faltas en el aviso de «Posible paciente repetido», la cita ya no se guarda sola: el formulario queda abierto con el aviso visible, porque si no se cerraba sin que se viera.
 
 Segunda corrección: el aviso de faltas era solo un recuadro en la sección del paciente y se podía guardar sin verlo. Al elegir un paciente con faltas para una cita nueva aparece además una ventana que hay que cerrar.
+
+Tercera corrección, a petición de la clínica: sin ventana emergente, solo el aviso amarillo. Cada paciente guarda su número de faltas (`users.no_show_count`, migración 086), que se recalcula al guardar o borrar sus citas y se muestra, solo si tiene alguna, en los resultados de la búsqueda, en la ficha que se abre al pulsar la cita en la agenda, en la ficha del paciente y en el aviso del formulario.

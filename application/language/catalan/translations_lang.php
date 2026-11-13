@@ -737,4 +737,6 @@ $lang['day_total'] = 'Total';
 $lang['mark_no_show'] = 'Falta d\'assistència';
 $lang['mark_no_show_question'] = 'El pacient no va venir a aquesta cita. Es desa com a «No presentat» i la propera vegada que se li doni cita apareixerà un avís. No s\'envia cap missatge.';
 $lang['no_show_warning'] = 'Aquest pacient té %count falta(es) d\'assistència, la darrera el %date.';
+$lang['no_show_count'] = 'Faltes d\'assistència';
+$lang['no_show_count_badge'] = '%count falta(es)';
 // End

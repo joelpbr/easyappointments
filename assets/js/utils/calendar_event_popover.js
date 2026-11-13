@@ -339,6 +339,20 @@ App.Utils.CalendarEventPopover = (function () {
                 renderPhoneIcon(customer.phone_number),
                 $('<span/>', {class: 'd-inline-block', text: customer.phone_number || '-'}),
                 $('<br/>'),
+                // Only for patients who missed some appointment.
+                ...(Number(customer.no_show_count) > 0
+                    ? [
+                          $('<div/>', {
+                              class: 'alert alert-warning py-1 px-2 my-2 small',
+                              html: [
+                                  $('<i/>', {class: 'fas fa-user-slash me-2'}),
+                                  document.createTextNode(
+                                      lang('no_show_count') + ': ' + Number(customer.no_show_count),
+                                  ),
+                              ],
+                          }),
+                      ]
+                    : []),
                 ...meetingLinkElements,
                 ...createPopoverRow('notes', getEventNotes(info.event)),
                 renderCustomContent(info),

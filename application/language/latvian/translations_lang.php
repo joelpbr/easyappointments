@@ -737,4 +737,6 @@ $lang['day_total'] = 'Total';
 $lang['mark_no_show'] = 'Mark no-show';
 $lang['mark_no_show_question'] = 'The patient did not come to this appointment. It is kept as a no-show, and the next time the patient is booked a warning will remind it. Nobody is notified.';
 $lang['no_show_warning'] = 'This patient missed %count appointment(s), the last one on %date.';
+$lang['no_show_count'] = 'Missed appointments';
+$lang['no_show_count_badge'] = '%count no-show(s)';
 // End
