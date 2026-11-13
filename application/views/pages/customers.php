@@ -15,9 +15,18 @@
                 </button>
             <?php endif; ?>
 
+            <!-- The search looks in one field at a time, chosen in the dropdown (see Customers_model::search_by_field). -->
             <form class="mb-4">
-                <div class="input-group mb-3">
-                    <input type="text" class="key form-control" aria-label="keyword">
+                <div class="input-group mb-2">
+                    <select id="filter-field" class="form-select ea-patient-search-field"
+                            aria-label="<?= e(lang('search_by')) ?>">
+                        <option value="first_name"><?= lang('first_name') ?></option>
+                        <option value="last_name"><?= lang('last_name') ?></option>
+                        <option value="document"><?= lang('clinical_document') ?></option>
+                        <option value="phone"><?= lang('phone_number') ?></option>
+                    </select>
+
+                    <input type="text" class="key form-control" aria-label="keyword" autocomplete="off">
 
                     <button class="filter btn btn-outline-secondary" type="submit"
                             data-tippy-content="<?= lang('filter') ?>">
@@ -26,9 +35,12 @@
                 </div>
             </form>
 
-            <h4 class="mb-3 fw-light">
-                <?= lang('customers') ?>
-            </h4>
+            <div class="d-flex align-items-baseline justify-content-between mb-3">
+                <h4 class="fw-light mb-0">
+                    <?= lang('customers') ?>
+                </h4>
+                <small id="customers-count" class="text-muted"></small>
+            </div>
 
             <div class="results overflow-auto" style="max-height: 650px;">
                 <!-- JS -->

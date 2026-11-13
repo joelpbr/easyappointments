@@ -1295,3 +1295,10 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         }
     }
 }
+
+// Field of the patient search (see customers.js).
+#customers-page .ea-patient-search-field {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 40%;
+}
