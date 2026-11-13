@@ -11,7 +11,7 @@
 /**
  * Clinical record modal component.
  *
- * Shows the record of a patient in three tabs: details, medical history (with allergies) and visits. The visits tab
+ * Shows the record of a patient in two tabs: details (with the medical history and allergies) and visits. The visits tab
  * lists the visits on the left and shows the record of the chosen one on the right, with the fields of the record
  * template of its treatment (see the Clinical_record_templates library). Saving a silicone or surgery visit can change
  * its price, so the caller is told to reload the calendar.
@@ -82,7 +82,7 @@ App.Components.ClinicalRecordModal = (function () {
     /**
      * Show a tab of the record.
      *
-     * @param {String} tab "details", "history" or "visits".
+     * @param {String} tab "details" or "visits".
      */
     function showTab(tab) {
         bootstrap.Tab.getOrCreateInstance($modal.find('[data-tab="' + tab + '"]')[0]).show();
@@ -90,7 +90,7 @@ App.Components.ClinicalRecordModal = (function () {
     }
 
     /**
-     * The footer saves the patient (details and history); a visit has its own save button.
+     * The footer saves the patient details; a visit has its own save button.
      *
      * @param {String} tab
      */
