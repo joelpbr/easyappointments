@@ -211,8 +211,12 @@ App.Utils.CalendarMidday = (() => {
 
             appliedFold = key;
 
-            // FullCalendar must measure the slots again, so that clicks and drags land on the right time.
-            calendars.forEach((calendar) => calendar.updateSize());
+            // FullCalendar only places the events again when it draws the time grid: changing an option of the slots
+            // makes it draw and measure them with the new heights, so that the events and the clicks land on their time.
+            calendars.forEach((calendar) => {
+                calendar.setOption('slotLaneClassNames', key ? ['ea-midday-fold-' + key] : []);
+                calendar.updateSize();
+            });
         }
     }
 

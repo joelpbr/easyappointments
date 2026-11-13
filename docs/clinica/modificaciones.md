@@ -435,3 +435,5 @@ Tercera corrección, a petición de la clínica: sin ventana emergente, solo el 
 | `assets/js/utils/calendar_day_total.js`, `calendar_table_view.js`, `calendar_event_content.js`, `calendar.php` | Se quita el «Total» de la barra; cada profesional muestra la suma de su día junto al nombre («Sebas (330€)»), y cada tarjeta el precio de esa cita junto al tratamiento («Quiropodia (30€)») | Ídem; el precio puede ser distinto del del tratamiento |
 
 Corrección posterior: el plegado se hace con una hoja de estilo que selecciona las filas del descanso por su hora, en lugar de marcar las filas (FullCalendar las vuelve a dibujar al pasar una columna de lista a calendario, lo que deshacía el plegado y hacía que el botón fallara). Las columnas en modo lista se ignoran: las de calendario siguen plegadas y el botón no desaparece.
+
+Segunda corrección: al abrir o plegar el descanso, FullCalendar no recolocaba las citas (quedaban a la altura de antes). Ahora, tras cambiar el estilo, se cambia una opción de las franjas para que dibuje y mida de nuevo, y cada cita queda en su hora, con o sin columnas en modo lista.
