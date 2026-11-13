@@ -12,8 +12,8 @@
  * Patient search.
  *
  * Pressing Enter in the name, the last name or the phone field of a new patient looks for the existing patients. The
- * search needs three letters or six digits of the phone number, never runs while typing, and shows up to 10
- * patients, with the option to keep creating a new one.
+ * search needs three letters or six digits of the phone number, never runs while typing, and shows up to 10 patients;
+ * when the patient is not there, the user just keeps typing.
  */
 App.Components.PatientSearch = (function () {
     const MIN_LETTERS = 3; // Same rule as is_specific_patient_search() on the server.
@@ -45,11 +45,10 @@ App.Components.PatientSearch = (function () {
      * @param {jQuery} options.$phoneNumber
      * @param {Function} options.isEnabled Whether to search (e.g. no patient is selected yet).
      * @param {Function} options.onSelect Called with the ID of the chosen patient.
-     * @param {Function} [options.onCreate] Called when the user keeps creating a new patient.
      *
      * @return {Object} {reset}
      */
-    function attach({$firstName, $lastName, $phoneNumber, isEnabled, onSelect, onCreate}) {
+    function attach({$firstName, $lastName, $phoneNumber, isEnabled, onSelect}) {
         const $list = $('<div/>', {class: 'list-group shadow ea-patient-suggestions', role: 'listbox'}).hide();
         let request = null;
 
@@ -73,12 +72,7 @@ App.Components.PatientSearch = (function () {
             const patientId = $option.data('patientId');
 
             close();
-
-            if (patientId) {
-                onSelect(patientId);
-            } else {
-                onCreate?.();
-            }
+            onSelect(patientId);
         };
 
         const message = (text) => $('<div/>', {class: 'list-group-item small text-muted', text});
@@ -95,9 +89,6 @@ App.Components.PatientSearch = (function () {
         const show = ($input, items) => {
             $list.empty().append(items).appendTo($input.parent()).show();
         };
-
-        const createOption = () =>
-            option([$('<i/>', {class: 'fas fa-user-plus me-2'}), lang('create_new_patient')]).addClass('fst-italic');
 
         const search = ($input) => {
             const keyword = $input.is($phoneNumber)
@@ -133,8 +124,6 @@ App.Components.PatientSearch = (function () {
                 if (response.more) {
                     items.push(message(lang('patient_search_more_results')));
                 }
-
-                items.push(createOption());
 
                 show($input, items);
             });

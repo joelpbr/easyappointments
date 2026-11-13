@@ -403,3 +403,10 @@ Tercera corrección, a petición de la clínica: sin ventana emergente, solo el 
 | `application/views/components/appointments_modal.php`, `assets/js/components/appointments_modal.js`, vistas de agenda | El estado solo se muestra al editar una cita: una nueva empieza siempre como «Programada». Se quita el campo «Primera visita» del formulario | Petición de la clínica: no son decisiones de recepción al dar cita |
 | `application/models/Appointments_model.php` | `set_first_visit()`: al crear una cita sin indicarlo, es primera visita si el paciente no tiene ninguna cita anterior; un paciente elegido de la lista o que coincide con uno existente la tiene, uno creado ahora no | Ídem; la API puede seguir indicándolo |
 | `assets/js/components/patient_search.js` | `onCreate` pasa a ser opcional | Ya no hay nada que marcar al crear un paciente |
+
+## Sin botones de paciente nuevo
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/views/components/appointments_modal.php`, `assets/js/components/appointments_modal.js` | Se quita el botón «Nuevo» de «Datos del paciente». Cambiar el nombre o el apellido de un paciente elegido lo suelta y lo trata como paciente nuevo (al guardar se siguen comprobando los posibles repetidos); cambiar el teléfono o el correo actualiza el elegido | Petición de la clínica: el botón no aportaba nada |
+| `assets/js/components/patient_search.js` | Se quita la opción «Crear paciente nuevo» de los resultados: si el paciente no está, se sigue escribiendo | Ídem |
