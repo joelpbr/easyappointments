@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- The record of a chiropody, cure or surgery visit shows the four foot diagrams (top, sides and sole) with the catalog of pathologies on their right and the observations under it; the database keeps the catalog of pathologies, the four diagrams and the pathologies placed on each visit with their exact coordinates, ready for placing them on the pictures
 - The "Revisión" treatment (10 minutes, free) is available to every provider and listed right after "Quiropodia" in the treatment dropdowns
 - Admins and providers can open the clinical record of a patient from the appointment details in the calendar: details (name, NIF/NIE, date of birth, address, phone, referral, profession, physical activity), medical history and allergies, and the list of their visits; each visit opens its own record in a side panel with the fields of its treatment (feet drawing, observations, reason, diagnosis, treatment), where choosing a silicone orthosis or typing the price of a surgery sets the price of the visit; each treatment has a record type on the services page, secretaries never see the records and the audit log notes every time one is opened; on the patients page the clinical record holds the name, phone, address and NIF/NIE, opens with a "Record" button and creates new patients
 - The "Revisión SP" treatment (30 minutes, 40 €) is available to every provider and listed after "Entrega SP" in the treatment dropdowns

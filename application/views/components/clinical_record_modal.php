@@ -150,7 +150,22 @@
                                     <div class="text-muted small" id="clinical-visit-subtitle"></div>
                                 </div>
 
-                                <div class="ea-clinical-feet mb-3" data-section="feet">[DIBUJO PIES]</div>
+                                <!-- Foot diagrams: the picture of the chosen view on the left, with the four views under it, and
+                                     the pathologies on the right with the observations under them (clinical_record_modal.js). -->
+                                <div class="ea-clinical-feet mb-3" data-section="feet">
+                                    <div class="ea-feet-diagram">
+                                        <div class="ea-feet-picture">
+                                            <img id="clinical-feet-picture" alt="">
+                                        </div>
+                                        <div id="clinical-feet-views" class="ea-feet-views" role="group"></div>
+                                    </div>
+
+                                    <div class="ea-feet-side">
+                                        <div class="form-label"><?= lang('clinical_pathologies') ?></div>
+                                        <div id="clinical-feet-pathologies" class="list-group ea-feet-pathologies"></div>
+                                        <div id="clinical-feet-observations"></div>
+                                    </div>
+                                </div>
 
                                 <div class="mb-3" data-field="reason">
                                     <label class="form-label" for="clinical-visit-reason"><?= lang(
@@ -210,6 +225,9 @@
                                         <div class="form-text"><?= lang('clinical_price_hint') ?></div>
                                     </div>
                                 </div>
+
+                                <!-- The observations come back here when the visit has no foot diagrams. -->
+                                <div id="clinical-observations-home" hidden></div>
 
                                 <div class="mb-3" data-field="observations">
                                     <label class="form-label" for="clinical-visit-observations"><?= lang(

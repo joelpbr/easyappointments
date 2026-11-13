@@ -549,3 +549,17 @@ Decidido con la clínica: se elimina por completo lo que está desactivado y vac
 Resultado: `ea_users` pasa de 27 a 20 columnas y `ea_settings` de 82 a 56 filas; 24 textos menos en cada idioma. Las notas del paciente se mantienen: salen en el formulario de cita como «Notes administratives».
 
 Cambio posterior: la barra de la agenda deja el botón «Nova cita» aparte; el desplegable «+» pasa a llamarse «Nova cita», y «Cercar forat» queda solo con la lupa. La etiqueta del mediodía muestra el horario: «12:30 - 15:00 - Migdia».
+
+## Diagramas de los pies (fase 1: base de datos y maquetación)
+
+Migración `092_create_foot_diagrams.php` (copia previa en `storage/backups/easyappointments-backup-2026-11-13-225050.gz`):
+
+| Tabla | Campos | Notas |
+| --- | --- | --- |
+| `podology_pathologies` | `id`, `name` (único), `image_filename`, `description`, fechas | Catálogo compartido. Se deja vacío: no se inventan patologías. Los iconos van en `assets/img/podology_pathologies/` |
+| `podology_diagram_types` | `id` (0-3, con CHECK), `name`, `background_image` | Los cuatro diagramas globales: 0 → `fotos_pies/1.png`, 1 → `2.png`, 2 → `3.png`, 3 → `4.png`. Sin nombre de vista anatómica |
+| `appointment_foot_markers` | `id`, `id_appointments`, `id_podology_diagram_types`, `id_podology_pathologies`, `x1`, `y1`, `x2`, `y2` (INT con signo), `is_healed`, `annotation_title`, `annotation_text`, `original_external_id` (único si se informa), fechas | Cada patología colocada en una visita; coordenadas exactas, sin escalar. Se permite repetir la misma patología en el mismo diagrama |
+
+Relaciones: paciente → citas (`ea_appointments`) → marcas. Borrar una cita borra sus marcas (cascade); una patología o un diagrama en uso no se pueden borrar (restrict). Índices: (cita, diagrama), diagrama, patología. Comprobado: coordenadas negativas guardadas tal cual, repeticiones permitidas, diagrama 4 rechazado (clave foránea y CHECK).
+
+Ficha de la visita (plantillas «Peus i observacions» y «Cirurgia»): el recuadro `[DIBUJO PIES]` pasa a ser la foto de la vista elegida con las cuatro vistas en miniatura debajo; a la derecha, la lista desplazable de patologías del catálogo (se puede elegir una) y, debajo, Observaciones. `Foot_diagrams_model` lee diagramas, catálogo y marcas; `Clinical_records::appointment()` los envía. Colocar los iconos sobre las fotos queda para la fase siguiente.

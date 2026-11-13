@@ -1331,21 +1331,106 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         border-bottom: 1px solid #dee2e6;
     }
 
-    // Placeholder of the feet drawing.
+    // Foot diagrams: the picture and its four views on the left, the pathologies and the observations on the right.
     .ea-clinical-feet {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 140px;
-        border: 2px dashed #adb5bd;
-        border-radius: 8px;
-        color: #6c757d;
-        font-weight: 600;
-        letter-spacing: 0.05em;
+        display: grid;
+        grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+        gap: 16px;
 
         &[hidden] {
             display: none;
         }
+    }
+
+    .ea-feet-picture {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: #ffffff;
+        overflow: hidden;
+
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+    }
+
+    .ea-feet-views {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+        margin-top: 6px;
+    }
+
+    .ea-feet-view {
+        padding: 2px;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        background: #ffffff;
+
+        img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        &.active {
+            border-color: #029ecb;
+        }
+    }
+
+    .ea-feet-side {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+
+        // The observations take the rest of the height, down to the views of the picture.
+        #clinical-feet-observations,
+        [data-field='observations'] {
+            display: flex;
+            flex: 1 1 auto;
+            flex-direction: column;
+            margin-bottom: 0 !important;
+        }
+
+        textarea {
+            flex: 1 1 auto;
+            min-height: 90px;
+        }
+    }
+
+    // The catalog of pathologies scrolls by itself.
+    .ea-feet-pathologies {
+        max-height: 190px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-bottom: 12px;
+    }
+
+    .ea-feet-pathology {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+
+        img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        &.active {
+            background: #e6f6fb;
+            color: inherit;
+            border-color: #029ecb;
+        }
+    }
+
+    .ea-feet-empty {
+        padding: 12px;
+        color: #6c757d;
+        font-size: 0.85rem;
     }
 }
 
@@ -1363,6 +1448,11 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
             max-height: 40vh;
             border-right: 0;
             border-bottom: 1px solid #dee2e6;
+        }
+
+        // On a phone the pathologies and the observations go under the picture.
+        .ea-clinical-feet {
+            grid-template-columns: minmax(0, 1fr);
         }
     }
 }

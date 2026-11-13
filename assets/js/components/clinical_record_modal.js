@@ -35,6 +35,12 @@ App.Components.ClinicalRecordModal = (function () {
     const $orthosis = $('#clinical-visit-orthosis');
     const $surgeryPrice = $('#clinical-visit-surgery-price');
     const $observations = $('#clinical-visit-observations');
+    const $observationsField = $observations.closest('[data-field="observations"]');
+    const $observationsHome = $('#clinical-observations-home');
+    const $feetPicture = $('#clinical-feet-picture');
+    const $feetViews = $('#clinical-feet-views');
+    const $feetPathologies = $('#clinical-feet-pathologies');
+    const $feetObservations = $('#clinical-feet-observations');
 
     let customerId = null;
     let currentAppointmentId = null;
@@ -422,6 +428,14 @@ App.Components.ClinicalRecordModal = (function () {
 
         $visitDetail.find('[data-section="feet"]').prop('hidden', !response.has_feet);
 
+        // With the foot diagrams, the observations go under the pathologies; otherwise they keep their place.
+        if (response.has_feet) {
+            renderFeet(response.feet);
+            $feetObservations.append($observationsField);
+        } else {
+            $observationsHome.after($observationsField);
+        }
+
         $visitDetail.find('[data-field]').each((index, element) => {
             const field = element.dataset.field;
 
@@ -449,6 +463,64 @@ App.Components.ClinicalRecordModal = (function () {
         $visitDetail.closest('.ea-clinical-visit-column').scrollTop(0);
 
         savedVisit = JSON.stringify(getVisitData());
+    }
+
+    /**
+     * Show the foot diagrams of a visit: the four views and the catalog of pathologies, which can be chosen.
+     *
+     * Placing the pathologies on the pictures comes later; the markers of the visit are already loaded with their exact
+     * coordinates (response.feet.markers).
+     *
+     * @param {Object} feet {diagrams, pathologies, markers}
+     */
+    function renderFeet(feet) {
+        $feetViews.empty();
+
+        feet.diagrams.forEach((diagram, index) => {
+            $('<button/>', {
+                'type': 'button',
+                'class': 'ea-feet-view' + (index === 0 ? ' active' : ''),
+                'data-diagram-id': diagram.id,
+                'title': diagram.name || lang('clinical_feet_view').replace('%s', index + 1),
+                'html': $('<img/>', {src: diagram.image_url, alt: ''}),
+            })
+                .on('click', (event) => showDiagram(diagram, $(event.currentTarget)))
+                .appendTo($feetViews);
+        });
+
+        if (feet.diagrams.length) {
+            showDiagram(feet.diagrams[0], $feetViews.children().first());
+        }
+
+        $feetPathologies.empty();
+
+        if (!feet.pathologies.length) {
+            $('<div/>', {class: 'ea-feet-empty', text: lang('clinical_no_pathologies')}).appendTo($feetPathologies);
+
+            return;
+        }
+
+        feet.pathologies.forEach((pathology) => {
+            $('<button/>', {
+                'type': 'button',
+                'class': 'list-group-item list-group-item-action ea-feet-pathology',
+                'data-pathology-id': pathology.id,
+                'title': pathology.description || pathology.name,
+                'html': [$('<img/>', {src: pathology.image_url, alt: ''}), $('<span/>', {text: pathology.name})],
+            }).appendTo($feetPathologies);
+        });
+    }
+
+    /**
+     * Show one of the four foot diagrams.
+     *
+     * @param {Object} diagram
+     * @param {jQuery} $button The view button of the diagram.
+     */
+    function showDiagram(diagram, $button) {
+        $feetPicture.attr('src', diagram.image_url).data('diagramId', diagram.id);
+        $feetViews.children().removeClass('active');
+        $button.addClass('active');
     }
 
     /**
@@ -560,6 +632,15 @@ App.Components.ClinicalRecordModal = (function () {
 
         $patientSave.on('click', savePatient);
         $('#clinical-visit-save').on('click', saveVisit);
+
+        // The chosen pathology, to be placed on the picture.
+        $feetPathologies.on('click', '.ea-feet-pathology', (event) => {
+            const $pathology = $(event.currentTarget);
+            const isActive = $pathology.hasClass('active');
+
+            $feetPathologies.children().removeClass('active');
+            $pathology.toggleClass('active', !isActive);
+        });
 
         $visits.on('click', '.ea-clinical-visit', (event) => {
             chooseVisit(Number(event.currentTarget.dataset.appointmentId));
