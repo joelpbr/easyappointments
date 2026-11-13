@@ -760,8 +760,8 @@ $lang['clinical_invalid_price'] = 'El preu no és vàlid.';
 $lang['clinical_invalid_birth_date'] = 'La data de naixement no és vàlida.';
 $lang['clinical_record_saved'] = 'Fitxa desada.';
 $lang['clinical_visit_saved'] = 'Visita desada.';
-$lang['clinical_unsaved_changes'] = 'Hi ha canvis sense desar. Vols tancar igualment?';
-$lang['clinical_close_anyway'] = 'Tancar sense desar';
+$lang['clinical_unsaved_changes'] = 'Hi ha canvis sense desar. Els vols desar?';
+$lang['clinical_dont_save'] = 'No desis';
 $lang['clinical_choose_visit'] = 'Tria una visita de la llista.';
 $lang['clinical_save_visit'] = 'Desa la visita';
 $lang['clinical_years_old'] = '%s anys';
@@ -776,6 +776,4 @@ $lang['clinical_pathologies'] = 'Patologies';
 $lang['clinical_no_pathologies'] = 'Encara no hi ha patologies al catàleg.';
 $lang['clinical_feet_view'] = 'Vista %s';
 $lang['clinical_feet_hint'] = 'Tria una patologia i clica sobre la foto per posar-la; clica-la per treure-la.';
-$lang['clinical_remove_marker'] = 'Vols treure «%s» d\'aquesta vista?';
-$lang['clinical_remove'] = 'Treu';
 // End

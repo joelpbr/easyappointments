@@ -179,46 +179,8 @@ class Clinical_records extends EA_Controller
     }
 
     /**
-     * Place a pathology on a foot diagram of a visit, at the given coordinates of the original picture.
-     */
-    public function add_marker(): void
-    {
-        try {
-            method('post');
-
-            $appointment = $this->authorize_appointment((int) request('appointment_id'));
-
-            json_response([
-                'marker' => $this->foot_diagrams_model->add_marker(
-                    (int) $appointment['id'],
-                    is_array(request('marker')) ? request('marker') : [],
-                ),
-            ]);
-        } catch (Throwable $e) {
-            json_exception($e);
-        }
-    }
-
-    /**
-     * Remove a pathology placed on a foot diagram of a visit.
-     */
-    public function delete_marker(): void
-    {
-        try {
-            method('post');
-
-            $appointment = $this->authorize_appointment((int) request('appointment_id'));
-
-            $this->foot_diagrams_model->delete_marker((int) $appointment['id'], (int) request('marker_id'));
-
-            json_response(['success' => true]);
-        } catch (Throwable $e) {
-            json_exception($e);
-        }
-    }
-
-    /**
-     * Save the record of a visit, and the price that it gives to the visit (silicone and surgery).
+     * Save the record of a visit, the price that it gives to the visit (silicone and surgery) and the pathologies
+     * placed on its foot diagrams (markers, sent as JSON: the whole list of the visit).
      */
     public function save_appointment(): void
     {
@@ -234,9 +196,20 @@ class Clinical_records extends EA_Controller
             );
             $price = Clinical_record_templates::appointment_price($template, $record, request('surgery_price'));
 
+            $has_feet = in_array($template, Clinical_record_templates::TEMPLATES_WITH_FEET, true);
+            $markers = $has_feet && request('markers') !== null ? json_decode((string) request('markers'), true) : null;
+
+            if ($markers !== null && !is_array($markers)) {
+                throw new InvalidArgumentException('The provided markers are not valid.');
+            }
+
             $this->db->trans_start();
 
             $this->appointment_records_model->save_for_appointment((int) $appointment['id'], $record);
+
+            if ($markers !== null) {
+                $this->foot_diagrams_model->sync_markers((int) $appointment['id'], $markers);
+            }
 
             if ($price !== null && (float) $appointment['price'] !== $price) {
                 $this->db->update(
@@ -256,7 +229,11 @@ class Clinical_records extends EA_Controller
                 throw new RuntimeException('Could not save the appointment record.');
             }
 
-            json_response(['success' => true, 'price' => $price ?? $appointment['price']]);
+            json_response([
+                'success' => true,
+                'price' => $price ?? $appointment['price'],
+                'markers' => $has_feet ? $this->foot_diagrams_model->get_markers((int) $appointment['id']) : null,
+            ]);
         } catch (Throwable $e) {
             json_exception($e);
         }

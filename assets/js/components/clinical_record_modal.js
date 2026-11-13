@@ -27,6 +27,7 @@ App.Components.ClinicalRecordModal = (function () {
     const $birthDate = $('#clinical-birth-date');
     const $age = $('#clinical-age');
     const $patientSave = $('#clinical-record-save');
+    const $visitSave = $('#clinical-visit-save');
     const $visitEmpty = $('#clinical-visit-empty');
     const $visitDetail = $('#clinical-visit-detail');
     const $visitTitle = $('#clinical-visit-title');
@@ -55,6 +56,10 @@ App.Components.ClinicalRecordModal = (function () {
     // Foot diagrams of the visit shown: {diagrams, pathologies, markers} and the diagram on screen.
     let feet = null;
     let diagramId = null;
+
+    // Whether the visit shown has foot diagrams, and a key for each marker, as the new ones have no id until saved.
+    let visitHasFeet = false;
+    let markerKey = 0;
 
     // Size of a placed pathology on the original picture, in its pixels.
     const MARKER_SIZE = 24;
@@ -168,6 +173,7 @@ App.Components.ClinicalRecordModal = (function () {
         updateHeader();
 
         savedPatient = JSON.stringify(getPatientData());
+        updateSaveButtons();
     }
 
     /**
@@ -332,8 +338,9 @@ App.Components.ClinicalRecordModal = (function () {
             return;
         }
 
-        App.Http.ClinicalRecords.savePatient(customerId, data).done(() => {
+        return App.Http.ClinicalRecords.savePatient(customerId, data).done(() => {
             savedPatient = JSON.stringify(data);
+            updateSaveButtons();
             updateHeader();
             App.Layouts.Backend.displayNotification(lang('clinical_record_saved'));
             onChange(customerId);
@@ -350,6 +357,7 @@ App.Components.ClinicalRecordModal = (function () {
             App.Http.ClinicalRecords.savePatient(0, data).done((response) => {
                 customerId = Number(response.id);
                 savedPatient = JSON.stringify(data);
+                updateSaveButtons();
                 updateHeader();
                 $modal.find('[data-tab="visits"]').prop('disabled', false);
                 App.Layouts.Backend.displayNotification(lang('clinical_record_saved'));
@@ -384,7 +392,10 @@ App.Components.ClinicalRecordModal = (function () {
         }
 
         if (isVisitDirty()) {
-            confirmDiscard(() => loadVisit(appointmentId));
+            confirmUnsaved(
+                () => saveVisit().done(() => loadVisit(appointmentId)),
+                () => loadVisit(appointmentId),
+            );
 
             return;
         }
@@ -417,6 +428,7 @@ App.Components.ClinicalRecordModal = (function () {
         const fields = response.fields;
 
         visitAppointmentId = appointment.id;
+        visitHasFeet = Boolean(response.has_feet);
         visitPrice = appointment.price;
 
         $visitTitle.text(appointment.service_name);
@@ -459,6 +471,7 @@ App.Components.ClinicalRecordModal = (function () {
         $('#clinical-visit-column').scrollTop(0);
 
         savedVisit = JSON.stringify(getVisitData());
+        updateSaveButtons();
     }
 
     /**
@@ -469,6 +482,7 @@ App.Components.ClinicalRecordModal = (function () {
      */
     function renderFeet(visitFeet) {
         feet = visitFeet;
+        feet.markers.forEach((marker) => (marker.key = ++markerKey));
         $feetViews.empty();
 
         feet.diagrams.forEach((diagram, index) => {
@@ -547,7 +561,7 @@ App.Components.ClinicalRecordModal = (function () {
                     $('<button/>', {
                         'type': 'button',
                         'class': 'ea-feet-marker',
-                        'data-marker-id': marker.id,
+                        'data-marker-key': marker.key,
                         'title': pathology?.name || '',
                         'css': {
                             left: (marker.x1 / width) * 100 + '%',
@@ -574,7 +588,7 @@ App.Components.ClinicalRecordModal = (function () {
 
     /**
      * Place the chosen pathology where the picture was clicked: the coordinates are those of the original picture,
-     * whatever its size on screen, and the marker is saved at once.
+     * whatever its size on screen. It is saved with the visit.
      *
      * @param {jQuery.Event} event
      */
@@ -600,43 +614,21 @@ App.Components.ClinicalRecordModal = (function () {
             y2: Math.round(y - half) + MARKER_SIZE,
         };
 
-        App.Http.ClinicalRecords.addMarker(visitAppointmentId, marker).done((response) => {
-            feet.markers.push(response.marker);
-            renderMarkers();
-        });
+        // Saved with the visit ("Save visit").
+        feet.markers.push({...marker, id: null, key: ++markerKey});
+        renderMarkers();
+        updateSaveButtons();
     }
 
     /**
-     * Remove a placed pathology, after asking.
+     * Remove a placed pathology; it is removed for good when the visit is saved.
      *
-     * @param {Number} markerId
+     * @param {Number} key Key of the marker.
      */
-    function removeMarker(markerId) {
-        const marker = feet.markers.find((marker) => marker.id === markerId);
-        const pathology = feet.pathologies.find((pathology) => pathology.id === marker?.pathology_id);
-
-        App.Utils.Message.show(
-            lang('clinical_pathologies'),
-            lang('clinical_remove_marker').replace('%s', pathology?.name || ''),
-            [
-                {
-                    text: lang('cancel'),
-                    className: 'btn btn-secondary',
-                    click: (event, messageModal) => messageModal.hide(),
-                },
-                {
-                    text: lang('clinical_remove'),
-                    className: 'btn btn-danger',
-                    click: (event, messageModal) => {
-                        messageModal.hide();
-                        App.Http.ClinicalRecords.deleteMarker(visitAppointmentId, markerId).done(() => {
-                            feet.markers = feet.markers.filter((marker) => marker.id !== markerId);
-                            renderMarkers();
-                        });
-                    },
-                },
-            ],
-        );
+    function removeMarker(key) {
+        feet.markers = feet.markers.filter((marker) => marker.key !== key);
+        renderMarkers();
+        updateSaveButtons();
     }
 
     /**
@@ -656,10 +648,7 @@ App.Components.ClinicalRecordModal = (function () {
             ? visitPrice
             : ($orthosis.find('option:selected').data('price') ?? visitPrice);
 
-        $visitSubtitle.text(
-            App.Utils.Date.format(startDatetime, vars('date_format'), vars('time_format'), true) +
-                (price !== null && price !== undefined ? ' · ' + formatPrice(price) : ''),
-        );
+        $visitSubtitle.text(App.Utils.Date.format(startDatetime, vars('date_format'), vars('time_format'), true));
     }
 
     /**
@@ -677,6 +666,19 @@ App.Components.ClinicalRecordModal = (function () {
         return {
             record,
             surgeryPrice: $surgeryPrice.closest('[data-field]').prop('hidden') ? '' : $surgeryPrice.val(),
+            // The pathologies placed on the foot diagrams are saved with the visit, so they count as its changes.
+            markers:
+                visitHasFeet && feet
+                    ? feet.markers.map(({id, diagram_id, pathology_id, x1, y1, x2, y2}) => ({
+                          id: id || null,
+                          diagram_id,
+                          pathology_id,
+                          x1,
+                          y1,
+                          x2,
+                          y2,
+                      }))
+                    : null,
         };
     }
 
@@ -686,19 +688,29 @@ App.Components.ClinicalRecordModal = (function () {
     function saveVisit() {
         const data = getVisitData();
 
-        App.Http.ClinicalRecords.saveAppointment(visitAppointmentId, data.record, data.surgeryPrice).done(
-            (response) => {
-                savedVisit = JSON.stringify(data);
-                visitPrice = response.price !== null ? Number(response.price) : null;
-                updateVisitSubtitle($visitDetail.data('start'));
-                App.Layouts.Backend.displayNotification(lang('clinical_visit_saved'));
+        return App.Http.ClinicalRecords.saveAppointment(
+            visitAppointmentId,
+            data.record,
+            data.surgeryPrice,
+            data.markers,
+        ).done((response) => {
+            // The new markers come back with their id.
+            if (response.markers && feet) {
+                feet.markers = response.markers.map((marker) => ({...marker, key: ++markerKey}));
+                renderMarkers();
+            }
 
-                // The list shows the new price and which visits have notes.
-                App.Http.ClinicalRecords.findPatient(customerId).done((patient) => renderVisits(patient.appointments));
+            savedVisit = JSON.stringify(getVisitData());
+            updateSaveButtons();
+            visitPrice = response.price !== null ? Number(response.price) : null;
+            updateVisitSubtitle($visitDetail.data('start'));
+            App.Layouts.Backend.displayNotification(lang('clinical_visit_saved'));
 
-                onChange(customerId);
-            },
-        );
+            // The list shows the new price and which visits have notes.
+            App.Http.ClinicalRecords.findPatient(customerId).done((patient) => renderVisits(patient.appointments));
+
+            onChange(customerId);
+        });
     }
 
     /**
@@ -720,11 +732,12 @@ App.Components.ClinicalRecordModal = (function () {
     }
 
     /**
-     * Ask before losing the changes that are not saved.
+     * Ask what to do with the changes that are not saved: save them, leave them or stay.
      *
-     * @param {Function} discard Called when the user chooses to go on without saving.
+     * @param {Function} save Called to save and go on.
+     * @param {Function} discard Called to go on without saving.
      */
-    function confirmDiscard(discard) {
+    function confirmUnsaved(save, discard) {
         App.Utils.Message.show(lang('clinical_record'), lang('clinical_unsaved_changes'), [
             {
                 text: lang('cancel'),
@@ -732,14 +745,30 @@ App.Components.ClinicalRecordModal = (function () {
                 click: (event, messageModal) => messageModal.hide(),
             },
             {
-                text: lang('clinical_close_anyway'),
-                className: 'btn btn-danger',
+                text: lang('clinical_dont_save'),
+                className: 'btn btn-outline-danger',
                 click: (event, messageModal) => {
                     messageModal.hide();
                     discard();
                 },
             },
+            {
+                text: lang('save'),
+                className: 'btn btn-primary',
+                click: (event, messageModal) => {
+                    messageModal.hide();
+                    save();
+                },
+            },
         ]);
+    }
+
+    /**
+     * The save buttons can only be pressed when there is something to save.
+     */
+    function updateSaveButtons() {
+        $patientSave.prop('disabled', !isPatientDirty());
+        $visitSave.prop('disabled', !isVisitDirty());
     }
 
     /**
@@ -751,7 +780,16 @@ App.Components.ClinicalRecordModal = (function () {
         }
 
         // The age next to the date of birth follows it while it is typed or picked.
-        App.Utils.UI.initializeDatePicker($birthDate, {maxDate: 'today', onChange: () => updateHeader()});
+        App.Utils.UI.initializeDatePicker($birthDate, {
+            maxDate: 'today',
+            onChange: () => {
+                updateHeader();
+                updateSaveButtons();
+            },
+        });
+
+        // Every change of the patient or of the visit turns their save button on.
+        $modal.on('input change', 'input, textarea, select', updateSaveButtons);
 
         $patientSave.on('click', savePatient);
         $('#clinical-visit-save').on('click', saveVisit);
@@ -762,7 +800,7 @@ App.Components.ClinicalRecordModal = (function () {
 
         $feetMarkers.on('click', '.ea-feet-marker', (event) => {
             event.stopPropagation();
-            removeMarker(Number(event.currentTarget.dataset.markerId));
+            removeMarker(Number(event.currentTarget.dataset.markerKey));
         });
 
         // The chosen pathology, to be placed on the picture.
@@ -790,10 +828,22 @@ App.Components.ClinicalRecordModal = (function () {
 
             if (isPatientDirty() || isVisitDirty()) {
                 event.preventDefault();
-                confirmDiscard(() => {
+
+                const close = () => {
                     closingConfirmed = true;
                     bootstrap.Modal.getOrCreateInstance($modal[0]).hide();
-                });
+                };
+
+                confirmUnsaved(() => {
+                    // A new patient may first ask about possible duplicates, so it is saved without closing.
+                    if (customerId === 0) {
+                        savePatient();
+
+                        return;
+                    }
+
+                    $.when(isPatientDirty() ? savePatient() : null, isVisitDirty() ? saveVisit() : null).done(close);
+                }, close);
             }
         });
 

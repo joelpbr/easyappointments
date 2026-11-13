@@ -64,10 +64,11 @@ App.Http.ClinicalRecords = (function () {
      * @param {Number} appointmentId
      * @param {Object} record
      * @param {String} surgeryPrice Price typed in a surgery record ('' to keep the price of the visit).
+     * @param {Array|null} markers Every pathology placed on the foot diagrams of the visit (null: no diagrams).
      *
-     * @return {Object}
+     * @return {Object} {price, markers}
      */
-    function saveAppointment(appointmentId, record, surgeryPrice) {
+    function saveAppointment(appointmentId, record, surgeryPrice, markers = null) {
         const url = App.Utils.Url.siteUrl('clinical_records/save_appointment');
 
         return $.post(url, {
@@ -75,42 +76,8 @@ App.Http.ClinicalRecords = (function () {
             appointment_id: appointmentId,
             record,
             surgery_price: surgeryPrice,
-        });
-    }
-
-    /**
-     * Place a pathology on a foot diagram of a visit.
-     *
-     * @param {Number} appointmentId
-     * @param {Object} marker {diagram_id, pathology_id, x1, y1, x2, y2} on the original picture.
-     *
-     * @return {Object} {marker}
-     */
-    function addMarker(appointmentId, marker) {
-        const url = App.Utils.Url.siteUrl('clinical_records/add_marker');
-
-        return $.post(url, {
-            csrf_token: vars('csrf_token'),
-            appointment_id: appointmentId,
-            marker,
-        });
-    }
-
-    /**
-     * Remove a pathology placed on a foot diagram of a visit.
-     *
-     * @param {Number} appointmentId
-     * @param {Number} markerId
-     *
-     * @return {Object}
-     */
-    function deleteMarker(appointmentId, markerId) {
-        const url = App.Utils.Url.siteUrl('clinical_records/delete_marker');
-
-        return $.post(url, {
-            csrf_token: vars('csrf_token'),
-            appointment_id: appointmentId,
-            marker_id: markerId,
+            // As JSON, so that an empty list (every marker removed) is sent too.
+            markers: markers === null ? undefined : JSON.stringify(markers),
         });
     }
 
@@ -119,7 +86,5 @@ App.Http.ClinicalRecords = (function () {
         savePatient,
         findAppointment,
         saveAppointment,
-        addMarker,
-        deleteMarker,
     };
 })();
