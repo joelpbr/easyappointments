@@ -135,6 +135,79 @@ class Foot_diagrams_model extends EA_Model
 
             audit_log('created', 'appointment_foot_marker', (int) $this->db->insert_id());
         }
+
+        // From now on the visit keeps its own drawing, even when it is empty.
+        if ($this->db->get_where('appointment_records', ['id_appointments' => $appointment_id])->num_rows()) {
+            $this->db->update(
+                'appointment_records',
+                ['foot_diagrams_saved' => 1],
+                ['id_appointments' => $appointment_id],
+            );
+        } else {
+            $this->db->insert('appointment_records', [
+                'create_datetime' => date('Y-m-d H:i:s'),
+                'update_datetime' => date('Y-m-d H:i:s'),
+                'id_appointments' => $appointment_id,
+                'foot_diagrams_saved' => 1,
+            ]);
+        }
+    }
+
+    /**
+     * Get the drawing a visit starts with: its own when its diagrams were saved, otherwise a copy of the one of the
+     * previous visit of the patient whose diagrams were saved (same pathologies, views, coordinates, healed state and
+     * notes), to be saved with the visit.
+     *
+     * @param array $appointment Appointment row.
+     *
+     * @return array ['markers' => [...], 'copied_from' => start of the visit copied, or null].
+     */
+    public function get_drawing(array $appointment): array
+    {
+        $appointment_id = (int) $appointment['id'];
+
+        if ($this->diagrams_saved($appointment_id)) {
+            return ['markers' => $this->get_markers($appointment_id), 'copied_from' => null];
+        }
+
+        $previous = $this->db
+            ->select('appointments.id, appointments.start_datetime')
+            ->from('appointments')
+            ->join('appointment_records', 'appointment_records.id_appointments = appointments.id', 'inner')
+            ->where('appointments.id_users_customer', (int) $appointment['id_users_customer'])
+            ->where('appointments.id !=', $appointment_id)
+            ->where('appointments.start_datetime <', $appointment['start_datetime'])
+            ->where('appointment_records.foot_diagrams_saved', 1)
+            ->order_by('appointments.start_datetime', 'DESC')
+            ->limit(1)
+            ->get()
+            ->row_array();
+
+        if (!$previous) {
+            return ['markers' => [], 'copied_from' => null];
+        }
+
+        // A copy: the markers have no id until the visit is saved, so they never belong to the previous visit.
+        $markers = array_map(
+            fn(array $marker): array => ['id' => null] + $marker,
+            $this->get_markers((int) $previous['id']),
+        );
+
+        return ['markers' => $markers, 'copied_from' => $previous['start_datetime']];
+    }
+
+    /**
+     * Whether the foot diagrams of a visit were saved.
+     *
+     * @param int $appointment_id Appointment ID.
+     *
+     * @return bool
+     */
+    private function diagrams_saved(int $appointment_id): bool
+    {
+        return (bool) $this->db
+            ->get_where('appointment_records', ['id_appointments' => $appointment_id, 'foot_diagrams_saved' => 1])
+            ->num_rows();
     }
 
     /**
@@ -177,6 +250,10 @@ class Foot_diagrams_model extends EA_Model
 
             $columns[$field] = $value;
         }
+
+        $columns['is_healed'] = filter_var($marker['is_healed'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
+        $columns['annotation_title'] = mb_substr(trim((string) ($marker['annotation_title'] ?? '')), 0, 256) ?: null;
+        $columns['annotation_text'] = trim((string) ($marker['annotation_text'] ?? '')) ?: null;
 
         return $columns;
     }

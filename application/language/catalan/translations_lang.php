@@ -776,4 +776,5 @@ $lang['clinical_pathologies'] = 'Patologies';
 $lang['clinical_no_pathologies'] = 'Encara no hi ha patologies al catàleg.';
 $lang['clinical_feet_view'] = 'Vista %s';
 $lang['clinical_feet_hint'] = 'Tria una patologia i clica sobre la foto per posar-la; clica-la per treure-la.';
+$lang['clinical_feet_copied'] = 'Dibuix copiat de la visita del %s. Es desa amb aquesta visita.';
 // End

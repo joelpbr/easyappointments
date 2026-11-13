@@ -776,4 +776,5 @@ $lang['clinical_pathologies'] = 'Pathologies';
 $lang['clinical_no_pathologies'] = 'There are no pathologies in the catalog yet.';
 $lang['clinical_feet_view'] = 'View %s';
 $lang['clinical_feet_hint'] = 'Choose a pathology and click on the picture to place it; click it to remove it.';
+$lang['clinical_feet_copied'] = 'Drawing copied from the visit of %s. It is saved with this visit.';
 // End
