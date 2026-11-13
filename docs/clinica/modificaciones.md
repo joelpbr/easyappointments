@@ -346,12 +346,12 @@ Con este bloque la fase 5 queda terminada.
 
 | Archivo | Cambio | Motivo |
 | --- | --- | --- |
-|  | : ,  y ; tabla  (sin profesionales = toda la clínica); tabla  (festivos añadidos a mano); ajuste  (Cataluña) | Especificación 10.1 a 10.4 |
-|  |  expande las repeticiones () y filtra por profesional;  lista las citas no canceladas que caen en el periodo | 10.2, 10.3 y 10.7 |
-| ,  | Usan los bloqueos del profesional y de toda la clínica, con sus repeticiones | 10.9: disponibilidad, buscador, reservas y API |
-| , página y JS | Tipo, profesionales y repetición en el formulario; si hay citas afectadas no guarda: las muestra con «Reprogramar» y pide «Bloquear igualmente». Nunca cancela citas | 10.5 y 10.7 |
-| , vistas de agenda,  | Los bloqueos se pintan de fondo, en rojo con rayas como el fuera de horario y con su motivo, solo en las columnas afectadas; botón «Bloquear agenda» | 10.6; la clínica pidió el mismo rojo que el mediodía |
-| , , página y JS | Festivos nacionales y de Cataluña o Madrid calculados (Pascua incluida), festivos locales a mano, y «Cerrar la clínica» por día, que crea un bloqueo de toda la clínica | 10.4: el festivo no cierra por sí solo |
-|  | , ,  y  en los bloqueos | API documentada |
+| `application/migrations/083_add_blocked_period_scope.php` | `blocked_periods`: `type`, `recurrence` y `recurrence_until`; tabla `blocked_periods_providers` (sin profesionales = toda la clínica); tabla `holidays` (festivos añadidos a mano); ajuste `holiday_region` (Cataluña) | Especificación 10.1 a 10.4 |
+| `application/models/Blocked_periods_model.php` | `get_for_period()` expande las repeticiones (`expand_occurrences()`) y filtra por profesional; `get_affected_appointments()` lista las citas no canceladas que caen en el periodo | 10.2, 10.3 y 10.7 |
+| `application/libraries/Availability.php`, `Slot_rules.php` | Usan los bloqueos del profesional y de toda la clínica, con sus repeticiones | 10.9: disponibilidad, buscador, reservas y API |
+| `application/controllers/Blocked_periods.php`, página y JS | Tipo, profesionales y repetición en el formulario; si hay citas afectadas no guarda: las muestra con «Reprogramar» y pide «Bloquear igualmente». Nunca cancela citas | 10.5 y 10.7 |
+| `assets/js/utils/calendar_blocked_periods.js`, vistas de agenda, `backend.scss` | Los bloqueos se pintan de fondo, en rojo con rayas como el fuera de horario y con su motivo, solo en las columnas afectadas; botón «Bloquear agenda» | 10.6; la clínica pidió el mismo rojo que el mediodía |
+| `application/libraries/Holiday_calendar.php`, `application/controllers/Holidays.php`, página y JS | Festivos nacionales y de Cataluña o Madrid calculados (Pascua incluida), festivos locales a mano, y «Cerrar la clínica» por día, que crea un bloqueo de toda la clínica | 10.4: el festivo no cierra por sí solo |
+| `openapi.yml` | `type`, `providerIds`, `recurrence` y `recurrenceUntil` en los bloqueos | API documentada |
 
 Las aperturas excepcionales (10.8) ya existían como excepciones de horario. Con esto la fase 6 queda terminada.
