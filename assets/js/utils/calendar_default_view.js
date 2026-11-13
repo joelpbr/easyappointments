@@ -1341,7 +1341,7 @@ App.Utils.CalendarDefaultView = (function () {
             firstDay: firstWeekdayNumber,
             slotDuration: {minutes: vars('calendar_slot_minutes')},
             snapDuration: {minutes: vars('calendar_slot_minutes')},
-            scrollTime: '07:00:00',
+            scrollTime: '08:30:00',
             slotLabelInterval: '01:00',
             eventTimeFormat: timeFormat,
             eventTextColor: '#333',

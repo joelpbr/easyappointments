@@ -643,4 +643,6 @@ $lang['midday'] = 'Midday';
 $lang['open_midday'] = 'Open the midday break';
 $lang['fold_midday'] = 'Fold the midday break';
 $lang['midday_has_appointments'] = 'It cannot be folded while it has appointments or reservations.';
+$lang['filter_all_providers'] = 'Provider: all';
+$lang['filter_all_services'] = 'Service: all';
 // End

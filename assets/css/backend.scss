@@ -303,12 +303,6 @@ body .modal.full-screen .modal-push {
 }
 
 // Folded midday break (see calendar_midday.js).
-.ea-midday-toggle {
-    display: block;
-    margin: 0 auto 8px;
-    max-width: 100%;
-}
-
 #calendar .fc-timegrid-slots tr.ea-midday-folded,
 #calendar .fc-timegrid-slots tr.ea-midday-folded > td {
     height: 2px !important;
@@ -409,7 +403,7 @@ body .modal.full-screen .modal-push {
     font-size: 12px;
 }
 
-/* Calendar header and Select2 integration */
+/* Calendar header */
 #calendar .calendar-header {
     padding-bottom: 15px;
     display: flex;
@@ -418,28 +412,8 @@ body .modal.full-screen .modal-push {
     gap: 10px;
 }
 
-#calendar .calendar-header label {
-    margin: 0;
-    vertical-align: middle;
-}
-
 #calendar .calendar-header .select-date {
     width: auto;
-}
-
-#calendar .calendar-header .select2-container--default .select2-selection--multiple {
-    height: 38px;
-}
-
-#calendar .select2-container--default.select2-container--focus .select2-selection--multiple {
-    border-color: var(--bs-primary);
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
-}
-
-#calendar .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    background-color: var(--bs-light);
-    border: 1px solid var(--bs-border-color);
 }
 
 /* Calendar table view */
@@ -670,10 +644,6 @@ body .modal.full-screen .modal-push {
         display: flex !important;
         text-align: left;
     }
-
-    #calendar .calendar-header .select2-container {
-        width: 300px !important;
-    }
 }
 
 /* On mobile viewports the sync buttons should occupy a full row, with the
@@ -699,33 +669,215 @@ body .modal.full-screen .modal-push {
     }
 }
 
-/* Calendar table view filter groups (label + select side by side). */
-#calendar .calendar-header .filter-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-/* On mobile viewports the calendar table view filters should stack: the
-   provider filter on its own row and the service filter on the next row,
-   each using the full available width. */
-@media (max-width: 767.98px) {
-    #calendar .calendar-header .filter-group {
-        flex: 1 0 100%;
-    }
-
-    #calendar .calendar-header .filter-group label {
-        flex: 0 0 5rem;
-    }
-
-    #calendar .calendar-header .filter-group .select2-container {
-        flex: 1 1 auto;
-        width: auto !important;
-        min-width: 0;
-    }
-}
-
 // Slot search: the time window pickers stay on one line next to the presets.
 #slot-search-modal .slot-search-time-range .flatpickr-wrapper {
     width: 6rem;
+}
+
+// Reception split view: the date navigation, the filters and the actions share one compact toolbar, and the provider
+// columns give the height to the hours (see calendar_table_view.js).
+#calendar-page #calendar-toolbar.ea-unified-toolbar {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+    margin-inline: -12px;
+    margin-bottom: 0 !important;
+    padding: 2px 12px;
+
+    #calendar-filter {
+        flex: 0 0 90px;
+        width: 90px;
+        padding: 0;
+    }
+
+    #select-filter-item {
+        margin: 0 !important;
+    }
+
+    .calendar-header {
+        flex: 1 1 auto;
+        flex-wrap: nowrap;
+        gap: 6px;
+        min-width: 0;
+        padding: 0;
+    }
+
+    .calendar-header > .btn {
+        flex: 0 0 auto;
+        margin: 0 !important;
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .flatpickr-wrapper {
+        flex: 0 0 112px;
+    }
+
+    .select-date {
+        width: 112px;
+        margin: 0 !important;
+    }
+
+    .filter-group {
+        flex: 0 1 150px;
+        width: 150px;
+        min-width: 125px;
+    }
+
+    #calendar-actions {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 6px;
+        width: auto;
+        max-width: 100%;
+        min-width: 0;
+        padding: 0;
+        white-space: nowrap;
+    }
+
+    .btn {
+        min-height: 34px;
+        padding: 6px;
+        font-size: 0.85rem;
+        line-height: 20px;
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 30px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        font-size: 0.85rem;
+        line-height: 20px;
+    }
+
+    .ea-simple-filter {
+        width: 100%;
+        height: 32px;
+        min-height: 32px;
+        padding: 4px 24px 4px 8px;
+        color: #1f2937;
+        background-color: #ffffff;
+        font-size: 12px;
+        line-height: 20px;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+
+    .ea-midday-toggle {
+        flex: 0 0 auto;
+        align-self: center;
+        min-width: max-content;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 1199.98px) {
+        flex-wrap: wrap;
+
+        .calendar-header {
+            flex: 1 1 calc(100% - 110px);
+        }
+
+        #calendar-actions {
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin-left: auto;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .calendar-header {
+            flex-wrap: wrap;
+        }
+    }
+}
+
+body:has(#calendar-toolbar.ea-unified-toolbar) #header {
+    .nav-link {
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+    }
+
+    #header-logo img {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    #header-logo small {
+        display: none !important;
+    }
+}
+
+#calendar:has(.ea-unified-toolbar) .calendar-view {
+    margin: 0;
+    padding: 0;
+
+    // The date is in the toolbar and in each provider heading.
+    .date-column {
+        display: grid;
+        align-content: start;
+    }
+
+    .date-column-title {
+        display: none;
+    }
+
+    .provider-column {
+        position: relative;
+    }
+
+    .provider-column .ea-provider-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 30px;
+        padding: 5px 120px 5px 6px;
+        font-size: 12px;
+        line-height: 20px;
+    }
+
+    .ea-provider-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ea-provider-date {
+        flex: 0 0 auto;
+        margin-left: auto;
+        font-weight: normal;
+    }
+
+    // The list / calendar switch of each column sits on its heading.
+    .provider-column .fc-header-toolbar {
+        position: absolute;
+        top: 2px;
+        right: 3px;
+        z-index: 4;
+        margin: 0 !important;
+    }
+
+    .fc-header-toolbar .btn,
+    .fc-header-toolbar .fc-button {
+        padding: 2px 5px;
+        font-size: 11px;
+        line-height: 20px;
+    }
+}
+
+// The columns scroll together, so only the last one shows its scrollbar.
+#calendar .fc-scroller.ea-linked-scroll {
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+// Inset the appointment cards without changing their time or the background periods.
+#calendar .fc-timegrid-event:has(.ea-event) {
+    margin-right: 10px;
+    margin-left: 10px;
 }
