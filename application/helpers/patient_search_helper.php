@@ -10,8 +10,8 @@
  * @link        https://easyappointments.org
  * ---------------------------------------------------------------------------- */
 
-if (!defined('PATIENT_SEARCH_MIN_WORD_LETTERS')) {
-    define('PATIENT_SEARCH_MIN_WORD_LETTERS', 2);
+if (!defined('PATIENT_SEARCH_MIN_LETTERS')) {
+    define('PATIENT_SEARCH_MIN_LETTERS', 3);
 }
 
 if (!defined('PATIENT_SEARCH_MIN_PHONE_DIGITS')) {
@@ -20,10 +20,10 @@ if (!defined('PATIENT_SEARCH_MIN_PHONE_DIGITS')) {
 
 if (!function_exists('is_specific_patient_search')) {
     /**
-     * Check whether a patient search says clearly who is being looked for.
+     * Check whether a patient search is worth running.
      *
-     * With thousands of patients a few letters match too many of them, so a search needs the first name and the last
-     * name (at least two words of two letters, e.g. "ma ga") or six digits of the phone number.
+     * A name search needs at least three letters (e.g. "lucia" or "ma ga") and a phone search six digits, so that one
+     * or two characters never list a large part of the patients. The results are limited anyway.
      *
      * @param string $keyword Typed text.
      *
@@ -31,24 +31,12 @@ if (!function_exists('is_specific_patient_search')) {
      */
     function is_specific_patient_search(string $keyword): bool
     {
-        $keyword = trim($keyword);
+        $letters = preg_match_all('/\p{L}/u', $keyword);
 
-        if (!preg_match('/\p{L}/u', $keyword)) {
+        if (!$letters) {
             return strlen(preg_replace('/\D/', '', $keyword)) >= PATIENT_SEARCH_MIN_PHONE_DIGITS;
         }
 
-        $words = preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY);
-
-        if (count($words) < 2) {
-            return false;
-        }
-
-        foreach ($words as $word) {
-            if (mb_strlen($word) < PATIENT_SEARCH_MIN_WORD_LETTERS) {
-                return false;
-            }
-        }
-
-        return true;
+        return $letters >= PATIENT_SEARCH_MIN_LETTERS;
     }
 }

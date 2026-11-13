@@ -254,7 +254,7 @@ class Customers extends EA_Controller
     /**
      * Find the patients that match a specific search, for the patient search of the appointment form.
      *
-     * A broad search (e.g. a single name) is not run. Up to QUICK_SEARCH_LIMIT patients are returned, and "more" tells
+     * A search with fewer than three letters or six digits is not run. Up to QUICK_SEARCH_LIMIT patients are returned, and "more" tells
      * when there are other matches, so that the search can be narrowed.
      */
     public function quick_search(): void
