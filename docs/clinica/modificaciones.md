@@ -455,3 +455,5 @@ Cambio posterior: los botones de la barra de la agenda (anterior, siguiente y «
 Cambio posterior: toda la barra de la agenda (selector de días, fecha, flechas, filtros y botones) tiene el mismo aspecto: fondo `#029ecb`, texto negro, la misma letra y sin bordes; al pasar el ratón el fondo se oscurece un poco (`#028bb3`).
 
 Cambio posterior: los desplegables de la barra de la agenda («1 Dia», «Tractament» y el filtro de la vista normal) se muestran como el de profesionales, con `initializeSelectDropdown()` de `ui.js`: un botón con la opción elegida y una lista con selector redondo por opción (y cabecera por grupo). El `select` original sigue oculto debajo, así que su valor y su evento `change` funcionan igual.
+
+Cambio posterior: la barra de la agenda vuelve a fondo blanco (texto negro, misma letra, sin bordes; gris claro `#e9ecef` al pasar el ratón); solo las dos flechas de cambiar de día mantienen el fondo `#029ecb`.
