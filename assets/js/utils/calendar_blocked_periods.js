@@ -55,7 +55,8 @@ App.Utils.CalendarBlockedPeriods = (function () {
                 end: moment(blockedPeriod.end_datetime).toDate(),
                 display: 'background',
                 editable: false,
-                className: 'fc-blocked-period fc-blocked-' + group(blockedPeriod.type),
+                // Same red stripes as the out of hours periods (midday, before opening...), with the reason as label.
+                className: 'fc-blocked-period fc-out-of-hours fc-blocked-' + group(blockedPeriod.type),
                 extendedProps: {data: blockedPeriod},
             }));
     }

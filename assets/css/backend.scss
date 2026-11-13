@@ -244,30 +244,7 @@ body .modal.full-screen .modal-push {
     border: 1px solid var(--bs-border-color);
 }
 
-// Blocked periods (see calendar_blocked_periods.js): grey tones that never match a treatment, above the out of hours
-// tone, with their reason as label.
-#calendar .fc-blocked-period {
-    opacity: 1;
-    border: 0;
-    font-weight: 600;
-    font-style: italic;
-}
-
-#calendar .fc-blocked-closure {
-    background: #495057 !important;
-    color: #ffffff;
-}
-
-#calendar .fc-blocked-vacation {
-    background: #adb5bd !important;
-    color: #212529;
-}
-
-#calendar .fc-blocked-absence {
-    background: repeating-linear-gradient(45deg, #dee2e6 0 6px, #eef0f2 6px 12px) !important;
-    color: #343a40;
-}
-
+// Blocked periods (see calendar_blocked_periods.js) use the out of hours red stripes, above the other backgrounds.
 #calendar .fc-timegrid-bg-harness:has(> .fc-blocked-period) {
     z-index: 3;
 }
