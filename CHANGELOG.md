@@ -28,6 +28,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- The clinic logo replaces the Easy!Appointments one in the header, the booking page, the emails and the browser icon (favicon)
 - The patient section of the appointment form says whether the patient is existing or new: an existing patient has to be chosen from the search and their data is protected until "Edit data" is clicked, while a new patient is typed freely and saving warns when the phone or the name match an existing patient
 - The appointment form has no "New" patient button nor "Create a new patient" search option: when the patient is not found you keep typing, and changing the name of a chosen patient takes the data as a new patient
 - New appointments always start as scheduled, without a status field, and whether they are the first visit is worked out when saving: it is when the patient has no earlier appointment, so a patient chosen from the list or matching an existing one is not new
