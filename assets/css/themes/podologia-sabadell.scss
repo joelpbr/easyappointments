@@ -149,6 +149,9 @@ body {
 }
 
 .btn-primary {
+    --bs-btn-bg: #029ecb;
+    --bs-btn-border-color: #029ecb;
+
     &:hover,
     &:focus-visible {
         background-color: #03508d;
