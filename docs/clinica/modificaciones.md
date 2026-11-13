@@ -579,3 +579,5 @@ Cambio posterior (el dibujo pasa a la visita siguiente): una visita cuyos diagra
 Cambio posterior: el popover de una cita en la agenda ya no muestra correo, paciente (ya es el título), estado ni zona horaria; inicio y fin van en una sola línea «Hora 12/11/2026 11:15–11:45» (con la fecha completa del final solo si acaba otro día).
 
 Cambio posterior: en el popover de una cita, «Tanca» y «Elimina» pasan al título (papelera roja a la izquierda que pide confirmación para eliminar, X a la derecha para cerrar); debajo, «Cancel·lar la cita» y «Falta d'assistència» en una línea, «Edita» en la siguiente y «Fitxa» abajo, más alto; todos del ancho de la tarjeta. `createAppointmentActions()` y `moveHeaderActions()` en `calendar_event_popover.js`.
+
+Cambio posterior: en el popover de la cita se intercambian los colores de «Edita» (ahora contorno azul) y «Fitxa» (ahora azul lleno); cada uno mantiene su tamaño, «Fitxa» sigue siendo el más alto.
