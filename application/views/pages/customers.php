@@ -15,18 +15,11 @@
                 </button>
             <?php endif; ?>
 
-            <!-- The search looks in one field at a time, chosen in the dropdown (see Customers_model::search_by_field). -->
+            <!-- The search looks in the name, last names, phone and document (see Customers_model::search_patients). -->
             <form class="mb-4">
                 <div class="input-group mb-2">
-                    <select id="filter-field" class="form-select ea-patient-search-field"
-                            aria-label="<?= e(lang('search_by')) ?>">
-                        <option value="first_name"><?= lang('first_name') ?></option>
-                        <option value="last_name"><?= lang('last_name') ?></option>
-                        <option value="document"><?= lang('clinical_document') ?></option>
-                        <option value="phone"><?= lang('phone_number') ?></option>
-                    </select>
-
-                    <input type="text" class="key form-control" aria-label="keyword" autocomplete="off">
+                    <input type="text" class="key form-control" aria-label="keyword" autocomplete="off"
+                           placeholder="<?= e(lang('patient_search_placeholder')) ?>">
 
                     <button class="filter btn btn-outline-secondary" type="submit"
                             data-tippy-content="<?= lang('filter') ?>">

@@ -49,7 +49,6 @@ App.Pages.Customers = (function () {
 
     const moment = window.moment;
 
-    const $filterField = $('#filter-field');
     const $customersCount = $('#customers-count');
 
     let filterResults = {};
@@ -71,21 +70,6 @@ App.Pages.Customers = (function () {
             filterLimit = 20;
             App.Pages.Customers.resetForm();
             App.Pages.Customers.filter(key);
-        });
-
-        /**
-         * Event: Search Field "Change"
-         *
-         * The search box shows an example of the chosen field and searches again with it.
-         */
-        $filterField.on('change', () => {
-            updateSearchField();
-
-            if ($filterCustomers.find('.key').val().trim()) {
-                $filterCustomers.find('form').trigger('submit');
-            }
-
-            $filterCustomers.find('.key').trigger('focus');
         });
 
         /**
@@ -643,7 +627,7 @@ App.Pages.Customers = (function () {
      * @param {Boolean} show Optional (false), if true then the selected record will be displayed on the form.
      */
     function filter(keyword, selectId = null, show = false) {
-        App.Http.Customers.search(keyword, filterLimit, null, null, $filterField.val()).then((result) => {
+        App.Http.Customers.search(keyword, filterLimit, null, null, true).then((result) => {
             const response = result.customers;
 
             filterResults = response;
@@ -686,18 +670,6 @@ App.Pages.Customers = (function () {
      *
      * @return {String} Returns the record HTML code.
      */
-    /**
-     * Show an example of the chosen search field in the search box, and the digit keyboard for the phone.
-     */
-    function updateSearchField() {
-        const field = $filterField.val();
-
-        $filterCustomers
-            .find('.key')
-            .attr('placeholder', lang('patient_search_example_' + field))
-            .attr('inputmode', field === 'phone' ? 'tel' : 'text');
-    }
-
     /**
      * Show how many patients there are, or how many match the search.
      *
@@ -768,7 +740,6 @@ App.Pages.Customers = (function () {
      * Initialize the module.
      */
     function initialize() {
-        updateSearchField();
         App.Pages.Customers.resetForm();
         App.Pages.Customers.addEventListeners();
         App.Pages.Customers.filter('');

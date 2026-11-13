@@ -792,11 +792,7 @@ $lang['clinical_years_old'] = '%s anys';
 $lang['clinical_new_patient'] = 'Pacient nou';
 $lang['clinical_record_fields_hint'] = 'El nom, els cognoms, el telèfon, l\'adreça i el NIF/NIE s\'editen a la fitxa.';
 $lang['clinical_age'] = 'Edat';
-$lang['search_by'] = 'Cerca per';
-$lang['patient_search_example_first_name'] = 'Ex.: Maria';
-$lang['patient_search_example_last_name'] = 'Ex.: Garcia López';
-$lang['patient_search_example_document'] = 'Ex.: 12345678Z';
-$lang['patient_search_example_phone'] = 'Ex.: 600 123 456';
 $lang['patients_total'] = '%s pacients';
 $lang['patients_found'] = '%s de %s pacients';
+$lang['patient_search_placeholder'] = 'Nom, cognoms, telèfon o DNI';
 // End

@@ -21,11 +21,6 @@
 class Customers_model extends EA_Model
 {
     /**
-     * Fields that the patients page searches by (see search_by_field()).
-     */
-    public const SEARCH_FIELDS = ['first_name', 'last_name', 'document', 'phone'];
-
-    /**
      * @var array
      */
     protected array $casts = [
@@ -505,42 +500,32 @@ class Customers_model extends EA_Model
     }
 
     /**
-     * Search the patients by one field, for the patients page.
+     * Search the patients by name, last names, phone and document, for the patients page.
      *
-     * - first_name, last_name: every typed word starts the field or one of its words, whatever the accents and the case,
-     *   so "mar" finds "María" and "Anna Maria", and "gar lo" finds "García López".
-     * - document: the DNI, NIE, NIF or other document contains the typed text, without spaces, dots or dashes.
-     * - phone: the phone number contains the typed digits, in any format and without the country prefix.
+     * Every typed word must match one of them, whatever the accents and the case: start the first name, the last names
+     * or one of their words ("mar gar" finds "María García"), be in the DNI, NIE or NIF (without dots or dashes) or,
+     * with digits, in the phone number. A text without letters is a phone number or a document, typed in any format
+     * ("614 488 708", "+34 614488708").
      *
      * An empty text lists every patient, the ones changed last first; otherwise the patients come sorted by name. Each
      * patient comes with their document.
      *
-     * @param string $field "first_name", "last_name", "document" or "phone".
      * @param string $keyword Typed text.
      * @param int $limit Maximum number of patients.
      * @param int $offset Patients to skip.
      * @param array|null $provider_ids Only patients with an appointment with these providers (null: every patient).
      *
      * @return array ['patients' => [...], 'count' => number of matching patients].
-     *
-     * @throws InvalidArgumentException When the field is unknown.
      */
-    public function search_by_field(
-        string $field,
+    public function search_patients(
         string $keyword,
         int $limit = 20,
         int $offset = 0,
         ?array $provider_ids = null,
     ): array {
-        if (!in_array($field, self::SEARCH_FIELDS, true)) {
-            throw new InvalidArgumentException('Invalid search field: ' . $field);
-        }
-
         $keyword = trim($keyword);
-        $digits = preg_replace('/\D/', '', $keyword);
 
-        // A phone search without digits, or a user who sees no patient, finds nothing.
-        if ($provider_ids === [] || ($field === 'phone' && $keyword !== '' && $digits === '')) {
+        if ($provider_ids === []) {
             return ['patients' => [], 'count' => 0];
         }
 
@@ -557,23 +542,39 @@ class Customers_model extends EA_Model
             )
             ->where('users.id_roles', $role_id);
 
-        if ($field === 'first_name' || $field === 'last_name') {
+        if ($keyword !== '' && !preg_match('/\p{L}/u', $keyword)) {
+            // Only digits and separators: a phone number or the number of a document.
+            $digits = preg_replace('/\D/', '', $keyword);
+
+            if ($digits === '') {
+                return ['patients' => [], 'count' => 0];
+            }
+
+            $query
+                ->group_start()
+                ->like('users.phone_normalized', $digits)
+                ->or_like('fiscal_parties.document_number', $digits)
+                ->group_end();
+        } else {
             foreach (array_slice(preg_split('/\s+/u', $keyword, -1, PREG_SPLIT_NO_EMPTY), 0, 4) as $word) {
+                // DNI, NIE and NIF are saved in capitals without separators.
+                $document = mb_strtoupper(preg_replace('/[.\-]/', '', $word));
+                $digits = preg_replace('/\D/', '', $word);
+
                 $query
                     ->group_start()
-                    ->like('users.' . $field, $word, 'after')
-                    ->or_like('users.' . $field, ' ' . $word)
-                    ->group_end();
-            }
-        } elseif ($field === 'document') {
-            // DNI, NIE and NIF are saved in capitals without separators.
-            $document = strtoupper(preg_replace('/[\s.\-]/', '', $keyword));
+                    ->like('users.first_name', $word, 'after')
+                    ->or_like('users.first_name', ' ' . $word)
+                    ->or_like('users.last_name', $word, 'after')
+                    ->or_like('users.last_name', ' ' . $word)
+                    ->or_like('fiscal_parties.document_number', $document);
 
-            if ($document !== '') {
-                $query->like('fiscal_parties.document_number', $document);
+                if ($digits !== '') {
+                    $query->or_like('users.phone_normalized', $digits);
+                }
+
+                $query->group_end();
             }
-        } elseif ($digits !== '') {
-            $query->like('users.phone_normalized', $digits);
         }
 
         $this->restrict_to_providers($query, $provider_ids);

@@ -203,19 +203,19 @@ class Customers extends EA_Controller
             }
 
             check('keyword', 'string|null');
-            check('field', 'string|null');
+            check('with_count', 'string|null');
             check('order_by', 'string|null');
             check('limit', 'numeric|null');
             check('offset', 'numeric|null');
 
             $keyword = request('keyword', '');
 
-            // The patients page searches by one field, and shows how many patients match and how many there are.
-            if (request('field')) {
+            // The patients page searches by name, last names, phone and document, and shows how many patients match
+            // and how many there are.
+            if (request('with_count')) {
                 $provider_ids = $this->visible_provider_ids();
 
-                $result = $this->customers_model->search_by_field(
-                    (string) request('field'),
+                $result = $this->customers_model->search_patients(
                     (string) $keyword,
                     max(1, min(500, (int) request('limit', 20))),
                     max(0, (int) request('offset', 0)),
