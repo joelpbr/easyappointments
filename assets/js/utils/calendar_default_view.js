@@ -182,6 +182,7 @@ App.Utils.CalendarDefaultView = (function () {
         $appointmentsModal
             .find('#appointment-first-visit')
             .val(appointment.is_first_visit == null ? '' : String(Number(appointment.is_first_visit)));
+        $appointmentsModal.find('#appointment-price').val(appointment.price ?? '');
         $appointmentsModal.find('#appointment-notes').val(appointment.notes);
         App.Components.ColorSelection.setColor($appointmentsModal.find('#appointment-color'), appointment.color);
 
@@ -906,6 +907,8 @@ App.Utils.CalendarDefaultView = (function () {
                 }
 
                 fullCalendar.addEventSource(events);
+
+                App.Utils.CalendarDayTotal.show(response.appointments);
 
                 App.Utils.CalendarPastTime.update(fullCalendar);
             })

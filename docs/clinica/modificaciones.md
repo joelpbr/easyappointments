@@ -355,3 +355,13 @@ Con este bloque la fase 5 queda terminada.
 | `openapi.yml` | `type`, `providerIds`, `recurrence` y `recurrenceUntil` en los bloqueos | API documentada |
 
 Las aperturas excepcionales (10.8) ya existían como excepciones de horario. Con esto la fase 6 queda terminada.
+
+## Precio de la cita y total del día
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/migrations/084_add_appointment_price.php` | `appointments.price`, con el precio actual del tratamiento para las citas existentes | Precio por defecto por tratamiento, editable en cada cita |
+| `application/models/Appointments_model.php` | `set_price()`: el precio enviado (admite coma decimal) o, si es nueva o se deja vacío, el del tratamiento; los cambios de precio quedan en la auditoría; `price` en la API | Que cambiar el precio del tratamiento no reescriba el pasado |
+| `application/controllers/Calendar.php`, `appointments_modal.php`, `appointments_modal.js`, vistas de agenda | Campo «Precio (€)» en la cita, que toma el precio del tratamiento al elegirlo | Petición de la clínica |
+| `assets/js/utils/calendar_day_total.js`, `calendar.php` | «Total» en la barra de la agenda: suma de las citas mostradas, sin canceladas ni no presentados, y el desglose por día al pasar el ratón; sigue los filtros de profesional y tratamiento | Suma total al cabo del día |
+| `openapi.yml` | `price` en las citas | API documentada |

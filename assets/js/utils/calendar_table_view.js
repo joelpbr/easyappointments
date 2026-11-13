@@ -279,6 +279,7 @@ App.Utils.CalendarTableView = (function () {
         $appointmentsModal
             .find('#appointment-first-visit')
             .val(appointment.is_first_visit == null ? '' : String(Number(appointment.is_first_visit)));
+        $appointmentsModal.find('#appointment-price').val(appointment.price ?? '');
         $appointmentsModal.find('#appointment-notes').val(appointment.notes);
         App.Components.ColorSelection.setColor($appointmentsModal.find('#appointment-color'), appointment.color);
         $appointmentsModal.modal('show');
@@ -1407,6 +1408,19 @@ App.Utils.CalendarTableView = (function () {
                 createDateColumn($wrapper, currentDate, response);
                 currentDate = moment(currentDate).add({days: 1}).toDate();
             }
+
+            // The total follows the displayed providers and the treatment filter.
+            const providerIds = $('.provider-column')
+                .map((index, column) => Number($(column).data('provider').id))
+                .get();
+            const serviceId = Number($filterService.val()) || null;
+
+            App.Utils.CalendarDayTotal.show(
+                response.appointments,
+                (appointment) =>
+                    providerIds.includes(Number(appointment.id_users_provider)) &&
+                    (!serviceId || Number(appointment.id_services) === serviceId),
+            );
 
             // Activate calendar navigation
 

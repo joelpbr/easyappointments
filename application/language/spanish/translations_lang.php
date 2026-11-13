@@ -731,4 +731,7 @@ $lang['holiday_close_clinic'] = 'Cerrar la clínica';
 $lang['holiday_add_local'] = 'Añadir festivo local';
 $lang['holiday_add_local_hint'] = 'Los festivos locales del municipio, o un festivo trasladado este año.';
 $lang['holiday_name_missing'] = 'Escribe el nombre del festivo.';
+$lang['appointment_price'] = 'Precio (€)';
+$lang['appointment_price_invalid'] = 'El precio debe ser un importe positivo.';
+$lang['day_total'] = 'Total';
 // End
