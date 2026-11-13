@@ -1,11 +1,27 @@
 /** Collapsible shared lunch break for the reception calendar. */
 App.Utils.CalendarMidday = (() => {
+    // A break that overlaps this window (in minutes of the day) is the midday break.
+    const MIDDAY_FROM = 12 * 60;
+    const MIDDAY_TO = 16 * 60;
     const expanded = new Set();
     let pending = false;
     const minutes = (date) => date.getHours() * 60 + date.getMinutes();
     const overlap = (start, end, from, to) => start < to && end > from;
     const clock = (value) =>
         String(Math.floor(value / 60)).padStart(2, '0') + ':' + String(value % 60).padStart(2, '0');
+
+    /**
+     * Check whether a working plan break is the midday break.
+     *
+     * @param {Object} breakPeriod Break with 'HH:mm' start and end.
+     *
+     * @return {Boolean}
+     */
+    function isMiddayBreak(breakPeriod) {
+        const toMinutes = (time) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
+
+        return overlap(toMinutes(breakPeriod.start), toMinutes(breakPeriod.end), MIDDAY_FROM, MIDDAY_TO);
+    }
 
     function schedule() {
         if (pending) return;
@@ -28,7 +44,7 @@ App.Utils.CalendarMidday = (() => {
                 .getEvents()
                 .filter((event) => event.extendedProps.middayBreak && event.end)
                 .map((event) => [minutes(event.start), minutes(event.end)])
-                .filter(([start, end]) => start < end && overlap(start, end, 720, 960));
+                .filter(([start, end]) => start < end);
             ranges = ranges
                 .flatMap(([start, end]) => breaks.map(([a, b]) => [Math.max(start, a), Math.min(end, b)]))
                 .filter(([start, end]) => end > start);
@@ -82,19 +98,15 @@ App.Utils.CalendarMidday = (() => {
             }
             button.disabled = occupied;
             button.setAttribute('aria-expanded', String(!folded));
-            button.setAttribute(
-                'aria-label',
-                occupied ? 'Mediodía con visitas' : folded ? 'Abrir mediodía' : 'Contraer mediodía',
-            );
+            const hint = occupied
+                ? lang('midday_has_appointments')
+                : folded
+                  ? lang('open_midday')
+                  : lang('fold_midday');
+            button.setAttribute('aria-label', hint);
+            button.title = hint;
             button.textContent =
-                (occupied ? 'Mediodía · con visitas' : folded ? 'Mediodía ▾' : 'Mediodía ▴') +
-                ' · ' +
-                clock(range[0]) +
-                '–' +
-                clock(range[1]);
-            button.title = occupied
-                ? 'No se puede contraer mientras haya visitas o reservas en este intervalo.'
-                : 'Abre el intervalo para seleccionar horas y añadir visitas.';
+                lang('midday') + ' ' + (folded ? '▾' : '▴') + ' · ' + clock(range[0]) + '–' + clock(range[1]);
             button.onclick = () => {
                 if (folded) expanded.add(key);
                 else expanded.delete(key);
@@ -128,5 +140,5 @@ App.Utils.CalendarMidday = (() => {
         return !range || !overlap(info.start, info.end, range.from, range.to);
     }
 
-    return {schedule, allows};
+    return {schedule, allows, isMiddayBreak};
 })();

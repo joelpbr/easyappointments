@@ -206,6 +206,8 @@ comparadas byte a byte.
 
 ## Fuera de horario en un solo tono
 
+Más tarde el tono pasó a rayas rojas (ver «Mediodía plegable»).
+
 | Archivo | Cambio | Motivo |
 | --- | --- | --- |
 | `assets/js/utils/calendar_table_view.js`, `calendar_default_view.js` | Antes de abrir, descansos, después de cerrar y días cerrados llevan la clase `fc-out-of-hours` y la misma etiqueta; el descanso deja de llamarse «Pausa» | La clínica quiere ver todo lo que queda fuera de la jornada igual, sin distinguir mañana, mediodía o noche |
@@ -233,3 +235,20 @@ comparadas byte a byte.
 | --- | --- | --- |
 | `application/libraries/Slot_finder.php` | `slots_in_periods()` ofrece también el inicio exacto de un periodo libre que no cae en la cuadrícula (p. ej. 10:40), además de las horas de la cuadrícula | Un hueco es un hueco: si quedan 10 minutos libres dentro del horario y se buscan 10, debe encontrarse aunque no empiece en punto |
 | `tests/Unit/Library/SlotFinderTest.php` | Casos del hueco de 10 minutos que solo cabe fuera de la cuadrícula y del hueco demasiado corto | — |
+
+## Orden y colores de los tratamientos
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/migrations/078_add_wallet_and_infiltracion.php` | Añade Wallet e Infiltración (30 min) y los asigna a los profesionales que ya tienen tratamientos; no toca los existentes | Faltaban en el catálogo de la clínica |
+| `application/migrations/079_improve_treatment_color_contrast.php` | Nueva paleta de fondos claros y distintos, legibles con texto negro; las citas que usaban el color anterior del tratamiento lo siguen, las de color propio no cambian | Contraste y distinción entre tratamientos |
+| `application/models/Services_model.php` | `DROPDOWN_ORDER`: los desplegables (`get_available_services()`, `to_options()`) siguen el orden de frecuencia de la clínica; el resto de servicios va después, por nombre | Los tratamientos más habituales, primero |
+
+## Mediodía plegable
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `assets/js/utils/calendar_midday.js` | Nuevo. En la vista partida pliega el descanso de mediodía común a todas las columnas de un día, con un botón para abrirlo; si hay visitas o reservas en el intervalo (aunque estén ocultas por un filtro) no se puede plegar, y mientras está plegado no se puede seleccionar ni arrastrar a él. `isMiddayBreak()` decide qué descanso es el de mediodía (el que toca la franja de 12:00 a 16:00) | Ganar altura para las horas de trabajo |
+| `assets/js/utils/calendar_table_view.js`, `calendar_default_view.js` | El descanso de mediodía se titula «Mediodía» y se marca con `middayBreak`; la vista partida llama al plegado al cargar eventos y fechas | Ídem |
+| `assets/css/backend.scss` | Filas plegadas; el fuera de horario pasa a rayas rojas con texto blanco en negrita y borde negro | Ídem, y que el fuera de horario se distinga mejor |
+| `application/language/*/translations_lang.php` | `midday`, `open_midday`, `fold_midday`, `midday_has_appointments` | Textos traducibles |

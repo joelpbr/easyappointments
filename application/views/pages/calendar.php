@@ -1,8 +1,6 @@
 <?php extend('layouts/backend_layout'); ?>
 
 <?php section('content'); ?>
-<link rel="stylesheet" href="<?= asset_url('assets/css/calendar_midday.css') ?>">
-
 
 <div class="container-fluid backend-page pt-0 pb-0" id="calendar-page">
     <div class="row mb-3 text-white py-3 bg-dark" id="calendar-toolbar">

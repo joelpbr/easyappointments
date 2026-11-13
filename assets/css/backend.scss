@@ -296,6 +296,33 @@ body .modal.full-screen .modal-push {
     paint-order: stroke fill;
     font-weight: bold;
     font-style: italic;
+
+    .fc-event-title {
+        font-weight: bold;
+    }
+}
+
+// Folded midday break (see calendar_midday.js).
+.ea-midday-toggle {
+    display: block;
+    margin: 0 auto 8px;
+    max-width: 100%;
+}
+
+#calendar .fc-timegrid-slots tr.ea-midday-folded,
+#calendar .fc-timegrid-slots tr.ea-midday-folded > td {
+    height: 2px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    border-top: 0;
+    border-bottom: 0;
+    line-height: 0;
+    pointer-events: none;
+}
+
+#calendar .ea-midday-folded .fc-timegrid-slot-label-frame,
+#calendar .ea-midday-folded .fc-timegrid-slot-label-cushion {
+    display: none;
 }
 
 #calendar-page .fc-daygrid-day-top {
@@ -701,8 +728,4 @@ body .modal.full-screen .modal-push {
 // Slot search: the time window pickers stay on one line next to the presets.
 #slot-search-modal .slot-search-time-range .flatpickr-wrapper {
     width: 6rem;
-}
-
-#calendar-page #calendar .fc-out-of-hours .fc-event-title {
-    font-weight: bold;
 }

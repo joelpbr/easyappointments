@@ -639,4 +639,8 @@ $lang['slot_search_any_provider_hint'] = 'Leave it empty to search every provide
 $lang['slot_search_no_results'] = 'There are no free slots with these criteria. Try a longer date range, another time window or a wider margin.';
 $lang['slot_search_invalid_range'] = 'The date range must start before it ends and cover at most 92 days.';
 $lang['until'] = 'Until';
+$lang['midday'] = 'Midday';
+$lang['open_midday'] = 'Open the midday break';
+$lang['fold_midday'] = 'Fold the midday break';
+$lang['midday_has_appointments'] = 'It cannot be folded while it has appointments or reservations.';
 // End
