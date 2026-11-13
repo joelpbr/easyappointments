@@ -896,10 +896,19 @@ App.Components.AppointmentsModal = (function () {
         $appointmentsModal.on('show.bs.modal', () => {
             $('#appointment-status-group').prop('hidden', !$appointmentId.val());
 
-            // An appointment that is being edited already has its patient, which stays protected.
+            // An appointment that is being edited already has its patient, which stays protected. Its no-shows are
+            // looked up too, as when the patient is chosen in the search, so that the warning always shows.
             if ($customerId.val()) {
+                const customerId = $customerId.val();
+
                 $('#patient-mode-existing').prop('checked', true);
                 setPatientLocked(true);
+
+                App.Http.Customers.find(customerId).done((customer) => {
+                    if ($customerId.val() === String(customerId)) {
+                        showNoShowWarning(customer);
+                    }
+                });
             }
 
             updatePatientState();
