@@ -36,7 +36,6 @@ class Secretaries_model extends EA_Model
         'firstName' => 'first_name',
         'lastName' => 'last_name',
         'email' => 'email',
-        'mobile' => 'mobile_number',
         'phone' => 'phone_number',
         'address' => 'address',
         'city' => 'city',
@@ -45,7 +44,6 @@ class Secretaries_model extends EA_Model
         'timezone' => 'timezone',
         'language' => 'language',
         'notes' => 'notes',
-        'ldapDn' => 'ldap_dn',
         'roleId' => 'id_roles',
     ];
 
@@ -547,7 +545,6 @@ class Secretaries_model extends EA_Model
             ->or_like('CONCAT_WS(" ", first_name, last_name)', $keyword)
             ->or_like('email', $keyword)
             ->or_like('phone_number', $keyword)
-            ->or_like('mobile_number', $keyword)
             ->or_like('address', $keyword)
             ->or_like('city', $keyword)
             ->or_like('state', $keyword)
@@ -646,7 +643,6 @@ class Secretaries_model extends EA_Model
             'firstName' => $secretary['first_name'],
             'lastName' => $secretary['last_name'],
             'email' => $secretary['email'],
-            'mobile' => $secretary['mobile_number'],
             'phone' => $secretary['phone_number'],
             'address' => $secretary['address'],
             'city' => $secretary['city'],
@@ -656,7 +652,6 @@ class Secretaries_model extends EA_Model
             'providers' => $secretary['providers'],
             'timezone' => $secretary['timezone'],
             'language' => $secretary['language'],
-            'ldapDn' => $secretary['ldap_dn'],
             'settings' => [
                 'username' => $secretary['settings']['username'],
                 'notifications' => filter_var($secretary['settings']['notifications'], FILTER_VALIDATE_BOOLEAN),
@@ -693,10 +688,6 @@ class Secretaries_model extends EA_Model
             $decoded_resource['email'] = $secretary['email'];
         }
 
-        if (array_key_exists('mobile', $secretary)) {
-            $decoded_resource['mobile_number'] = $secretary['mobile'];
-        }
-
         if (array_key_exists('phone', $secretary)) {
             $decoded_resource['phone_number'] = $secretary['phone'];
         }
@@ -727,10 +718,6 @@ class Secretaries_model extends EA_Model
 
         if (array_key_exists('language', $secretary)) {
             $decoded_resource['language'] = $secretary['language'];
-        }
-
-        if (array_key_exists('ldapDn', $secretary)) {
-            $decoded_resource['ldap_dn'] = $secretary['ldapDn'];
         }
 
         if (array_key_exists('providers', $secretary)) {

@@ -20,7 +20,7 @@ RUN npx gulp compile
 # 3. PHP + Apache runtime shared by both targets
 FROM php:8.3-apache-trixie AS base
 COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
-RUN install-php-extensions gd ldap mysqli opcache \
+RUN install-php-extensions gd mysqli opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php.ini $PHP_INI_DIR/conf.d/app.ini
 COPY docker/apache.conf /etc/apache2/conf-enabled/app.conf

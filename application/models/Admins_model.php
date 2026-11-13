@@ -36,7 +36,6 @@ class Admins_model extends EA_Model
         'firstName' => 'first_name',
         'lastName' => 'last_name',
         'email' => 'email',
-        'mobile' => 'mobile_number',
         'phone' => 'phone_number',
         'address' => 'address',
         'city' => 'city',
@@ -45,7 +44,6 @@ class Admins_model extends EA_Model
         'timezone' => 'timezone',
         'language' => 'language',
         'notes' => 'notes',
-        'ldapDn' => 'ldap_dn',
         'roleId' => 'id_roles',
     ];
 
@@ -507,7 +505,6 @@ class Admins_model extends EA_Model
             ->or_like('CONCAT_WS(" ", first_name, last_name)', $keyword)
             ->or_like('email', $keyword)
             ->or_like('phone_number', $keyword)
-            ->or_like('mobile_number', $keyword)
             ->or_like('address', $keyword)
             ->or_like('city', $keyword)
             ->or_like('state', $keyword)
@@ -588,7 +585,6 @@ class Admins_model extends EA_Model
             'firstName' => $admin['first_name'],
             'lastName' => $admin['last_name'],
             'email' => $admin['email'],
-            'mobile' => $admin['mobile_number'],
             'phone' => $admin['phone_number'],
             'address' => $admin['address'],
             'city' => $admin['city'],
@@ -597,7 +593,6 @@ class Admins_model extends EA_Model
             'notes' => $admin['notes'],
             'timezone' => $admin['timezone'],
             'language' => $admin['language'],
-            'ldapDn' => $admin['ldap_dn'],
             'settings' => [
                 'username' => $admin['settings']['username'],
                 'notifications' => filter_var($admin['settings']['notifications'], FILTER_VALIDATE_BOOLEAN),
@@ -634,10 +629,6 @@ class Admins_model extends EA_Model
             $decoded_resource['email'] = $admin['email'];
         }
 
-        if (array_key_exists('mobile', $admin)) {
-            $decoded_resource['mobile_number'] = $admin['mobile'];
-        }
-
         if (array_key_exists('phone', $admin)) {
             $decoded_resource['phone_number'] = $admin['phone'];
         }
@@ -668,10 +659,6 @@ class Admins_model extends EA_Model
 
         if (array_key_exists('language', $admin)) {
             $decoded_resource['language'] = $admin['language'];
-        }
-
-        if (array_key_exists('ldapDn', $admin)) {
-            $decoded_resource['ldap_dn'] = $admin['ldapDn'];
         }
 
         if (array_key_exists('settings', $admin)) {

@@ -20,7 +20,6 @@ App.Pages.Providers = (function () {
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
     const $email = $('#email');
-    const $mobileNumber = $('#mobile-number');
     const $phoneNumber = $('#phone-number');
     const $address = $('#address');
     const $city = $('#city');
@@ -31,7 +30,6 @@ App.Pages.Providers = (function () {
     const $notes = $('#notes');
     const $language = $('#language');
     const $timezone = $('#timezone');
-    const $ldapDn = $('#ldap-dn');
     const $username = $('#username');
     const $password = $('#password');
     const $passwordConfirmation = $('#password-confirm');
@@ -191,7 +189,6 @@ App.Pages.Providers = (function () {
                 first_name: $firstName.val(),
                 last_name: $lastName.val(),
                 email: $email.val(),
-                mobile_number: $mobileNumber.val(),
                 phone_number: $phoneNumber.val(),
                 address: $address.val(),
                 city: $city.val(),
@@ -202,7 +199,6 @@ App.Pages.Providers = (function () {
                 notes: $notes.val(),
                 language: $language.val(),
                 timezone: $timezone.val(),
-                ldap_dn: $ldapDn.val(),
                 settings: {
                     username: $username.val(),
                     working_plan: JSON.stringify(workingPlan),
@@ -357,14 +353,6 @@ App.Pages.Providers = (function () {
                 throw new Error(lang('invalid_phone'));
             }
 
-            // Validate mobile number.
-            const mobileNumber = $mobileNumber.val();
-
-            if (mobileNumber && !App.Utils.Validation.phone(mobileNumber)) {
-                $mobileNumber.addClass('is-invalid');
-                throw new Error(lang('invalid_phone'));
-            }
-
             // Check if username exists
             if ($username.attr('already-exists') === 'true') {
                 $username.addClass('is-invalid');
@@ -428,7 +416,6 @@ App.Pages.Providers = (function () {
         $firstName.val(provider.first_name);
         $lastName.val(provider.last_name);
         $email.val(provider.email);
-        $mobileNumber.val(provider.mobile_number);
         $phoneNumber.val(provider.phone_number);
         $address.val(provider.address);
         $city.val(provider.city);
@@ -439,7 +426,6 @@ App.Pages.Providers = (function () {
         $notes.val(provider.notes);
         $language.val(provider.language);
         $timezone.val(provider.timezone);
-        $ldapDn.val(provider.ldap_dn);
 
         $username.val(provider.settings.username);
         $calendarView.val(provider.settings.calendar_view);
@@ -563,8 +549,6 @@ App.Pages.Providers = (function () {
         const name = [provider.first_name, provider.last_name].filter(Boolean).join(' ');
 
         let info = provider.email;
-
-        info = provider.mobile_number ? info + ', ' + provider.mobile_number : info;
 
         info = provider.phone_number ? info + ', ' + provider.phone_number : info;
 

@@ -401,18 +401,11 @@ App.Utils.CalendarTableView = (function () {
         $appointmentsModal.find('#city').val(customer.city);
         $appointmentsModal.find('#zip-code').val(customer.zip_code);
         $appointmentsModal.find('#language').val(customer.language);
-        $appointmentsModal.find('#timezone').val(customer.timezone);
         $appointmentsModal.find('#customer-notes').val(customer.notes);
-        $appointmentsModal.find('#custom-field-1').val(customer.custom_field_1);
-        $appointmentsModal.find('#custom-field-2').val(customer.custom_field_2);
-        $appointmentsModal.find('#custom-field-3').val(customer.custom_field_3);
-        $appointmentsModal.find('#custom-field-4').val(customer.custom_field_4);
-        $appointmentsModal.find('#custom-field-5').val(customer.custom_field_5);
 
         // Appointment fields
 
         $appointmentsModal.find('#appointment-location').val(appointment.location);
-        $appointmentsModal.find('#appointment-meeting-link').val(appointment.meeting_link);
         $appointmentsModal.find('#appointment-status').val(appointment.status);
         $appointmentsModal.find('#appointment-price').val(appointment.price ?? '');
         $appointmentsModal.find('#appointment-notes').val(appointment.notes);

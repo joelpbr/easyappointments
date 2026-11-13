@@ -44,13 +44,7 @@ class Customers_model extends EA_Model
         'zip' => 'zip_code',
         'timezone' => 'timezone',
         'language' => 'language',
-        'customField1' => 'custom_field_1',
-        'customField2' => 'custom_field_2',
-        'customField3' => 'custom_field_3',
-        'customField4' => 'custom_field_4',
-        'customField5' => 'custom_field_5',
         'notes' => 'notes',
-        'ldapDn' => 'ldap_dn',
         'preferredProviderId' => 'id_users_preferred_provider',
     ];
 
@@ -72,6 +66,9 @@ class Customers_model extends EA_Model
         }
 
         $this->validate($customer);
+
+        // Patients are always in the clinic's timezone (setting default_timezone), so none is kept per patient.
+        $customer['timezone'] = null;
 
         if (array_key_exists('phone_number', $customer)) {
             $customer['phone_normalized'] = normalize_phone($customer['phone_number']);
@@ -479,7 +476,6 @@ class Customers_model extends EA_Model
             ->or_like('CONCAT_WS(" ", first_name, last_name)', $keyword)
             ->or_like('email', $keyword)
             ->or_like('phone_number', $keyword)
-            ->or_like('mobile_number', $keyword)
             ->or_like('address', $keyword)
             ->or_like('city', $keyword)
             ->or_like('state', $keyword)
@@ -883,14 +879,8 @@ class Customers_model extends EA_Model
             'city' => $customer['city'],
             'zip' => $customer['zip_code'],
             'notes' => $customer['notes'],
-            'timezone' => $customer['timezone'],
+            'timezone' => $customer['timezone'] ?: setting('default_timezone'),
             'language' => $customer['language'],
-            'customField1' => $customer['custom_field_1'],
-            'customField2' => $customer['custom_field_2'],
-            'customField3' => $customer['custom_field_3'],
-            'customField4' => $customer['custom_field_4'],
-            'customField5' => $customer['custom_field_5'],
-            'ldapDn' => $customer['ldap_dn'],
             'noShowCount' => (int) ($customer['no_show_count'] ?? 0),
             'preferredProviderId' => isset($customer['id_users_preferred_provider'])
                 ? (int) $customer['id_users_preferred_provider']
@@ -948,30 +938,6 @@ class Customers_model extends EA_Model
 
         if (array_key_exists('timezone', $customer)) {
             $decoded_resource['timezone'] = $customer['timezone'];
-        }
-
-        if (array_key_exists('customField1', $customer)) {
-            $decoded_resource['custom_field_1'] = $customer['customField1'];
-        }
-
-        if (array_key_exists('customField2', $customer)) {
-            $decoded_resource['custom_field_2'] = $customer['customField2'];
-        }
-
-        if (array_key_exists('customField3', $customer)) {
-            $decoded_resource['custom_field_3'] = $customer['customField3'];
-        }
-
-        if (array_key_exists('customField4', $customer)) {
-            $decoded_resource['custom_field_4'] = $customer['customField4'];
-        }
-
-        if (array_key_exists('customField5', $customer)) {
-            $decoded_resource['custom_field_5'] = $customer['customField5'];
-        }
-
-        if (array_key_exists('ldapDn', $customer)) {
-            $decoded_resource['ldap_dn'] = $customer['ldapDn'];
         }
 
         if (array_key_exists('preferredProviderId', $customer)) {

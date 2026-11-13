@@ -30,14 +30,8 @@ class Calendar extends EA_Controller
         'city',
         'state',
         'zip_code',
-        'timezone',
         'language',
         'notes',
-        'custom_field_1',
-        'custom_field_2',
-        'custom_field_3',
-        'custom_field_4',
-        'custom_field_5',
     ];
 
     public array $optional_customer_fields = [
@@ -49,7 +43,6 @@ class Calendar extends EA_Controller
         'start_datetime',
         'end_datetime',
         'location',
-        'meeting_link',
         'notes',
         'color',
         'status',
@@ -97,7 +90,6 @@ class Calendar extends EA_Controller
         $this->load->library('timezones');
         $this->load->library('webhooks_client');
         $this->load->library('permissions');
-        $this->load->library('jitsi_client');
         $this->load->library('slot_rules');
         $this->load->library('clinical_record_templates');
     }
@@ -463,11 +455,6 @@ class Calendar extends EA_Controller
                             $appointment['id'],
                             $appointment['id_users_provider'],
                         );
-                    }
-
-                    // Jitsi integration: if enabled and meeting_link is empty, generate a Jitsi meeting link
-                    if (setting('jitsi_enabled') === '1' && empty($appointment['meeting_link'])) {
-                        $appointment['meeting_link'] = $this->jitsi_client->generate_link();
                     }
 
                     $this->appointments_model->only($appointment, $this->allowed_appointment_fields);

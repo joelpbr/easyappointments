@@ -24,19 +24,6 @@ use Google\Service\Calendar\Events;
 class Google_sync
 {
     /**
-     * Number of times the event will be fetched again while the Google Meet conference is still pending.
-     *
-     * ponytail: a single retry keeps the booking request short, move the lookup to a background job if the link has
-     * to be available on the very first save every time.
-     */
-    public const MEETING_LINK_ATTEMPTS = 1;
-
-    /**
-     * Microseconds to wait before the pending Google Meet conference is fetched again.
-     */
-    public const MEETING_LINK_ATTEMPT_INTERVAL = 500000;
-
-    /**
      * @var EA_Controller|CI_Controller
      */
     protected EA_Controller|CI_Controller $CI;
@@ -238,32 +225,8 @@ class Google_sync
             $event->attendees[] = $event_customer;
         }
 
-        // Add Google Meet conferencing if enabled
-        if (filter_var(setting('google_meet_link_generation'), FILTER_VALIDATE_BOOLEAN)) {
-            $conference_data = new Google_Service_Calendar_ConferenceData();
-            $create_request = new Google_Service_Calendar_CreateConferenceRequest();
-            $create_request->setRequestId(uniqid('meet_', true));
-            $conference_solution_key = new Google_Service_Calendar_ConferenceSolutionKey();
-            $conference_solution_key->setType('hangoutsMeet');
-            $create_request->setConferenceSolutionKey($conference_solution_key);
-            $conference_data->setCreateRequest($create_request);
-            $event->setConferenceData($conference_data);
-        }
-
         // Add the new event to the Google Calendar.
-        $created_event = $this->service->events->insert($provider['settings']['google_calendar'], $event, [
-            'conferenceDataVersion' => 1,
-        ]);
-
-        // If Google Meet was enabled and a link was generated, update the appointment's meeting_link
-        if (filter_var(setting('google_meet_link_generation'), FILTER_VALIDATE_BOOLEAN)) {
-            $meeting_link = $this->get_meeting_link($created_event, $provider['settings']['google_calendar']);
-
-            if ($meeting_link) {
-                $appointment['meeting_link'] = $meeting_link;
-                $this->CI->appointments_model->save($appointment);
-            }
-        }
+        $created_event = $this->service->events->insert($provider['settings']['google_calendar'], $event);
 
         return $created_event;
     }
@@ -324,79 +287,13 @@ class Google_sync
             $event->attendees[] = $event_customer;
         }
 
-        // Add Google Meet conferencing if enabled and event doesn't already have one
-        if (
-            filter_var(setting('google_meet_link_generation'), FILTER_VALIDATE_BOOLEAN) &&
-            !$event->getConferenceData()
-        ) {
-            $conference_data = new Google_Service_Calendar_ConferenceData();
-            $create_request = new Google_Service_Calendar_CreateConferenceRequest();
-            $create_request->setRequestId(uniqid('meet_', true));
-            $conference_solution_key = new Google_Service_Calendar_ConferenceSolutionKey();
-            $conference_solution_key->setType('hangoutsMeet');
-            $create_request->setConferenceSolutionKey($conference_solution_key);
-            $conference_data->setCreateRequest($create_request);
-            $event->setConferenceData($conference_data);
-        }
-
         $updated_event = $this->service->events->update(
             $provider['settings']['google_calendar'],
             $event->getId(),
             $event,
-            ['conferenceDataVersion' => 1],
         );
 
-        // If Google Meet was enabled and a link was generated, update the appointment's meeting_link
-        if (
-            filter_var(setting('google_meet_link_generation'), FILTER_VALIDATE_BOOLEAN) &&
-            empty($appointment['meeting_link'])
-        ) {
-            $meeting_link = $this->get_meeting_link($updated_event, $provider['settings']['google_calendar']);
-
-            if ($meeting_link) {
-                $appointment['meeting_link'] = $meeting_link;
-                $this->CI->appointments_model->save($appointment);
-            }
-        }
-
         return $updated_event;
-    }
-
-    /**
-     * Get the Google Meet link of an event, waiting for the conference to be created if needed.
-     *
-     * Google creates the conference asynchronously, so the entry points are often still missing from the response of
-     * the insert/update request and the event has to be fetched again before the link becomes available.
-     *
-     * @param Event $event Google Calendar event that contains the conference data.
-     * @param string $calendar_id Google Calendar ID, needed for fetching the event again.
-     *
-     * @return string|null Returns the meeting link or NULL if no conference was created.
-     *
-     * @throws \Google\Service\Exception
-     */
-    protected function get_meeting_link(Event $event, string $calendar_id): ?string
-    {
-        for ($attempt = 0; ; $attempt++) {
-            foreach ($event->getConferenceData()?->getEntryPoints() ?? [] as $entry_point) {
-                if ($entry_point->getEntryPointType() === 'video') {
-                    return $entry_point->getUri();
-                }
-            }
-
-            $status = $event->getConferenceData()?->getCreateRequest()?->getStatus()?->getStatusCode();
-
-            // Give up quickly when the conference is still pending: the caller runs inside the booking request and
-            // the next appointment save fills the link in, as update_appointment() looks it up again while it is
-            // still empty.
-            if ($status !== 'pending' || $attempt === self::MEETING_LINK_ATTEMPTS || !$calendar_id) {
-                return null;
-            }
-
-            usleep(self::MEETING_LINK_ATTEMPT_INTERVAL);
-
-            $event = $this->service->events->get($calendar_id, $event->getId());
-        }
     }
 
     /**

@@ -51,7 +51,6 @@ class Providers_model extends EA_Model
         'firstName' => 'first_name',
         'lastName' => 'last_name',
         'email' => 'email',
-        'mobile' => 'mobile_number',
         'phone' => 'phone_number',
         'address' => 'address',
         'city' => 'city',
@@ -62,7 +61,6 @@ class Providers_model extends EA_Model
         'notes' => 'notes',
         'isPrivate' => 'is_private',
         'isActive' => 'is_active',
-        'ldapDn' => 'ldap_dn',
         'roleId' => 'id_roles',
     ];
 
@@ -805,7 +803,6 @@ class Providers_model extends EA_Model
             ->or_like('CONCAT_WS(" ", first_name, last_name)', $keyword)
             ->or_like('email', $keyword)
             ->or_like('phone_number', $keyword)
-            ->or_like('mobile_number', $keyword)
             ->or_like('address', $keyword)
             ->or_like('city', $keyword)
             ->or_like('state', $keyword)
@@ -904,7 +901,6 @@ class Providers_model extends EA_Model
             'firstName' => $provider['first_name'],
             'lastName' => $provider['last_name'],
             'email' => $provider['email'],
-            'mobile' => $provider['mobile_number'],
             'phone' => $provider['phone_number'],
             'address' => $provider['address'],
             'city' => $provider['city'],
@@ -913,7 +909,6 @@ class Providers_model extends EA_Model
             'notes' => $provider['notes'],
             'isPrivate' => $provider['is_private'],
             'isActive' => (bool) ($provider['is_active'] ?? true),
-            'ldapDn' => $provider['ldap_dn'],
             'timezone' => $provider['timezone'],
             'language' => $provider['language'],
         ];
@@ -992,10 +987,6 @@ class Providers_model extends EA_Model
             $decoded_resource['email'] = $provider['email'];
         }
 
-        if (array_key_exists('mobile', $provider)) {
-            $decoded_resource['mobile_number'] = $provider['mobile'];
-        }
-
         if (array_key_exists('phone', $provider)) {
             $decoded_resource['phone_number'] = $provider['phone'];
         }
@@ -1038,10 +1029,6 @@ class Providers_model extends EA_Model
 
         if (array_key_exists('isActive', $provider)) {
             $decoded_resource['is_active'] = (bool) $provider['isActive'];
-        }
-
-        if (array_key_exists('ldapDn', $provider)) {
-            $decoded_resource['ldap_dn'] = $provider['ldapDn'];
         }
 
         if (array_key_exists('settings', $provider)) {

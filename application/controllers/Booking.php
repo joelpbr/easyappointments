@@ -34,13 +34,7 @@ class Booking extends EA_Controller
         'city',
         'state',
         'zip_code',
-        'timezone',
         'language',
-        'custom_field_1',
-        'custom_field_2',
-        'custom_field_3',
-        'custom_field_4',
-        'custom_field_5',
     ];
     public mixed $allowed_provider_fields = ['id', 'first_name', 'last_name', 'services', 'timezone'];
     public array $allowed_appointment_fields = [
@@ -48,7 +42,6 @@ class Booking extends EA_Controller
         'start_datetime',
         'end_datetime',
         'location',
-        'meeting_link',
         'notes',
         'color',
         'status',
@@ -80,7 +73,6 @@ class Booking extends EA_Controller
         $this->load->library('notifications');
         $this->load->library('availability');
         $this->load->library('webhooks_client');
-        $this->load->library('jitsi_client');
         $this->load->library('slot_rules');
     }
 
@@ -113,37 +105,19 @@ class Booking extends EA_Controller
             return;
         }
 
+        // Without online booking (the clinic books its appointments itself), the address of the application leads to
+        // the login of the staff instead of a "booking is disabled" message.
+        if (setting('disable_booking')) {
+            redirect('login');
+
+            return;
+        }
+
         allow_iframe_embedding(); // The booking page is designed to be embeddable in third-party sites.
 
         $company_name = setting('company_name');
         $company_logo = setting('company_logo');
         $company_color = setting('company_color');
-        $disable_booking = setting('disable_booking');
-        $google_analytics_code = setting('google_analytics_code');
-        $matomo_analytics_url = setting('matomo_analytics_url');
-        $matomo_analytics_site_id = setting('matomo_analytics_site_id');
-
-        if ($disable_booking) {
-            $disable_booking_message = setting('disable_booking_message');
-
-            html_vars([
-                'show_message' => true,
-                'page_title' => lang('page_title') . ' ' . e($company_name),
-                'message_title' => lang('booking_is_disabled'),
-                'message_text' => $disable_booking_message,
-                'message_icon' => base_url('assets/img/error.png'),
-                'google_analytics_code' => $google_analytics_code,
-                'matomo_analytics_url' => $matomo_analytics_url,
-                'matomo_analytics_site_id' => $matomo_analytics_site_id,
-                'display_login_button' => setting('display_login_button'),
-                'legal_notice_url' => setting('legal_notice_url'),
-                'imprint_url' => setting('imprint_url'),
-            ]);
-
-            $this->load->view('pages/booking_message');
-
-            return;
-        }
 
         $available_services = $this->services_model->get_available_services(true);
         $available_providers = $this->providers_model->get_available_providers(true);
@@ -217,9 +191,6 @@ class Booking extends EA_Controller
                     'message_title' => lang('appointment_not_found'),
                     'message_text' => lang('appointment_does_not_exist_in_db'),
                     'message_icon' => base_url('assets/img/error.png'),
-                    'google_analytics_code' => $google_analytics_code,
-                    'matomo_analytics_url' => $matomo_analytics_url,
-                    'matomo_analytics_site_id' => $matomo_analytics_site_id,
                     'display_login_button' => $display_login_button,
                     'legal_notice_url' => $legal_notice_url,
                     'imprint_url' => $imprint_url,
@@ -256,9 +227,6 @@ class Booking extends EA_Controller
                         '{$limit}' => sprintf('%02d:%02d', $hours, $minutes),
                     ]),
                     'message_icon' => base_url('assets/img/error.png'),
-                    'google_analytics_code' => $google_analytics_code,
-                    'matomo_analytics_url' => $matomo_analytics_url,
-                    'matomo_analytics_site_id' => $matomo_analytics_site_id,
                     'display_login_button' => $display_login_button,
                     'legal_notice_url' => $legal_notice_url,
                     'imprint_url' => $imprint_url,
@@ -337,9 +305,6 @@ class Booking extends EA_Controller
             'display_delete_personal_information' => $display_delete_personal_information,
             'legal_notice_url' => $legal_notice_url,
             'imprint_url' => $imprint_url,
-            'google_analytics_code' => $google_analytics_code,
-            'matomo_analytics_url' => $matomo_analytics_url,
-            'matomo_analytics_site_id' => $matomo_analytics_site_id,
             'timezones' => $timezones,
             'grouped_timezones' => $grouped_timezones,
             'manage_mode' => $manage_mode,
@@ -517,11 +482,6 @@ class Booking extends EA_Controller
                 if (count($existing_appointments)) {
                     throw new RuntimeException(lang('customer_is_already_booked'));
                 }
-            }
-
-            // Jitsi integration: if enabled, generate a Jitsi meeting link for the appointment
-            if (setting('jitsi_enabled') === '1') {
-                $appointment['meeting_link'] = $this->jitsi_client->generate_link();
             }
 
             if (empty($appointment['location']) && !empty($service['location'])) {

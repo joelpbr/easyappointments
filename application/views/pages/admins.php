@@ -97,14 +97,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label" for="mobile-number">
-                            <?= lang('mobile_number') ?>
-
-                        </label>
-                        <input id="mobile-number" class="form-control" maxlength="128" disabled>
-                    </div>
-
-                    <div class="mb-3">
                         <label class="form-label" for="address">
                             <?= lang('address') ?>
                         </label>
@@ -203,15 +195,6 @@
                             'grouped_timezones' => vars('grouped_timezones'),
                         ]); ?>
                     </div>
-
-                    <?php if (setting('ldap_is_active')): ?>
-                        <div class="mb-3">
-                            <label for="ldap-dn" class="form-label">
-                                <?= lang('ldap_dn') ?>
-                            </label>
-                            <input type="text" id="ldap-dn" class="form-control" maxlength="100" disabled/>
-                        </div>
-                    <?php endif; ?>
 
                     <div>
                         <label class="form-label mb-3">

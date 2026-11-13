@@ -92,9 +92,6 @@ class Booking_cancellation extends EA_Controller
                     'message_title' => lang('appointment_not_found'),
                     'message_text' => lang('appointment_does_not_exist_in_db'),
                     'message_icon' => base_url('assets/img/error.png'),
-                    'google_analytics_code' => setting('google_analytics_code'),
-                    'matomo_analytics_url' => setting('matomo_analytics_url'),
-                    'matomo_analytics_site_id' => setting('matomo_analytics_site_id'),
                     'display_login_button' => setting('display_login_button'),
                 ]);
 
@@ -148,9 +145,6 @@ class Booking_cancellation extends EA_Controller
             html_vars([
                 'page_title' => lang('appointment_cancelled_title'),
                 'company_color' => setting('company_color'),
-                'google_analytics_code' => setting('google_analytics_code'),
-                'matomo_analytics_url' => setting('matomo_analytics_url'),
-                'matomo_analytics_site_id' => setting('matomo_analytics_site_id'),
             ]);
 
             $this->load->view('pages/booking_cancellation');
@@ -165,9 +159,6 @@ class Booking_cancellation extends EA_Controller
                 'message_title' => lang('unexpected_issues'),
                 'message_text' => lang('unexpected_issues_message'),
                 'message_icon' => base_url('assets/img/error.png'),
-                'google_analytics_code' => setting('google_analytics_code'),
-                'matomo_analytics_url' => setting('matomo_analytics_url'),
-                'matomo_analytics_site_id' => setting('matomo_analytics_site_id'),
                 'display_login_button' => setting('display_login_button'),
             ]);
 

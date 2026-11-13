@@ -58,7 +58,6 @@ class Appointments_model extends EA_Model
         'start' => 'start_datetime',
         'end' => 'end_datetime',
         'location' => 'location',
-        'meetingLink' => 'meeting_link',
         'color' => 'color',
         'status' => 'status',
         'isFirstVisit' => 'is_first_visit',
@@ -146,10 +145,6 @@ class Appointments_model extends EA_Model
 
         // Security: reject meeting links with a non-http(s) scheme (e.g. "javascript:") so they cannot be
         // stored and later rendered as a clickable href on the calendar.
-        if (!empty($appointment['meeting_link'])) {
-            validate_url($appointment['meeting_link']);
-        }
-
         // Make sure the color is a hex value, as it is rendered into the calendar markup.
         if (!empty($appointment['color']) && !validate_color((string) $appointment['color'])) {
             throw new InvalidArgumentException('The provided appointment color is invalid: ' . $appointment['color']);
@@ -862,7 +857,6 @@ class Appointments_model extends EA_Model
             'serviceId' => $appointment['id_services'] !== null ? (int) $appointment['id_services'] : null,
             'serviceName' => $appointment['service_name'] ?? null,
             'price' => isset($appointment['price']) ? (float) $appointment['price'] : null,
-            'meetingLink' => $appointment['meeting_link'],
             'googleCalendarId' =>
                 $appointment['id_google_calendar'] !== null ? $appointment['id_google_calendar'] : null,
             'caldavCalendarId' =>
@@ -944,10 +938,6 @@ class Appointments_model extends EA_Model
 
         if (array_key_exists('caldavCalendarId', $appointment)) {
             $decoded_resource['id_caldav_calendar'] = $appointment['caldavCalendarId'];
-        }
-
-        if (array_key_exists('meetingLink', $appointment)) {
-            $decoded_resource['meeting_link'] = $appointment['meetingLink'];
         }
 
         $decoded_resource['is_unavailability'] = false;

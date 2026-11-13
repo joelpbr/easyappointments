@@ -44,54 +44,6 @@
                     <div class="card h-100">
                         <div class="card-header">
                             <h5 class="fw-light mb-0">
-                                <?= lang('google_analytics') ?>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3 integration-info">
-                                <small>
-                                    <?= lang('google_analytics_info') ?>
-                                </small>
-                            </div>
-                        </div>
-                        <div class="card-footer border-0">
-                            <a href="<?= site_url('google_analytics_settings') ?>"
-                               class="btn btn-outline-primary w-100">
-                                <i class="fas fa-cogs me-2"></i>
-                                <?= lang('configure') ?>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="fw-light mb-0">
-                                <?= lang('matomo_analytics') ?>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3 integration-info">
-                                <small>
-                                    <?= lang('matomo_analytics_info') ?>
-                                </small>
-                            </div>
-                        </div>
-                        <div class="card-footer border-0">
-                            <a href="<?= site_url('matomo_analytics_settings') ?>"
-                               class="btn btn-outline-primary w-100">
-                                <i class="fas fa-cogs me-2"></i>
-                                <?= lang('configure') ?>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="fw-light mb-0">
                                 <?= lang('api') ?>
                             </h5>
                         </div>
@@ -104,29 +56,6 @@
                         </div>
                         <div class="card-footer border-0">
                             <a href="<?= site_url('api_settings') ?>" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-cogs me-2"></i>
-                                <?= lang('configure') ?>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="fw-light mb-0">
-                                <?= lang('ldap') ?>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3 integration-info">
-                                <small>
-                                    <?= lang('ldap_info') ?>
-                                </small>
-                            </div>
-                        </div>
-                        <div class="card-footer border-0">
-                            <a href="<?= site_url('ldap_settings') ?>" class="btn btn-outline-primary w-100">
                                 <i class="fas fa-cogs me-2"></i>
                                 <?= lang('configure') ?>
                             </a>
@@ -173,29 +102,6 @@
                         </div>
                         <div class="card-footer border-0">
                             <a href="<?= site_url('caldav_settings') ?>" class="btn btn-outline-primary w-100">
-                                <i class="fas fa-cogs me-2"></i>
-                                <?= lang('configure') ?>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="fw-light mb-0">
-                                <?= lang('jitsi') ?>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-3 integration-info">
-                                <small>
-                                    <?= lang('jitsi_info') ?>
-                                </small>
-                            </div>
-                        </div>
-                        <div class="card-footer border-0">
-                            <a href="<?= site_url('jitsi_settings') ?>" class="btn btn-outline-primary w-100">
                                 <i class="fas fa-cogs me-2"></i>
                                 <?= lang('configure') ?>
                             </a>

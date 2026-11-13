@@ -504,21 +504,6 @@ $customer_address = trim((string) ($customer['address'] ?? ''));
                                                 </tr>
                                             <?php endif; ?>
 
-                                            <?php if (!empty($appointment['meeting_link'])): ?>
-                                                <tr>
-                                                    <td class="label" style="padding: 3px;font-weight: bold;">
-                                                        <?= lang('meeting_link') ?>
-                                                    </td>
-                                                    <td style="padding: 3px;">
-                                                        <a
-                                                            href="<?= e($appointment['meeting_link']) ?>"
-                                                            target="_blank">
-                                                            <?= e($appointment['meeting_link']) ?>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            <?php endif; ?>
-
                                             <?php if (!empty($appointment['notes'])): ?>
                                                 <tr>
                                                     <td class="label" style="padding: 3px;font-weight: bold;">
@@ -581,25 +566,6 @@ $customer_address = trim((string) ($customer['address'] ?? ''));
                                                     </td>
                                                 </tr>
                                             <?php endif; ?>
-
-                                            <?php for ($i = 1; $i <= 5; $i++): ?>
-                                                <?php if (
-                                                    setting('display_custom_field_' . $i) &&
-                                                    !empty($customer['custom_field_' . $i])
-                                                ): ?>
-                                                    <tr>
-                                                        <td class="label" style="padding: 3px;font-weight: bold;">
-                                                            <?= e(
-                                                                setting('label_custom_field_' . $i) ?:
-                                                                lang('custom_field') . ' #' . $i,
-                                                            ) ?>
-                                                        </td>
-                                                        <td style="padding: 3px;">
-                                                            <?= e($customer['custom_field_' . $i]) ?>
-                                                        </td>
-                                                    </tr>
-                                                <?php endif; ?>
-                                            <?php endfor; ?>
                                         </table>
 
                                         <br>

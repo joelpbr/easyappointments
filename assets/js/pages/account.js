@@ -19,7 +19,6 @@ App.Pages.Account = (function () {
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
     const $email = $('#email');
-    const $mobileNumber = $('#mobile-number');
     const $phoneNumber = $('#phone-number');
     const $address = $('#address');
     const $city = $('#city');
@@ -111,7 +110,6 @@ App.Pages.Account = (function () {
         $firstName.val(account.first_name);
         $lastName.val(account.last_name);
         $email.val(account.email);
-        $mobileNumber.val(account.mobile_number);
         $phoneNumber.val(account.phone_number);
         $address.val(account.address);
         $city.val(account.city);
@@ -140,7 +138,6 @@ App.Pages.Account = (function () {
             first_name: $firstName.val(),
             last_name: $lastName.val(),
             email: $email.val(),
-            mobile_number: $mobileNumber.val(),
             phone_number: $phoneNumber.val(),
             address: $address.val(),
             city: $city.val(),

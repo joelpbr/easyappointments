@@ -20,7 +20,6 @@ App.Pages.Secretaries = (function () {
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
     const $email = $('#email');
-    const $mobileNumber = $('#mobile-number');
     const $phoneNumber = $('#phone-number');
     const $address = $('#address');
     const $city = $('#city');
@@ -29,7 +28,6 @@ App.Pages.Secretaries = (function () {
     const $notes = $('#notes');
     const $language = $('#language');
     const $timezone = $('#timezone');
-    const $ldapDn = $('#ldap-dn');
     const $username = $('#username');
     const $password = $('#password');
     const $passwordConfirmation = $('#password-confirm');
@@ -200,7 +198,6 @@ App.Pages.Secretaries = (function () {
                 first_name: $firstName.val(),
                 last_name: $lastName.val(),
                 email: $email.val(),
-                mobile_number: $mobileNumber.val(),
                 phone_number: $phoneNumber.val(),
                 address: $address.val(),
                 city: $city.val(),
@@ -209,7 +206,6 @@ App.Pages.Secretaries = (function () {
                 notes: $notes.val(),
                 language: $language.val(),
                 timezone: $timezone.val(),
-                ldap_dn: $ldapDn.val(),
                 settings: {
                     username: $username.val(),
                     notifications: Number($notifications.prop('checked')),
@@ -350,14 +346,6 @@ App.Pages.Secretaries = (function () {
                 throw new Error(lang('invalid_phone'));
             }
 
-            // Validate mobile number.
-            const mobileNumber = $mobileNumber.val();
-
-            if (mobileNumber && !App.Utils.Validation.phone(mobileNumber)) {
-                $mobileNumber.addClass('is-invalid');
-                throw new Error(lang('invalid_phone'));
-            }
-
             // Check if username exists
             if ($username.attr('already-exists') === 'true') {
                 $username.addClass('is-invalid');
@@ -403,7 +391,6 @@ App.Pages.Secretaries = (function () {
         $firstName.val(secretary.first_name);
         $lastName.val(secretary.last_name);
         $email.val(secretary.email);
-        $mobileNumber.val(secretary.mobile_number);
         $phoneNumber.val(secretary.phone_number);
         $address.val(secretary.address);
         $city.val(secretary.city);
@@ -412,7 +399,6 @@ App.Pages.Secretaries = (function () {
         $notes.val(secretary.notes);
         $language.val(secretary.language);
         $timezone.val(secretary.timezone);
-        $ldapDn.val(secretary.ldap_dn);
 
         $username.val(secretary.settings.username);
         $calendarView.val(secretary.settings.calendar_view);
@@ -487,8 +473,6 @@ App.Pages.Secretaries = (function () {
         const name = secretary.first_name + ' ' + secretary.last_name;
 
         let info = secretary.email;
-
-        info = secretary.mobile_number ? info + ', ' + secretary.mobile_number : info;
 
         info = secretary.phone_number ? info + ', ' + secretary.phone_number : info;
 
