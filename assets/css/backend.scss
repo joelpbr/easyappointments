@@ -887,3 +887,21 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     max-height: 18rem;
     overflow-y: auto;
 }
+
+// Summary of the administrative history in the patient record (see customers.js).
+.ea-patient-history-summary {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 12px;
+    margin: 0;
+
+    dt {
+        font-weight: normal;
+        color: var(--bs-secondary-color);
+    }
+
+    dd {
+        margin: 0;
+        font-weight: 600;
+    }
+}

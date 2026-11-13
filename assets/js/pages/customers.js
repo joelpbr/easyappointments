@@ -319,11 +319,6 @@ App.Pages.Customers = (function () {
     }
 
     /**
-     * Display a customer record into the form.
-     *
-     * @param {Object} customer Contains the customer record data.
-     */
-    /**
      * Get the fiscal data typed in the form.
      *
      * @return {Object}
@@ -376,6 +371,11 @@ App.Pages.Customers = (function () {
         );
     }
 
+    /**
+     * Display a customer record into the form.
+     *
+     * @param {Object} customer Contains the customer record data.
+     */
     function display(customer) {
         $id.val(customer.id);
         $firstName.val(customer.first_name);
@@ -397,89 +397,126 @@ App.Pages.Customers = (function () {
         $customField4.val(customer.custom_field_4);
         $customField5.val(customer.custom_field_5);
 
+        displayHistory(customer.appointments);
+    }
+
+    /**
+     * Show the administrative history of the patient: a summary of their visits, then the coming appointments and the
+     * previous ones, with their status. It is not a clinical record.
+     *
+     * @param {Array} appointments Appointments of the patient, with their service and provider.
+     */
+    function displayHistory(appointments) {
         $customerAppointments.empty();
 
-        if (!customer.appointments.length) {
-            $('<p/>', {
-                'text': lang('no_records_found'),
-            }).appendTo($customerAppointments);
+        // Providers and reception only see the appointments of their own providers.
+        const visible = appointments.filter((appointment) => {
+            const providerId = Number(appointment.id_users_provider);
+
+            if (vars('role_slug') === App.Layouts.Backend.DB_SLUG_PROVIDER) {
+                return providerId === Number(vars('user_id'));
+            }
+
+            if (vars('role_slug') === App.Layouts.Backend.DB_SLUG_SECRETARY) {
+                return vars('secretary_providers').map(Number).includes(providerId);
+            }
+
+            return true;
+        });
+
+        if (!visible.length) {
+            $('<p/>', {text: lang('no_records_found')}).appendTo($customerAppointments);
+
+            return;
         }
 
-        customer.appointments.forEach((appointment) => {
-            if (
-                vars('role_slug') === App.Layouts.Backend.DB_SLUG_PROVIDER &&
-                parseInt(appointment.id_users_provider) !== vars('user_id')
-            ) {
+        const now = moment();
+        const startOf = (appointment) => moment(appointment.start_datetime);
+        const providerName = (appointment) =>
+            [appointment.provider?.first_name, appointment.provider?.last_name].filter(Boolean).join(' ');
+
+        const upcoming = visible
+            .filter((appointment) => startOf(appointment).isSameOrAfter(now))
+            .sort((a, b) => startOf(a) - startOf(b));
+
+        const previous = visible
+            .filter((appointment) => startOf(appointment).isBefore(now))
+            .sort((a, b) => startOf(b) - startOf(a));
+
+        const visits = previous.filter((appointment) => !['cancelled', 'no_show'].includes(appointment.status));
+        const count = (status) => visible.filter((appointment) => appointment.status === status).length;
+
+        const summary = [
+            [lang('history_visits'), visits.length],
+            [
+                lang('history_last_visit'),
+                visits.length
+                    ? App.Utils.Date.format(startOf(visits[0]).toDate(), vars('date_format'), vars('time_format'))
+                    : '—',
+            ],
+            [lang('history_cancelled'), count('cancelled')],
+            [lang('history_no_shows'), count('no_show')],
+            [lang('history_providers'), [...new Set(visits.map(providerName))].join(', ') || '—'],
+        ];
+
+        $('<dl/>', {
+            class: 'ea-patient-history-summary small mb-3',
+            html: summary.flatMap(([label, value]) => [$('<dt/>', {text: label}), $('<dd/>', {text: value})]),
+        }).appendTo($customerAppointments);
+
+        const statusName = (code) => vars('appointment_statuses').find((status) => status.code === code)?.name || code;
+
+        const statusClass = {
+            cancelled: 'text-bg-secondary',
+            no_show: 'text-bg-danger',
+            completed: 'text-bg-success',
+            confirmed: 'text-bg-primary',
+        };
+
+        const section = (title, list) => {
+            if (!list.length) {
                 return;
             }
 
-            if (
-                vars('role_slug') === App.Layouts.Backend.DB_SLUG_SECRETARY &&
-                vars('secretary_providers').indexOf(appointment.id_users_provider) === -1
-            ) {
-                return;
-            }
+            $('<h6/>', {class: 'mt-2 mb-1', text: title}).appendTo($customerAppointments);
 
-            const start = App.Utils.Date.format(
-                moment(appointment.start_datetime).toDate(),
-                vars('date_format'),
-                vars('time_format'),
-                true,
-            );
+            list.forEach((appointment) => {
+                $('<div/>', {
+                    class: 'appointment-row py-1 border-bottom',
+                    'data-id': appointment.id,
+                    html: [
+                        $('<a/>', {
+                            href: App.Utils.Url.siteUrl(`calendar/reschedule/${appointment.hash}`),
+                            class: 'me-1',
+                            title: lang('edit'),
+                            html: $('<i/>', {class: 'fas fa-edit'}),
+                        }),
+                        $('<small/>', {
+                            class: 'fw-semibold',
+                            text: App.Utils.Date.format(
+                                startOf(appointment).toDate(),
+                                vars('date_format'),
+                                vars('time_format'),
+                                true,
+                            ),
+                        }),
+                        $('<span/>', {
+                            class: 'badge ms-1 ' + (statusClass[appointment.status] || 'text-bg-light'),
+                            text: statusName(appointment.status),
+                        }),
+                        $('<br/>'),
+                        $('<small/>', {
+                            text: [appointment.service_name || appointment.service?.name, providerName(appointment)]
+                                .filter(Boolean)
+                                .join(' · '),
+                        }),
+                    ],
+                }).appendTo($customerAppointments);
+            });
+        };
 
-            const end = App.Utils.Date.format(
-                moment(appointment.end_datetime).toDate(),
-                vars('date_format'),
-                vars('time_format'),
-                true,
-            );
-
-            $('<div/>', {
-                'class': 'appointment-row',
-                'data-id': appointment.id,
-                'html': [
-                    // Service - Provider
-
-                    $('<a/>', {
-                        'href': App.Utils.Url.siteUrl(`calendar/reschedule/${appointment.hash}`),
-                        'html': [
-                            $('<i/>', {
-                                'class': 'fas fa-edit me-1',
-                            }),
-                            $('<strong/>', {
-                                'text':
-                                    appointment.service.name +
-                                    ' - ' +
-                                    appointment.provider.first_name +
-                                    ' ' +
-                                    appointment.provider.last_name,
-                            }),
-                            $('<br/>'),
-                        ],
-                    }),
-
-                    // Start
-
-                    $('<small/>', {
-                        'text': start,
-                    }),
-                    $('<br/>'),
-
-                    // End
-
-                    $('<small/>', {
-                        'text': end,
-                    }),
-                    $('<br/>'),
-
-                    // Timezone
-
-                    $('<small/>', {
-                        'text': vars('timezones')[appointment.provider.timezone],
-                    }),
-                ],
-            }).appendTo('#customer-appointments');
-        });
+        section(lang('history_upcoming'), upcoming);
+        section(lang('history_previous'), previous);
     }
 
     /**

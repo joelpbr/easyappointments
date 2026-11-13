@@ -681,4 +681,11 @@ $lang['fiscal_city'] = 'Municipio';
 $lang['fiscal_province'] = 'Provincia';
 $lang['fiscal_country'] = 'País';
 $lang['fiscal_country_default'] = 'España';
+$lang['history_visits'] = 'Visitas';
+$lang['history_last_visit'] = 'Última visita';
+$lang['history_cancelled'] = 'Canceladas';
+$lang['history_no_shows'] = 'No presentado';
+$lang['history_providers'] = 'Atendido por';
+$lang['history_upcoming'] = 'Próximas citas';
+$lang['history_previous'] = 'Citas anteriores';
 // End
