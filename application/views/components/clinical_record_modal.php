@@ -169,6 +169,7 @@
 
                         <div class="ea-feet-side">
                             <div class="form-label mb-0"><?= lang('clinical_pathologies') ?></div>
+                            <div id="clinical-feet-copied" class="ea-feet-copied" hidden></div>
                             <div id="clinical-feet-pathologies" class="list-group ea-feet-pathologies"></div>
                             <div id="clinical-feet-observations"></div>
                         </div>

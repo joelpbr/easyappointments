@@ -1503,6 +1503,20 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         }
     }
 
+    // Note of a drawing copied from the previous visit.
+    .ea-feet-copied {
+        margin-bottom: 8px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: #e6f6fb;
+        color: #055160;
+        font-size: 0.8rem;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
     // The catalog of pathologies scrolls by itself.
     .ea-feet-pathologies {
         max-height: 190px;

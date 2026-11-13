@@ -40,6 +40,7 @@ App.Components.ClinicalRecordModal = (function () {
     const $feetBoard = $('#clinical-feet-board');
     const $feetPicture = $('#clinical-feet-picture');
     const $feetMarkers = $('#clinical-feet-markers');
+    const $feetCopied = $('#clinical-feet-copied');
     const $feetViews = $('#clinical-feet-views');
     const $feetPathologies = $('#clinical-feet-pathologies');
     const $feetObservations = $('#clinical-feet-observations');
@@ -483,6 +484,18 @@ App.Components.ClinicalRecordModal = (function () {
     function renderFeet(visitFeet) {
         feet = visitFeet;
         feet.markers.forEach((marker) => (marker.key = ++markerKey));
+
+        // A visit without its own drawing starts with a copy of the previous one, saved with the visit.
+        $feetCopied
+            .text(
+                feet.copied_from
+                    ? lang('clinical_feet_copied').replace(
+                          '%s',
+                          App.Utils.Date.format(feet.copied_from, vars('date_format'), vars('time_format'), false),
+                      )
+                    : '',
+            )
+            .prop('hidden', !feet.copied_from);
         $feetViews.empty();
 
         feet.diagrams.forEach((diagram, index) => {
@@ -669,14 +682,17 @@ App.Components.ClinicalRecordModal = (function () {
             // The pathologies placed on the foot diagrams are saved with the visit, so they count as its changes.
             markers:
                 visitHasFeet && feet
-                    ? feet.markers.map(({id, diagram_id, pathology_id, x1, y1, x2, y2}) => ({
-                          id: id || null,
-                          diagram_id,
-                          pathology_id,
-                          x1,
-                          y1,
-                          x2,
-                          y2,
+                    ? feet.markers.map((marker) => ({
+                          id: marker.id || null,
+                          diagram_id: marker.diagram_id,
+                          pathology_id: marker.pathology_id,
+                          x1: marker.x1,
+                          y1: marker.y1,
+                          x2: marker.x2,
+                          y2: marker.y2,
+                          is_healed: Boolean(marker.is_healed),
+                          annotation_title: marker.annotation_title || null,
+                          annotation_text: marker.annotation_text || null,
                       }))
                     : null,
         };
@@ -694,9 +710,11 @@ App.Components.ClinicalRecordModal = (function () {
             data.surgeryPrice,
             data.markers,
         ).done((response) => {
-            // The new markers come back with their id.
+            // The new markers come back with their id, and the drawing is now the visit's own.
             if (response.markers && feet) {
                 feet.markers = response.markers.map((marker) => ({...marker, key: ++markerKey}));
+                feet.copied_from = null;
+                $feetCopied.prop('hidden', true);
                 renderMarkers();
             }
 

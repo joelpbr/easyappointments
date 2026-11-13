@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- A visit whose foot diagrams were never saved starts with an exact copy of the drawing of the previous visit of the patient (same pathologies, views and positions), noted above the pathologies and saved with the visit; a visit that was saved keeps its own drawing, even when every pathology was removed
 - In the clinical record, the save buttons are only active when there is something to save, the pathologies placed on the foot diagrams are saved with the visit, and leaving a visit or closing the record with unsaved changes (anywhere in the record) asks whether to save them, not save them or stay
 - In the foot diagrams of a visit, choosing a pathology and clicking on the picture places it there with its coordinates on the original picture; clicking a placed pathology removes it, and each view shows how many pathologies it has
 - The record of a chiropody, cure or surgery visit shows the four foot diagrams (top, sides and sole) with the catalog of pathologies on their right and the observations under it; the database keeps the catalog of pathologies, the four diagrams and the pathologies placed on each visit with their exact coordinates, ready for placing them on the pictures

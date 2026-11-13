@@ -169,7 +169,8 @@ class Clinical_records extends EA_Controller
                     ? [
                         'diagrams' => $this->foot_diagrams_model->get_diagram_types(),
                         'pathologies' => $this->foot_diagrams_model->get_pathologies(),
-                        'markers' => $this->foot_diagrams_model->get_markers((int) $appointment['id']),
+                        // Its own drawing, or a copy of the one of the previous visit.
+                        ...$this->foot_diagrams_model->get_drawing($appointment),
                     ]
                     : null,
             ]);
