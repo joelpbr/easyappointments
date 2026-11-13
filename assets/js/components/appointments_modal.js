@@ -51,6 +51,7 @@ App.Components.AppointmentsModal = (function () {
     const $customField5 = $('#custom-field-5');
     const $appointmentDuration = $('#appointment-duration');
     const $appointmentPrice = $('#appointment-price');
+    const $noShowWarning = $('#no-show-warning');
     const $appointmentFirstVisit = $('#appointment-first-visit');
     const $toggleMoreFields = $('#toggle-more-fields');
     const $usualProviderHint = $('#usual-provider-hint');
@@ -513,6 +514,7 @@ App.Components.AppointmentsModal = (function () {
             newPatientConfirmed = false;
             usualProviderId = null;
             updateUsualProviderHint();
+            showNoShowWarning(null);
 
             $customerId.val('');
             $firstName.val('');
@@ -543,6 +545,7 @@ App.Components.AppointmentsModal = (function () {
         newPatientConfirmed = false;
         usualProviderId = null;
         updateUsualProviderHint();
+        showNoShowWarning(null);
 
         // Empty form fields.
         $appointmentsModal.find('input, textarea').val('');
@@ -728,11 +731,36 @@ App.Components.AppointmentsModal = (function () {
 
         usualProviderId = customer.id_users_preferred_provider || null;
         updateUsualProviderHint();
+        showNoShowWarning(customer);
 
         // For a new appointment, the visits of the patient tell whether it is the first one.
         if (!$appointmentId.val() && customer.visits !== undefined) {
             $appointmentFirstVisit.val(customer.visits > 0 ? '0' : '1');
         }
+    }
+
+    /**
+     * Warn when the chosen patient missed appointments before, so that reception can remind them.
+     *
+     * @param {Object|null} customer Patient with no_shows and last_no_show, or null to hide the warning.
+     */
+    function showNoShowWarning(customer) {
+        const count = Number(customer?.no_shows || 0);
+
+        $noShowWarning.prop('hidden', !count).empty();
+
+        if (!count) {
+            return;
+        }
+
+        $noShowWarning.append(
+            $('<i/>', {class: 'fas fa-user-slash me-2'}),
+            document.createTextNode(
+                lang('no_show_warning')
+                    .replace('%count', count)
+                    .replace('%date', moment(customer.last_no_show).format('DD/MM/YYYY')),
+            ),
+        );
     }
 
     /**

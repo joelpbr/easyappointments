@@ -176,9 +176,10 @@ App.Utils.CalendarEventPopover = (function () {
      * @param {string} displayEdit - CSS class to show/hide edit button.
      * @param {string} displayDelete - CSS class to show/hide delete button.
      * @param {string} [displayCancel] - CSS class to show/hide the cancel appointment button.
+     * @param {string} [displayNoShow] - CSS class to show/hide the no-show button.
      * @returns {jQuery} Button container element.
      */
-    function createPopoverButtons(displayEdit, displayDelete, displayCancel = 'd-none') {
+    function createPopoverButtons(displayEdit, displayDelete, displayCancel = 'd-none', displayNoShow = 'd-none') {
         return $('<div/>', {
             class: 'd-flex flex-wrap justify-content-center gap-2',
             html: [
@@ -192,6 +193,11 @@ App.Utils.CalendarEventPopover = (function () {
                     'cancel-appointment-popover btn btn-outline-danger ' + displayCancel,
                     'fas fa-calendar-times',
                     'cancel_appointment',
+                ),
+                createPopoverButton(
+                    'no-show-popover btn btn-outline-warning ' + displayNoShow,
+                    'fas fa-user-slash',
+                    'mark_no_show',
                 ),
                 createPopoverButton('edit-popover btn btn-primary ' + displayEdit, 'fas fa-edit', 'edit'),
             ],
@@ -337,7 +343,15 @@ App.Utils.CalendarEventPopover = (function () {
                 ...createPopoverRow('notes', getEventNotes(info.event)),
                 renderCustomContent(info),
                 $('<hr/>'),
-                createPopoverButtons(displayEdit, displayDelete, statusFreesSlot(data.status) ? 'd-none' : displayEdit),
+                createPopoverButtons(
+                    displayEdit,
+                    displayDelete,
+                    statusFreesSlot(data.status) ? 'd-none' : displayEdit,
+                    // A no-show can only be marked once the appointment has started.
+                    statusFreesSlot(data.status) || data.status === 'no_show' || moment(data.start_datetime).isAfter()
+                        ? 'd-none'
+                        : displayEdit,
+                ),
             ],
         });
     }

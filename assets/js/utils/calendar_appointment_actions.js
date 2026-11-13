@@ -16,6 +16,7 @@
  */
 App.Utils.CalendarAppointmentActions = (function () {
     const STATUS_CANCELLED = 'cancelled';
+    const STATUS_NO_SHOW = 'no_show';
 
     /**
      * Cancel an appointment after asking whether the users must be notified.
@@ -59,6 +60,39 @@ App.Utils.CalendarAppointmentActions = (function () {
     }
 
     /**
+     * Mark that the patient did not come to an appointment, after confirming it. No message is sent to anybody.
+     *
+     * The appointment is kept with the no-show status, which warns about it the next time the patient is booked.
+     *
+     * @param {Object} eventData Appointment data of the calendar event.
+     * @param {Function} onDone Called once the appointment is saved.
+     */
+    function markNoShow(eventData, onDone) {
+        const appointment = {...eventData, status: STATUS_NO_SHOW};
+
+        appointment.is_unavailability = Number(appointment.is_unavailability) || 0;
+        delete appointment.customer;
+        delete appointment.provider;
+        delete appointment.service;
+
+        App.Utils.Message.show(lang('mark_no_show'), lang('mark_no_show_question'), [
+            {
+                text: lang('close'),
+                className: 'btn btn-outline-secondary',
+                click: (event, messageModal) => messageModal.hide(),
+            },
+            {
+                text: lang('mark_no_show'),
+                className: 'btn btn-warning',
+                click: (event, messageModal) => {
+                    messageModal.hide();
+                    App.Http.Calendar.saveAppointment(appointment, null, onDone, null, false);
+                },
+            },
+        ]);
+    }
+
+    /**
      * Ask for confirmation before an appointment is deleted for good.
      *
      * @param {Function} onConfirm Called when the user confirms the deletion.
@@ -83,6 +117,7 @@ App.Utils.CalendarAppointmentActions = (function () {
 
     return {
         cancel,
+        markNoShow,
         confirmDelete,
     };
 })();

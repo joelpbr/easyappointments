@@ -365,3 +365,11 @@ Las aperturas excepcionales (10.8) ya existían como excepciones de horario. Con
 | `application/controllers/Calendar.php`, `appointments_modal.php`, `appointments_modal.js`, vistas de agenda | Campo «Precio (€)» en la cita, que toma el precio del tratamiento al elegirlo | Petición de la clínica |
 | `assets/js/utils/calendar_day_total.js`, `calendar.php` | «Total» en la barra de la agenda: suma de las citas mostradas, sin canceladas ni no presentados, y el desglose por día al pasar el ratón; sigue los filtros de profesional y tratamiento | Suma total al cabo del día |
 | `openapi.yml` | `price` en las citas | API documentada |
+
+## Faltas de asistencia
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `assets/js/utils/calendar_appointment_actions.js`, `calendar_event_popover.js`, vistas de agenda | Botón «Falta de asistencia» en la ficha de la cita, solo cuando ya ha empezado y no está cancelada ni marcada: pide confirmación y la guarda como «No presentado», sin enviar mensajes | Registrar la falta en un clic |
+| `application/models/Customers_model.php` | `get_visit_summary()` cuenta también las faltas y la última | Ídem |
+| `assets/js/components/appointments_modal.js`, `appointments_modal.php` | Al elegir un paciente con faltas, aviso «Este paciente tiene N falta(s) de asistencia, la última el …» | Aviso al volver a darle cita |

@@ -1852,6 +1852,12 @@ App.Utils.CalendarTableView = (function () {
 
         $calendar.on('click', '.delete-popover', onDeletePopoverClick);
         $calendar.on('click', '.cancel-appointment-popover', onCancelAppointmentPopoverClick);
+        $calendar.on('click', '.no-show-popover', () => {
+            closePopover();
+            App.Utils.CalendarAppointmentActions.markNoShow(lastFocusedEventData.extendedProps.data, () =>
+                $reloadAppointments.trigger('click'),
+            );
+        });
     }
 
     // Initialization
