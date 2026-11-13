@@ -872,3 +872,18 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     margin-right: 10px;
     margin-left: 10px;
 }
+
+// Patient suggestions under the name and phone fields of the appointment form (see patient_autocomplete.js).
+#appointments-modal .mb-3:has(> .ea-patient-suggestions) {
+    position: relative;
+}
+
+.ea-patient-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    max-height: 18rem;
+    overflow-y: auto;
+}

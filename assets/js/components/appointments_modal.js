@@ -20,7 +20,6 @@ App.Components.AppointmentsModal = (function () {
     const $appointmentsModal = $('#appointments-modal');
     const $startDatetime = $('#start-datetime');
     const $endDatetime = $('#end-datetime');
-    const $filterExistingCustomers = $('#filter-existing-customers');
     const $customerId = $('#customer-id');
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
@@ -32,7 +31,6 @@ App.Components.AppointmentsModal = (function () {
     const $language = $('#language');
     const $timezone = $('#timezone');
     const $customerNotes = $('#customer-notes');
-    const $selectCustomer = $('#select-customer');
     const $saveAppointment = $('#save-appointment');
     const $appointmentId = $('#appointment-id');
     const $appointmentLocation = $('#appointment-location');
@@ -45,7 +43,6 @@ App.Components.AppointmentsModal = (function () {
     const $selectService = $('#select-service');
     const $selectProvider = $('#select-provider');
     const $insertAppointment = $('#insert-appointment');
-    const $existingCustomersList = $('#existing-customers-list');
     const $newCustomer = $('#new-customer');
     const $customField1 = $('#custom-field-1');
     const $customField2 = $('#custom-field-2');
@@ -57,6 +54,8 @@ App.Components.AppointmentsModal = (function () {
     const $toggleMoreFields = $('#toggle-more-fields');
 
     const MIN_DURATION = 5; // Minutes, matches EVENT_MINIMUM_DURATION.
+
+    let patientAutocomplete = null;
 
     /**
      * Show the duration of the start and end currently selected.
@@ -399,135 +398,6 @@ App.Components.AppointmentsModal = (function () {
         });
 
         /**
-         * Event: Pick Existing Customer Button "Click"
-         *
-         * @param {jQuery.Event} event
-         */
-        $selectCustomer.on('click', (event) => {
-            if (!$existingCustomersList.is(':visible')) {
-                $(event.currentTarget).find('span').text(lang('hide'));
-                $existingCustomersList.empty();
-                $existingCustomersList.slideDown('slow');
-                $filterExistingCustomers.fadeIn('slow').val('');
-                vars('customers').forEach((customer) => {
-                    $('<div/>', {
-                        'data-id': customer.id,
-                        'text':
-                            (customer.first_name || '[No First Name]') + ' ' + (customer.last_name || '[No Last Name]'),
-                    }).appendTo($existingCustomersList);
-                });
-            } else {
-                $existingCustomersList.slideUp('slow');
-                $filterExistingCustomers.fadeOut('slow');
-                $(event.currentTarget).find('span').text(lang('select'));
-            }
-        });
-
-        /**
-         * Event: Select Existing Customer From List "Click"
-         *
-         * @param {jQuery.Event}
-         */
-        $appointmentsModal.on('click', '#existing-customers-list div', (event) => {
-            const customerId = $(event.target).attr('data-id');
-
-            const customer = vars('customers').find((customer) => Number(customer.id) === Number(customerId));
-
-            if (customer) {
-                $customerId.val(customer.id);
-                $firstName.val(customer.first_name);
-                $lastName.val(customer.last_name);
-                $email.val(customer.email);
-                $phoneNumber.val(customer.phone_number);
-                $address.val(customer.address);
-                $city.val(customer.city);
-                $zipCode.val(customer.zip_code);
-                $language.val(customer.language);
-                $timezone.val(customer.timezone);
-                $customerNotes.val(customer.notes);
-                $customField1.val(customer.custom_field_1);
-                $customField2.val(customer.custom_field_2);
-                $customField3.val(customer.custom_field_3);
-                $customField4.val(customer.custom_field_4);
-                $customField5.val(customer.custom_field_5);
-            }
-
-            $selectCustomer.trigger('click'); // Hide the list.
-        });
-
-        let filterExistingCustomersTimeout = null;
-
-        /**
-         * Event: Filter Existing Customers "Change"
-         *
-         * @param {jQuery.Event}
-         */
-        $filterExistingCustomers.on('keyup', (event) => {
-            if (filterExistingCustomersTimeout) {
-                clearTimeout(filterExistingCustomersTimeout);
-            }
-
-            const keyword = $(event.target).val().toLowerCase();
-
-            filterExistingCustomersTimeout = setTimeout(() => {
-                $('#loading').css('visibility', 'hidden');
-
-                App.Http.Customers.search(keyword, 50)
-                    .done((response) => {
-                        $existingCustomersList.empty();
-
-                        response.forEach((customer) => {
-                            $('<div/>', {
-                                'data-id': customer.id,
-                                'text':
-                                    (customer.first_name || '[No First Name]') +
-                                    ' ' +
-                                    (customer.last_name || '[No Last Name]'),
-                            }).appendTo($existingCustomersList);
-
-                            // Verify if this customer is on the old customer list.
-                            const result = vars('customers').filter((existingCustomer) => {
-                                return Number(existingCustomer.id) === Number(customer.id);
-                            });
-
-                            // Add it to the customer list.
-                            if (!result.length) {
-                                vars('customers').push(customer);
-                            }
-                        });
-                    })
-                    .fail(() => {
-                        // If there is any error on the request, search by the local client database.
-                        $existingCustomersList.empty();
-
-                        vars('customers').forEach((customer) => {
-                            if (
-                                customer.first_name.toLowerCase().indexOf(keyword) !== -1 ||
-                                customer.last_name.toLowerCase().indexOf(keyword) !== -1 ||
-                                customer.email.toLowerCase().indexOf(keyword) !== -1 ||
-                                customer.phone_number.toLowerCase().indexOf(keyword) !== -1 ||
-                                customer.address.toLowerCase().indexOf(keyword) !== -1 ||
-                                customer.city.toLowerCase().indexOf(keyword) !== -1 ||
-                                customer.zip_code.toLowerCase().indexOf(keyword) !== -1 ||
-                                customer.notes.toLowerCase().indexOf(keyword) !== -1
-                            ) {
-                                $('<div/>', {
-                                    'data-id': customer.id,
-                                    'text':
-                                        (customer.first_name || '[No First Name]') +
-                                        ' ' +
-                                        (customer.last_name || '[No Last Name]'),
-                                }).appendTo($existingCustomersList);
-                            }
-                        });
-                    })
-                    .always(() => {
-                        $('#loading').css('visibility', '');
-                    });
-            }, 1000);
-        });
-
-        /**
          * Event: Selected Service "Change"
          *
          * When the user clicks on a service, its available providers should become visible. We also need to
@@ -597,10 +467,8 @@ App.Components.AppointmentsModal = (function () {
          * Event: Enter New Customer Button "Click"
          */
         $newCustomer.on('click', () => {
-            // A patient that is registered now has not visited the clinic before.
-            if ($appointmentFirstVisit.val() === '') {
-                $appointmentFirstVisit.val('1');
-            }
+            markAsNewPatient();
+            patientAutocomplete.reset();
 
             $customerId.val('');
             $firstName.val('');
@@ -664,10 +532,7 @@ App.Components.AppointmentsModal = (function () {
             }
         });
 
-        // Close existing customers-filter frame.
-        $existingCustomersList.slideUp('slow');
-        $filterExistingCustomers.fadeOut('slow');
-        $selectCustomer.find('span').text(lang('select'));
+        patientAutocomplete.reset();
 
         // Setup start and datetimepickers.
         // Get the selected service duration. It will be needed in order to calculate the appointment end datetime.
@@ -780,8 +645,51 @@ App.Components.AppointmentsModal = (function () {
     /**
      * Initialize the module.
      */
+    /**
+     * A patient that is registered now has not visited the clinic before.
+     */
+    function markAsNewPatient() {
+        if ($appointmentFirstVisit.val() === '') {
+            $appointmentFirstVisit.val('1');
+        }
+    }
+
+    /**
+     * Fill the patient fields with an existing patient.
+     *
+     * @param {Object} customer
+     */
+    function fillCustomer(customer) {
+        $customerId.val(customer.id);
+        $firstName.val(customer.first_name);
+        $lastName.val(customer.last_name);
+        $email.val(customer.email);
+        $phoneNumber.val(customer.phone_number);
+        $address.val(customer.address);
+        $city.val(customer.city);
+        $zipCode.val(customer.zip_code);
+        $language.val(customer.language);
+        $timezone.val(customer.timezone);
+        $customerNotes.val(customer.notes);
+        $customField1.val(customer.custom_field_1);
+        $customField2.val(customer.custom_field_2);
+        $customField3.val(customer.custom_field_3);
+        $customField4.val(customer.custom_field_4);
+        $customField5.val(customer.custom_field_5);
+        $appointmentsModal.find('.is-invalid').removeClass('is-invalid');
+    }
+
     function initialize() {
         addEventListeners();
+
+        patientAutocomplete = App.Components.PatientAutocomplete.attach({
+            $firstName,
+            $lastName,
+            $phoneNumber,
+            isEnabled: () => !$customerId.val(),
+            onSelect: (customerId) => App.Http.Customers.find(customerId).done(fillCustomer),
+            onCreate: markAsNewPatient,
+        });
     }
 
     document.addEventListener('DOMContentLoaded', initialize);

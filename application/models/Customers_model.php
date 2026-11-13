@@ -70,6 +70,10 @@ class Customers_model extends EA_Model
 
         $this->validate($customer);
 
+        if (array_key_exists('phone_number', $customer)) {
+            $customer['phone_normalized'] = normalize_phone($customer['phone_number']);
+        }
+
         if (empty($customer['id'])) {
             return $this->insert($customer);
         } else {
@@ -461,6 +465,79 @@ class Customers_model extends EA_Model
             ->limit($limit)
             ->offset($offset)
             ->order_by($this->quote_order_by($order_by))
+            ->get()
+            ->result_array();
+
+        foreach ($customers as &$customer) {
+            $this->cast($customer);
+        }
+
+        return $customers;
+    }
+
+    /**
+     * Find the patients whose name, last name or phone number start with the typed text, for the autocomplete.
+     *
+     * Every word must start the first name, the last name or one of their words, so "mar gar" finds "María García"
+     * and "María Gómez García". A text made of digits searches the normalized phone numbers instead. Only the fields
+     * needed to recognize a patient are returned.
+     *
+     * @param string $keyword Typed text.
+     * @param int $limit Maximum number of patients.
+     * @param array|null $provider_ids Only patients with an appointment with these providers (null: every patient).
+     *
+     * @return array Patients with id, first_name, last_name and phone_number.
+     */
+    public function autocomplete(string $keyword, int $limit = 10, ?array $provider_ids = null): array
+    {
+        $keyword = trim($keyword);
+
+        if (mb_strlen($keyword) < 2 || $provider_ids === []) {
+            return [];
+        }
+
+        // Resolved first: it runs its own query, which would reset the one being built.
+        $role_id = $this->get_customer_role_id();
+
+        $query = $this->db
+            ->select('users.id, users.first_name, users.last_name, users.phone_number')
+            ->from('users')
+            ->where('users.id_roles', $role_id);
+
+        $digits = preg_replace('/\D/', '', $keyword);
+
+        if (!preg_match('/\p{L}/u', $keyword) && strlen($digits) >= 3) {
+            // The national number may be typed without the prefix, so the digits can be anywhere in it.
+            $query->like('users.phone_normalized', $digits);
+        } else {
+            foreach (array_slice(preg_split('/\s+/u', $keyword), 0, 4) as $word) {
+                $query
+                    ->group_start()
+                    ->like('users.first_name', $word, 'after')
+                    ->or_like('users.first_name', ' ' . $word)
+                    ->or_like('users.last_name', $word, 'after')
+                    ->or_like('users.last_name', ' ' . $word)
+                    ->group_end();
+            }
+        }
+
+        if ($provider_ids !== null) {
+            $query->where(
+                'EXISTS (SELECT 1 FROM ' .
+                    $this->db->dbprefix('appointments') .
+                    ' AS appointments WHERE appointments.id_users_customer = ' .
+                    $this->db->dbprefix('users') .
+                    '.id AND appointments.id_users_provider IN (' .
+                    implode(',', array_map('intval', $provider_ids)) .
+                    '))',
+                null,
+                false,
+            );
+        }
+
+        $customers = $query
+            ->order_by('users.first_name ASC, users.last_name ASC, users.id ASC')
+            ->limit($limit)
             ->get()
             ->result_array();
 

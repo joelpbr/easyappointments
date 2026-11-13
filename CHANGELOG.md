@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- Typing the name, last name or phone number of a patient in the appointment form suggests the matching patients, without accents mattering and whatever the phone format, and offers to create a new one; the calendar no longer loads the patient list in advance
 - The reception calendar folds the shared midday break by default, with a toggle beside the date; visits and reservations keep the interval open, including visits hidden by treatment filters
 - Wallet and Infiltración are available as clinic treatments, assigned to the existing providers
 - Production Docker setup: clone the repository, copy .env.example to .env and run docker compose up -d to start the application, its database and the scheduled calendar synchronization and data cleanup

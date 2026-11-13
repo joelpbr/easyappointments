@@ -250,20 +250,7 @@
                                 <i class="fas fa-plus-square me-2"></i>
                                 <?= lang('new') ?>
                             </button>
-                            <button id="select-customer" class="btn btn-outline-secondary btn-sm" type="button"
-                                    data-tippy-content="<?= lang('pick_existing_customer_hint') ?>">
-                                <i class="fas fa-hand-pointer me-2"></i>
-                                <span>
-                                    <?= lang('select') ?>
-                                </span>
-                            </button>
-
-                            <input id="filter-existing-customers"
-                                   placeholder="<?= lang('type_to_filter_customers') ?>"
-                                   style="display: none;" class="input-sm form-control">
                         </h5>
-
-                        <div id="existing-customers-list" style="display: none;"></div>
 
                         <input id="customer-id" type="hidden">
 
@@ -413,6 +400,7 @@
 
 <?php section('scripts'); ?>
 
+<script src="<?= asset_url('assets/js/components/patient_autocomplete.js') ?>"></script>
 <script src="<?= asset_url('assets/js/components/appointments_modal.js') ?>"></script>
 
 <?php end_section('scripts'); ?>
