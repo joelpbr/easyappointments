@@ -493,3 +493,5 @@ Cambio posterior: la ficha clínica deja el panel lateral y pasa a pestañas («
 Cambio posterior: la ficha queda con dos pestañas, «Dades» y «Visites»; los antecedentes médicos y las alergias pasan a «Dades», uno al lado del otro debajo de los datos.
 
 Cambio posterior: la pestaña «Dades» de la ficha cabe sin desplazamiento desde 1280×720 (con o sin aviso de alergias): tres filas de campos (nombre, apellidos y NIF/NIE; nacimiento, teléfono y dirección; procedencia, profesión y actividad física) y debajo antecedentes y alergias, que ocupan el alto restante en pantallas grandes.
+
+Cambio posterior: en la página de Pacients manda la ficha (para admin y profesionales). Nombre, apellidos, teléfono, dirección y NIF/NIE ya no salen en el formulario de la página: se editan en la ficha, que se abre con el botón «Fitxa» junto al nombre del paciente. Al guardar la página se conservan los valores de la ficha. «Afegir» abre una ficha vacía: al guardarla se crea el paciente (con el aviso de posibles repetidos) y la página lo muestra. La secretaría, que no ve la ficha, sigue con el formulario completo.
