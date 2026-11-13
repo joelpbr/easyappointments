@@ -36,7 +36,6 @@ class Admins_model extends EA_Model
         'firstName' => 'first_name',
         'lastName' => 'last_name',
         'email' => 'email',
-        'mobile' => 'mobile_number',
         'phone' => 'phone_number',
         'address' => 'address',
         'city' => 'city',
@@ -506,7 +505,6 @@ class Admins_model extends EA_Model
             ->or_like('CONCAT_WS(" ", first_name, last_name)', $keyword)
             ->or_like('email', $keyword)
             ->or_like('phone_number', $keyword)
-            ->or_like('mobile_number', $keyword)
             ->or_like('address', $keyword)
             ->or_like('city', $keyword)
             ->or_like('state', $keyword)
@@ -587,7 +585,6 @@ class Admins_model extends EA_Model
             'firstName' => $admin['first_name'],
             'lastName' => $admin['last_name'],
             'email' => $admin['email'],
-            'mobile' => $admin['mobile_number'],
             'phone' => $admin['phone_number'],
             'address' => $admin['address'],
             'city' => $admin['city'],
@@ -630,10 +627,6 @@ class Admins_model extends EA_Model
 
         if (array_key_exists('email', $admin)) {
             $decoded_resource['email'] = $admin['email'];
-        }
-
-        if (array_key_exists('mobile', $admin)) {
-            $decoded_resource['mobile_number'] = $admin['mobile'];
         }
 
         if (array_key_exists('phone', $admin)) {

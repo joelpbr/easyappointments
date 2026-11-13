@@ -2526,8 +2526,6 @@ components:
                     type: string
                 email:
                     type: string
-                mobile:
-                    type: string
                 phone:
                     type: string
                 address:
@@ -2561,7 +2559,6 @@ components:
                 firstName: Jason
                 lastName: Doe
                 email: jason@example.org
-                mobile: '+10000000000'
                 phone: '+10000000000'
                 address: Test Street 1A
                 city: Some Place
@@ -2583,8 +2580,6 @@ components:
                 lastName:
                     type: string
                 email:
-                    type: string
-                mobile:
                     type: string
                 phone:
                     type: string
@@ -2618,7 +2613,6 @@ components:
                 firstName: Jason
                 lastName: Doe
                 email: jason@example.org
-                mobile: '+10000000000'
                 phone: '+10000000000'
                 address: Test Street 1A
                 city: Some Place
@@ -2642,8 +2636,6 @@ components:
                 lastName:
                     type: string
                 email:
-                    type: string
-                mobile:
                     type: string
                 phone:
                     type: string
@@ -2709,7 +2701,6 @@ components:
                 firstName: Chris
                 lastName: Doe
                 email: chris@example.org
-                mobile: '+10000000000'
                 phone: '+10000000000'
                 address: Test Street 1A
                 city: Some Place
@@ -2768,8 +2759,6 @@ components:
                     type: string
                 email:
                     type: string
-                mobile:
-                    type: string
                 phone:
                     type: string
                 address:
@@ -2834,7 +2823,6 @@ components:
                 firstName: Chris
                 lastName: Doe
                 email: chris@example.org
-                mobile: '+10000000000'
                 phone: '+10000000000'
                 address: Test Street 1A
                 city: Some Place
@@ -2895,8 +2883,6 @@ components:
                     type: string
                 email:
                     type: string
-                mobile:
-                    type: string
                 phone:
                     type: string
                 address:
@@ -2934,7 +2920,6 @@ components:
                 firstName: Jessy
                 lastName: Doe
                 email: jessy@example.org
-                mobile: '+10000000000'
                 phone: '+10000000000'
                 address: Test Street 1A
                 city: Some Place
@@ -2957,8 +2942,6 @@ components:
                 lastName:
                     type: string
                 email:
-                    type: string
-                mobile:
                     type: string
                 phone:
                     type: string
@@ -2996,7 +2979,6 @@ components:
                 firstName: Jessy
                 lastName: Doe
                 email: jessy@example.org
-                mobile: '+10000000000'
                 phone: '+10000000000'
                 address: Test Street 1A
                 city: Some Place

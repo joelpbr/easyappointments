@@ -97,14 +97,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label" for="mobile-number">
-                            <?= lang('mobile_number') ?>
-
-                        </label>
-                        <input id="mobile-number" class="form-control" maxlength="128" disabled>
-                    </div>
-
-                    <div class="mb-3">
                         <label class="form-label" for="address">
                             <?= lang('address') ?>
                         </label>

@@ -473,7 +473,6 @@ class Customers_model extends EA_Model
             ->or_like('CONCAT_WS(" ", first_name, last_name)', $keyword)
             ->or_like('email', $keyword)
             ->or_like('phone_number', $keyword)
-            ->or_like('mobile_number', $keyword)
             ->or_like('address', $keyword)
             ->or_like('city', $keyword)
             ->or_like('state', $keyword)

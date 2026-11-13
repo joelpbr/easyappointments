@@ -36,7 +36,6 @@ class Users_model extends EA_Model
         'firstName' => 'first_name',
         'lastName' => 'last_name',
         'email' => 'email',
-        'mobile' => 'mobile_number',
         'phone' => 'phone_number',
         'address' => 'address',
         'city' => 'city',
@@ -340,7 +339,6 @@ class Users_model extends EA_Model
             ->or_like('last_name', $keyword)
             ->or_like('email', $keyword)
             ->or_like('phone_number', $keyword)
-            ->or_like('mobile_number', $keyword)
             ->or_like('address', $keyword)
             ->or_like('city', $keyword)
             ->or_like('state', $keyword)

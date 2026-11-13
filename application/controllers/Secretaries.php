@@ -28,7 +28,6 @@ class Secretaries extends EA_Controller
         'email',
         'alt_number',
         'phone_number',
-        'mobile_number',
         'address',
         'city',
         'state',

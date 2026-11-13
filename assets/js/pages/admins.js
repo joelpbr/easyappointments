@@ -20,7 +20,6 @@ App.Pages.Admins = (function () {
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
     const $email = $('#email');
-    const $mobileNumber = $('#mobile-number');
     const $phoneNumber = $('#phone-number');
     const $address = $('#address');
     const $city = $('#city');
@@ -191,7 +190,6 @@ App.Pages.Admins = (function () {
                 first_name: $firstName.val(),
                 last_name: $lastName.val(),
                 email: $email.val(),
-                mobile_number: $mobileNumber.val(),
                 phone_number: $phoneNumber.val(),
                 address: $address.val(),
                 city: $city.val(),
@@ -319,14 +317,6 @@ App.Pages.Admins = (function () {
                 throw new Error(lang('invalid_phone'));
             }
 
-            // Validate mobile number.
-            const mobileNumber = $mobileNumber.val();
-
-            if (mobileNumber && !App.Utils.Validation.phone(mobileNumber)) {
-                $mobileNumber.addClass('is-invalid');
-                throw new Error(lang('invalid_phone'));
-            }
-
             // Check if username exists
             if ($username.attr('already-exists') === 'true') {
                 $username.addClass('is-invalid');
@@ -372,7 +362,6 @@ App.Pages.Admins = (function () {
         $firstName.val(admin.first_name);
         $lastName.val(admin.last_name);
         $email.val(admin.email);
-        $mobileNumber.val(admin.mobile_number);
         $phoneNumber.val(admin.phone_number);
         $address.val(admin.address);
         $city.val(admin.city);
@@ -442,7 +431,6 @@ App.Pages.Admins = (function () {
 
         let info = admin.email;
 
-        info = admin.mobile_number ? info + ', ' + admin.mobile_number : info;
 
         info = admin.phone_number ? info + ', ' + admin.phone_number : info;
 
