@@ -384,6 +384,7 @@ App.Pages.Customers = (function () {
      */
     function displayFiscalData(customerId) {
         $fiscalFields.val('');
+        $fiscalFields.not('[data-fiscal="country"]').attr('placeholder', '');
         currentFiscal = {};
         updateFiscalDocumentHint();
 
@@ -397,6 +398,23 @@ App.Pages.Customers = (function () {
 
             $fiscalFields.each((index, field) => {
                 $(field).val(customer.fiscal?.[$(field).data('fiscal')] || '');
+            });
+
+            // An empty field means the patient's value, which is shown in grey (see Fiscal_parties_model).
+            const patientValues = {
+                name: [customer.first_name, customer.last_name].filter(Boolean).join(' '),
+                address: customer.address,
+                zip_code: customer.zip_code,
+                city: customer.city,
+                province: customer.state,
+            };
+
+            $fiscalFields.each((index, field) => {
+                const key = $(field).data('fiscal');
+
+                if (key in patientValues) {
+                    $(field).attr('placeholder', patientValues[key] || '');
+                }
             });
 
             updateFiscalDocumentHint();

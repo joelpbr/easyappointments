@@ -525,3 +525,7 @@ Cambio posterior: la etiqueta «Migdia» queda centrada en la franja plegada del
 Cambio posterior: las visitas cortas (10-15 minutos) muestran todo en una sola línea («Paciente · Tratamiento (precio) · hora · duración · estado»), cortada con puntos suspensivos si no cabe, en lugar de dos líneas que se salían de la tarjeta; al pasar el ratón se sigue viendo todo.
 
 Cambio posterior: en las visitas cortas la línea usa letra de 10 px con interlineado de 12 px, centrada en vertical y sin el margen interior de FullCalendar, para que en las de 10 minutos (14 px útiles) quepa entera sin tocar el borde.
+
+Cambio posterior (simplificación de la base de datos): la fila fiscal del propio paciente guarda solo lo que difiere del paciente. Nombre, dirección, código postal, ciudad y provincia vacíos significan los del paciente (`Fiscal_parties_model::PATIENT_FIELDS`), y el país vacío, España. Al guardar se vacía lo que repite los datos del paciente; la migración `090_keep_only_differing_fiscal_data.php` lo aplicó a los 9.827 registros (ahora solo guardan el documento). En Pacients los campos vacíos muestran en gris el valor del paciente. Así, cambiar la dirección en la ficha cambia también la de las facturas.
+
+Descartado tras medirlo: quitar el índice `id_users_provider` de las citas (lo cubre en teoría el índice por profesional y periodo). Sin él, MySQL leía toda la tabla (7.453 filas) para la agenda de un día en lugar de las 2.466 del profesional, porque «empieza antes del día X» no filtra casi nada. Se mantiene.
