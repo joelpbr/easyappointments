@@ -415,9 +415,9 @@ App.Utils.CalendarEventPopover = (function () {
                         ),
                     ],
                 }),
-                createPopoverButton('edit-popover btn btn-primary w-100 ' + displayEdit, 'fas fa-edit', 'edit'),
+                createPopoverButton('edit-popover btn btn-outline-primary w-100 ' + displayEdit, 'fas fa-edit', 'edit'),
                 createPopoverButton(
-                    'clinical-record-popover btn btn-outline-primary w-100 ea-popover-record ' + displayRecord,
+                    'clinical-record-popover btn btn-primary w-100 ea-popover-tall ' + displayRecord,
                     'fas fa-notes-medical',
                     'open_clinical_record',
                 ),
