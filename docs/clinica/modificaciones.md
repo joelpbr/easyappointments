@@ -385,3 +385,5 @@ Las aperturas excepcionales (10.8) ya existían como excepciones de horario. Con
 | `.env.example`, `docker-compose.yml` | `LANGUAGE=catalan` por defecto | Ídem |
 
 Corrección posterior: al elegir un paciente con faltas en el aviso de «Posible paciente repetido», la cita ya no se guarda sola: el formulario queda abierto con el aviso visible, porque si no se cerraba sin que se viera.
+
+Segunda corrección: el aviso de faltas era solo un recuadro en la sección del paciente y se podía guardar sin verlo. Al elegir un paciente con faltas para una cita nueva aparece además una ventana que hay que cerrar.

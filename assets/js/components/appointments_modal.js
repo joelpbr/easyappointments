@@ -761,14 +761,21 @@ App.Components.AppointmentsModal = (function () {
             return;
         }
 
-        $noShowWarning.append(
-            $('<i/>', {class: 'fas fa-user-slash me-2'}),
-            document.createTextNode(
-                lang('no_show_warning')
-                    .replace('%count', count)
-                    .replace('%date', moment(customer.last_no_show).format('DD/MM/YYYY')),
-            ),
-        );
+        const text = lang('no_show_warning')
+            .replace('%count', count)
+            .replace('%date', moment(customer.last_no_show).format('DD/MM/YYYY'));
+
+        $noShowWarning.append($('<i/>', {class: 'fas fa-user-slash me-2'}), document.createTextNode(text));
+
+        // Booking a new appointment for them also shows a dialog that has to be closed, so that it is not missed.
+        if (!$appointmentId.val()) {
+            App.Utils.Message.show(lang('mark_no_show'), $('<p/>', {class: 'mb-0', text}).prop('outerHTML'), [
+                {
+                    text: lang('close'),
+                    click: (event, messageModal) => messageModal.hide(),
+                },
+            ]);
+        }
     }
 
     /**
