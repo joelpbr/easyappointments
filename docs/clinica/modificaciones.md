@@ -341,3 +341,17 @@ apellido rechazaba búsquedas habituales como un nombre solo; el límite de 10 r
 | `assets/css/backend.scss` | Estilo del resumen | Ídem |
 
 Con este bloque la fase 5 queda terminada.
+
+## Bloqueos y festivos (fase 6)
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+|  | : ,  y ; tabla  (sin profesionales = toda la clínica); tabla  (festivos añadidos a mano); ajuste  (Cataluña) | Especificación 10.1 a 10.4 |
+|  |  expande las repeticiones () y filtra por profesional;  lista las citas no canceladas que caen en el periodo | 10.2, 10.3 y 10.7 |
+| ,  | Usan los bloqueos del profesional y de toda la clínica, con sus repeticiones | 10.9: disponibilidad, buscador, reservas y API |
+| , página y JS | Tipo, profesionales y repetición en el formulario; si hay citas afectadas no guarda: las muestra con «Reprogramar» y pide «Bloquear igualmente». Nunca cancela citas | 10.5 y 10.7 |
+| , vistas de agenda,  | Los bloqueos se pintan de fondo, en rojo con rayas como el fuera de horario y con su motivo, solo en las columnas afectadas; botón «Bloquear agenda» | 10.6; la clínica pidió el mismo rojo que el mediodía |
+| , , página y JS | Festivos nacionales y de Cataluña o Madrid calculados (Pascua incluida), festivos locales a mano, y «Cerrar la clínica» por día, que crea un bloqueo de toda la clínica | 10.4: el festivo no cierra por sí solo |
+|  | , ,  y  en los bloqueos | API documentada |
+
+Las aperturas excepcionales (10.8) ya existían como excepciones de horario. Con esto la fase 6 queda terminada.
