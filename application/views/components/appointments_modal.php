@@ -16,7 +16,7 @@
  */
 ?>
 <div id="appointments-modal" class="modal fade">
-    <div class="modal-dialog modal-dialog-centered modal-fullscreen-lg-down modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-lg-down modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title"><?= lang('edit_appointment_title') ?></h3>
@@ -236,7 +236,7 @@
                                     </label>
                                     <textarea id="appointment-notes" class="<?= $require_notes
                                         ? 'required'
-                                        : '' ?> form-control" rows="3"></textarea>
+                                        : '' ?> form-control" rows="2"></textarea>
                                 </div>
 
                             </div>
@@ -390,7 +390,7 @@
                                     <label for="customer-notes" class="form-label">
                                         <?= lang('administrative_notes') ?>
                                     </label>
-                                    <textarea id="customer-notes" rows="3" class="form-control"></textarea>
+                                    <textarea id="customer-notes" rows="2" class="form-control"></textarea>
                                 </div>
 
                             </div>

@@ -389,3 +389,9 @@ Corrección posterior: al elegir un paciente con faltas en el aviso de «Posible
 Segunda corrección: el aviso de faltas era solo un recuadro en la sección del paciente y se podía guardar sin verlo. Al elegir un paciente con faltas para una cita nueva aparece además una ventana que hay que cerrar.
 
 Tercera corrección, a petición de la clínica: sin ventana emergente, solo el aviso amarillo. Cada paciente guarda su número de faltas (`users.no_show_count`, migración 086), que se recalcula al guardar o borrar sus citas y se muestra, solo si tiene alguna, en la ficha que se abre al pulsar la cita en la agenda, en la ficha del paciente y en el aviso del formulario.
+
+## Formulario de cita sin scroll
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/views/components/appointments_modal.php`, `assets/css/backend.scss` | En ordenador (≥ 992 px) el formulario es más ancho, con la cita a la izquierda y el paciente a la derecha, los campos de dos en dos, comentario y observaciones de dos líneas y márgenes más pequeños; en el móvil sigue en una columna | Que una cita nueva quepa en pantalla sin scroll (antes 1.216 px de alto; ahora cabe en 1366×768) |
