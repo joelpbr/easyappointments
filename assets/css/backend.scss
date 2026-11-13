@@ -827,13 +827,13 @@ body .modal.full-screen .modal-push {
         white-space: nowrap;
     }
 
-    // Every control of the bar looks the same: clinic cyan, black text, the same font and no border. Only the
-    // background colour is set, so that the selects keep their arrow.
+    // Every control of the bar looks the same: white, black text, the same font and no border; only the arrows
+    // that change the day are clinic cyan. Only the background colour is set, so that the selects keep their arrow.
     .btn,
     .form-control,
     .form-select {
         color: #000000;
-        background-color: #029ecb;
+        background-color: #ffffff;
         border: 0;
         font-size: 0.85rem;
         font-weight: 500;
@@ -843,14 +843,29 @@ body .modal.full-screen .modal-push {
         &.active,
         &.show {
             color: #000000;
-            background-color: #028bb3;
+            background-color: #e9ecef;
         }
 
         &:disabled,
         &.disabled {
             color: #000000;
-            background-color: #029ecb;
+            background-color: #ffffff;
             opacity: 0.6;
+        }
+    }
+
+    .calendar-header > .previous,
+    .calendar-header > .next {
+        background-color: #029ecb;
+
+        &:hover,
+        &:focus {
+            background-color: #028bb3;
+        }
+
+        &:disabled,
+        &.disabled {
+            background-color: #029ecb;
         }
     }
 
