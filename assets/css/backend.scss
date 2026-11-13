@@ -1257,28 +1257,45 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         max-width: 45%;
     }
 
-    #clinical-tab-visits {
-        height: 100%;
-    }
-
-    .ea-clinical-visits-layout {
-        height: 100%;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .ea-clinical-visits-column {
-        height: 100%;
-        overflow-y: auto;
-        border-right: 1px solid #dee2e6;
-        background: #f8f9fa;
-    }
-
+    // The column of the chosen visit only exists in the visits tab.
     .ea-clinical-visit-column {
-        height: 100%;
-        overflow-y: auto;
-        padding: 16px 20px;
+        display: none;
+    }
+
+    // Visits tab: the tabs and the list of visits on the left, and the chosen visit as a column on the right from under
+    // the header, so that it gets the whole height of the window.
+    &.ea-visits-mode {
+        .modal-content {
+            display: grid;
+            grid-template-columns: minmax(260px, 28%) minmax(0, 1fr);
+            grid-template-rows: auto auto minmax(0, 1fr);
+        }
+
+        .ea-clinical-header {
+            grid-column: 1 / -1;
+        }
+
+        .ea-clinical-tabs {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .ea-clinical-body {
+            grid-column: 1;
+            grid-row: 3;
+            padding: 0;
+            background: #f8f9fa;
+        }
+
+        .ea-clinical-visit-column {
+            display: block;
+            grid-column: 2;
+            grid-row: 2 / span 2;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 10px 16px 12px;
+            border-left: 1px solid #dee2e6;
+        }
     }
 
     .ea-clinical-visit {
@@ -1337,10 +1354,23 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         }
     }
 
+    // One line: the treatment, the date and price, and the save button of the visit.
     .ea-clinical-visit-heading {
-        margin-bottom: 16px;
-        padding-bottom: 10px;
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
         border-bottom: 1px solid #dee2e6;
+
+        h4 {
+            margin: 0;
+            font-size: 1.15rem;
+        }
+
+        .btn {
+            align-self: center;
+        }
     }
 
     // Foot diagrams: the picture and its four views on the left, the pathologies and the observations on the right.
@@ -1354,8 +1384,13 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         }
     }
 
+    // The picture fits the height of the window, so that the whole visit is seen without scrolling; the frame takes
+    // the size of the picture, so that the markers stay on it.
     .ea-feet-picture {
         position: relative;
+        width: fit-content;
+        max-width: 100%;
+        margin: 0 auto;
         border: 1px solid #dee2e6;
         border-radius: 8px;
         background: #ffffff;
@@ -1363,8 +1398,10 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
 
         > img {
             display: block;
-            width: 100%;
+            width: auto;
+            max-width: 100%;
             height: auto;
+            max-height: calc(100vh - 300px);
             user-select: none;
         }
 
@@ -1503,18 +1540,23 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
 
 @media (max-width: 767.98px) {
     #clinical-record-modal {
-        .ea-clinical-body,
-        #clinical-tab-visits,
-        .ea-clinical-visits-layout,
-        .ea-clinical-visits-column,
-        .ea-clinical-visit-column {
-            height: auto;
-        }
+        // On a phone the chosen visit goes under the list of visits.
+        &.ea-visits-mode {
+            .modal-content {
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-rows: auto auto auto minmax(0, 1fr);
+            }
 
-        .ea-clinical-visits-column {
-            max-height: 40vh;
-            border-right: 0;
-            border-bottom: 1px solid #dee2e6;
+            .ea-clinical-body {
+                max-height: 30vh;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .ea-clinical-visit-column {
+                grid-column: 1;
+                grid-row: 4;
+                border-left: 0;
+            }
         }
 
         // On a phone the pathologies and the observations go under the picture.
