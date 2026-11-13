@@ -185,6 +185,14 @@ App.Components.AppointmentsModal = (function () {
                     if (choice?.id) {
                         App.Http.Customers.find(choice.id).done((customer) => {
                             fillCustomer(customer);
+
+                            // A patient who missed appointments is not saved at once, so that the warning is seen.
+                            if (Number(customer.no_shows) > 0) {
+                                $noShowWarning[0].scrollIntoView({block: 'center'});
+
+                                return;
+                            }
+
                             $saveAppointment.trigger('click');
                         });
                     } else if (choice?.create) {
