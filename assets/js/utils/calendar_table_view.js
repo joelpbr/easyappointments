@@ -684,6 +684,9 @@ App.Utils.CalendarTableView = (function () {
         $target.popover('show');
         $popoverTarget = $target;
 
+        // Deleting and closing an appointment are in the title of its popover.
+        App.Utils.CalendarEventPopover.moveHeaderActions($('#calendar .popover'));
+
         // Fix popover position if too high
 
         const $popover = $calendar.find('.popover');
