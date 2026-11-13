@@ -775,4 +775,7 @@ $lang['fiscal_same_as_patient_hint'] = 'Els camps buits fan servir les dades del
 $lang['clinical_pathologies'] = 'Patologies';
 $lang['clinical_no_pathologies'] = 'Encara no hi ha patologies al catàleg.';
 $lang['clinical_feet_view'] = 'Vista %s';
+$lang['clinical_feet_hint'] = 'Tria una patologia i clica sobre la foto per posar-la; clica-la per treure-la.';
+$lang['clinical_remove_marker'] = 'Vols treure «%s» d\'aquesta vista?';
+$lang['clinical_remove'] = 'Treu';
 // End

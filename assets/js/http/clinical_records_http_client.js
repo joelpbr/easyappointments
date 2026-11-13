@@ -78,10 +78,48 @@ App.Http.ClinicalRecords = (function () {
         });
     }
 
+    /**
+     * Place a pathology on a foot diagram of a visit.
+     *
+     * @param {Number} appointmentId
+     * @param {Object} marker {diagram_id, pathology_id, x1, y1, x2, y2} on the original picture.
+     *
+     * @return {Object} {marker}
+     */
+    function addMarker(appointmentId, marker) {
+        const url = App.Utils.Url.siteUrl('clinical_records/add_marker');
+
+        return $.post(url, {
+            csrf_token: vars('csrf_token'),
+            appointment_id: appointmentId,
+            marker,
+        });
+    }
+
+    /**
+     * Remove a pathology placed on a foot diagram of a visit.
+     *
+     * @param {Number} appointmentId
+     * @param {Number} markerId
+     *
+     * @return {Object}
+     */
+    function deleteMarker(appointmentId, markerId) {
+        const url = App.Utils.Url.siteUrl('clinical_records/delete_marker');
+
+        return $.post(url, {
+            csrf_token: vars('csrf_token'),
+            appointment_id: appointmentId,
+            marker_id: markerId,
+        });
+    }
+
     return {
         findPatient,
         savePatient,
         findAppointment,
         saveAppointment,
+        addMarker,
+        deleteMarker,
     };
 })();
