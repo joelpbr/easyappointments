@@ -463,3 +463,27 @@ Cambio posterior: la barra de desplazamiento vertical de la agenda se oculta (se
 Cambio posterior: en el modo lista de la agenda se quita el punto de color y el día de arriba (ya está en la cabecera del profesional); cada fila tiene el color de su tratamiento, como las tarjetas del modo calendario, y las citas que ya han acabado llevan encima las rayas de las horas fuera de horario, manteniendo su color (se revisa cada minuto, `markEndedListEvents()`).
 
 Cambio posterior: nuevo tratamiento «Revisión SP» (30 min, 40 €, color `#f7d6ae`), ofrecido por todos los profesionales y situado entre «Entrega SP» y «Cura» en los desplegables (migración `087_add_sp_review_treatment.php` y `Services_model::DROPDOWN_ORDER`).
+
+## Ficha clínica del paciente
+
+Amplía el alcance inicial («No se pretende construir inicialmente una historia clínica completa»): la clínica pide una ficha con datos clínicos y notas por visita.
+
+| Archivo | Cambio |
+| --- | --- |
+| `application/migrations/088_add_clinical_records.php` | Tablas `patient_records` (fecha de nacimiento, procedencia, profesión, actividad física, antecedentes médicos, alergias; una por paciente) y `appointment_records` (motivo, diagnóstico, tratamiento, observaciones, ortesis; una por cita), con borrado en cascada; columna `services.record_template` con el tipo de ficha de cada tratamiento |
+| `application/libraries/Clinical_record_templates.php` | Tipos de ficha y sus campos, ortesis y precios, limpieza de datos y precio que da la ficha a la visita; solo admin y profesionales (`can_access()`) |
+| `application/models/Patient_records_model.php`, `Appointment_records_model.php` | Lectura y guardado; el registro de auditoría solo anota qué campos cambian, nunca su contenido |
+| `application/controllers/Clinical_records.php` | `patient`, `save_patient`, `appointment`, `save_appointment`; comprueba rol y acceso al paciente y registra cada apertura (`viewed`) |
+| `application/views/components/clinical_record_modal.php`, `assets/js/components/clinical_record_modal.js`, `assets/js/http/clinical_records_http_client.js` | Ventana de la ficha y panel lateral de cada visita, con aviso si se cierra con cambios sin guardar |
+| `assets/js/utils/calendar_event_popover.js`, `calendar_table_view.js`, `calendar_default_view.js`, `Calendar.php`, `calendar.php` | Botón «Fitxa» en la tarjeta de la cita (solo admin y profesionales) |
+| `application/views/pages/services.php`, `assets/js/pages/services.js`, `Services_model.php`, `Services.php`, `openapi.yml` | Campo «Tipus de fitxa» del tratamiento (`recordTemplate` en la API) |
+
+Tipos de ficha (asignados por la migración, editables en Tractaments):
+
+- **Peus i observacions** (Quiropodia, Cura, Cura PV, Ortonixia, Wallet): `[DIBUJO PIES]` y Observaciones.
+- **Cirurgia** (Cirugía): `[DIBUJO PIES]`, Motivo, Diagnóstico, Tratamiento, Precio de la cirugía (pasa a ser el precio de la visita) y Observaciones.
+- **Exploració** (Exploración): Motivo, Diagnóstico y Tratamiento.
+- **Silicona** (Silicona): Motivo, Diagnóstico y Ortesis (cresta 30 €, interdigital 1º 27 €, interdigital 4º 25 €, omega 30 €), cuyo precio pasa a ser el de la visita.
+- **Només observacions** (Entrega SP, Revisión SP, Infiltración, Moldes, Otro y los tratamientos nuevos): Observaciones en un cuadro grande.
+
+El NIF/NIE de la ficha es el número de documento de los datos fiscales: se guarda una sola vez. El dibujo de los pies es de momento un marcador `[DIBUJO PIES]`.

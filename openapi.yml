@@ -2460,6 +2460,10 @@ components:
                     type: string
                 color:
                     type: string
+                recordTemplate:
+                    type: string
+                    enum: [feet, surgery, exploration, silicone, notes]
+                    description: Clinical record of the visits of the service (feet drawing and observations, surgery, exploration, silicone or observations only).
                 slotInterval:
                     type: integer
                 attendantsNumber:
@@ -2479,6 +2483,7 @@ components:
                 location: Test Street 1A, 12345 Some State, Some Place
                 description: This is a test service.
                 color: '#7cbae8'
+                recordTemplate: notes
                 slotInterval: 30
                 attendantsNumber: 1
                 isPrivate: false
@@ -2501,6 +2506,10 @@ components:
                     type: string
                 color:
                     type: string
+                recordTemplate:
+                    type: string
+                    enum: [feet, surgery, exploration, silicone, notes]
+                    description: Clinical record of the visits of the service (feet drawing and observations, surgery, exploration, silicone or observations only).
                 slotInterval:
                     type: integer
                 attendantsNumber:
@@ -2519,6 +2528,7 @@ components:
                 location: Test Street 1A, 12345 Some State, Some Place
                 description: This is a test service.
                 color: '#7cbae8'
+                recordTemplate: notes
                 slotInterval: 30
                 attendantsNumber: 1
                 isPrivate: false

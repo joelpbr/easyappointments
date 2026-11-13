@@ -130,6 +130,20 @@
                 <?php component('color_selection', ['attributes' => 'id="color"']); ?>
             </div>
 
+            <div class="mb-3">
+                <label class="form-label" for="record-template">
+                    <?= lang('clinical_record_template') ?>
+                </label>
+                <select id="record-template" class="form-select" disabled>
+                    <?php foreach (array_keys(Clinical_record_templates::TEMPLATES) as $template): ?>
+                        <option value="<?= $template ?>"><?= lang('clinical_template_' . $template) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="form-text text-muted">
+                    <small><?= lang('clinical_record_template_hint') ?></small>
+                </div>
+            </div>
+
             <div>
                 <label class="form-label mb-3">
                     <?= lang('options') ?>

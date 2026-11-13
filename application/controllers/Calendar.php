@@ -99,6 +99,7 @@ class Calendar extends EA_Controller
         $this->load->library('permissions');
         $this->load->library('jitsi_client');
         $this->load->library('slot_rules');
+        $this->load->library('clinical_record_templates');
     }
 
     /**
@@ -241,10 +242,13 @@ class Calendar extends EA_Controller
             ),
             'default_language' => setting('default_language'),
             'default_timezone' => setting('default_timezone'),
+            // Only admins and providers see the clinical records (health data).
+            'clinical_records' => Clinical_record_templates::can_access($role_slug),
         ]);
 
         html_vars([
             'page_title' => lang('calendar'),
+            'clinical_records' => Clinical_record_templates::can_access($role_slug),
             'active_menu' => PRIV_APPOINTMENTS,
             'user_display_name' => $this->accounts->get_user_display_name($user_id),
             'timezone' => session('timezone'),
