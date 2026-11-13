@@ -11,21 +11,15 @@
 <div id="clinical-record-modal" class="modal fade" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-fullscreen-lg-down modal-xl">
         <div class="modal-content">
+            <!-- One low line: the name of the patient and, when there are some, the allergies. -->
             <div class="modal-header ea-clinical-header">
-                <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
-                    <div class="ea-clinical-avatar"><i class="fas fa-user"></i></div>
-                    <div class="min-w-0">
-                        <h3 class="modal-title mb-0 text-truncate" id="clinical-record-title"></h3>
-                        <div class="ea-clinical-summary" id="clinical-record-summary"></div>
-                    </div>
+                <h3 class="modal-title text-truncate" id="clinical-record-title"></h3>
+                <div id="clinical-record-allergies-alert" class="ea-clinical-allergies" hidden>
+                    <i class="fas fa-triangle-exclamation me-1"></i>
+                    <strong><?= lang('clinical_allergies') ?>:</strong>
+                    <span class="ea-clinical-allergies-text"></span>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div id="clinical-record-allergies-alert" class="ea-clinical-allergies" hidden>
-                <i class="fas fa-triangle-exclamation me-2"></i>
-                <strong><?= lang('clinical_allergies') ?>:</strong>
-                <span></span>
             </div>
 
             <ul class="nav nav-tabs ea-clinical-tabs" role="tablist">
@@ -40,6 +34,13 @@
                             role="tab" data-tab="visits">
                         <i class="fas fa-calendar-check me-2"></i><?= lang('clinical_visits') ?>
                         <span class="badge rounded-pill ms-1" id="clinical-visits-count"></span>
+                    </button>
+                </li>
+                <!-- Saves the details of the patient; a visit has its own button. -->
+                <li class="nav-item ms-auto align-self-center">
+                    <button type="button" id="clinical-record-save" class="btn btn-primary btn-sm">
+                        <i class="fas fa-check-square me-2"></i>
+                        <?= lang('save') ?>
                     </button>
                 </li>
             </ul>
@@ -251,15 +252,6 @@
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <?= lang('close') ?>
-                </button>
-                <button type="button" id="clinical-record-save" class="btn btn-primary">
-                    <i class="fas fa-check-square me-2"></i>
-                    <?= lang('save') ?>
-                </button>
-            </div>
         </div>
     </div>
 </div>

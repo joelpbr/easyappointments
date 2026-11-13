@@ -19,7 +19,6 @@
 App.Components.ClinicalRecordModal = (function () {
     const $modal = $('#clinical-record-modal');
     const $title = $('#clinical-record-title');
-    const $summary = $('#clinical-record-summary');
     const $allergiesAlert = $('#clinical-record-allergies-alert');
     const $visits = $('#clinical-visits');
     const $visitsCount = $('#clinical-visits-count');
@@ -134,7 +133,7 @@ App.Components.ClinicalRecordModal = (function () {
     }
 
     /**
-     * The footer saves the patient details; a visit has its own save button.
+     * The save button of the tabs saves the patient details; a visit has its own save button.
      *
      * @param {String} tab
      */
@@ -169,34 +168,19 @@ App.Components.ClinicalRecordModal = (function () {
     }
 
     /**
-     * Show the patient in the header: name, age, document and phone, and the allergies when there are some.
+     * Show the patient in the header: the name, and the allergies when there are some; and the age next to the date
+     * of birth.
      */
     function updateHeader() {
         const data = getPatientData();
         const name = [data.customer.first_name, data.customer.last_name].filter(Boolean).join(' ');
-        const parts = [];
         const age = data.record.birth_date
             ? lang('clinical_years_old').replace('%s', moment().diff(data.record.birth_date, 'years'))
             : '';
 
         $age.val(age);
 
-        if (age) {
-            parts.push(age);
-        }
-
-        if (data.document_number) {
-            const type = $documentType.find('option:selected').text();
-
-            parts.push((data.document_type ? type + ' ' : '') + data.document_number);
-        }
-
-        if (data.customer.phone_number) {
-            parts.push(data.customer.phone_number);
-        }
-
         $title.text(name || (customerId === 0 ? lang('clinical_new_patient') : lang('clinical_record')));
-        $summary.text(parts.join(' · '));
 
         const allergies = (data.record.allergies || '').trim();
 
@@ -205,7 +189,7 @@ App.Components.ClinicalRecordModal = (function () {
 
         $allergiesAlert
             .prop('hidden', !allergies || noAllergies)
-            .find('span')
+            .find('.ea-clinical-allergies-text')
             .text(allergies);
     }
 
