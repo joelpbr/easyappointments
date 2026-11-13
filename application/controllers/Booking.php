@@ -48,7 +48,6 @@ class Booking extends EA_Controller
         'start_datetime',
         'end_datetime',
         'location',
-        'meeting_link',
         'notes',
         'color',
         'status',
@@ -80,7 +79,6 @@ class Booking extends EA_Controller
         $this->load->library('notifications');
         $this->load->library('availability');
         $this->load->library('webhooks_client');
-        $this->load->library('jitsi_client');
         $this->load->library('slot_rules');
     }
 
@@ -517,11 +515,6 @@ class Booking extends EA_Controller
                 if (count($existing_appointments)) {
                     throw new RuntimeException(lang('customer_is_already_booked'));
                 }
-            }
-
-            // Jitsi integration: if enabled, generate a Jitsi meeting link for the appointment
-            if (setting('jitsi_enabled') === '1') {
-                $appointment['meeting_link'] = $this->jitsi_client->generate_link();
             }
 
             if (empty($appointment['location']) && !empty($service['location'])) {

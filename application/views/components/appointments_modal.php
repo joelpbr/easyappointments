@@ -152,13 +152,6 @@
                                     </label>
                                     <input id="appointment-location" class="form-control">
                                 </div>
-
-                                <div class="mb-3 ea-more-field">
-                                    <label for="appointment-meeting-link" class="form-label">
-                                        <?= lang('meeting_link') ?>
-                                    </label>
-                                    <input id="appointment-meeting-link" class="form-control" placeholder="https://">
-                                </div>
                             </div>
 
                             <div class="col-12 col-sm-6">

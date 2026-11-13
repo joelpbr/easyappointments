@@ -177,7 +177,6 @@ App.Utils.CalendarDefaultView = (function () {
 
         // Appointment fields
         $appointmentsModal.find('#appointment-location').val(appointment.location);
-        $appointmentsModal.find('#appointment-meeting-link').val(appointment.meeting_link);
         $appointmentsModal.find('#appointment-status').val(appointment.status);
         $appointmentsModal.find('#appointment-price').val(appointment.price ?? '');
         $appointmentsModal.find('#appointment-notes').val(appointment.notes);

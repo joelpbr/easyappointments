@@ -316,18 +316,6 @@ App.Utils.CalendarEventPopover = (function () {
         const customer = data.customer;
         const provider = data.provider;
         const customerName = [customer.first_name, customer.last_name].filter(Boolean).join(' ') || '-';
-        const meetingLinkElements = data.meeting_link
-            ? [
-                  $('<strong/>', {class: 'd-inline-block me-2', text: lang('meeting_link')}),
-                  $('<a/>', {
-                      href: data.meeting_link,
-                      target: '_blank',
-                      rel: 'noopener noreferrer',
-                      text: data.meeting_link,
-                  }),
-                  $('<br/>'),
-              ]
-            : [];
         return $('<div/>', {
             html: [
                 ...createPopoverRow('start', formatDateTime(info.event.start)),
@@ -365,7 +353,6 @@ App.Utils.CalendarEventPopover = (function () {
                           }),
                       ]
                     : []),
-                ...meetingLinkElements,
                 ...createPopoverRow('notes', getEventNotes(info.event)),
                 renderCustomContent(info),
                 $('<hr/>'),
