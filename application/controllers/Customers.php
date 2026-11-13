@@ -203,11 +203,33 @@ class Customers extends EA_Controller
             }
 
             check('keyword', 'string|null');
+            check('field', 'string|null');
             check('order_by', 'string|null');
             check('limit', 'numeric|null');
             check('offset', 'numeric|null');
 
             $keyword = request('keyword', '');
+
+            // The patients page searches by one field, and shows how many patients match and how many there are.
+            if (request('field')) {
+                $provider_ids = $this->visible_provider_ids();
+
+                $result = $this->customers_model->search_by_field(
+                    (string) request('field'),
+                    (string) $keyword,
+                    max(1, min(500, (int) request('limit', 20))),
+                    max(0, (int) request('offset', 0)),
+                    $provider_ids,
+                );
+
+                json_response([
+                    'customers' => $this->with_appointments($result['patients']),
+                    'count' => $result['count'],
+                    'total' => $this->customers_model->count_patients($provider_ids),
+                ]);
+
+                return;
+            }
 
             $order_by = request('order_by', 'update_datetime DESC');
 
@@ -217,53 +239,65 @@ class Customers extends EA_Controller
 
             $customers = $this->customers_model->search($keyword, $limit, $offset, $order_by);
 
-            $user_id = session('user_id');
-            $role_slug = session('role_slug');
-
-            $secretary_provider_ids = [];
-
-            if ($role_slug === DB_SLUG_SECRETARY) {
-                $secretary_provider_ids = $this->secretaries_model->find($user_id)['providers'];
-            }
-
-            foreach ($customers as $index => &$customer) {
-                if (!$this->permissions->has_customer_access($user_id, $customer['id'])) {
-                    unset($customers[$index]);
-
-                    continue;
-                }
-
-                $appointments = $this->appointments_model->get(['id_users_customer' => $customer['id']]);
-
-                // If the current user is a provider, only include their own appointments.
-                if ($role_slug === DB_SLUG_PROVIDER) {
-                    $appointments = array_filter($appointments, function ($appointment) use ($user_id) {
-                        return (int) $appointment['id_users_provider'] === (int) $user_id;
-                    });
-
-                    $appointments = array_values($appointments);
-                }
-
-                // If the current user is a secretary, only include appointments of their providers.
-                if ($role_slug === DB_SLUG_SECRETARY) {
-                    $appointments = array_filter($appointments, function ($appointment) use ($secretary_provider_ids) {
-                        return in_array((int) $appointment['id_users_provider'], $secretary_provider_ids);
-                    });
-
-                    $appointments = array_values($appointments);
-                }
-
-                foreach ($appointments as &$appointment) {
-                    $this->appointments_model->load($appointment, ['service', 'provider']);
-                }
-
-                $customer['appointments'] = $appointments;
-            }
-
-            json_response(array_values($customers));
+            json_response($this->with_appointments($customers));
         } catch (Throwable $e) {
             json_exception($e);
         }
+    }
+
+    /**
+     * Add to each patient the appointments that the user can see, and leave out the patients the user cannot see.
+     *
+     * @param array $customers
+     *
+     * @return array
+     */
+    private function with_appointments(array $customers): array
+    {
+        $user_id = session('user_id');
+        $role_slug = session('role_slug');
+
+        $secretary_provider_ids = [];
+
+        if ($role_slug === DB_SLUG_SECRETARY) {
+            $secretary_provider_ids = $this->secretaries_model->find($user_id)['providers'];
+        }
+
+        foreach ($customers as $index => &$customer) {
+            if (!$this->permissions->has_customer_access($user_id, $customer['id'])) {
+                unset($customers[$index]);
+
+                continue;
+            }
+
+            $appointments = $this->appointments_model->get(['id_users_customer' => $customer['id']]);
+
+            // If the current user is a provider, only include their own appointments.
+            if ($role_slug === DB_SLUG_PROVIDER) {
+                $appointments = array_filter($appointments, function ($appointment) use ($user_id) {
+                    return (int) $appointment['id_users_provider'] === (int) $user_id;
+                });
+
+                $appointments = array_values($appointments);
+            }
+
+            // If the current user is a secretary, only include appointments of their providers.
+            if ($role_slug === DB_SLUG_SECRETARY) {
+                $appointments = array_filter($appointments, function ($appointment) use ($secretary_provider_ids) {
+                    return in_array((int) $appointment['id_users_provider'], $secretary_provider_ids);
+                });
+
+                $appointments = array_values($appointments);
+            }
+
+            foreach ($appointments as &$appointment) {
+                $this->appointments_model->load($appointment, ['service', 'provider']);
+            }
+
+            $customer['appointments'] = $appointments;
+        }
+
+        return array_values($customers);
     }
 
     /**
