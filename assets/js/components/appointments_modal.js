@@ -50,6 +50,7 @@ App.Components.AppointmentsModal = (function () {
     const $customField4 = $('#custom-field-4');
     const $customField5 = $('#custom-field-5');
     const $appointmentDuration = $('#appointment-duration');
+    const $appointmentPrice = $('#appointment-price');
     const $appointmentFirstVisit = $('#appointment-first-visit');
     const $toggleMoreFields = $('#toggle-more-fields');
     const $usualProviderHint = $('#usual-provider-hint');
@@ -213,6 +214,7 @@ App.Components.AppointmentsModal = (function () {
                 color: App.Components.ColorSelection.getColor($appointmentColor),
                 status: $appointmentStatus.val(),
                 is_first_visit: $appointmentFirstVisit.val(),
+                price: $appointmentPrice.val(),
                 notes: $appointmentNotes.val(),
                 is_unavailability: Number(false),
             };
@@ -441,6 +443,11 @@ App.Components.AppointmentsModal = (function () {
 
             if (service?.color) {
                 App.Components.ColorSelection.setColor($appointmentColor, service.color);
+            }
+
+            // A new appointment takes the price of its service, which can then be changed for it.
+            if (!$appointmentId.val()) {
+                $appointmentPrice.val(service?.price ?? '');
             }
 
             const duration = service ? service.duration : 60;

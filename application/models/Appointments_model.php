@@ -29,6 +29,7 @@ class Appointments_model extends EA_Model
         'id_services',
         'status',
         'is_first_visit',
+        'price',
         'notes',
     ];
 
@@ -65,6 +66,7 @@ class Appointments_model extends EA_Model
         'hash' => 'hash',
         'serviceId' => 'id_services',
         'serviceName' => 'service_name',
+        'price' => 'price',
         'providerId' => 'id_users_provider',
         'customerId' => 'id_users_customer',
         'googleCalendarId' => 'id_google_calendar',
@@ -265,6 +267,7 @@ class Appointments_model extends EA_Model
         }
 
         $this->set_service_name($appointment);
+        $this->set_price($appointment);
 
         if (!$this->db->insert('appointments', $appointment)) {
             throw new RuntimeException('Could not insert appointment.');
@@ -296,6 +299,7 @@ class Appointments_model extends EA_Model
         $appointment['update_datetime'] = date('Y-m-d H:i:s');
 
         $this->set_service_name($appointment);
+        $this->set_price($appointment);
 
         $before = $this->db->get_where('appointments', ['id' => $appointment['id']])->row_array() ?: [];
 
@@ -359,6 +363,52 @@ class Appointments_model extends EA_Model
         if (!empty($service['color']) && ($color === '' || $color === DEFAULT_APPOINTMENT_COLOR)) {
             $appointment['color'] = $service['color'];
         }
+    }
+
+    /**
+     * Set the price of an appointment: the one given, or the price of its service when it is new or left empty.
+     *
+     * Unavailabilities have no price.
+     *
+     * @param array $appointment Associative array with the appointment data.
+     *
+     * @throws InvalidArgumentException When the price is not a positive amount.
+     */
+    protected function set_price(array &$appointment): void
+    {
+        if (!empty($appointment['is_unavailability'])) {
+            unset($appointment['price']);
+
+            return;
+        }
+
+        $price = $appointment['price'] ?? null;
+
+        if ($price !== null && $price !== '') {
+            $price = str_replace(',', '.', (string) $price);
+
+            if (!is_numeric($price) || (float) $price < 0) {
+                throw new InvalidArgumentException(lang('appointment_price_invalid'));
+            }
+
+            $appointment['price'] = round((float) $price, 2);
+
+            return;
+        }
+
+        // An update that does not send the price keeps the stored one.
+        if (!empty($appointment['id']) && !array_key_exists('price', $appointment)) {
+            return;
+        }
+
+        $service_price = empty($appointment['id_services'])
+            ? null
+            : $this->db
+                ->select('price')
+                ->get_where('services', ['id' => $appointment['id_services']])
+                ->row()?->price;
+
+        $appointment['price'] = $service_price !== null ? (float) $service_price : null;
     }
 
     /**
@@ -751,6 +801,7 @@ class Appointments_model extends EA_Model
             'providerId' => $appointment['id_users_provider'] !== null ? (int) $appointment['id_users_provider'] : null,
             'serviceId' => $appointment['id_services'] !== null ? (int) $appointment['id_services'] : null,
             'serviceName' => $appointment['service_name'] ?? null,
+            'price' => isset($appointment['price']) ? (float) $appointment['price'] : null,
             'meetingLink' => $appointment['meeting_link'],
             'googleCalendarId' =>
                 $appointment['id_google_calendar'] !== null ? $appointment['id_google_calendar'] : null,
@@ -809,6 +860,10 @@ class Appointments_model extends EA_Model
 
         if (array_key_exists('notes', $appointment)) {
             $decoded_resource['notes'] = $appointment['notes'];
+        }
+
+        if (array_key_exists('price', $appointment)) {
+            $decoded_resource['price'] = $appointment['price'];
         }
 
         if (array_key_exists('customerId', $appointment)) {

@@ -731,4 +731,7 @@ $lang['holiday_close_clinic'] = 'Close the clinic';
 $lang['holiday_add_local'] = 'Add a local holiday';
 $lang['holiday_add_local_hint'] = 'The local holidays of the town, or a holiday moved this year.';
 $lang['holiday_name_missing'] = 'Type the name of the holiday.';
+$lang['appointment_price'] = 'Price (€)';
+$lang['appointment_price_invalid'] = 'The price must be a positive amount.';
+$lang['day_total'] = 'Total';
 // End

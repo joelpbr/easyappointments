@@ -93,6 +93,8 @@
                 </a>
             <?php endif; ?>
 
+            <span id="day-total" class="badge text-bg-light fs-6 fw-semibold align-middle" hidden></span>
+
             <button id="reload-appointments" class="btn btn-light"
                     data-tippy-content="<?= lang('reload_appointments_hint') ?>">
                 <i class="fas fa-sync-alt"></i>
@@ -183,6 +185,7 @@
 <script src="<?= asset_url('assets/js/utils/calendar_event_content.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_past_time.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_blocked_periods.js') ?>"></script>
+<script src="<?= asset_url('assets/js/utils/calendar_day_total.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/calendar_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/customers_http_client.js') ?>"></script>
 <?php if (vars('calendar_view') === CALENDAR_VIEW_DEFAULT): ?>

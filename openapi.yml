@@ -2196,6 +2196,10 @@ components:
                 serviceName:
                     type: string
                     readOnly: true
+                price:
+                    type: number
+                    nullable: true
+                    description: Price of the appointment, by default the price of its service.
                 googleCalendarId:
                     type: string
                 caldavCalendarId:
@@ -2216,6 +2220,7 @@ components:
                 providerId: 2
                 serviceId: 6
                 serviceName: Quiropodia
+                price: 30
                 googleCalendarId: null
                 caldavCalendarId: null
         AppointmentPayload:
@@ -2246,6 +2251,10 @@ components:
                     type: integer
                 serviceId:
                     type: integer
+                price:
+                    type: number
+                    nullable: true
+                    description: Price of the appointment; empty or omitted on creation takes the price of the service.
             example:
                 start: '2021-01-01 17:00:00'
                 end: '2021-01-01 18:00:00'

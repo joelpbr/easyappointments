@@ -54,6 +54,7 @@ class Calendar extends EA_Controller
         'color',
         'status',
         'is_first_visit',
+        'price',
         'is_unavailability',
         'id_users_provider',
         'id_users_customer',

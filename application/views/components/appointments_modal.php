@@ -189,6 +189,14 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label for="appointment-price" class="form-label">
+                                        <?= lang('appointment_price') ?>
+                                    </label>
+                                    <input id="appointment-price" class="form-control" type="number" min="0"
+                                           step="0.01" inputmode="decimal">
+                                </div>
+
+                                <div class="mb-3">
                                     <label for="end-datetime" class="form-label"><?= lang('end_date_time') ?></label>
                                     <input id="end-datetime" class="required form-control">
                                 </div>
