@@ -57,6 +57,7 @@ class Customers extends EA_Controller
 
         $this->load->model('appointments_model');
         $this->load->model('customers_model');
+        $this->load->model('fiscal_parties_model');
         $this->load->model('providers_model');
         $this->load->model('secretaries_model');
         $this->load->model('roles_model');
@@ -174,6 +175,8 @@ class Customers extends EA_Controller
 
             // Lets the appointment form tell whether the new appointment is the first visit.
             $customer += $this->customers_model->get_visit_summary($customer_id);
+
+            $customer['fiscal'] = $this->fiscal_parties_model->get_patient_data($customer_id);
 
             json_response($customer);
         } catch (Throwable $e) {
@@ -378,7 +381,18 @@ class Customers extends EA_Controller
 
             $this->customers_model->optional($customer, $this->optional_customer_fields);
 
+            // The fiscal data is optional, but checked before the patient is saved.
+            $fiscal = is_array(request('fiscal')) ? request('fiscal') : null;
+
+            if ($fiscal !== null) {
+                $this->fiscal_parties_model->validate($fiscal);
+            }
+
             $customer_id = $this->customers_model->save($customer);
+
+            if ($fiscal !== null) {
+                $this->fiscal_parties_model->save_patient_data($customer_id, $fiscal);
+            }
 
             $customer = $this->customers_model->find($customer_id);
 
@@ -419,7 +433,18 @@ class Customers extends EA_Controller
 
             $this->customers_model->optional($customer, $this->optional_customer_fields);
 
+            // The fiscal data is optional, but checked before the patient is saved.
+            $fiscal = is_array(request('fiscal')) ? request('fiscal') : null;
+
+            if ($fiscal !== null) {
+                $this->fiscal_parties_model->validate($fiscal);
+            }
+
             $customer_id = $this->customers_model->save($customer);
+
+            if ($fiscal !== null) {
+                $this->fiscal_parties_model->save_patient_data($customer_id, $fiscal);
+            }
 
             $customer = $this->customers_model->find($customer_id);
 

@@ -214,6 +214,68 @@
                         <textarea id="notes" rows="4" class="form-control" disabled></textarea>
                     </div>
 
+                    <fieldset id="fiscal-data" class="mb-3">
+                        <h5 class="mt-4 mb-1 fw-light"><?= lang('fiscal_data') ?></h5>
+                        <p class="form-text mt-0 mb-3"><?= lang('fiscal_data_hint') ?></p>
+
+                        <div class="mb-3">
+                            <label for="fiscal-document-type" class="form-label">
+                                <?= lang('fiscal_document_type') ?>
+                            </label>
+                            <select id="fiscal-document-type" class="form-select" data-fiscal="document_type" disabled>
+                                <option value="">—</option>
+                                <?php foreach (FISCAL_ID_TYPES as $type): ?>
+                                    <option value="<?= $type ?>"><?= lang('fiscal_document_' . $type) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fiscal-document-number" class="form-label">
+                                <?= lang('fiscal_document_number') ?>
+                            </label>
+                            <input type="text" id="fiscal-document-number" class="form-control" maxlength="64"
+                                   data-fiscal="document_number" disabled/>
+                            <div id="fiscal-document-hint" class="form-text"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fiscal-name" class="form-label"><?= lang('fiscal_name') ?></label>
+                            <input type="text" id="fiscal-name" class="form-control" maxlength="256" data-fiscal="name"
+                                   disabled/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fiscal-address" class="form-label"><?= lang('fiscal_address') ?></label>
+                            <input type="text" id="fiscal-address" class="form-control" maxlength="256"
+                                   data-fiscal="address" disabled/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fiscal-zip-code" class="form-label"><?= lang('zip_code') ?></label>
+                            <input type="text" id="fiscal-zip-code" class="form-control" maxlength="16"
+                                   data-fiscal="zip_code" disabled/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fiscal-city" class="form-label"><?= lang('fiscal_city') ?></label>
+                            <input type="text" id="fiscal-city" class="form-control" maxlength="128" data-fiscal="city"
+                                   disabled/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fiscal-province" class="form-label"><?= lang('fiscal_province') ?></label>
+                            <input type="text" id="fiscal-province" class="form-control" maxlength="128"
+                                   data-fiscal="province" disabled/>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="fiscal-country" class="form-label"><?= lang('fiscal_country') ?></label>
+                            <input type="text" id="fiscal-country" class="form-control" maxlength="128"
+                                   placeholder="<?= lang('fiscal_country_default') ?>" data-fiscal="country" disabled/>
+                        </div>
+                    </fieldset>
+
                 </div>
 
                 <div class="col-12 col-lg-6">

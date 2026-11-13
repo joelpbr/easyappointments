@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- Patients have optional fiscal data (document type and number, name or company name, fiscal address, zip code, town, province and country) on the patients page; DNI, NIE and the NIF of entities are checked by their format and check character, passports and foreign documents are saved as typed, and an appointment never asks for them
 - Patients can have a usual provider, set on the patients page and in the API (preferredProviderId); the appointment form shows it under the provider with a button to choose them, and fills in "First visit" from the past visits of the chosen patient
 - Creating a patient whose phone number (in any format) or first and last name (ignoring accents and case) match an existing one asks whether to use the existing patient or create the new one anyway, in the appointment form and on the patients page; patients are never merged
 - The appointment form finds existing patients when Enter is pressed after typing at least three letters of their name or six digits of their phone number, without accents mattering and whatever the phone format; it shows up to 10 patients, asks to narrow broader searches and offers to create a new patient, and the calendar no longer loads the patient list in advance
