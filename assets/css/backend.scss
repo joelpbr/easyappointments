@@ -1130,6 +1130,37 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         overflow-y: auto;
     }
 
+    // The details fit without scrolling on a laptop: three rows of fields, and the medical history and the allergies,
+    // which take the rest of the height on larger screens.
+    #clinical-tab-details.active {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        height: 100%;
+    }
+
+    .ea-clinical-details .form-label,
+    .ea-clinical-notes .form-label {
+        margin-bottom: 2px;
+        font-size: 0.85rem;
+    }
+
+    .ea-clinical-notes {
+        flex: 1 1 auto;
+        min-height: 0;
+
+        > div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        textarea {
+            flex: 1 1 auto;
+            min-height: 70px;
+            resize: none;
+        }
+    }
+
     .ea-clinical-document-type {
         flex: 0 0 auto;
         width: auto;

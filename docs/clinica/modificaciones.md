@@ -491,3 +491,5 @@ El NIF/NIE de la ficha es el número de documento de los datos fiscales: se guar
 Cambio posterior: la ficha clínica deja el panel lateral y pasa a pestañas («Dades», «Antecedents» con antecedentes y alergias, «Visites»). En «Visites» la lista de visitas queda a la izquierda y la ficha de la visita elegida a la derecha, dentro de la misma ventana, con su propio botón «Desa la visita». La cabecera muestra el paciente con edad, documento y teléfono, y un aviso rojo con las alergias cuando tiene. Abierta desde una cita de la agenda, se abre en «Visites» con esa visita; si se cambia de visita o se cierra con cambios sin guardar, pregunta antes.
 
 Cambio posterior: la ficha queda con dos pestañas, «Dades» y «Visites»; los antecedentes médicos y las alergias pasan a «Dades», uno al lado del otro debajo de los datos.
+
+Cambio posterior: la pestaña «Dades» de la ficha cabe sin desplazamiento desde 1280×720 (con o sin aviso de alergias): tres filas de campos (nombre, apellidos y NIF/NIE; nacimiento, teléfono y dirección; procedencia, profesión y actividad física) y debajo antecedentes y alergias, que ocupan el alto restante en pantallas grandes.

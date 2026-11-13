@@ -46,18 +46,18 @@
 
             <div class="modal-body tab-content ea-clinical-body">
                 <div class="tab-pane fade show active" id="clinical-tab-details" role="tabpanel">
-                    <div class="row g-3">
-                        <div class="col-md-6">
+                    <div class="row g-2 ea-clinical-details">
+                        <div class="col-md-3">
                             <label class="form-label" for="clinical-first-name"><?= lang('first_name') ?></label>
                             <input id="clinical-first-name" class="form-control" data-customer="first_name"
                                    maxlength="256">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label" for="clinical-last-name"><?= lang('last_name') ?></label>
                             <input id="clinical-last-name" class="form-control" data-customer="last_name"
                                    maxlength="512">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <label class="form-label" for="clinical-document-number"><?= lang(
                                 'clinical_document',
                             ) ?></label>
@@ -72,7 +72,7 @@
                                 <input id="clinical-document-number" class="form-control" maxlength="64">
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label" for="clinical-birth-date"><?= lang(
                                 'clinical_birth_date',
                             ) ?></label>
@@ -83,7 +83,7 @@
                             <input id="clinical-phone-number" class="form-control" data-customer="phone_number"
                                    maxlength="128">
                         </div>
-                        <div class="col-12">
+                        <div class="col-md-7">
                             <label class="form-label" for="clinical-address"><?= lang('address') ?></label>
                             <input id="clinical-address" class="form-control" data-customer="address" maxlength="256">
                         </div>
@@ -108,21 +108,24 @@
                             <input id="clinical-physical-activity" class="form-control"
                                    data-record="physical_activity" maxlength="256">
                         </div>
+                    </div>
+
+                    <!-- The medical history and the allergies take the rest of the height. -->
+                    <div class="row g-2 ea-clinical-notes">
                         <div class="col-md-6">
                             <label class="form-label" for="clinical-medical-history"><?= lang(
                                 'clinical_medical_history',
                             ) ?></label>
-                            <textarea id="clinical-medical-history" class="form-control" rows="5"
+                            <textarea id="clinical-medical-history" class="form-control" rows="3"
                                       data-record="medical_history"></textarea>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="clinical-allergies"><?= lang('clinical_allergies') ?></label>
-                            <textarea id="clinical-allergies" class="form-control" rows="5"
+                            <textarea id="clinical-allergies" class="form-control" rows="3"
                                       data-record="allergies"></textarea>
                         </div>
                     </div>
                 </div>
-
 
                 <div class="tab-pane fade" id="clinical-tab-visits" role="tabpanel">
                     <div class="row g-0 ea-clinical-visits-layout">
