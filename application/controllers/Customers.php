@@ -63,6 +63,7 @@ class Customers extends EA_Controller
         $this->load->model('roles_model');
 
         $this->load->library('accounts');
+        $this->load->library('clinical_record_templates');
         $this->load->library('permissions');
         $this->load->library('timezones');
         $this->load->library('webhooks_client');
@@ -117,15 +118,19 @@ class Customers extends EA_Controller
             'role_slug' => $role_slug,
             'date_format' => $date_format,
             'time_format' => $time_format,
+            'first_weekday' => setting('first_weekday'),
             'timezones' => $this->timezones->to_array(),
             'secretary_providers' => $secretary_providers,
             'appointment_statuses' => appointment_statuses(),
             'default_language' => setting('default_language'),
             'default_timezone' => setting('default_timezone'),
+            // Admins and providers edit the name, phone, address and NIF/NIE in the clinical record.
+            'clinical_records' => Clinical_record_templates::can_access($role_slug),
         ]);
 
         html_vars([
             'page_title' => lang('customers'),
+            'clinical_records' => Clinical_record_templates::can_access($role_slug),
             'active_menu' => PRIV_CUSTOMERS,
             'user_display_name' => $this->accounts->get_user_display_name($user_id),
             'timezones' => $this->timezones->to_array(),

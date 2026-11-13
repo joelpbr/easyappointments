@@ -69,12 +69,27 @@
 
             <div class="row">
                 <div class="col-12 col-lg-6" style="margin-left: 0;">
-                    <h4 class="mb-3 fw-light">
-                        <?= lang('details') ?>
-                    </h4>
+                    <?php if (vars('clinical_records')): ?>
+                        <!-- The clinical record holds the name, phone, address and NIF/NIE of the patient. -->
+                        <div class="d-flex align-items-center gap-3 mb-2">
+                            <h4 class="fw-light mb-0 flex-grow-1 text-truncate" id="customer-record-name">
+                                <?= lang('details') ?>
+                            </h4>
+                            <button type="button" id="open-clinical-record" class="btn btn-primary" disabled>
+                                <i class="fas fa-notes-medical me-2"></i>
+                                <?= lang('open_clinical_record') ?>
+                            </button>
+                        </div>
+                        <p class="form-text mt-0 mb-3"><?= lang('clinical_record_fields_hint') ?></p>
+                    <?php else: ?>
+                        <h4 class="mb-3 fw-light">
+                            <?= lang('details') ?>
+                        </h4>
+                    <?php endif; ?>
 
                     <div id="form-message" class="alert" style="display:none;"></div>
 
+                    <?php if (!vars('clinical_records')): ?>
                     <div class="mb-3">
                         <label for="first-name" class="form-label">
                             <?= lang('first_name') ?>
@@ -86,7 +101,9 @@
                                class="<?= vars('require_first_name') ? 'required' : '' ?> form-control" maxlength="100"
                                disabled/>
                     </div>
+                    <?php endif; ?>
 
+                    <?php if (!vars('clinical_records')): ?>
                     <div class="mb-3">
                         <label for="last-name" class="form-label">
                             <?= lang('last_name') ?>
@@ -98,6 +115,7 @@
                                class="<?= vars('require_last_name') ? 'required' : '' ?> form-control" maxlength="120"
                                disabled/>
                     </div>
+                    <?php endif; ?>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">
@@ -111,6 +129,7 @@
                                disabled/>
                     </div>
 
+                    <?php if (!vars('clinical_records')): ?>
                     <div class="mb-3">
                         <label for="phone-number" class="form-label">
                             <?= lang('phone_number') ?>
@@ -121,6 +140,7 @@
                         <input type="text" id="phone-number" maxlength="60"
                                class="<?= vars('require_phone_number') ? 'required' : '' ?> form-control" disabled/>
                     </div>
+                    <?php endif; ?>
 
                     <div id="no-show-count-group" class="mb-3" hidden>
                         <label for="no-show-count" class="form-label"><?= lang('no_show_count') ?></label>
@@ -140,6 +160,7 @@
                         </select>
                     </div>
 
+                    <?php if (!vars('clinical_records')): ?>
                     <div class="mb-3">
                         <label for="address" class="form-label">
                             <?= lang('address') ?>
@@ -151,6 +172,7 @@
                                class="<?= vars('require_address') ? 'required' : '' ?> form-control"
                                maxlength="120" disabled/>
                     </div>
+                    <?php endif; ?>
 
                     <div class="mb-3">
                         <label for="city" class="form-label">
@@ -224,6 +246,7 @@
                         <h5 class="mt-4 mb-1 fw-light"><?= lang('fiscal_data') ?></h5>
                         <p class="form-text mt-0 mb-3"><?= lang('fiscal_data_hint') ?></p>
 
+                        <?php if (!vars('clinical_records')): ?>
                         <div class="mb-3">
                             <label for="fiscal-document-type" class="form-label">
                                 <?= lang('fiscal_document_type') ?>
@@ -244,6 +267,7 @@
                                    data-fiscal="document_number" disabled/>
                             <div id="fiscal-document-hint" class="form-text"></div>
                         </div>
+                        <?php endif; ?>
 
                         <div class="mb-3">
                             <label for="fiscal-name" class="form-label"><?= lang('fiscal_name') ?></label>
@@ -297,10 +321,15 @@
     </div>
 </div>
 
+<?php if (vars('clinical_records')): ?>
+    <?php component('clinical_record_modal'); ?>
+<?php endif; ?>
+
 <?php end_section('content'); ?>
 
 <?php section('scripts'); ?>
 
+<script src="<?= asset_url('assets/js/utils/ui.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/customers_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/components/patient_duplicates.js') ?>"></script>
 <script src="<?= asset_url('assets/js/pages/customers.js') ?>"></script>

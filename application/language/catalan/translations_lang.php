@@ -789,4 +789,6 @@ $lang['clinical_close_anyway'] = 'Tancar sense desar';
 $lang['clinical_choose_visit'] = 'Tria una visita de la llista.';
 $lang['clinical_save_visit'] = 'Desa la visita';
 $lang['clinical_years_old'] = '%s anys';
+$lang['clinical_new_patient'] = 'Pacient nou';
+$lang['clinical_record_fields_hint'] = 'El nom, els cognoms, el telèfon, l\'adreça i el NIF/NIE s\'editen a la fitxa.';
 // End

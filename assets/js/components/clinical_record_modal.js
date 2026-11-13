@@ -52,31 +52,59 @@ App.Components.ClinicalRecordModal = (function () {
      * @param {Number} patientId Patient ID.
      * @param {Object} [options]
      * @param {Number} [options.appointmentId] Visit from which the record is opened.
-     * @param {Function} [options.onChange] Called after the record changed something the calendar shows.
+     * @param {Function} [options.onChange] Called with the patient ID after the record changed something that the
+     * page shows (the patient, or the price of a visit).
      */
     function open(patientId, options = {}) {
-        customerId = Number(patientId);
         currentAppointmentId = options.appointmentId ? Number(options.appointmentId) : null;
         onChange = options.onChange || (() => {});
 
-        App.Http.ClinicalRecords.findPatient(customerId).done((response) => {
-            closingConfirmed = false;
-            visitAppointmentId = null;
-            savedVisit = '';
-            $visitDetail.prop('hidden', true);
-            $visitEmpty.prop('hidden', false);
-
-            fillPatient(response);
-            renderVisits(response.appointments);
-
-            showTab(currentAppointmentId ? 'visits' : 'details');
-
-            if (currentAppointmentId) {
-                loadVisit(currentAppointmentId);
-            }
-
-            bootstrap.Modal.getOrCreateInstance($modal[0]).show();
+        App.Http.ClinicalRecords.findPatient(Number(patientId)).done((response) => {
+            customerId = Number(patientId);
+            show(response);
         });
+    }
+
+    /**
+     * Open an empty record to create a new patient. Saving it creates the patient, after checking that it does not
+     * look like an existing one.
+     *
+     * @param {Object} [options]
+     * @param {Function} [options.onChange] Called with the new patient ID once created.
+     */
+    function openNew(options = {}) {
+        currentAppointmentId = null;
+        onChange = options.onChange || (() => {});
+        customerId = 0;
+
+        show({customer: {}, record: {}, document_type: '', document_number: '', appointments: []});
+    }
+
+    /**
+     * Show the record of a patient (or an empty one for a new patient).
+     *
+     * @param {Object} response
+     */
+    function show(response) {
+        closingConfirmed = false;
+        visitAppointmentId = null;
+        savedVisit = '';
+        $visitDetail.prop('hidden', true);
+        $visitEmpty.prop('hidden', false);
+
+        fillPatient(response);
+        renderVisits(response.appointments);
+
+        // A new patient has no visits until it is saved.
+        $modal.find('[data-tab="visits"]').prop('disabled', customerId === 0);
+
+        showTab(currentAppointmentId ? 'visits' : 'details');
+
+        if (currentAppointmentId) {
+            loadVisit(currentAppointmentId);
+        }
+
+        bootstrap.Modal.getOrCreateInstance($modal[0]).show();
     }
 
     /**
@@ -146,7 +174,7 @@ App.Components.ClinicalRecordModal = (function () {
             parts.push(data.customer.phone_number);
         }
 
-        $title.text(name || lang('clinical_record'));
+        $title.text(name || (customerId === 0 ? lang('clinical_new_patient') : lang('clinical_record')));
         $summary.text(parts.join(' · '));
 
         const allergies = (data.record.allergies || '').trim();
@@ -216,16 +244,26 @@ App.Components.ClinicalRecordModal = (function () {
                     }),
                     $('<small/>', {
                         class: 'ea-clinical-visit-meta',
-                        text: [
-                            appointment.provider_name,
-                            App.Utils.CalendarEventPopover?.getStatusName(appointment.status) || appointment.status,
-                        ]
+                        text: [appointment.provider_name, getStatusName(appointment.status)]
                             .filter(Boolean)
                             .join(' · '),
                     }),
                 ],
             }).appendTo($visits);
         });
+    }
+
+    /**
+     * Get the name of an appointment status, from the statuses of the page.
+     *
+     * @param {String} code
+     *
+     * @return {String}
+     */
+    function getStatusName(code) {
+        const status = (vars('appointment_statuses') || []).find((status) => status.code === code);
+
+        return status ? status.name : code || '';
     }
 
     /**
@@ -274,11 +312,50 @@ App.Components.ClinicalRecordModal = (function () {
     function savePatient() {
         const data = getPatientData();
 
+        if (customerId === 0) {
+            createPatient(data);
+
+            return;
+        }
+
         App.Http.ClinicalRecords.savePatient(customerId, data).done(() => {
             savedPatient = JSON.stringify(data);
             updateHeader();
             App.Layouts.Backend.displayNotification(lang('clinical_record_saved'));
-            onChange();
+            onChange(customerId);
+        });
+    }
+
+    /**
+     * Create the patient of an empty record, or open the existing patient that it looks like when the user prefers.
+     *
+     * @param {Object} data
+     */
+    function createPatient(data) {
+        const create = () =>
+            App.Http.ClinicalRecords.savePatient(0, data).done((response) => {
+                customerId = Number(response.id);
+                savedPatient = JSON.stringify(data);
+                updateHeader();
+                $modal.find('[data-tab="visits"]').prop('disabled', false);
+                App.Layouts.Backend.displayNotification(lang('clinical_record_saved'));
+                onChange(customerId);
+            });
+
+        if (!App.Components.PatientDuplicates) {
+            create();
+
+            return;
+        }
+
+        App.Components.PatientDuplicates.confirmNewPatient(data.customer).then((choice) => {
+            if (choice?.create) {
+                create();
+            } else if (choice?.id) {
+                savedPatient = JSON.stringify(data);
+                open(choice.id, {onChange});
+                onChange(choice.id);
+            }
         });
     }
 
@@ -412,7 +489,7 @@ App.Components.ClinicalRecordModal = (function () {
                 // The list shows the new price and which visits have notes.
                 App.Http.ClinicalRecords.findPatient(customerId).done((patient) => renderVisits(patient.appointments));
 
-                onChange();
+                onChange(customerId);
             },
         );
     }
@@ -505,5 +582,6 @@ App.Components.ClinicalRecordModal = (function () {
 
     return {
         open,
+        openNew,
     };
 })();

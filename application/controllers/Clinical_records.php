@@ -40,6 +40,7 @@ class Clinical_records extends EA_Controller
 
         $this->load->library('clinical_record_templates');
         $this->load->library('permissions');
+        $this->load->library('webhooks_client');
     }
 
     /**
@@ -71,14 +72,19 @@ class Clinical_records extends EA_Controller
     }
 
     /**
-     * Save the record of a patient.
+     * Save the record of a patient, or create a new patient from an empty record (without customer_id).
      */
     public function save_patient(): void
     {
         try {
             method('post');
 
-            $customer_id = $this->authorize_customer((int) request('customer_id'));
+            $is_new = !(int) request('customer_id');
+            $customer_id = $is_new ? 0 : $this->authorize_customer((int) request('customer_id'));
+
+            if ($is_new) {
+                $this->authorize_new_customer();
+            }
 
             $submitted_customer = is_array(request('customer')) ? request('customer') : [];
             $record = Clinical_record_templates::clean_patient_record(
@@ -86,17 +92,25 @@ class Clinical_records extends EA_Controller
             );
 
             // The NIF/NIE is the document of the fiscal data, so both places always show the same one.
-            $fiscal = array_merge($this->fiscal_parties_model->get_patient_data($customer_id), [
+            $fiscal = array_merge($is_new ? [] : $this->fiscal_parties_model->get_patient_data($customer_id), [
                 'document_type' => (string) request('document_type'),
                 'document_number' => (string) request('document_number'),
             ]);
 
             $this->fiscal_parties_model->validate($fiscal);
 
-            // The other patient fields are kept, so that the required ones are still checked.
-            $customer = $this->customers_model->find($customer_id);
-            $customer =
-                ['id' => $customer_id] + array_intersect_key($customer, array_flip($this->customer_save_fields()));
+            // The other patient fields are kept, so that the required ones are still checked. A new patient gets the
+            // default language and timezone, as on the patients page.
+            if ($is_new) {
+                $customer = [
+                    'language' => setting('default_language'),
+                    'timezone' => setting('default_timezone'),
+                ];
+            } else {
+                $customer = $this->customers_model->find($customer_id);
+                $customer =
+                    ['id' => $customer_id] + array_intersect_key($customer, array_flip($this->customer_save_fields()));
+            }
 
             foreach (self::CUSTOMER_FIELDS as $field) {
                 if (array_key_exists($field, $submitted_customer)) {
@@ -106,7 +120,7 @@ class Clinical_records extends EA_Controller
 
             $this->db->trans_start();
 
-            $this->customers_model->save($customer);
+            $customer_id = $this->customers_model->save($customer);
             $this->fiscal_parties_model->save_patient_data($customer_id, $fiscal);
             $this->patient_records_model->save_for_customer($customer_id, $record);
 
@@ -116,7 +130,9 @@ class Clinical_records extends EA_Controller
                 throw new RuntimeException('Could not save the patient record.');
             }
 
-            json_response(['success' => true]);
+            $this->webhooks_client->trigger(WEBHOOK_CUSTOMER_SAVE, $this->customers_model->find($customer_id));
+
+            json_response(['success' => true, 'id' => $customer_id]);
         } catch (Throwable $e) {
             json_exception($e);
         }
@@ -219,6 +235,20 @@ class Clinical_records extends EA_Controller
         }
 
         return $customer_id;
+    }
+
+    /**
+     * Make sure the user can create a patient from an empty record, as on the patients page.
+     */
+    private function authorize_new_customer(): void
+    {
+        if (!Clinical_record_templates::can_access(session('role_slug')) || cannot('add', PRIV_CUSTOMERS)) {
+            abort(403, 'Forbidden');
+        }
+
+        if (session('role_slug') !== DB_SLUG_ADMIN && setting('limit_customer_access')) {
+            abort(403, 'Forbidden');
+        }
     }
 
     /**

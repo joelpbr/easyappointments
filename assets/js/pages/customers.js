@@ -40,6 +40,15 @@ App.Pages.Customers = (function () {
     const $notes = $('#notes');
     const $formMessage = $('#form-message');
     const $customerAppointments = $('#customer-appointments');
+    const $recordName = $('#customer-record-name');
+    const $openClinicalRecord = $('#open-clinical-record');
+
+    // For admins and providers, the clinical record holds the name, phone, address and NIF/NIE of the patient, which
+    // this page then does not show: they are kept from the shown patient when the page saves it.
+    const IDENTITY_FIELDS = ['first_name', 'last_name', 'phone_number', 'address'];
+    const RECORD_FISCAL_FIELDS = ['document_type', 'document_number'];
+    let currentCustomer = null;
+    let currentFiscal = {};
 
     const moment = window.moment;
 
@@ -99,6 +108,13 @@ App.Pages.Customers = (function () {
          * Event: Add Customer Button "Click"
          */
         $customers.on('click', '#add-customer', () => {
+            // A new patient starts with the clinical record, which holds the name and the phone.
+            if (vars('clinical_records')) {
+                App.Components.ClinicalRecordModal.openNew({onChange: showPatient});
+
+                return;
+            }
+
             App.Pages.Customers.resetForm();
             $('#customers-page').addClass('editing');
             $customers.find('#add-edit-delete-group').hide();
@@ -138,6 +154,15 @@ App.Pages.Customers = (function () {
         });
 
         /**
+         * Event: Open Clinical Record Button "Click"
+         */
+        $openClinicalRecord.on('click', () => {
+            if (currentCustomer) {
+                App.Components.ClinicalRecordModal.open(currentCustomer.id, {onChange: refreshIdentity});
+            }
+        });
+
+        /**
          * Event: Fiscal Document Type "Change"
          */
         $fiscalDocumentType.on('change', updateFiscalDocumentHint);
@@ -169,6 +194,13 @@ App.Pages.Customers = (function () {
             if ($id.val()) {
                 customer.id = $id.val();
             }
+
+            // Fields edited in the clinical record keep the values of the shown patient.
+            IDENTITY_FIELDS.forEach((field) => {
+                if (customer[field] === undefined) {
+                    customer[field] = currentCustomer?.[field] ?? '';
+                }
+            });
 
             if (!App.Pages.Customers.validate()) {
                 return;
@@ -306,6 +338,11 @@ App.Pages.Customers = (function () {
 
         $customerAppointments.empty();
 
+        currentCustomer = null;
+        currentFiscal = {};
+        $recordName.text(lang('details'));
+        $openClinicalRecord.prop('disabled', true);
+
         $customers.find('#edit-customer, #delete-customer').prop('disabled', true);
         $customers.find('#add-edit-delete-group').show();
         $customers.find('#save-cancel-group').hide();
@@ -330,6 +367,13 @@ App.Pages.Customers = (function () {
             fiscal[$(field).data('fiscal')] = $(field).val();
         });
 
+        // The NIF/NIE is edited in the clinical record when this page does not show it.
+        RECORD_FISCAL_FIELDS.forEach((field) => {
+            if (fiscal[field] === undefined) {
+                fiscal[field] = currentFiscal[field] || '';
+            }
+        });
+
         return fiscal;
     }
 
@@ -340,6 +384,7 @@ App.Pages.Customers = (function () {
      */
     function displayFiscalData(customerId) {
         $fiscalFields.val('');
+        currentFiscal = {};
         updateFiscalDocumentHint();
 
         App.Http.Customers.find(customerId).done((customer) => {
@@ -347,6 +392,8 @@ App.Pages.Customers = (function () {
             if (Number($id.val()) !== Number(customerId)) {
                 return;
             }
+
+            currentFiscal = customer.fiscal || {};
 
             $fiscalFields.each((index, field) => {
                 $(field).val(customer.fiscal?.[$(field).data('fiscal')] || '');
@@ -377,6 +424,8 @@ App.Pages.Customers = (function () {
      * @param {Object} customer Contains the customer record data.
      */
     function display(customer) {
+        currentCustomer = customer;
+        showIdentity(customer);
         $id.val(customer.id);
         $firstName.val(customer.first_name);
         $lastName.val(customer.last_name);
@@ -402,6 +451,55 @@ App.Pages.Customers = (function () {
         $customField5.val(customer.custom_field_5);
 
         displayHistory(customer.appointments);
+    }
+
+    /**
+     * Show the name of the patient above the form, where the clinical record opens.
+     *
+     * @param {Object} customer
+     */
+    function showIdentity(customer) {
+        const name = [customer.first_name, customer.last_name].filter(Boolean).join(' ');
+
+        $recordName.text(name || lang('details'));
+        $openClinicalRecord.prop('disabled', false);
+    }
+
+    /**
+     * After the clinical record saved the patient, show the new name and keep the new values, without losing what is
+     * being edited on this page.
+     *
+     * @param {Number} customerId
+     */
+    function refreshIdentity(customerId) {
+        App.Http.Customers.find(customerId).done((customer) => {
+            if (!currentCustomer || Number(currentCustomer.id) !== Number(customerId)) {
+                return;
+            }
+
+            IDENTITY_FIELDS.forEach((field) => (currentCustomer[field] = customer[field]));
+            currentFiscal = customer.fiscal || {};
+            showIdentity(currentCustomer);
+
+            const $row = $filterCustomers.find('.entry[data-id="' + customerId + '"]');
+
+            if ($row.length) {
+                $row.replaceWith(App.Pages.Customers.getFilterHtml(Object.assign({}, currentCustomer)));
+                $filterCustomers.find('.entry[data-id="' + customerId + '"]').addClass('selected');
+            }
+        });
+    }
+
+    /**
+     * Show a patient created (or chosen) from the clinical record.
+     *
+     * @param {Number} customerId
+     */
+    function showPatient(customerId) {
+        App.Pages.Customers.resetForm();
+        $('#customers-page').removeClass('editing');
+        $filterCustomers.find('.key').val('');
+        App.Pages.Customers.filter('', customerId, true);
     }
 
     /**
