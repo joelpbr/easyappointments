@@ -523,3 +523,5 @@ Cambio posterior: todo lo que está fuera de horario tiene exactamente el mismo 
 Cambio posterior: la etiqueta «Migdia» queda centrada en la franja plegada del mediodía (antes el margen la empujaba abajo y se cortaba); lo mismo para las etiquetas del resto de franjas fuera de horario.
 
 Cambio posterior: las visitas cortas (10-15 minutos) muestran todo en una sola línea («Paciente · Tratamiento (precio) · hora · duración · estado»), cortada con puntos suspensivos si no cabe, en lugar de dos líneas que se salían de la tarjeta; al pasar el ratón se sigue viendo todo.
+
+Cambio posterior: en las visitas cortas la línea usa letra de 10 px con interlineado de 12 px, centrada en vertical y sin el margen interior de FullCalendar, para que en las de 10 minutos (14 px útiles) quepa entera sin tocar el borde.
