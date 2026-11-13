@@ -985,6 +985,12 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     margin-left: 10px;
 }
 
+// Dropdowns made from a select (see initializeSelectDropdown() in ui.js) fill their place, like the select did.
+.ea-select-dropdown,
+.ea-select-dropdown > .form-select {
+    width: 100%;
+}
+
 // Patient search results under the name and phone fields of the appointment form (see patient_search.js).
 #appointments-modal .mb-3:has(> .ea-patient-suggestions) {
     position: relative;

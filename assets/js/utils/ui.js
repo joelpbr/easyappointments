@@ -252,11 +252,80 @@ window.App.Utils.UI = (function () {
         return $target[0]._flatpickr.setDate(value);
     }
 
+    /**
+     * Show a select as a dropdown like the provider filter of the calendar: a button with the chosen option and a list
+     * with a round check per option (and a header per option group).
+     *
+     * The select stays in the page, hidden, so its value and change event work as before: choosing an option sets it
+     * and triggers "change". The button follows the changes of the select.
+     *
+     * @param {jQuery} $select
+     */
+    function initializeSelectDropdown($select) {
+        const $group = $('<div/>', {class: 'dropdown ea-select-dropdown'}).insertAfter($select);
+        const name = 'ea-select-' + ($select.attr('id') || Math.random().toString(36).slice(2));
+
+        $select.prop('hidden', true).appendTo($group);
+
+        const $button = $('<button/>', {
+            type: 'button',
+            class: 'form-select text-start ' + ($select.hasClass('ea-simple-filter') ? 'ea-simple-filter' : ''),
+            'data-bs-toggle': 'dropdown',
+            'aria-expanded': 'false',
+            'aria-label': $select.attr('aria-label') || '',
+        }).appendTo($group);
+
+        const $menu = $('<div/>', {class: 'dropdown-menu ea-select-dropdown-menu'}).appendTo($group);
+
+        const option = (element) =>
+            $('<label/>', {
+                class: 'dropdown-item d-flex align-items-center gap-2',
+                html: [
+                    $('<input/>', {
+                        type: 'radio',
+                        name,
+                        class: 'form-check-input m-0',
+                        value: element.value,
+                        checked: element.selected,
+                    }),
+                    $('<span/>', {text: element.text}),
+                ],
+            });
+
+        const updateLabel = () => $button.text($select.find('option:selected').text());
+
+        // The options are read when the list opens, so that options added later are shown too.
+        $group.on('show.bs.dropdown', () => {
+            $menu.empty();
+
+            $select.children().each((index, child) => {
+                if (child.tagName === 'OPTGROUP') {
+                    $('<h6/>', {class: 'dropdown-header', text: child.label}).appendTo($menu);
+                    $(child)
+                        .children('option')
+                        .each((childIndex, element) => $menu.append(option(element)));
+                } else {
+                    $menu.append(option(child));
+                }
+            });
+        });
+
+        $menu.on('change', 'input', (event) => {
+            $select.val(event.target.value).trigger('change');
+            bootstrap.Dropdown.getOrCreateInstance($button[0]).hide();
+        });
+
+        $select.on('change', updateLabel);
+
+        updateLabel();
+    }
+
     return {
         initializeDateTimePicker,
         initializeDatePicker,
         initializeTimePicker,
         initializeDropdown,
+        initializeSelectDropdown,
         initializeTextEditor,
         getDateTimePickerValue,
         setDateTimePickerValue,
