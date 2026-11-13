@@ -10,9 +10,9 @@
 <nav id="header" class="navbar navbar-expand-md navbar-dark bg-primary p-0">
     <div id="header-logo" class="navbar-brand p-1 lh-1">
         <img src="<?= base_url(
-            'assets/img/logo.png',
+            'https://www.podologiasabadell.com/img/logo.webp',
         ) ?>" alt="logo" class="float-start me-2" style="width: 45px; height: 45px;">
-        <h6 class="mb-1 mt-1 fw-bold text-white" style="font-size: 15px;">EASY!APPOINTMENTS</h6>
+        <h6 class="mb-1 mt-1 fw-bold text-white" style="font-size: 15px;">Clínica Podològica</h6>
         <small class="d-block text-white-50" style="font-size: 12px;">Online Appointment Scheduler</small>
     </div>
 
@@ -116,10 +116,6 @@
                             <?= $name ?>
                         </a>
                     <?php endforeach; ?>
-                    <a class="dropdown-item text-danger" href="https://easyappointments.org/premium" target="_blank">
-                        <i class="fas fa-crown text-warning me-2"></i>
-                        Premium
-                    </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="<?= site_url('booking') ?>" target="_blank">
                         <i class="fas fa-external-link me-2"></i>

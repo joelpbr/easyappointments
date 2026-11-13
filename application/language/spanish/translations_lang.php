@@ -737,4 +737,10 @@ $lang['mark_no_show'] = 'Falta de asistencia';
 $lang['mark_no_show_question'] = 'El paciente no vino a esta cita. Se guarda como «No presentado» y la próxima vez que se le dé cita aparecerá un aviso. No se envía ningún mensaje.';
 $lang['no_show_warning'] = 'Este paciente tiene %count falta(s) de asistencia, la última el %date.';
 $lang['no_show_count'] = 'Faltas de asistencia';
+$lang['existing_patient'] = 'Paciente existente';
+$lang['new_patient'] = 'Paciente nuevo';
+$lang['edit_patient_data'] = 'Editar datos';
+$lang['protect_patient_data'] = 'Proteger datos';
+$lang['change_patient'] = 'Cambiar de paciente';
+$lang['choose_existing_patient'] = 'Busca el paciente y elígelo de la lista, o márcalo como paciente nuevo.';
 // End

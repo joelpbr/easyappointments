@@ -737,4 +737,10 @@ $lang['mark_no_show'] = 'Mark no-show';
 $lang['mark_no_show_question'] = 'The patient did not come to this appointment. It is kept as a no-show, and the next time the patient is booked a warning will remind it. Nobody is notified.';
 $lang['no_show_warning'] = 'This patient missed %count appointment(s), the last one on %date.';
 $lang['no_show_count'] = 'Missed appointments';
+$lang['existing_patient'] = 'Existing patient';
+$lang['new_patient'] = 'New patient';
+$lang['edit_patient_data'] = 'Edit data';
+$lang['protect_patient_data'] = 'Protect data';
+$lang['change_patient'] = 'Change patient';
+$lang['choose_existing_patient'] = 'Look for the patient and choose them from the list, or mark them as a new patient.';
 // End

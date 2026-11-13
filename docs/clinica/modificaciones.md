@@ -410,3 +410,9 @@ Tercera corrección, a petición de la clínica: sin ventana emergente, solo el 
 | --- | --- | --- |
 | `application/views/components/appointments_modal.php`, `assets/js/components/appointments_modal.js` | Se quita el botón «Nuevo» de «Datos del paciente». Cambiar el nombre o el apellido de un paciente elegido lo suelta y lo trata como paciente nuevo (al guardar se siguen comprobando los posibles repetidos); cambiar el teléfono o el correo actualiza el elegido | Petición de la clínica: el botón no aportaba nada |
 | `assets/js/components/patient_search.js` | Se quita la opción «Crear paciente nuevo» de los resultados: si el paciente no está, se sigue escribiendo | Ídem |
+
+## Paciente existente o nuevo
+
+| Archivo | Cambio | Motivo |
+| --- | --- | --- |
+| `application/views/components/appointments_modal.php`, `assets/js/components/appointments_modal.js`, `backend.scss` | Selector «Paciente existente / Paciente nuevo» en «Datos del paciente» (existente por defecto). Existente: hay que buscarlo y elegirlo (si no, no se guarda y lo dice); sus datos quedan protegidos (en gris) hasta pulsar «Editar datos», y «Cambiar de paciente» lo suelta. Nuevo: se escribe libremente, sin búsqueda, y al guardar se avisa si el teléfono o el nombre coinciden con otro paciente, con la opción de usar ese o seguir como nuevo. Al editar una cita, su paciente queda protegido | Petición de la clínica: dejar claro si el paciente es nuevo y no cambiar los datos de uno existente por error |
