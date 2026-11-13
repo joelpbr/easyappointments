@@ -42,11 +42,6 @@ App.Components.AppointmentsModal = (function () {
     const $selectService = $('#select-service');
     const $selectProvider = $('#select-provider');
     const $insertAppointment = $('#insert-appointment');
-    const $customField1 = $('#custom-field-1');
-    const $customField2 = $('#custom-field-2');
-    const $customField3 = $('#custom-field-3');
-    const $customField4 = $('#custom-field-4');
-    const $customField5 = $('#custom-field-5');
     const $appointmentDuration = $('#appointment-duration');
     const $appointmentPrice = $('#appointment-price');
     const $noShowWarning = $('#no-show-warning');
@@ -255,11 +250,6 @@ App.Components.AppointmentsModal = (function () {
                 language: $language.val(),
                 timezone: $timezone.val(),
                 notes: $customerNotes.val(),
-                custom_field_1: $customField1.val(),
-                custom_field_2: $customField2.val(),
-                custom_field_3: $customField3.val(),
-                custom_field_4: $customField4.val(),
-                custom_field_5: $customField5.val(),
             };
 
             if ($customerId.val() !== '') {
@@ -732,11 +722,6 @@ App.Components.AppointmentsModal = (function () {
         $language.val(customer.language);
         $timezone.val(customer.timezone);
         $customerNotes.val(customer.notes);
-        $customField1.val(customer.custom_field_1);
-        $customField2.val(customer.custom_field_2);
-        $customField3.val(customer.custom_field_3);
-        $customField4.val(customer.custom_field_4);
-        $customField5.val(customer.custom_field_5);
         $appointmentsModal.find('.is-invalid').removeClass('is-invalid');
         $appointmentsModal.find('.modal-message').addClass('d-none');
 

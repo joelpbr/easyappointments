@@ -336,10 +336,6 @@
                                     </select>
                                 </div>
 
-                                <div class="ea-more-field">
-                                    <?php component('custom_fields'); ?>
-                                </div>
-
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="mb-3 <?= $require_address ? '' : 'ea-more-field' ?>">

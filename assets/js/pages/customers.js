@@ -29,11 +29,6 @@ App.Pages.Customers = (function () {
     const $fiscalFields = $('#fiscal-data [data-fiscal]');
     const $fiscalDocumentType = $('#fiscal-document-type');
     const $fiscalDocumentHint = $('#fiscal-document-hint');
-    const $customField1 = $('#custom-field-1');
-    const $customField2 = $('#custom-field-2');
-    const $customField3 = $('#custom-field-3');
-    const $customField4 = $('#custom-field-4');
-    const $customField5 = $('#custom-field-5');
     const $formMessage = $('#form-message');
     const $customerAppointments = $('#customer-appointments');
     const $recordName = $('#customer-record-name');
@@ -182,11 +177,6 @@ App.Pages.Customers = (function () {
                 notes: currentCustomer?.notes ?? '',
                 timezone: vars('default_timezone') || 'Europe/Madrid',
                 language: $language.val() || 'english',
-                custom_field_1: $customField1.val(),
-                custom_field_2: $customField2.val(),
-                custom_field_3: $customField3.val(),
-                custom_field_4: $customField4.val(),
-                custom_field_5: $customField5.val(),
                 id_users_preferred_provider: $preferredProvider.val(),
             };
 
@@ -456,11 +446,6 @@ App.Pages.Customers = (function () {
         $('#no-show-count').val(customer.no_show_count || 0);
         $('#no-show-count-group').prop('hidden', !Number(customer.no_show_count));
         displayFiscalData(customer.id);
-        $customField1.val(customer.custom_field_1);
-        $customField2.val(customer.custom_field_2);
-        $customField3.val(customer.custom_field_3);
-        $customField4.val(customer.custom_field_4);
-        $customField5.val(customer.custom_field_5);
 
         displayHistory(customer.appointments);
     }

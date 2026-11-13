@@ -110,10 +110,6 @@ class Booking_settings extends EA_Controller
                     $setting['id'] = $existing_setting['id'];
                 }
 
-                if (!empty($setting['name']) && str_starts_with($setting['name'], 'label_custom_field_')) {
-                    $setting['value'] = strip_tags($setting['value'] ?? '');
-                }
-
                 if (!empty($setting['name']) && in_array($setting['name'], $rich_text_settings, true)) {
                     $setting['value'] = pure_html($setting['value'] ?? '');
                 }

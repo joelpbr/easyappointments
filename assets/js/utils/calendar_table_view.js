@@ -403,11 +403,6 @@ App.Utils.CalendarTableView = (function () {
         $appointmentsModal.find('#language').val(customer.language);
         $appointmentsModal.find('#timezone').val(customer.timezone);
         $appointmentsModal.find('#customer-notes').val(customer.notes);
-        $appointmentsModal.find('#custom-field-1').val(customer.custom_field_1);
-        $appointmentsModal.find('#custom-field-2').val(customer.custom_field_2);
-        $appointmentsModal.find('#custom-field-3').val(customer.custom_field_3);
-        $appointmentsModal.find('#custom-field-4').val(customer.custom_field_4);
-        $appointmentsModal.find('#custom-field-5').val(customer.custom_field_5);
 
         // Appointment fields
 

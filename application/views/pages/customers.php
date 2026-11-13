@@ -204,10 +204,6 @@
                         </select>
                     </div>
 
-                    <?php component('custom_fields', [
-                        'disabled' => true,
-                    ]); ?>
-
                     <fieldset id="fiscal-data" class="mb-3">
                         <h5 class="mt-4 mb-1 fw-light"><?= lang('fiscal_data') ?></h5>
                         <p class="form-text mt-0 mb-3">

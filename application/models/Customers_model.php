@@ -44,11 +44,6 @@ class Customers_model extends EA_Model
         'zip' => 'zip_code',
         'timezone' => 'timezone',
         'language' => 'language',
-        'customField1' => 'custom_field_1',
-        'customField2' => 'custom_field_2',
-        'customField3' => 'custom_field_3',
-        'customField4' => 'custom_field_4',
-        'customField5' => 'custom_field_5',
         'notes' => 'notes',
         'preferredProviderId' => 'id_users_preferred_provider',
     ];
@@ -884,11 +879,6 @@ class Customers_model extends EA_Model
             'notes' => $customer['notes'],
             'timezone' => $customer['timezone'],
             'language' => $customer['language'],
-            'customField1' => $customer['custom_field_1'],
-            'customField2' => $customer['custom_field_2'],
-            'customField3' => $customer['custom_field_3'],
-            'customField4' => $customer['custom_field_4'],
-            'customField5' => $customer['custom_field_5'],
             'noShowCount' => (int) ($customer['no_show_count'] ?? 0),
             'preferredProviderId' => isset($customer['id_users_preferred_provider'])
                 ? (int) $customer['id_users_preferred_provider']
@@ -946,26 +936,6 @@ class Customers_model extends EA_Model
 
         if (array_key_exists('timezone', $customer)) {
             $decoded_resource['timezone'] = $customer['timezone'];
-        }
-
-        if (array_key_exists('customField1', $customer)) {
-            $decoded_resource['custom_field_1'] = $customer['customField1'];
-        }
-
-        if (array_key_exists('customField2', $customer)) {
-            $decoded_resource['custom_field_2'] = $customer['customField2'];
-        }
-
-        if (array_key_exists('customField3', $customer)) {
-            $decoded_resource['custom_field_3'] = $customer['customField3'];
-        }
-
-        if (array_key_exists('customField4', $customer)) {
-            $decoded_resource['custom_field_4'] = $customer['customField4'];
-        }
-
-        if (array_key_exists('customField5', $customer)) {
-            $decoded_resource['custom_field_5'] = $customer['customField5'];
         }
 
         if (array_key_exists('preferredProviderId', $customer)) {

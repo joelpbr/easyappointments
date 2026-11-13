@@ -80,7 +80,6 @@
                     </div>
                 <?php endif; ?>
 
-                <?php component('custom_fields'); ?>
 
             </div>
 
