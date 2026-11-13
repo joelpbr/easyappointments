@@ -67,6 +67,9 @@ class Customers_model extends EA_Model
 
         $this->validate($customer);
 
+        // Patients are always in the clinic's timezone (setting default_timezone), so none is kept per patient.
+        $customer['timezone'] = null;
+
         if (array_key_exists('phone_number', $customer)) {
             $customer['phone_normalized'] = normalize_phone($customer['phone_number']);
         }
@@ -876,7 +879,7 @@ class Customers_model extends EA_Model
             'city' => $customer['city'],
             'zip' => $customer['zip_code'],
             'notes' => $customer['notes'],
-            'timezone' => $customer['timezone'],
+            'timezone' => $customer['timezone'] ?: setting('default_timezone'),
             'language' => $customer['language'],
             'noShowCount' => (int) ($customer['no_show_count'] ?? 0),
             'preferredProviderId' => isset($customer['id_users_preferred_provider'])

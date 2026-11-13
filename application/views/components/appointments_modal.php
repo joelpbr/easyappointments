@@ -374,17 +374,6 @@
                                            maxlength="120"/>
                                 </div>
 
-                                <div class="mb-3 ea-more-field">
-                                    <label class="form-label" for="timezone">
-                                        <?= lang('timezone') ?>
-                                        <span class="text-danger" hidden>*</span>
-                                    </label>
-                                    <?php component('timezone_dropdown', [
-                                        'attributes' => 'id="timezone" class="form-select required"',
-                                        'grouped_timezones' => vars('grouped_timezones'),
-                                    ]); ?>
-                                </div>
-
                                 <div class="mb-3">
                                     <label for="customer-notes" class="form-label">
                                         <?= lang('administrative_notes') ?>

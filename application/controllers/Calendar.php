@@ -30,7 +30,6 @@ class Calendar extends EA_Controller
         'city',
         'state',
         'zip_code',
-        'timezone',
         'language',
         'notes',
     ];

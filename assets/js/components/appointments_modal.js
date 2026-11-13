@@ -29,7 +29,6 @@ App.Components.AppointmentsModal = (function () {
     const $city = $('#city');
     const $zipCode = $('#zip-code');
     const $language = $('#language');
-    const $timezone = $('#timezone');
     const $customerNotes = $('#customer-notes');
     const $saveAppointment = $('#save-appointment');
     const $appointmentId = $('#appointment-id');
@@ -248,7 +247,6 @@ App.Components.AppointmentsModal = (function () {
                 city: $city.val(),
                 zip_code: $zipCode.val(),
                 language: $language.val(),
-                timezone: $timezone.val(),
                 notes: $customerNotes.val(),
             };
 
@@ -570,7 +568,6 @@ App.Components.AppointmentsModal = (function () {
         toggleMoreFields(false);
 
         $language.val(vars('default_language'));
-        $timezone.val(vars('default_timezone'));
 
         // Reset color.
         $appointmentColor.find('.color-selection-option:first').trigger('click');
@@ -720,7 +717,6 @@ App.Components.AppointmentsModal = (function () {
         $city.val(customer.city);
         $zipCode.val(customer.zip_code);
         $language.val(customer.language);
-        $timezone.val(customer.timezone);
         $customerNotes.val(customer.notes);
         $appointmentsModal.find('.is-invalid').removeClass('is-invalid');
         $appointmentsModal.find('.modal-message').addClass('d-none');
@@ -791,7 +787,6 @@ App.Components.AppointmentsModal = (function () {
         $customerId.val('');
         getPatientFields().filter('input, textarea').val('');
         $language.val(vars('default_language'));
-        $timezone.val(vars('default_timezone'));
     }
 
     /**

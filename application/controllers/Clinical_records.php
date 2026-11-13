@@ -100,11 +100,10 @@ class Clinical_records extends EA_Controller
             $this->fiscal_parties_model->validate($fiscal);
 
             // The other patient fields are kept, so that the required ones are still checked. A new patient gets the
-            // default language and timezone, as on the patients page.
+            // default language, as on the patients page.
             if ($is_new) {
                 $customer = [
                     'language' => setting('default_language'),
-                    'timezone' => setting('default_timezone'),
                 ];
             } else {
                 $customer = $this->customers_model->find($customer_id);

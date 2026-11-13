@@ -33,7 +33,6 @@ class Customers extends EA_Controller
         'state',
         'zip_code',
         'notes',
-        'timezone',
         'language',
         'id_users_preferred_provider',
     ];

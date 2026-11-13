@@ -171,11 +171,9 @@ App.Pages.Customers = (function () {
                 phone_number: $phoneNumber.val(),
                 address: $address.val(),
                 city: $city.val(),
-                // The page no longer shows the zip code nor the notes, which are kept as they are, and every patient
-                // is in the clinic's timezone.
+                // The page no longer shows the zip code nor the notes, which are kept as they are.
                 zip_code: currentCustomer?.zip_code ?? '',
                 notes: currentCustomer?.notes ?? '',
-                timezone: vars('default_timezone') || 'Europe/Madrid',
                 language: $language.val() || 'english',
                 id_users_preferred_provider: $preferredProvider.val(),
             };

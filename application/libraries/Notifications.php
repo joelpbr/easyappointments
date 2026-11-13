@@ -93,7 +93,7 @@ class Notifications
                         $customer_link,
                         $customer['email'],
                         $ics_stream,
-                        $customer['timezone'],
+                        $customer['timezone'] ?: setting('default_timezone'),
                     );
                 } catch (Throwable $e) {
                     $this->log_exception($e, 'appointment-saved to customer', $appointment['id'] ?? null);
@@ -269,7 +269,7 @@ class Notifications
                         $settings,
                         $customer['email'],
                         $cancellation_reason,
-                        $customer['timezone'],
+                        $customer['timezone'] ?: setting('default_timezone'),
                     );
                 } catch (Throwable $e) {
                     $this->log_exception($e, 'appointment-deleted to customer', $appointment['id'] ?? null);

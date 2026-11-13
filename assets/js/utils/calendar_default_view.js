@@ -167,7 +167,6 @@ App.Utils.CalendarDefaultView = (function () {
         $appointmentsModal.find('#city').val(customer.city);
         $appointmentsModal.find('#zip-code').val(customer.zip_code);
         $appointmentsModal.find('#language').val(customer.language);
-        $appointmentsModal.find('#timezone').val(customer.timezone);
         $appointmentsModal.find('#customer-notes').val(customer.notes);
 
         // Appointment fields
