@@ -531,3 +531,19 @@ Cambio posterior (simplificación de la base de datos): la fila fiscal del propi
 Descartado tras medirlo: quitar el índice `id_users_provider` de las citas (lo cubre en teoría el índice por profesional y periodo). Sin él, MySQL leía toda la tabla (7.453 filas) para la agenda de un día en lugar de las 2.466 del profesional, porque «empieza antes del día X» no filtra casi nada. Se mantiene.
 
 Cambio posterior (un solo camino para «no disponible»): las ausencias y cierres se crean solo como bloqueos (botón «Bloquejos», tipo ausencia personal, vacaciones… y profesionales). El menú «+» ya no ofrece «Indisponibilitat» (se oculta desde `calendar_table_view.js` y `calendar_default_view.js`; las que ya existen se siguen viendo y editando), y seleccionar una franja en la agenda abre directamente una cita nueva en lugar de preguntar «¿cita o indisponibilidad?». Sin cambios en la base de datos: el motor de disponibilidad sigue entendiendo las indisponibilidades.
+
+## Limpieza de lo que no se usa (13/11/2026)
+
+Decidido con la clínica: se elimina por completo lo que está desactivado y vacío y no se va a usar. Migración `091_remove_unused_features.php`.
+
+| Qué | Base de datos | Código |
+| --- | --- | --- |
+| Videollamada (Jitsi y Google Meet) | `appointments.meeting_link` | Ajustes de Jitsi, `Jitsi_client`, la parte de Meet de `Google_sync` (la sincronización con Google Calendar se mantiene), campo del formulario de cita, popover, correos, `.ics`, API |
+| LDAP | `users.ldap_dn`, 8 ajustes `ldap_*` | Ajustes e importación LDAP, `Ldap_client`, el inicio de sesión por LDAP, campo en las fichas del personal, extensión PHP `ldap` del Dockerfile. Se mantienen las constantes `LDAP_DEFAULT_*` porque la migración 057 las usa en instalaciones nuevas |
+| Campos personalizados | `users.custom_field_1..5`, 15 ajustes | Componente `custom_fields`, ajustes de reserva, formularios, correos, API |
+| Analíticas web | 3 ajustes | Ajustes de Google Analytics y Matomo y sus scripts. La política de seguridad (CSP) ya solo permite scripts y peticiones de la propia aplicación |
+| Móvil | `users.mobile_number` | Campo en cuenta, administradores, profesionales y secretaría, búsquedas, API |
+| Zona horaria de los pacientes | `users.timezone` vacío en pacientes | Los pacientes usan siempre la de la clínica (`default_timezone`); la columna sigue para el personal |
+| Reserva online | `disable_booking = 1` | La dirección de la aplicación lleva al inicio de sesión |
+
+Resultado: `ea_users` pasa de 27 a 20 columnas y `ea_settings` de 82 a 56 filas; 24 textos menos en cada idioma. Las notas del paciente se mantienen: salen en el formulario de cita como «Notes administratives».

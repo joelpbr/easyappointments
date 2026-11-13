@@ -31,6 +31,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- The features the clinic does not use are removed: the video call link of the appointments (Jitsi and Google Meet), the LDAP login and import, the custom fields of the patients, the web analytics (Google Analytics and Matomo) and the mobile number of the users; online booking is turned off, so the address of the application opens the login, and patients always use the clinic's timezone
 - Absences and closures are added only as blocked periods: the calendar no longer offers new unavailabilities (the existing ones are still shown and can be edited), and selecting time in the calendar opens a new appointment at once instead of asking what to add
 - The fiscal data of a patient keeps only what differs from the patient: empty fiscal name, address, zip code, city or province use the patient's ones (shown in grey on the patients page), so changing the patient's address also changes their invoices
 - The patient search of the patients page looks in the first name, last names, phone and NIF/NIE at once, every typed word matching one of them, ignoring accents, case and the phone or document format; it lists the matching patients by name with their document and shows how many match out of all the patients

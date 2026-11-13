@@ -105,31 +105,19 @@ class Booking extends EA_Controller
             return;
         }
 
+        // Without online booking (the clinic books its appointments itself), the address of the application leads to
+        // the login of the staff instead of a "booking is disabled" message.
+        if (setting('disable_booking')) {
+            redirect('login');
+
+            return;
+        }
+
         allow_iframe_embedding(); // The booking page is designed to be embeddable in third-party sites.
 
         $company_name = setting('company_name');
         $company_logo = setting('company_logo');
         $company_color = setting('company_color');
-        $disable_booking = setting('disable_booking');
-
-        if ($disable_booking) {
-            $disable_booking_message = setting('disable_booking_message');
-
-            html_vars([
-                'show_message' => true,
-                'page_title' => lang('page_title') . ' ' . e($company_name),
-                'message_title' => lang('booking_is_disabled'),
-                'message_text' => $disable_booking_message,
-                'message_icon' => base_url('assets/img/error.png'),
-                'display_login_button' => setting('display_login_button'),
-                'legal_notice_url' => setting('legal_notice_url'),
-                'imprint_url' => setting('imprint_url'),
-            ]);
-
-            $this->load->view('pages/booking_message');
-
-            return;
-        }
 
         $available_services = $this->services_model->get_available_services(true);
         $available_providers = $this->providers_model->get_available_providers(true);
