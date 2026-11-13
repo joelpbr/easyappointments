@@ -186,18 +186,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="zip-code" class="form-label">
-                            <?= lang('zip_code') ?>
-                            <?php if (vars('require_zip_code')): ?>
-                                <span class="text-danger" hidden>*</span>
-                            <?php endif; ?>
-                        </label>
-                        <input type="text" id="zip-code"
-                               class="<?= vars('require_zip_code') ? 'required' : '' ?> form-control"
-                               maxlength="120" disabled/>
-                    </div>
-
-                    <div class="mb-3">
                         <label class="form-label" for="language">
                             <?= lang('language') ?>
                             <span class="text-danger" hidden>*</span>
@@ -209,17 +197,6 @@
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="timezone">
-                            <?= lang('timezone') ?>
-                            <span class="text-danger" hidden>*</span>
-                        </label>
-                        <?php component('timezone_dropdown', [
-                            'attributes' => 'id="timezone" class="form-select required" disabled',
-                            'grouped_timezones' => vars('grouped_timezones'),
-                        ]); ?>
                     </div>
 
                     <?php if (setting('ldap_is_active')): ?>
@@ -234,13 +211,6 @@
                     <?php component('custom_fields', [
                         'disabled' => true,
                     ]); ?>
-
-                    <div class="mb-3">
-                        <label class="form-label" for="notes">
-                            <?= lang('notes') ?>
-                        </label>
-                        <textarea id="notes" rows="4" class="form-control" disabled></textarea>
-                    </div>
 
                     <fieldset id="fiscal-data" class="mb-3">
                         <h5 class="mt-4 mb-1 fw-light"><?= lang('fiscal_data') ?></h5>
