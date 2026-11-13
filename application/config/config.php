@@ -133,21 +133,6 @@ $languages = [
 
 $config['language_codes'] = $languages;
 
-// Match the browser language against the known codes, trying the region specific one first (e.g. "zh-cn"
-// before "zh"), so that codes like "pt-br" and "zh-tw" can be detected as well.
-$accept_language = strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '', 0, 5));
-$accept_language_prefix = substr($accept_language, 0, 2);
-
-$detected_language = $languages[$accept_language] ?? ($languages[$accept_language_prefix] ?? null);
-
-if (!$detected_language && strlen($accept_language_prefix) === 2) {
-    foreach ($languages as $code => $name) {
-        if (str_starts_with($code, $accept_language_prefix)) {
-            $detected_language = $name;
-            break;
-        }
-    }
-}
 
 // Validate language parameter to prevent injection - only accept known language values
 $requested_language = $_GET['language'] ?? null;
@@ -155,7 +140,8 @@ if ($requested_language !== null && !in_array($requested_language, $languages, t
     $requested_language = null; // Invalid language, ignore it
 }
 
-$config['language'] = $requested_language ?? ($detected_language ?? Config::LANGUAGE);
+// The clinic works in Catalan by default, whatever the language of the browser; Spanish is chosen in the user menu.
+$config['language'] = $requested_language ?? Config::LANGUAGE;
 
 $config['language_code'] = array_search($config['language'], $languages) ?: 'en';
 
@@ -169,50 +155,7 @@ $config['language_code'] = array_search($config['language'], $languages) ?: 'en'
 | of these languages.
 |
 */
-$config['available_languages'] = [
-    'albanian',
-    'arabic',
-    'bosnian',
-    'bulgarian',
-    'catalan',
-    'chinese',
-    'croatian',
-    'czech',
-    'danish',
-    'dutch',
-    'english',
-    'estonian',
-    'finnish',
-    'french',
-    'german',
-    'greek',
-    'hebrew',
-    'hindi',
-    'hungarian',
-    'italian',
-    'japanese',
-    'latvian',
-    'lithuanian',
-    'luxembourgish',
-    'marathi',
-    'norwegian',
-    'persian',
-    'polish',
-    'portuguese',
-    'portuguese-br',
-    'romanian',
-    'russian',
-    'serbian',
-    'slovak',
-    'slovenian',
-    'spanish',
-    'swedish',
-    'thai',
-    'traditional-chinese',
-    'turkish',
-    'ukrainian',
-    'uzbek',
-];
+$config['available_languages'] = ['catalan', 'spanish'];
 
 /*
 |--------------------------------------------------------------------------

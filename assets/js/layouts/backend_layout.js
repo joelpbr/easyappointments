@@ -92,6 +92,16 @@ window.App.Layouts.Backend = (function () {
         });
 
         tippy('[data-tippy-content]');
+
+        // Language switch of the user menu (Catalan or Spanish).
+        $(document).on('click', '.ea-change-language', (event) => {
+            event.preventDefault();
+
+            $.post(App.Utils.Url.siteUrl('localization/change_language'), {
+                csrf_token: vars('csrf_token'),
+                language: $(event.currentTarget).data('language'),
+            }).done(() => window.location.reload());
+        });
     }
 
     document.addEventListener('DOMContentLoaded', initialize);

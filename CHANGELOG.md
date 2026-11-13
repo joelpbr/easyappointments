@@ -28,6 +28,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- The application works in Catalan by default, with the clinic terminology, and Spanish can be chosen in the user menu, which keeps the choice; other languages are no longer offered and the browser language no longer decides
 - The management pages no longer show the footer (Easy!Appointments credits, language selector and greeting), so the calendar uses that height; the license and credits remain under About
 - Midday breaks are labeled "Mediodía" and out-of-hours periods use red stripes with bold white text outlined in black
 - Treatment dropdowns follow the clinic frequency order, with distinct light backgrounds for readable black text; appointments using the previous treatment colors follow the new palette while custom colors stay unchanged
