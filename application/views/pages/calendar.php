@@ -49,18 +49,13 @@
             <?php endif; ?>
 
             <?php if (can('add', PRIV_APPOINTMENTS)): ?>
-                <button id="open-new-appointment" class="btn btn-light" type="button">
-                    <i class="fas fa-calendar-plus me-2"></i>
-                    <?= lang('new_appointment_title') ?>
-                </button>
-
                 <button id="open-slot-search" class="btn btn-light" type="button">
                     <i class="fas fa-search me-2"></i>
-                    <?= lang('find_slot') ?>
                 </button>
 
                 <div class="dropdown d-inline-block">
                     <button class="btn btn-light" type="button" data-bs-toggle="dropdown">
+                        <?= lang('new_appointment_title') ?>
                         <i class="fas fa-plus-square"></i>
                     </button>
                     <ul class="dropdown-menu">

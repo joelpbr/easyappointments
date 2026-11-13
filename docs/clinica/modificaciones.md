@@ -547,3 +547,5 @@ Decidido con la clínica: se elimina por completo lo que está desactivado y vac
 | Reserva online | `disable_booking = 1` | La dirección de la aplicación lleva al inicio de sesión |
 
 Resultado: `ea_users` pasa de 27 a 20 columnas y `ea_settings` de 82 a 56 filas; 24 textos menos en cada idioma. Las notas del paciente se mantienen: salen en el formulario de cita como «Notes administratives».
+
+Cambio posterior: la barra de la agenda deja el botón «Nova cita» aparte; el desplegable «+» pasa a llamarse «Nova cita», y «Cercar forat» queda solo con la lupa. La etiqueta del mediodía muestra el horario: «12:30 - 15:00 - Migdia».
