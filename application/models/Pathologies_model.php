@@ -44,7 +44,7 @@ class Pathologies_model extends EA_Model
     ];
 
     /**
-     * Get the whole catalog, by name, with how many times each pathology is placed on the diagrams of the visits.
+     * Get the whole catalog by usage descending, then name, with the number of saved markers for each pathology.
      *
      * @return array List of ['id', 'name', 'description', 'image_url', 'marker_count'].
      */
@@ -62,12 +62,17 @@ class Pathologies_model extends EA_Model
 
         $pathologies = $this->db->order_by('name')->get('podology_pathologies')->result_array();
 
-        return array_map(
+        $catalog = array_map(
             fn(array $pathology): array => $this->resource($pathology) + [
                 'marker_count' => (int) ($counts[$pathology['id']] ?? 0),
             ],
             $pathologies,
         );
+
+        // Equal counts keep the alphabetical order from the database (PHP's sort is stable).
+        usort($catalog, static fn(array $a, array $b): int => $b['marker_count'] <=> $a['marker_count']);
+
+        return $catalog;
     }
 
     /**
