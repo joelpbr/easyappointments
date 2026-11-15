@@ -875,7 +875,7 @@ $lang['backup_restore'] = 'Restaurar';
 $lang['backup_before_restore'] = 'Antes de restaurar';
 $lang['backup_restore_title'] = 'Restaurar una copia';
 $lang['backup_restore_info'] = 'Sustituye todos los datos actuales por los de la copia. Antes se guarda en la lista una copia de los datos actuales, para poder recuperarlos.';
-$lang['backup_upload_label'] = 'Archivo de la copia (.sql.gz o .sql)';
+$lang['backup_upload_label'] = 'Archivo de copia (.db, .sql.gz o .sql)';
 $lang['backup_max_size'] = 'Hasta %s.';
 $lang['backup_restore_confirm'] = 'Todos los datos actuales (pacientes, citas, fichas clínicas, configuración y usuarios) se sustituirán por los de la copia «%s». Antes se guarda una copia de los datos actuales. ¿Quieres continuar?';
 $lang['backup_restore_button'] = 'Sustituir los datos';
@@ -890,3 +890,23 @@ $lang['backup_rollback_failed'] = 'No se ha podido restaurar la copia ni volver 
 $lang['backup_migration_failed'] = 'Se ha restaurado la copia, pero no se ha podido actualizar a esta versión de la aplicación. Mira el registro de la aplicación.';
 $lang['backup_nothing_changed'] = 'No se ha restaurado la copia. No se ha cambiado nada.';
 // End
+
+$lang['backup_podologo_confirm'] = '¿Importar %s? Se añadirán pacientes, visitas y dibujos sin sustituir los datos actuales. Se conservan las coordenadas originales. Los iconos usan el catálogo disponible o un símbolo provisional; cámbialos en Patologías. Antes se crea una copia de seguridad.';
+
+$lang['backup_podologo_canvas_hint'] = 'Lienzo original del dibujo (píxeles). 360 × 300 es provisional: ajústalo comparando un dibujo antiguo. Las coordenadas se conservan sin cambios y se muestran sobre los fondos actuales.';
+
+$lang['backup_podologo_width'] = 'Ancho original';
+
+$lang['backup_podologo_height'] = 'Alto original';
+
+$lang['backup_podologo_canvas_required'] = 'Introduce el ancho y el alto del lienzo original.';
+
+$lang['backup_podologo_already_imported'] = 'Ya se ha importado una base Podologo o hay una importación en curso. No se ha duplicado la importación.';
+
+$lang['backup_podologo_reader_failed'] = 'No se ha podido leer la base Firebird. Comprueba que sea una base Podologo completa y que el lector esté instalado. No se ha cambiado ningún dato.';
+
+$lang['backup_delete'] = 'Borrar base de datos actual';
+
+$lang['backup_delete_confirm'] = '¿Borrar todos los pacientes, citas, dibujos, datos fiscales e historias clínicas, recordatorios y datos importados? Se conservan los accesos del personal, ajustes, catálogos, registro de auditoría y copias existentes. Antes se crea una copia de seguridad.';
+
+$lang['backup_delete_type'] = 'Escribe DELETE para confirmar.';

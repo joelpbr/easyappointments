@@ -40,25 +40,23 @@ class Foot_diagrams_model extends EA_Model
     }
 
     /**
-     * Get the catalog of pathologies, by name.
+     * Get the catalog of pathologies in the same usage order as the catalog page.
      *
      * @return array List of ['id', 'name', 'image_url', 'description'].
      */
     public function get_pathologies(): array
     {
-        $pathologies = $this->db->order_by('name')->get('podology_pathologies')->result_array();
-
-        // The icons uploaded from the pathologies page have their own address.
+        // Share the ordering and icon URLs with every other pathology list.
         $this->load->model('pathologies_model');
 
         return array_map(
             fn(array $pathology): array => [
                 'id' => (int) $pathology['id'],
                 'name' => $pathology['name'],
-                'image_url' => Pathologies_model::image_url($pathology),
+                'image_url' => $pathology['image_url'],
                 'description' => $pathology['description'],
             ],
-            $pathologies,
+            $this->pathologies_model->get_all(),
         );
     }
 
@@ -92,6 +90,21 @@ class Foot_diagrams_model extends EA_Model
      */
     public function sync_markers(int $appointment_id, array $markers): void
     {
+        // Keep the canvas when a legacy drawing is carried to a new visit, even if every marker is removed.
+        $appointment = $this->db->get_where('appointments', ['id' => $appointment_id])->row_array();
+        $drawing = $appointment ? $this->get_drawing($appointment) : [];
+        $layout = null;
+        if (!empty($drawing['diagrams'][0]['background_image'])) {
+            $layout = [];
+            foreach ($drawing['diagrams'] as $diagram) {
+                $layout[$diagram['id']] = [
+                    'width' => $diagram['coordinate_width'],
+                    'height' => $diagram['coordinate_height'],
+                    'file' => $diagram['background_image'],
+                ];
+            }
+            $layout = json_encode($layout, JSON_THROW_ON_ERROR);
+        }
         $current = array_map(
             'intval',
             array_column(
@@ -157,7 +170,7 @@ class Foot_diagrams_model extends EA_Model
         if ($this->db->get_where('appointment_records', ['id_appointments' => $appointment_id])->num_rows()) {
             $this->db->update(
                 'appointment_records',
-                ['foot_diagrams_saved' => 1],
+                ['foot_diagrams_saved' => 1, 'foot_diagram_layout' => $layout],
                 ['id_appointments' => $appointment_id],
             );
         } else {
@@ -166,6 +179,7 @@ class Foot_diagrams_model extends EA_Model
                 'update_datetime' => date('Y-m-d H:i:s'),
                 'id_appointments' => $appointment_id,
                 'foot_diagrams_saved' => 1,
+                'foot_diagram_layout' => $layout,
             ]);
         }
     }
@@ -184,7 +198,8 @@ class Foot_diagrams_model extends EA_Model
         $appointment_id = (int) $appointment['id'];
 
         if ($this->diagrams_saved($appointment_id)) {
-            return ['markers' => $this->get_markers($appointment_id), 'copied_from' => null];
+            return ['markers' => $this->get_markers($appointment_id), 'copied_from' => null] +
+                $this->drawing_layout($appointment_id);
         }
 
         $previous = $this->db
@@ -210,7 +225,29 @@ class Foot_diagrams_model extends EA_Model
             $this->get_markers((int) $previous['id']),
         );
 
-        return ['markers' => $markers, 'copied_from' => $previous['start_datetime']];
+        return ['markers' => $markers, 'copied_from' => $previous['start_datetime']] +
+            $this->drawing_layout((int) $previous['id']);
+    }
+
+    private function drawing_layout(int $appointment_id): array
+    {
+        $record = $this->db->get_where('appointment_records', ['id_appointments' => $appointment_id])->row_array();
+        $layout = json_decode($record['foot_diagram_layout'] ?? 'null', true);
+        if (!$layout) {
+            return [];
+        }
+        $diagrams = [];
+        foreach ($layout as $id => $diagram) {
+            $diagrams[] = [
+                'id' => (int) $id,
+                'name' => null,
+                'image_url' => base_url('assets/img/' . $diagram['file']),
+                'coordinate_width' => $diagram['width'],
+                'coordinate_height' => $diagram['height'],
+                'background_image' => $diagram['file'],
+            ];
+        }
+        return ['diagrams' => $diagrams];
     }
 
     /**
@@ -272,6 +309,22 @@ class Foot_diagrams_model extends EA_Model
         $columns['annotation_title'] = mb_substr(trim((string) ($marker['annotation_title'] ?? '')), 0, 256) ?: null;
         $columns['annotation_text'] = trim((string) ($marker['annotation_text'] ?? '')) ?: null;
 
+        // Inherited legacy drawings retain their original canvas and background, without changing a coordinate.
+        if (!empty($marker['background_image'])) {
+            require_once APPPATH . 'libraries/Podologo_import.php';
+            $diagrams = Podologo_import::diagrams(
+                (int) ($marker['coordinate_width'] ?? 0),
+                (int) ($marker['coordinate_height'] ?? 0),
+            );
+            $diagram = $diagrams[$diagram_id];
+            if ($marker['background_image'] !== $diagram['file']) {
+                throw new InvalidArgumentException('Invalid original drawing background.');
+            }
+            $columns['coordinate_width'] = $diagram['width'];
+            $columns['coordinate_height'] = $diagram['height'];
+            $columns['background_image'] = $marker['background_image'];
+        }
+
         return $columns;
     }
 
@@ -295,6 +348,9 @@ class Foot_diagrams_model extends EA_Model
             'is_healed' => (bool) $marker['is_healed'],
             'annotation_title' => $marker['annotation_title'],
             'annotation_text' => $marker['annotation_text'],
+            'coordinate_width' => isset($marker['coordinate_width']) ? (int) $marker['coordinate_width'] : null,
+            'coordinate_height' => isset($marker['coordinate_height']) ? (int) $marker['coordinate_height'] : null,
+            'background_image' => $marker['background_image'] ?? null,
         ];
     }
 }

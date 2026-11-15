@@ -58,7 +58,9 @@ $human_size = function (int $bytes): string {
                                 <td class="text-nowrap" title="<?= e($backup['name']) ?>">
                                     <?= date('d/m/Y H:i', strtotime($backup['date'])) ?>
                                     <?php if (str_contains($backup['name'], '-before-restore')): ?>
-                                        <span class="badge text-bg-secondary ms-1"><?= lang('backup_before_restore') ?></span>
+                                        <span class="badge text-bg-secondary ms-1"><?= lang(
+                                            'backup_before_restore',
+                                        ) ?></span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-nowrap"><?= $human_size((int) $backup['size']) ?></td>
@@ -92,17 +94,37 @@ $human_size = function (int $bytes): string {
                     <label class="form-label" for="backup-file"><?= lang('backup_upload_label') ?></label>
                     <div class="d-flex flex-wrap gap-2">
                         <input id="backup-file" type="file" class="form-control w-auto flex-grow-1"
-                               accept=".gz,.sql,application/gzip,application/sql">
+                               accept=".db,.gz,.sql,application/gzip,application/sql,application/octet-stream">
                         <button type="button" id="backup-upload" class="btn btn-danger" disabled>
                             <i class="fas fa-upload me-2"></i>
                             <?= lang('backup_restore') ?>
                         </button>
+                    </div>
+                    <div id="podologo-canvas" class="mt-3" hidden>
+                        <p class="form-text"><?= lang('backup_podologo_canvas_hint') ?></p>
+                        <div class="d-flex gap-3">
+                            <label><?= lang('backup_podologo_width') ?>
+                                <input id="podologo-width" type="number" min="1" max="10000" value="360" class="form-control">
+                            </label>
+                            <label><?= lang('backup_podologo_height') ?>
+                                <input id="podologo-height" type="number" min="1" max="10000" value="300" class="form-control">
+                            </label>
+                        </div>
                     </div>
                     <?php if ($max_upload_bytes): ?>
                         <div class="form-text">
                             <?= e(sprintf(lang('backup_max_size'), $human_size((int) $max_upload_bytes))) ?>
                         </div>
                     <?php endif; ?>
+                </div>
+            </div>
+            <div class="card border-danger mt-4">
+                <div class="card-body">
+                    <h5><?= lang('backup_delete') ?></h5>
+                    <p class="small text-muted"><?= lang('backup_delete_confirm') ?></p>
+                    <button type="button" id="backup-delete" class="btn btn-outline-danger">
+                        <i class="fas fa-trash me-2"></i><?= lang('backup_delete') ?>
+                    </button>
                 </div>
             </div>
         </div>

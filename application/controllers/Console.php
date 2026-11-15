@@ -91,6 +91,16 @@ class Console extends EA_Controller
         $this->instance->migrate($type);
     }
 
+    /** Restore all visible clinical fields from a previous Podologo import, with a safety backup. */
+    public function repair_podologo_clinical(): void
+    {
+        set_time_limit(0);
+        $this->load->library('podologo_clinical_repair');
+        $result = $this->podologo_clinical_repair->repair();
+        audit_log('updated', 'database', null, $result);
+        response(json_encode($result, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR) . PHP_EOL);
+    }
+
     /**
      * Seed the database with test data.
      *

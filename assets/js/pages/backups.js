@@ -85,50 +85,93 @@ App.Pages.Backups = (function () {
      * @param {String} label What the question calls the copy (its date or the name of the file).
      * @param {FormData} data name of a copy of the list, or backup_file.
      */
-    function restore(label, data) {
-        App.Utils.Message.show(lang('backup_restore_title'), lang('backup_restore_confirm').replace('%s', label), [
-            {
-                text: lang('cancel'),
-                className: 'btn btn-outline-secondary',
-                click: (event, messageModal) => messageModal.hide(),
-            },
-            {
-                text: lang('backup_restore_button'),
-                className: 'btn btn-danger',
-                click: (event, messageModal) => {
-                    messageModal.hide();
-
-                    post('restore', data).done((response) => {
-                        if (response.logged_out) {
-                            App.Utils.Message.show(lang('backups'), lang('backup_restored_logged_out'), [
-                                {
-                                    text: lang('login'),
-                                    className: 'btn btn-primary',
-                                    click: () => (window.location.href = App.Utils.Url.siteUrl('login')),
-                                },
-                            ]);
-
-                            return;
-                        }
-
-                        App.Utils.Message.show(
-                            lang('backups'),
-                            lang('backup_restored').replace('%s', response.previous),
-                            [
-                                {
-                                    text: lang('close'),
-                                    className: 'btn btn-primary',
-                                    click: () => window.location.reload(),
-                                },
-                            ],
-                        );
-                    });
+    function restore(label, data, legacy = false) {
+        const question = lang(legacy ? 'backup_podologo_confirm' : 'backup_restore_confirm');
+        App.Utils.Message.show(
+            lang('backup_restore_title'),
+            question.replace('%s', App.Utils.String.escapeHtml(label)),
+            [
+                {
+                    text: lang('cancel'),
+                    className: 'btn btn-outline-secondary',
+                    click: (event, messageModal) => messageModal.hide(),
                 },
-            },
-        ]);
+                {
+                    text: lang('backup_restore_button'),
+                    className: 'btn btn-danger',
+                    click: (event, messageModal) => {
+                        messageModal.hide();
+
+                        post('restore', data).done((response) => {
+                            if (response.logged_out) {
+                                App.Utils.Message.show(lang('backups'), lang('backup_restored_logged_out'), [
+                                    {
+                                        text: lang('login'),
+                                        className: 'btn btn-primary',
+                                        click: () => (window.location.href = App.Utils.Url.siteUrl('login')),
+                                    },
+                                ]);
+
+                                return;
+                            }
+
+                            App.Utils.Message.show(
+                                lang('backups'),
+                                lang('backup_restored').replace('%s', response.previous),
+                                [
+                                    {
+                                        text: lang('close'),
+                                        className: 'btn btn-primary',
+                                        click: () => window.location.reload(),
+                                    },
+                                ],
+                            );
+                        });
+                    },
+                },
+            ],
+        );
     }
 
     $('#backup-create').on('click', create);
+
+    $('#backup-delete').on('click', () => {
+        const $confirmation = $('<input/>', {
+            type: 'text',
+            class: 'form-control mt-3',
+            autocomplete: 'off',
+            'aria-label': lang('backup_delete_type'),
+            placeholder: 'DELETE',
+        });
+        const $message = $('<div/>')
+            .append($('<p/>').text(lang('backup_delete_confirm')))
+            .append($('<label/>').text(lang('backup_delete_type')).append($confirmation));
+
+        const $modal = App.Utils.Message.show(lang('backup_delete'), ' ', [
+            {
+                text: lang('cancel'),
+                className: 'btn btn-outline-secondary',
+                click: (event, modal) => modal.hide(),
+            },
+            {
+                text: lang('backup_delete'),
+                className: 'btn btn-danger',
+                click: (event, modal) => {
+                    if ($confirmation.val() !== 'DELETE') {
+                        $confirmation.addClass('is-invalid').trigger('focus');
+                        return;
+                    }
+                    const data = new FormData();
+                    data.append('confirmation', $confirmation.val());
+                    $(event.currentTarget).prop('disabled', true);
+                    modal.hide();
+                    post('delete_current', data).done(() => window.location.reload());
+                },
+            },
+        ]);
+        $modal.find('.modal-body').empty().append($message);
+        $modal.on('shown.bs.modal', () => $confirmation.trigger('focus'));
+    });
 
     $page.on('click', '.backup-restore-listed', (event) => {
         const $button = $(event.currentTarget);
@@ -139,7 +182,10 @@ App.Pages.Backups = (function () {
         restore($button.data('label'), data);
     });
 
-    $file.on('change', () => $upload.prop('disabled', !$file[0].files.length));
+    $file.on('change', () => {
+        $upload.prop('disabled', !$file[0].files.length);
+        $('#podologo-canvas').prop('hidden', !/\.db$/i.test($file[0].files[0]?.name || ''));
+    });
 
     $upload.on('click', () => {
         const file = $file[0].files[0];
@@ -160,8 +206,10 @@ App.Pages.Backups = (function () {
         const data = new FormData();
 
         data.append('backup_file', file);
+        data.append('canvas_width', $('#podologo-width').val());
+        data.append('canvas_height', $('#podologo-height').val());
 
-        restore(file.name, data);
+        restore(file.name, data, /\.db$/i.test(file.name));
     });
 
     return {};

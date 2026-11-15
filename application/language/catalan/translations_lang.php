@@ -875,7 +875,7 @@ $lang['backup_restore'] = 'Restaura';
 $lang['backup_before_restore'] = 'Abans de restaurar';
 $lang['backup_restore_title'] = 'Restaura una còpia';
 $lang['backup_restore_info'] = 'Substitueix totes les dades actuals per les de la còpia. Abans es desa a la llista una còpia de les dades actuals, per poder-les recuperar.';
-$lang['backup_upload_label'] = 'Fitxer de la còpia (.sql.gz o .sql)';
+$lang['backup_upload_label'] = 'Fitxer de còpia (.db, .sql.gz o .sql)';
 $lang['backup_max_size'] = 'Fins a %s.';
 $lang['backup_restore_confirm'] = 'Totes les dades actuals (pacients, cites, fitxes clíniques, configuració i usuaris) se substituiran per les de la còpia «%s». Abans es desa una còpia de les dades actuals. Vols continuar?';
 $lang['backup_restore_button'] = 'Substitueix les dades';
@@ -890,3 +890,23 @@ $lang['backup_rollback_failed'] = 'No s\'ha pogut restaurar la còpia ni tornar 
 $lang['backup_migration_failed'] = 'S\'ha restaurat la còpia, però no s\'ha pogut actualitzar a aquesta versió de l\'aplicació. Mira el registre de l\'aplicació.';
 $lang['backup_nothing_changed'] = 'No s\'ha restaurat la còpia. No s\'ha canviat res.';
 // End
+
+$lang['backup_podologo_confirm'] = 'Vols importar %s? S’afegiran pacients, visites i dibuixos sense substituir les dades actuals. Es conserven les coordenades originals. Les icones fan servir el catàleg disponible o un símbol provisional; canvia-les a Patologies. Abans es crea una còpia de seguretat.';
+
+$lang['backup_podologo_canvas_hint'] = 'Llenç original del dibuix (píxels). 360 × 300 és provisional: ajusta’l comparant un dibuix antic. Les coordenades es conserven sense canvis i es mostren sobre els fons actuals.';
+
+$lang['backup_podologo_width'] = 'Amplada original';
+
+$lang['backup_podologo_height'] = 'Alçada original';
+
+$lang['backup_podologo_canvas_required'] = 'Introdueix l’amplada i l’alçada del llenç original.';
+
+$lang['backup_podologo_already_imported'] = 'Ja s’ha importat una base Podologo o hi ha una importació en curs. No s’ha duplicat la importació.';
+
+$lang['backup_podologo_reader_failed'] = 'No s’ha pogut llegir la base Firebird. Comprova que sigui una base Podologo completa i que el lector estigui instal·lat. No s’ha canviat cap dada.';
+
+$lang['backup_delete'] = 'Esborra la base de dades actual';
+
+$lang['backup_delete_confirm'] = 'Vols esborrar tots els pacients, cites, dibuixos, dades fiscals i històries clíniques, recordatoris i dades importades? Es conserven els accessos del personal, ajustos, catàlegs, registre d’auditoria i còpies existents. Abans es crea una còpia de seguretat.';
+
+$lang['backup_delete_type'] = 'Escriu DELETE per confirmar.';

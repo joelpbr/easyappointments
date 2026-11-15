@@ -225,8 +225,16 @@ class Database_backup
      *
      * @return string Path of the copy of the database as it was before.
      */
-    public function restore(string $path): string
+    public function restore(string $path, ?array $drawing_canvas = null): string
     {
+        require_once APPPATH . 'libraries/Podologo_import.php';
+        if (Podologo_import::matches($path)) {
+            if (!$drawing_canvas) {
+                throw new InvalidArgumentException(lang('backup_podologo_canvas_required'));
+            }
+            return (new Podologo_import())->restore($path, $drawing_canvas['width'], $drawing_canvas['height']);
+        }
+
         $sql = self::read($path);
 
         self::validate($sql, $this->CI->db->dbprefix);
@@ -275,6 +283,64 @@ class Database_backup
         }
 
         return $previous;
+    }
+
+    /**
+     * Clear patient data atomically, retaining staff, settings, catalogs and audit history.
+     * DELETE (not TRUNCATE) keeps this operation transactional and leaves existing IDs un-reused.
+     */
+    public function clear_clinical_data(): string
+    {
+        $mysqli = $this->connection();
+        if ((int) $this->value($mysqli, "SELECT GET_LOCK('podologo_import', 0)") !== 1) {
+            throw new RuntimeException('A database import is running. Try again when it finishes.');
+        }
+        try {
+            $previous = $this->create('before-delete');
+            $prefix = $this->CI->db->dbprefix;
+            $tables = $this->tables($mysqli);
+            $this->run($mysqli, 'START TRANSACTION');
+            try {
+                foreach (
+                    [
+                        'whatsapp_reminders',
+                        'appointment_foot_markers',
+                        'appointment_records',
+                        'appointments',
+                        'patient_records',
+                        'fiscal_parties',
+                    'podologo_source_rows',
+                    'podologo_import_links',
+                    ]
+                    as $table
+                ) {
+                    if (in_array($prefix . $table, $tables, true)) {
+                        $this->run($mysqli, 'DELETE FROM ' . $this->identifier($prefix . $table));
+                    }
+                }
+                $users = $this->identifier($prefix . 'users');
+                $roles = $this->identifier($prefix . 'roles');
+                if (in_array($prefix . 'consents', $tables, true)) {
+                    $consents = $this->identifier($prefix . 'consents');
+                    $this->run(
+                        $mysqli,
+                        "DELETE c FROM $consents c JOIN $users u ON u.id = c.id_users
+                        JOIN $roles r ON r.id = u.id_roles WHERE r.slug = 'customer'",
+                    );
+                }
+                $this->run(
+                    $mysqli,
+                    "DELETE u FROM $users u JOIN $roles r ON r.id = u.id_roles WHERE r.slug = 'customer'",
+                );
+                $this->run($mysqli, 'COMMIT');
+            } catch (Throwable $error) {
+                $this->run($mysqli, 'ROLLBACK');
+                throw $error;
+            }
+            return $previous;
+        } finally {
+            $this->run($mysqli, "SELECT RELEASE_LOCK('podologo_import')");
+        }
     }
 
     /**

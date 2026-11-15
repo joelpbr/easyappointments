@@ -93,6 +93,24 @@ class Backups extends EA_Controller
         }
     }
 
+    /** Clear clinical data while keeping the application usable for another upload. */
+    public function delete_current(): void
+    {
+        try {
+            method('post');
+            $this->check_allowed();
+            if (request('confirmation') !== 'DELETE') {
+                throw new InvalidArgumentException(lang('backup_delete_type'));
+            }
+            set_time_limit(0);
+            $previous = $this->database_backup->clear_clinical_data();
+            audit_log('deleted', 'database', null, ['previous' => basename($previous)]);
+            json_response(['success' => true, 'previous' => basename($previous)]);
+        } catch (Throwable $e) {
+            json_exception($e);
+        }
+    }
+
     /**
      * Download a copy of the backups folder.
      *
@@ -158,11 +176,18 @@ class Backups extends EA_Controller
             $user_id = (int) session('user_id');
 
             try {
-                $previous = $this->database_backup->restore($path);
+                $previous = $this->database_backup->restore($path, [
+                    'width' => (int) request('canvas_width', 0),
+                    'height' => (int) request('canvas_height', 0),
+                ]);
             } catch (InvalidArgumentException $e) {
                 log_message('error', 'Backup not restored: ' . $e->getMessage());
 
-                throw new InvalidArgumentException(lang('backup_invalid_file'), 0, $e);
+                throw new InvalidArgumentException(
+                    Podologo_import::matches($path) ? $e->getMessage() : lang('backup_invalid_file'),
+                    0,
+                    $e,
+                );
             } catch (RuntimeException $e) {
                 log_message('error', 'Backup not restored: ' . $e->getMessage());
 

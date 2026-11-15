@@ -32,6 +32,32 @@ tags:
     - name: webhooks
     - name: working_plan_exceptions
 paths:
+    /backups/delete_current:
+        servers:
+            - url: /index.php
+        post:
+            summary: Clear current patient and clinical data
+            description: Administrator session and system-settings edit permission required. Creates a safety backup before transactional deletion. Keeps staff accounts, settings, catalogs, audit history and backup files.
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            required: [confirmation, csrf_token]
+                            properties:
+                                confirmation:
+                                    type: string
+                                    enum: [DELETE]
+                                csrf_token:
+                                    type: string
+            responses:
+                '200':
+                    description: Clinical data deleted; response includes success and previous backup filename.
+                '400':
+                    description: Invalid confirmation or operation failed.
+                '403':
+                    description: Access or CSRF validation denied.
     /availabilities:
         get:
             tags:
