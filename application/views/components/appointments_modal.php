@@ -46,6 +46,25 @@
                                         $service_option = function (array $service): string {
                                             $label = e($service['name']);
                                             $hidden = '';
+                                            // Mix 65% white into the service color for readable black labels.
+                                            $color = (string) ($service['color'] ?? '');
+                                            if (!preg_match('/^#(?:[a-f0-9]{3}|[a-f0-9]{6})$/i', $color)) {
+                                                $color = '#ffffff';
+                                            }
+                                            $hex = substr($color, 1);
+                                            if (strlen($hex) === 3) {
+                                                $hex = implode(
+                                                    '',
+                                                    array_map(fn($digit) => $digit . $digit, str_split($hex)),
+                                                );
+                                            }
+                                            $background = vsprintf(
+                                                '#%02x%02x%02x',
+                                                array_map(
+                                                    fn($channel) => (int) round(165.75 + hexdec($channel) * 0.35),
+                                                    str_split($hex, 2),
+                                                ),
+                                            );
 
                                             if (!$service['is_active']) {
                                                 $label .= ' (' . lang('inactive') . ')';
@@ -54,7 +73,9 @@
 
                                             return '<option value="' .
                                                 $service['id'] .
-                                                '"' .
+                                                '" style="background-color:' .
+                                                $background .
+                                                ';color:#111111;"' .
                                                 $hidden .
                                                 '>' .
                                                 $label .
@@ -154,33 +175,34 @@
                                 </div>
                             </div>
 
-                            <div class="col-12 col-sm-6">
-                                <div class="mb-3">
-                                    <label for="start-datetime"
-                                           class="form-label"><?= lang('start_date_time') ?></label>
-                                    <input id="start-datetime" class="required form-control">
+                            <div class="col-12">
+                                <div class="mb-3 ea-appointment-timing">
+                                    <div>
+                                        <label for="start-datetime" class="form-label"><?= lang('start') ?></label>
+                                        <input id="start-datetime" class="required form-control"
+                                               aria-label="<?= e(lang('start_date_time')) ?>">
+                                    </div>
+                                    <div>
+                                        <label for="end-datetime" class="form-label"><?= lang('end') ?></label>
+                                        <input id="end-datetime" class="required form-control"
+                                               aria-label="<?= e(lang('end_date_time')) ?>">
+                                    </div>
+                                    <div class="ea-appointment-minutes">
+                                        <label for="appointment-duration" class="form-label">
+                                            <?= ucfirst(lang('minutes')) ?>
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <input id="appointment-duration" class="required form-control" type="number" min="5"
+                                               max="1440" step="1" aria-label="<?= e(lang('duration_minutes')) ?>">
+                                    </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="appointment-duration" class="form-label">
-                                        <?= lang('duration_minutes') ?>
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                    <input id="appointment-duration" class="required form-control" type="number" min="5"
-                                           max="1440" step="1">
-                                </div>
-
-                                <div class="mb-3">
+                                <div class="mb-3 ea-money">
                                     <label for="appointment-price" class="form-label">
                                         <?= lang('appointment_price') ?>
                                     </label>
                                     <input id="appointment-price" class="form-control" type="number" min="0"
                                            step="0.01" inputmode="decimal">
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="end-datetime" class="form-label"><?= lang('end_date_time') ?></label>
-                                    <input id="end-datetime" class="required form-control">
                                 </div>
 
                                 <div class="mb-3 ea-more-field">
@@ -225,14 +247,6 @@
                         </div>
                     </fieldset>
 
-                    <div class="mb-3">
-                        <button id="toggle-more-fields" class="btn btn-link btn-sm px-0" type="button"
-                                aria-expanded="false">
-                            <i class="fas fa-chevron-down me-1"></i>
-                            <span><?= lang('more_details') ?></span>
-                        </button>
-                    </div>
-
                     <fieldset>
                         <h5 class="mb-2 fw-light">
                             <?= lang('customer_details_title') ?>
@@ -264,17 +278,12 @@
                             </div>
                         </div>
 
-                        <p id="patient-search-hint" class="form-text mt-0 mb-2">
-                            <i class="fas fa-search me-1"></i>
-                            <?= lang('patient_search_hint') ?>
-                        </p>
-
                         <div id="no-show-warning" class="alert alert-warning py-2" role="alert" hidden></div>
 
                         <input id="customer-id" type="hidden">
 
                         <div class="row">
-                            <div class="col-12 col-sm-6">
+                            <div class="col-12">
                                 <div class="mb-3">
                                     <label for="first-name" class="form-label">
                                         <?= lang('first_name') ?>
@@ -300,18 +309,6 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">
-                                        <?= lang('email') ?>
-                                        <?php if ($require_email): ?>
-                                            <span class="text-danger">*</span>
-                                        <?php endif; ?>
-                                    </label>
-                                    <input type="text" id="email"
-                                           class="<?= $require_email ? 'required' : '' ?> form-control"
-                                           maxlength="120"/>
-                                </div>
-
-                                <div class="mb-3">
                                     <label for="phone-number" class="form-label">
                                         <?= lang('phone_number') ?>
                                         <?php if ($require_phone_number): ?>
@@ -320,58 +317,6 @@
                                     </label>
                                     <input type="text" id="phone-number" maxlength="60"
                                            class="<?= $require_phone_number ? 'required' : '' ?> form-control"/>
-                                </div>
-
-                                <div class="mb-3 ea-more-field">
-                                    <label class="form-label" for="language">
-                                        <?= lang('language') ?>
-                                        <span class="text-danger" hidden>*</span>
-                                    </label>
-                                    <select id="language" class="form-select required">
-                                        <?php foreach (vars('available_languages') as $available_language): ?>
-                                            <option value="<?= $available_language ?>">
-                                                <?= ucfirst($available_language) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="mb-3 <?= $require_address ? '' : 'ea-more-field' ?>">
-                                    <label for="address" class="form-label">
-                                        <?= lang('address') ?>
-                                        <?php if ($require_address): ?>
-                                            <span class="text-danger">*</span>
-                                        <?php endif; ?>
-                                    </label>
-                                    <input type="text" id="address"
-                                           class="<?= $require_address ? 'required' : '' ?> form-control"
-                                           maxlength="120"/>
-                                </div>
-
-                                <div class="mb-3 <?= $require_city ? '' : 'ea-more-field' ?>">
-                                    <label for="city" class="form-label">
-                                        <?= lang('city') ?>
-                                        <?php if ($require_city): ?>
-                                            <span class="text-danger">*</span>
-                                        <?php endif; ?>
-                                    </label>
-                                    <input type="text" id="city"
-                                           class="<?= $require_city ? 'required' : '' ?> form-control"
-                                           maxlength="120"/>
-                                </div>
-
-                                <div class="mb-3 <?= $require_zip_code ? '' : 'ea-more-field' ?>">
-                                    <label for="zip-code" class="form-label">
-                                        <?= lang('zip_code') ?>
-                                        <?php if ($require_zip_code): ?>
-                                            <span class="text-danger">*</span>
-                                        <?php endif; ?>
-                                    </label>
-                                    <input type="text" id="zip-code"
-                                           class="<?= $require_zip_code ? 'required' : '' ?> form-control"
-                                           maxlength="120"/>
                                 </div>
 
                                 <div class="mb-3">
@@ -389,6 +334,13 @@
             </div>
 
             <div class="modal-footer">
+                <!-- Reminder the day before at 10:00; on by default. -->
+                <label class="ea-whatsapp-reminder form-check me-auto"
+                       for="send-whatsapp-reminder" title="<?= e(lang('send_whatsapp_reminder')) ?>">
+                    <input class="form-check-input" type="checkbox" id="send-whatsapp-reminder"
+                           aria-label="<?= e(lang('send_whatsapp_reminder')) ?>" checked>
+                    <span><?= lang('send_whatsapp_reminder') ?></span>
+                </label>
 
                 <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
                     <?= lang('close') ?>

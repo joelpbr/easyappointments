@@ -7,6 +7,24 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- The booking form again includes both original comment fields: the appointment's comment and the patient's administrative notes, loaded and saved independently under their original labels.
+- Clicking a patient opens their clinical record directly; a small SVG button beside its close button opens that patient's original details page and administrative history, with the existing choices for unsaved changes.
+- Imported text recovers accents, Ñ/ñ, ordinals and punctuation damaged by incorrect character encoding, including repeated conversions; existing records can be repaired with a safety backup and verification that all other fields and drawing coordinates are unchanged.
+- The legacy EMAIL2 field is imported as patient provenance, combining it with existing referral information without duplicates or changes to the patient's email address.
+- Historical visits recover missing provider assignments from the clinic's S/T comment conventions and confirmed Sara default, preventing those records from failing the calendar feed; the original visit data and drawing coordinates are retained.
+- Imported visit starts are rounded down to the preceding quarter-hour and their ends use the assigned service's default duration; existing imported times can be repaired without changing clinical content or drawings.
+- Booking an existing patient no longer fails on a hidden language field or revalidates locked patient data; the booking form asks only for name, surname and phone, with optional appointment observations, while secondary patient details remain in their record.
+- Podologo imports populate the existing patient document fields from the original NIF, retaining unrecognized values as other documents without fabricating digits or overwriting later edits.
+- Imported clinical comments omit the legacy PIESIGUALESBIO form flag while retaining its original value in the source archive.
+- Imported duplicate pathology entries and Sara/Sebas providers can be unified with existing clinic records, preserving every marker and appointment; from 2024 onward a separate uppercase T in a visit comment assigns the visit to Toñi.
+- Podologo conversion keeps original clinical prose without added treatment headings, discipline prefixes, duplicate passages or internal specialist identifiers; existing imported histories can be cleaned while retaining later notes.
+- Podologo conversion consolidates all clinical narrative into existing visit fields and templates; prescribed Cura PV and Cura are assigned to the existing corresponding treatments, and previous generated formatting is replaced while preserving later notes.
+- Administrators can clear current patients, visits, drawings and imported history from Backups after typing DELETE; a safety backup is saved first, while staff logins, settings, catalogs and audit history are retained.
+- The existing backup upload accepts original Podologo Firebird .db files up to 256 MB, imports patient and visit history with verified unchanged drawing coordinates, keeps original source rows, and uses editable provisional canvas dimensions and replaceable pathology icons.
+- Settings › Backups lets administrators take a copy of the whole database and download it, download any of the daily copies, and restore a copy by uploading it or choosing it from the list; restoring asks first, saves a copy of the current data, puts it back by itself if the file fails, and updates an older copy to the current version (also from the console with php index.php console restore <file>)
+- WhatsApp reminders: the day before each appointment, at 10:00 (Europe/Madrid), the patient gets a reminder in Catalan with their name, the day and the time through the official WhatsApp Cloud API of Meta and an approved template; each appointment has a "Send a WhatsApp reminder" switch, on by default, cancelled appointments and patients without a mobile number are left out, a reminder is never sent twice, failures are retried up to three times until 20:00 and the rest are left for review, and Settings › Integrations › WhatsApp reminders holds the Meta details, the webhook that reports delivered and read messages, a test message and a panel with every reminder, its status and the estimated cost of the month
+- WhatsApp notifications: a bell in the header shows how many WhatsApp messages could not be sent and opens a list of every message, tests included, where each one can be sent again, marked as sent by hand, cancelled or removed
+- A Pathologies page in the treatments menu adds, changes and removes the pathologies of the foot diagrams with their name, description and icon; a pathology placed on some visit cannot be removed
 - A visit whose foot diagrams were never saved starts with an exact copy of the drawing of the previous visit of the patient (same pathologies, views and positions), noted above the pathologies and saved with the visit; a visit that was saved keeps its own drawing, even when every pathology was removed
 - In the clinical record, the save buttons are only active when there is something to save, the pathologies placed on the foot diagrams are saved with the visit, and leaving a visit or closing the record with unsaved changes (anywhere in the record) asks whether to save them, not save them or stay
 - In the foot diagrams of a visit, choosing a pathology and clicking on the picture places it there with its coordinates on the original picture; clicking a placed pathology removes it, and each view shows how many pathologies it has
@@ -35,6 +53,11 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- Switching tabs and visits of the clinical record, choosing a record in the lists of the management pages, opening menus and showing notifications fade in smoothly, and rows, visits and foot diagram views fade their highlight; going to the visits of a clinical record no longer pops its right column in after the fade
+- The X-ray switch of the foot diagrams is a round icon button in the corner of the picture instead of a button on a row of its own
+- A healed pathology shows a green smiling face in its place on the foot diagram, instead of the faded pathology with a small face on its corner
+- The second and third views of the foot diagrams swap places on screen, and a visit opens on the first view from the left with pathologies placed on it
+- A pathology on the foot diagram grows less under the pointer, and one just placed only grows once the pointer has left it and comes back
 - The features the clinic does not use are removed: the video call link of the appointments (Jitsi and Google Meet), the LDAP login and import, the custom fields of the patients, the web analytics (Google Analytics and Matomo) and the mobile number of the users; online booking is turned off, so the address of the application opens the login, and patients always use the clinic's timezone
 - Absences and closures are added only as blocked periods: the calendar no longer offers new unavailabilities (the existing ones are still shown and can be edited), and selecting time in the calendar opens a new appointment at once instead of asking what to add
 - The fiscal data of a patient keeps only what differs from the patient: empty fiscal name, address, zip code, city or province use the patient's ones (shown in grey on the patients page), so changing the patient's address also changes their invoices
@@ -76,6 +99,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Fixed
 
+- All the pathologies on the foot diagrams are shown at the same size, centred where they were placed; the ones added by hand to imported visits were one and a half times bigger
 - After an update the browsers load the new styles and scripts right away instead of keeping the previous ones from their cache
 - A new appointment from the calendar toolbar starts at the next slot of the agenda, without seconds, instead of jumping to the next hour at minutes 0, 15, 30 and 45
 - Deleting a provider that has appointments is now refused instead of silently deleting all of their appointments

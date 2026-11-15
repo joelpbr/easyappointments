@@ -174,6 +174,12 @@ App.Utils.CalendarDefaultView = (function () {
         $appointmentsModal.find('#appointment-status').val(appointment.status);
         $appointmentsModal.find('#appointment-price').val(appointment.price ?? '');
         $appointmentsModal.find('#appointment-notes').val(appointment.notes);
+        $appointmentsModal
+            .find('#send-whatsapp-reminder')
+            .prop(
+                'checked',
+                appointment.send_whatsapp_reminder === undefined || Boolean(Number(appointment.send_whatsapp_reminder)),
+            );
         App.Components.ColorSelection.setColor($appointmentsModal.find('#appointment-color'), appointment.color);
 
         $appointmentsModal.modal('show');
@@ -347,58 +353,25 @@ App.Utils.CalendarDefaultView = (function () {
     }
 
     /**
-     * Show appointment deletion confirmation dialog.
+     * Delete an appointment after confirming it, without notifying anybody.
      *
      * @param {number} appointmentId - Appointment ID to delete.
      */
     function handleDeleteAppointment(appointmentId) {
-        App.Utils.Message.show(lang('delete_appointment_title'), lang('notify_users_on_delete_question'), [
+        App.Utils.Message.show(lang('delete_appointment_title'), lang('delete_record_prompt'), [
             {
                 text: lang('close'),
-                click: (event, notifyModal) => notifyModal.hide(),
+                click: (event, messageModal) => messageModal.hide(),
             },
             {
-                text: lang('no'),
-                click: (event, notifyModal) => {
-                    notifyModal.hide();
+                text: lang('delete'),
+                className: 'btn btn-danger',
+                click: (event, messageModal) => {
+                    messageModal.hide();
+                    // Nobody is notified of the removal.
                     App.Http.Calendar.deleteAppointment(appointmentId, null, false).done(() => {
                         $reloadAppointments.trigger('click');
                     });
-                },
-            },
-            {
-                text: lang('yes'),
-                click: (event, notifyModal) => {
-                    notifyModal.hide();
-
-                    const reasonButtons = [
-                        {
-                            text: lang('close'),
-                            click: (event, messageModal) => messageModal.hide(),
-                        },
-                        {
-                            text: lang('delete'),
-                            click: (event, messageModal) => {
-                                const reason = $('#cancellation-reason').val();
-                                messageModal.hide();
-                                App.Http.Calendar.deleteAppointment(appointmentId, reason, true).done(() => {
-                                    $reloadAppointments.trigger('click');
-                                });
-                            },
-                        },
-                    ];
-
-                    App.Utils.Message.show(
-                        lang('delete_appointment_title'),
-                        lang('write_appointment_removal_reason'),
-                        reasonButtons,
-                    );
-
-                    $('<textarea/>', {
-                        class: 'form-control w-100',
-                        id: 'cancellation-reason',
-                        rows: '3',
-                    }).appendTo('#message-modal .modal-body');
                 },
             },
         ]);
@@ -493,6 +466,8 @@ App.Utils.CalendarDefaultView = (function () {
      * @param {Object} eventData - Event data.
      */
     function handleAppointmentResize(info, eventData) {
+        const previous = {start_datetime: eventData.start_datetime, end_datetime: eventData.end_datetime};
+
         eventData.end_datetime = moment(eventData.end_datetime)
             .add({days: info.endDelta.days, milliseconds: info.endDelta.milliseconds})
             .format('YYYY-MM-DD HH:mm:ss');
@@ -517,7 +492,10 @@ App.Utils.CalendarDefaultView = (function () {
             info.event.setProp('data', eventData);
         };
 
-        showNotifyUsersDialog(appointment, successCallback, () => info.revert());
+        saveMovedAppointment(appointment, eventData.customer, successCallback, () => {
+            Object.assign(eventData, previous);
+            info.revert();
+        });
     }
 
     /**
@@ -589,6 +567,8 @@ App.Utils.CalendarDefaultView = (function () {
      * @param {Object} eventData - Event data.
      */
     function handleAppointmentDrop(info, eventData) {
+        const previous = {start_datetime: eventData.start_datetime, end_datetime: eventData.end_datetime};
+
         const appointment = prepareAppointmentForSave(eventData);
 
         appointment.start_datetime = moment(appointment.start_datetime)
@@ -621,7 +601,10 @@ App.Utils.CalendarDefaultView = (function () {
             ]);
         };
 
-        showNotifyUsersDialog(appointment, successCallback, () => info.revert());
+        saveMovedAppointment(appointment, eventData.customer, successCallback, () => {
+            Object.assign(eventData, previous);
+            info.revert();
+        });
     }
 
     /**
@@ -682,43 +665,53 @@ App.Utils.CalendarDefaultView = (function () {
     }
 
     /**
-     * Show dialog asking whether to notify users.
+     * Ask before saving a moved or resized appointment; nobody is notified.
      *
      * @param {Object} appointment - Appointment data.
+     * @param {Object} customer - Patient of the appointment, to name it.
      * @param {Function} successCallback - Callback on success.
      * @param {Function} revertCallback - Callback to revert changes.
      */
-    function showNotifyUsersDialog(appointment, successCallback, revertCallback) {
-        App.Utils.Message.show(lang('appointment_update'), lang('notify_users_on_update_question'), [
-            {
-                text: lang('no'),
-                click: (event, messageModal) => {
-                    messageModal.hide();
-                    App.Http.Calendar.saveAppointmentWithConflictHandling(
-                        appointment,
-                        null,
-                        () => successCallback(false),
-                        null,
-                        false,
-                        revertCallback,
-                    );
+    function saveMovedAppointment(appointment, customer, successCallback, revertCallback) {
+        const timeFormat = vars('time_format') === 'regular' ? 'h:mm a' : 'HH:mm';
+        const schedule =
+            App.Utils.Date.format(appointment.start_datetime, vars('date_format'), vars('time_format'), true) +
+            ' – ' +
+            moment(appointment.end_datetime).format(timeFormat);
+        const name = [customer?.first_name, customer?.last_name].filter(Boolean).join(' ');
+
+        App.Utils.Message.show(
+            lang('appointment_update'),
+            lang('move_appointment_question')
+                .replace('%s', App.Utils.String.escapeHtml(name))
+                .replace('%s', App.Utils.String.escapeHtml(schedule)),
+            [
+                {
+                    text: lang('cancel'),
+                    className: 'btn btn-outline-secondary',
+                    click: (event, messageModal) => {
+                        messageModal.hide();
+                        revertCallback();
+                    },
                 },
-            },
-            {
-                text: lang('yes'),
-                click: (event, messageModal) => {
-                    messageModal.hide();
-                    App.Http.Calendar.saveAppointmentWithConflictHandling(
-                        appointment,
-                        null,
-                        () => successCallback(true),
-                        null,
-                        true,
-                        revertCallback,
-                    );
+                {
+                    text: lang('save'),
+                    className: 'btn btn-primary',
+                    click: (event, messageModal) => {
+                        messageModal.hide();
+                        App.Http.Calendar.saveAppointmentWithConflictHandling(
+                            appointment,
+                            null,
+                            () => successCallback(false),
+                            null,
+                            false,
+                            revertCallback,
+                        );
+                    },
                 },
-            },
-        ]);
+            ],
+            false,
+        );
     }
 
     /**
@@ -1163,6 +1156,17 @@ App.Utils.CalendarDefaultView = (function () {
                 fullCalendar.view.activeEnd,
             );
         });
+
+        // Time labels of the day view: a click or a drag over them opens a new appointment at that time or range, as
+        // the grid does. In the week view they are shared by every day, so they are left alone.
+        App.Utils.CalendarTimeLabels.listen(
+            $calendar,
+            () =>
+                fullCalendar?.view.type === 'timeGridDay'
+                    ? {fullCalendar, day: fullCalendar.getDate(), scope: $calendar[0]}
+                    : null,
+            onSelect,
+        );
 
         // Popover close button
         $calendarPage.on('click', '.close-popover', closePopover);

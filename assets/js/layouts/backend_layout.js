@@ -80,9 +80,62 @@ window.App.Layouts.Backend = (function () {
     }
 
     /**
+     * Whether the amounts of money are hidden on this browser.
+     *
+     * @return {Boolean}
+     */
+    function isMoneyHidden() {
+        return document.documentElement.classList.contains('ea-money-hidden');
+    }
+
+    /**
+     * Hide or show every amount of money of the pages. The elements marked with "ea-money" are hidden by the styles;
+     * the options of a list cannot be hidden in part, so those with "data-money-label" show that label, without the amount,
+     * instead. The choice is remembered on this browser.
+     *
+     * @param {Boolean} hidden
+     */
+    function setMoneyHidden(hidden) {
+        document.documentElement.classList.toggle('ea-money-hidden', hidden);
+
+        try {
+            localStorage.setItem('ea-money-hidden', hidden ? '1' : '0');
+        } catch (error) {
+            // Without storage the choice only lasts for this page.
+        }
+
+        updateMoneyLabels();
+
+        const $toggle = $('#toggle-money');
+        const label = $toggle.data(hidden ? 'labelShow' : 'labelHide');
+
+        $toggle.attr({'aria-pressed': String(hidden), 'aria-label': label, 'data-tippy-content': label});
+        $toggle[0]?._tippy?.setContent(label);
+    }
+
+    /**
+     * Show the options with an amount with or without it.
+     */
+    function updateMoneyLabels() {
+        const hidden = isMoneyHidden();
+
+        $('option[data-money-label]').each((index, option) => {
+            if (option.dataset.fullLabel === undefined) {
+                option.dataset.fullLabel = option.textContent.trim();
+            }
+
+            option.textContent = hidden ? option.dataset.moneyLabel : option.dataset.fullLabel;
+        });
+    }
+
+    /**
      * Initialize the module.
      */
     function initialize() {
+        setMoneyHidden(isMoneyHidden());
+
+        $('#toggle-money').on('click', () => setMoneyHidden(!isMoneyHidden()));
+
         $(document).ajaxStart(() => {
             $loading.show();
         });
@@ -104,6 +157,20 @@ window.App.Layouts.Backend = (function () {
         });
     }
 
+    /**
+     * Fade an element in, with the fade of the Bootstrap tabs, when what it shows changes (another record, another
+     * visit). It restarts the fade when it is still running.
+     *
+     * @param {jQuery} $target
+     */
+    function fadeIn($target) {
+        $target.each((index, element) => {
+            element.classList.remove('ea-fade-in');
+            void element.offsetWidth; // Restart the animation.
+            element.classList.add('ea-fade-in');
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', initialize);
 
     return {
@@ -122,5 +189,7 @@ window.App.Layouts.Backend = (function () {
         PRIV_SYSTEM_SETTINGS,
         PRIV_USER_SETTINGS,
         displayNotification,
+        fadeIn,
+        isMoneyHidden,
     };
 })();

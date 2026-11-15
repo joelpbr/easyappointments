@@ -160,10 +160,10 @@ App.Http.Customers = (function () {
      *
      * @return {Object}
      */
-    function find(customerId) {
+    function find(customerId, withAppointments = false) {
         const url = App.Utils.Url.siteUrl('customers/find');
 
-        return $.get(url, {customer_id: customerId});
+        return $.get(url, {customer_id: customerId, with_appointments: withAppointments ? 1 : undefined});
     }
 
     return {

@@ -20,6 +20,7 @@ App.Components.ClinicalRecordModal = (function () {
     const $modal = $('#clinical-record-modal');
     const $title = $('#clinical-record-title');
     const $allergiesAlert = $('#clinical-record-allergies-alert');
+    const $customerDetails = $('#clinical-customer-details');
     const $visits = $('#clinical-visits');
     const $visitsCount = $('#clinical-visits-count');
     const $documentType = $('#clinical-document-type');
@@ -40,8 +41,8 @@ App.Components.ClinicalRecordModal = (function () {
     const $feetBoard = $('#clinical-feet-board');
     const $feetPicture = $('#clinical-feet-picture');
     const $feetMarkers = $('#clinical-feet-markers');
-    const $feetCopied = $('#clinical-feet-copied');
     const $feetViews = $('#clinical-feet-views');
+    const $feetXray = $('#clinical-feet-xray');
     const $feetPathologies = $('#clinical-feet-pathologies');
     const $feetObservations = $('#clinical-feet-observations');
 
@@ -57,13 +58,62 @@ App.Components.ClinicalRecordModal = (function () {
     // Foot diagrams of the visit shown: {diagrams, pathologies, markers} and the diagram on screen.
     let feet = null;
     let diagramId = null;
+    let showFeetXray = false;
+    let feetBackgroundRequest = 0;
 
     // Whether the visit shown has foot diagrams, and a key for each marker, as the new ones have no id until saved.
     let visitHasFeet = false;
     let markerKey = 0;
 
-    // Size of a placed pathology on the original picture, in its pixels.
-    const MARKER_SIZE = 24;
+    // The marker just placed, which does not grow under the pointer until the pointer has left it once.
+    let freshMarkerKey = null;
+
+    // Size of a placed pathology, as a share of the width of the picture: that of the imported ones (16 pixels on
+    // their 360 pixels wide canvas). Every marker is shown at this size, whatever box it was saved with.
+    const MARKER_SCALE = 16 / 360;
+
+    // Size of the original picture of each diagram, in pixels. The saved coordinates refer to it, and the picture is
+    // shown at its width, whatever the size of the file now in assets/img/fotos_pies.
+    const ORIGINAL_SIZES = {
+        0: {width: 688, height: 535},
+        1: {width: 687, height: 535},
+        2: {width: 688, height: 536},
+        3: {width: 687, height: 536},
+    };
+
+    /**
+     * Size of the original picture of the diagram on screen, or that of the file when the diagram is not known.
+     *
+     * @return {{width: Number, height: Number}}
+     */
+    function originalSize() {
+        const picture = $feetPicture[0];
+        const legacy = feet?.diagrams.find((diagram) => diagram.id === diagramId && diagram.background_image);
+
+        if (legacy) {
+            return {width: legacy.coordinate_width, height: legacy.coordinate_height};
+        }
+
+        return ORIGINAL_SIZES[diagramId] || {width: picture.naturalWidth, height: picture.naturalHeight};
+    }
+
+    /**
+     * Show the picture at the width of the original one, keeping the proportions of the file.
+     */
+    function sizeFeetPicture() {
+        const picture = $feetPicture[0];
+
+        if (!picture.naturalWidth || !picture.naturalHeight) {
+            return;
+        }
+
+        // Keep the normal display size even when imported coordinates use a smaller legacy canvas.
+        $feetBoard[0].style.setProperty(
+            '--feet-width',
+            (ORIGINAL_SIZES[diagramId]?.width || picture.naturalWidth) + 'px',
+        );
+        $feetBoard[0].style.setProperty('--feet-ratio', String(picture.naturalWidth / picture.naturalHeight));
+    }
 
     /**
      * Open the record of a patient.
@@ -191,6 +241,7 @@ App.Components.ClinicalRecordModal = (function () {
         $age.val(age);
 
         $title.text(name || (customerId === 0 ? lang('clinical_new_patient') : lang('clinical_record')));
+        $customerDetails.prop('hidden', !customerId);
 
         const allergies = (data.record.allergies || '').trim();
 
@@ -204,11 +255,41 @@ App.Components.ClinicalRecordModal = (function () {
     }
 
     /**
+     * Show or hide the comment of a visit (the notes of its appointment), from the icon by its date.
+     *
+     * @param {HTMLElement} icon
+     */
+    function toggleComment(icon) {
+        const popover = bootstrap.Popover.getOrCreateInstance(icon, {
+            content: icon.dataset.notes,
+            trigger: 'manual',
+            placement: 'right',
+            container: $modal[0],
+            customClass: 'ea-clinical-visit-comment-popover',
+        });
+        const isShown = icon.getAttribute('aria-describedby');
+
+        hideComments();
+
+        if (!isShown) {
+            popover.show();
+        }
+    }
+
+    /**
+     * Hide the comments of the visits that are shown.
+     */
+    function hideComments() {
+        $visits.find('.ea-clinical-visit-comment').each((index, icon) => bootstrap.Popover.getInstance(icon)?.hide());
+    }
+
+    /**
      * Render the list of visits, the latest first.
      *
      * @param {Array} appointments
      */
     function renderVisits(appointments) {
+        hideComments();
         $visits.empty();
         $visitsCount.text(appointments.length || '');
 
@@ -233,15 +314,33 @@ App.Components.ClinicalRecordModal = (function () {
                         html: [
                             $('<span/>', {
                                 class: 'ea-clinical-visit-date',
-                                text: App.Utils.Date.format(
-                                    appointment.start_datetime,
-                                    vars('date_format'),
-                                    vars('time_format'),
-                                    true,
-                                ),
+                                html: [
+                                    document.createTextNode(
+                                        App.Utils.Date.format(
+                                            appointment.start_datetime,
+                                            vars('date_format'),
+                                            vars('time_format'),
+                                            true,
+                                        ),
+                                    ),
+                                    appointment.notes
+                                        ? $('<span/>', {
+                                              'class': 'ea-clinical-visit-comment ms-2',
+                                              'role': 'button',
+                                              'tabindex': 0,
+                                              'title': lang('appointment_comment'),
+                                              'aria-label': lang('appointment_comment'),
+                                              'data-notes': appointment.notes,
+                                              'html': $('<i/>', {class: 'fas fa-comment-dots'}),
+                                          })
+                                        : null,
+                                ],
                             }),
                             appointment.price !== null
-                                ? $('<span/>', {class: 'ea-clinical-visit-price', text: formatPrice(appointment.price)})
+                                ? $('<span/>', {
+                                      class: 'ea-clinical-visit-price ea-money',
+                                      text: formatPrice(appointment.price),
+                                  })
                                 : null,
                         ],
                     }),
@@ -470,6 +569,7 @@ App.Components.ClinicalRecordModal = (function () {
         $visitEmpty.prop('hidden', true);
         $visitDetail.prop('hidden', false).data('start', appointment.start_datetime);
         $('#clinical-visit-column').scrollTop(0);
+        App.Layouts.Backend.fadeIn($visitDetail);
 
         savedVisit = JSON.stringify(getVisitData());
         updateSaveButtons();
@@ -483,27 +583,23 @@ App.Components.ClinicalRecordModal = (function () {
      */
     function renderFeet(visitFeet) {
         feet = visitFeet;
+        showFeetXray = false;
         feet.markers.forEach((marker) => (marker.key = ++markerKey));
-
-        // A visit without its own drawing starts with a copy of the previous one, saved with the visit.
-        $feetCopied
-            .text(
-                feet.copied_from
-                    ? lang('clinical_feet_copied').replace(
-                          '%s',
-                          App.Utils.Date.format(feet.copied_from, vars('date_format'), vars('time_format'), false),
-                      )
-                    : '',
-            )
-            .prop('hidden', !feet.copied_from);
         $feetViews.empty();
 
-        feet.diagrams.forEach((diagram, index) => {
+        // On screen the second and third views swap places; the saved diagrams and their numbers stay as they are.
+        const shownDiagrams = feet.diagrams.map((diagram, index) => ({diagram, number: index + 1}));
+
+        if (shownDiagrams.length >= 3) {
+            [shownDiagrams[1], shownDiagrams[2]] = [shownDiagrams[2], shownDiagrams[1]];
+        }
+
+        shownDiagrams.forEach(({diagram, number}) => {
             $('<button/>', {
                 'type': 'button',
                 'class': 'ea-feet-view',
                 'data-diagram-id': diagram.id,
-                'title': diagram.name || lang('clinical_feet_view').replace('%s', index + 1),
+                'title': diagram.name || lang('clinical_feet_view').replace('%s', number),
                 'html': [$('<img/>', {src: diagram.image_url, alt: ''}), $('<span/>', {class: 'ea-feet-view-count'})],
             }).appendTo($feetViews);
         });
@@ -525,7 +621,13 @@ App.Components.ClinicalRecordModal = (function () {
         });
 
         updateFeetCursor();
-        showDiagram(feet.diagrams[0]?.id ?? null);
+
+        // A visit opens on the first view from the left with pathologies placed on it, or the first one when none has.
+        const firstWithMarkers = shownDiagrams.find(({diagram}) =>
+            feet.markers.some((marker) => marker.diagram_id === diagram.id),
+        );
+
+        showDiagram((firstWithMarkers ?? shownDiagrams[0])?.diagram.id ?? null);
     }
 
     /**
@@ -546,12 +648,45 @@ App.Components.ClinicalRecordModal = (function () {
         }
 
         // The markers are placed once the picture knows its original size.
+        $feetBoard.removeClass('ea-feet-xray');
         $feetPicture.off('load.markers').on('load.markers', renderMarkers);
         $feetPicture.attr('src', diagram.image_url);
+        updateFeetBackground();
 
         if ($feetPicture[0].complete && $feetPicture[0].naturalWidth) {
             renderMarkers();
         }
+    }
+
+    /**
+     * Switch only the background. The normal picture keeps its dimensions and click target, so marker coordinates
+     * stay the same even though the X-ray files have a different resolution. This preference is never saved.
+     */
+    function updateFeetBackground() {
+        const request = ++feetBackgroundRequest;
+        const diagram = feet?.diagrams.find((diagram) => diagram.id === diagramId);
+        const xrayUrl = diagram?.image_url.replace(/\.png(?=[?#]|$)/i, '_x.png');
+
+        $feetXray.attr('aria-pressed', String(showFeetXray)).toggleClass('active', showFeetXray);
+
+        if (!showFeetXray || !xrayUrl) {
+            // Leave the X-ray underneath while the normal image fades back in.
+            $feetBoard.removeClass('ea-feet-xray');
+            return;
+        }
+
+        const picture = new Image();
+        picture.onload = () => {
+            if (request !== feetBackgroundRequest) return;
+            $feetBoard.css('background-image', 'url("' + xrayUrl + '")').addClass('ea-feet-xray');
+        };
+        picture.onerror = () => {
+            if (request !== feetBackgroundRequest) return;
+            showFeetXray = false;
+            $feetBoard.removeClass('ea-feet-xray');
+            $feetXray.attr('aria-pressed', 'false').removeClass('active');
+        };
+        picture.src = xrayUrl;
     }
 
     /**
@@ -560,29 +695,45 @@ App.Components.ClinicalRecordModal = (function () {
      */
     function renderMarkers() {
         const picture = $feetPicture[0];
-        const width = picture.naturalWidth;
-        const height = picture.naturalHeight;
+        const {width, height} = originalSize();
 
+        sizeFeetPicture();
         $feetMarkers.empty();
 
-        if (width && height) {
+        if (picture.naturalWidth && width && height) {
             feet.markers
                 .filter((marker) => marker.diagram_id === diagramId)
                 .forEach((marker) => {
                     const pathology = feet.pathologies.find((pathology) => pathology.id === marker.pathology_id);
 
+                    const name = pathology?.name || '';
+
+                    // Centred where it was placed, at the same size as all the others.
+                    const centerX = (marker.x1 + marker.x2) / 2 / width;
+                    const centerY = (marker.y1 + marker.y2) / 2 / height;
+                    const sizeX = MARKER_SCALE;
+                    const sizeY = (MARKER_SCALE * width) / height;
+
                     $('<button/>', {
                         'type': 'button',
-                        'class': 'ea-feet-marker',
+                        'class':
+                            'ea-feet-marker' +
+                            (marker.is_healed ? ' ea-feet-marker-healed' : '') +
+                            (marker.key === freshMarkerKey ? ' ea-feet-marker-fresh' : ''),
                         'data-marker-key': marker.key,
-                        'title': pathology?.name || '',
+                        'title': marker.is_healed ? name + ' (' + lang('clinical_marker_healed_state') + ')' : name,
                         'css': {
-                            left: (marker.x1 / width) * 100 + '%',
-                            top: (marker.y1 / height) * 100 + '%',
-                            width: ((marker.x2 - marker.x1) / width) * 100 + '%',
-                            height: ((marker.y2 - marker.y1) / height) * 100 + '%',
+                            left: (centerX - sizeX / 2) * 100 + '%',
+                            top: (centerY - sizeY / 2) * 100 + '%',
+                            width: sizeX * 100 + '%',
+                            height: sizeY * 100 + '%',
                         },
-                        'html': pathology ? $('<img/>', {src: pathology.image_url, alt: pathology.name}) : null,
+                        // A healed pathology is replaced by a smiling face in the same place; its name stays in the title.
+                        'html': [
+                            marker.is_healed
+                                ? $('<i/>', {'class': 'fas fa-smile ea-feet-marker-healed-face'})
+                                : pathology && $('<img/>', {src: pathology.image_url, alt: pathology.name}),
+                        ].filter(Boolean),
                     }).appendTo($feetMarkers);
                 });
         }
@@ -614,55 +765,76 @@ App.Components.ClinicalRecordModal = (function () {
         }
 
         const rect = picture.getBoundingClientRect();
-        const x = ((event.clientX - rect.left) * picture.naturalWidth) / rect.width;
-        const y = ((event.clientY - rect.top) * picture.naturalHeight) / rect.height;
-        const half = MARKER_SIZE / 2;
+        const {width, height} = originalSize();
+        const x = ((event.clientX - rect.left) * width) / rect.width;
+        const y = ((event.clientY - rect.top) * height) / rect.height;
+        const size = Math.max(1, Math.round(width * MARKER_SCALE));
+        const half = size / 2;
 
         const marker = {
             diagram_id: diagramId,
             pathology_id: pathologyId,
             x1: Math.round(x - half),
             y1: Math.round(y - half),
-            x2: Math.round(x - half) + MARKER_SIZE,
-            y2: Math.round(y - half) + MARKER_SIZE,
+            x2: Math.round(x - half) + size,
+            y2: Math.round(y - half) + size,
+            coordinate_width: feet.diagrams.find((diagram) => diagram.id === diagramId)?.coordinate_width || null,
+            coordinate_height: feet.diagrams.find((diagram) => diagram.id === diagramId)?.coordinate_height || null,
+            background_image: feet.diagrams.find((diagram) => diagram.id === diagramId)?.background_image || null,
         };
 
         // Saved with the visit ("Save visit").
         feet.markers.push({...marker, id: null, key: ++markerKey});
+        freshMarkerKey = markerKey;
         renderMarkers();
         updateSaveButtons();
     }
 
     /**
-     * Remove a placed pathology, after asking; it is removed for good when the visit is saved.
+     * Ask what to do with a placed pathology: mark it as healed (or not healed any more), remove it or leave it. Both
+     * changes are saved with the visit.
      *
      * @param {Number} key Key of the marker.
      */
-    function removeMarker(key) {
+    function editMarker(key) {
         const marker = feet.markers.find((marker) => marker.key === key);
-        const pathology = feet.pathologies.find((pathology) => pathology.id === marker?.pathology_id);
 
-        App.Utils.Message.show(
-            lang('clinical_pathologies'),
-            lang('clinical_remove_marker').replace('%s', pathology?.name || ''),
-            [
-                {
-                    text: lang('cancel'),
-                    className: 'btn btn-secondary',
-                    click: (event, messageModal) => messageModal.hide(),
+        if (!marker) {
+            return;
+        }
+
+        const pathology = feet.pathologies.find((pathology) => pathology.id === marker.pathology_id);
+        const name = App.Utils.String.escapeHtml(pathology?.name || '');
+
+        App.Utils.Message.show(lang('clinical_pathologies'), lang('clinical_marker_question').replace('%s', name), [
+            {
+                text: lang('cancel'),
+                className: 'btn btn-secondary',
+                click: (event, messageModal) => messageModal.hide(),
+            },
+            {
+                text: lang('clinical_remove'),
+                className: 'btn btn-danger',
+                click: (event, messageModal) => {
+                    messageModal.hide();
+                    feet.markers = feet.markers.filter((marker) => marker.key !== key);
+                    renderMarkers();
+                    updateSaveButtons();
                 },
-                {
-                    text: lang('clinical_remove'),
-                    className: 'btn btn-danger',
-                    click: (event, messageModal) => {
-                        messageModal.hide();
-                        feet.markers = feet.markers.filter((marker) => marker.key !== key);
-                        renderMarkers();
-                        updateSaveButtons();
-                    },
+            },
+            {
+                text:
+                    '<i class="fas fa-smile me-1"></i>' +
+                    lang(marker.is_healed ? 'clinical_marker_not_healed' : 'clinical_marker_healed'),
+                className: 'btn btn-success',
+                click: (event, messageModal) => {
+                    messageModal.hide();
+                    marker.is_healed = !marker.is_healed;
+                    renderMarkers();
+                    updateSaveButtons();
                 },
-            ],
-        );
+            },
+        ]);
     }
 
     /**
@@ -714,6 +886,9 @@ App.Components.ClinicalRecordModal = (function () {
                           is_healed: Boolean(marker.is_healed),
                           annotation_title: marker.annotation_title || null,
                           annotation_text: marker.annotation_text || null,
+                          coordinate_width: marker.coordinate_width || null,
+                          coordinate_height: marker.coordinate_height || null,
+                          background_image: marker.background_image || null,
                       }))
                     : null,
         };
@@ -731,11 +906,9 @@ App.Components.ClinicalRecordModal = (function () {
             data.surgeryPrice,
             data.markers,
         ).done((response) => {
-            // The new markers come back with their id, and the drawing is now the visit's own.
+            // The new markers come back with their id.
             if (response.markers && feet) {
                 feet.markers = response.markers.map((marker) => ({...marker, key: ++markerKey}));
-                feet.copied_from = null;
-                $feetCopied.prop('hidden', true);
                 renderMarkers();
             }
 
@@ -803,6 +976,27 @@ App.Components.ClinicalRecordModal = (function () {
     }
 
     /**
+     * Open the original customer page, keeping the same unsaved-changes choices as closing the record.
+     */
+    function openCustomerDetails() {
+        if (!customerId) {
+            return;
+        }
+
+        const navigate = () => window.location.assign(App.Utils.Url.siteUrl('customers?customer_id=' + customerId));
+
+        if (isPatientDirty() || isVisitDirty()) {
+            confirmUnsaved(() => {
+                $.when(isPatientDirty() ? savePatient() : null, isVisitDirty() ? saveVisit() : null).done(navigate);
+            }, navigate);
+
+            return;
+        }
+
+        navigate();
+    }
+
+    /**
      * The save buttons can only be pressed when there is something to save.
      */
     function updateSaveButtons() {
@@ -831,15 +1025,26 @@ App.Components.ClinicalRecordModal = (function () {
         $modal.on('input change', 'input, textarea, select', updateSaveButtons);
 
         $patientSave.on('click', savePatient);
+        $customerDetails.on('click', openCustomerDetails);
         $('#clinical-visit-save').on('click', saveVisit);
 
         $feetViews.on('click', '.ea-feet-view', (event) => showDiagram(Number(event.currentTarget.dataset.diagramId)));
 
+        $feetXray.on('click', () => {
+            showFeetXray = !showFeetXray;
+            updateFeetBackground();
+        });
+
         $feetPicture.on('click', placeMarker);
+
+        $feetMarkers.on('mouseleave', '.ea-feet-marker-fresh', (event) => {
+            freshMarkerKey = null;
+            event.currentTarget.classList.remove('ea-feet-marker-fresh');
+        });
 
         $feetMarkers.on('click', '.ea-feet-marker', (event) => {
             event.stopPropagation();
-            removeMarker(Number(event.currentTarget.dataset.markerKey));
+            editMarker(Number(event.currentTarget.dataset.markerKey));
         });
 
         // The chosen pathology, to be placed on the picture.
@@ -852,11 +1057,32 @@ App.Components.ClinicalRecordModal = (function () {
             updateFeetCursor();
         });
 
+        // The comment of a visit opens by its date, without choosing that visit.
+        $visits.on('click keydown', '.ea-clinical-visit-comment', (event) => {
+            if (event.type === 'keydown' && !['Enter', ' '].includes(event.key)) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            toggleComment(event.currentTarget);
+        });
+
         $visits.on('click', '.ea-clinical-visit', (event) => {
             chooseVisit(Number(event.currentTarget.dataset.appointmentId));
         });
 
-        $modal.on('shown.bs.tab', '[data-tab]', (event) => updateFooter(event.target.dataset.tab));
+        // A click anywhere else, or scrolling the list, closes the comment.
+        $(document).on('click', (event) => {
+            if (!$(event.target).closest('.ea-clinical-visit-comment, .popover').length) {
+                hideComments();
+            }
+        });
+        $visits.on('scroll', hideComments);
+        $modal.on('hide.bs.modal', hideComments);
+
+        // Switch the layout as the tab starts to change, so that the new tab fades in already in its place.
+        $modal.on('show.bs.tab', '[data-tab]', (event) => updateFooter(event.target.dataset.tab));
 
         $orthosis.on('change', () => updateVisitSubtitle($visitDetail.data('start')));
 

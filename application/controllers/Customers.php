@@ -177,6 +177,10 @@ class Customers extends EA_Controller
 
             $customer['fiscal'] = $this->fiscal_parties_model->get_patient_data($customer_id);
 
+            if (request('with_appointments')) {
+                $customer = $this->with_appointments([$customer])[0];
+            }
+
             json_response($customer);
         } catch (Throwable $e) {
             json_exception($e);

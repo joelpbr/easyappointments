@@ -27,7 +27,7 @@ App.Http.Calendar = (function () {
      * @param {Object} [customer] Optional, contains the customer data.
      * @param {Function} [successCallback] Optional, if defined, this function is going to be executed on post success.
      * @param {Function} [errorCallback] Optional, if defined, this function is going to be executed on post failure.
-     * @param {Boolean} [notifyUsers] Optional, whether to send notification to users (defaults to true).
+     * @param {Boolean} [notifyUsers] Optional, whether to send notification to users (defaults to false).
      * @param {Boolean} [forceSave] Optional, whether to force save even if there's a conflict (defaults to false).
      *
      * @return {*|jQuery}
@@ -37,7 +37,7 @@ App.Http.Calendar = (function () {
         customer,
         successCallback,
         errorCallback,
-        notifyUsers = true,
+        notifyUsers = false,
         forceSave = false,
     ) {
         const url = App.Utils.Url.siteUrl('calendar/save_appointment');
@@ -115,7 +115,7 @@ App.Http.Calendar = (function () {
      *
      * @return {*|jQuery}
      */
-    function deleteAppointment(appointmentId, cancellationReason, notifyUsers = true) {
+    function deleteAppointment(appointmentId, cancellationReason, notifyUsers = false) {
         const url = App.Utils.Url.siteUrl('calendar/delete_appointment');
 
         const data = {

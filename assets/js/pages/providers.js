@@ -583,6 +583,8 @@ App.Pages.Providers = (function () {
 
         // Display record in form (if display = true).
         if (show) {
+            App.Layouts.Backend.fadeIn($('.record-details'));
+
             const provider = filterResults.find((filterResult) => Number(filterResult.id) === Number(id));
 
             App.Pages.Providers.display(provider);

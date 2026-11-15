@@ -245,9 +245,62 @@ body .modal.full-screen .modal-push {
     font-size: 11px;
 }
 
-// Quick appointment form: the secondary fields stay hidden until "More details" is clicked.
-#appointments-modal:not(.ea-show-more) .ea-more-field {
+// Quick appointment form: the secondary fields are never shown.
+#appointments-modal .ea-more-field {
     display: none;
+}
+
+#appointments-modal .ea-appointment-timing {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 4.5rem;
+    grid-column: 1 / -1;
+    gap: 0.5rem;
+
+    > div {
+        min-width: 0;
+    }
+
+    .flatpickr-wrapper {
+        display: block;
+        width: 100%;
+    }
+
+    .form-control {
+        padding-right: 0.375rem;
+        padding-left: 0.375rem;
+        font-size: 0.875rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 575.98px) {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+        .ea-appointment-minutes {
+            width: 5rem;
+        }
+    }
+}
+
+#appointments-modal .ea-whatsapp-reminder {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0;
+    font-size: 0.875rem;
+    min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    cursor: pointer;
+
+    .form-check-input {
+        flex-shrink: 0;
+        float: none;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin: 0;
+        cursor: pointer;
+    }
 }
 
 // The data of a chosen patient is protected until "Edit data" is clicked (see appointments_modal.js).
@@ -369,10 +422,18 @@ body .modal.full-screen .modal-push {
     content: ' · ';
 }
 
-// Appointments whose status frees the slot (e.g. cancelled) stay visible, but faded.
+// Appointments whose status frees the slot (e.g. cancelled) stay visible, but faded, and with the stripes of the hours
+// out of work over their colour, as the appointments that have already ended have in the list.
 #calendar .fc-event.fc-appointment-freed {
     opacity: 0.5;
     text-decoration: line-through;
+    background-image: url('../img/unavailability.jpg');
+    background-blend-mode: multiply;
+}
+
+#calendar .fc-list-event.fc-appointment-freed > td {
+    background-image: url('../img/unavailability.jpg');
+    background-blend-mode: multiply;
 }
 
 // Blocked periods (see calendar_blocked_periods.js) use the out of hours grey stripes, above the other backgrounds.
@@ -1162,8 +1223,16 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
             font-size: 1.15rem;
         }
 
-        .btn-close {
+        .ea-clinical-header-actions {
+            display: flex;
+            flex: 0 0 auto;
+            align-items: center;
+            gap: 12px;
             margin-left: auto;
+
+            .btn-close {
+                margin: 0;
+            }
         }
     }
 
@@ -1213,8 +1282,7 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         overflow-y: auto;
     }
 
-    // The details fit without scrolling on a laptop: three rows of fields, and the medical history and the allergies,
-    // which take the rest of the height on larger screens.
+    // Compact details and text fields, with scrolling available on smaller screens.
     #clinical-tab-details.active {
         display: flex;
         flex-direction: column;
@@ -1229,7 +1297,7 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     }
 
     .ea-clinical-notes {
-        flex: 1 1 auto;
+        flex: 0 0 auto;
         min-height: 0;
 
         > div {
@@ -1238,9 +1306,9 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         }
 
         textarea {
-            flex: 1 1 auto;
-            min-height: 70px;
-            resize: none;
+            flex: 0 0 auto;
+            min-height: 0;
+            resize: vertical;
         }
     }
 
@@ -1295,6 +1363,13 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
             overflow-y: auto;
             padding: 10px 16px 12px;
             border-left: 1px solid #dee2e6;
+
+            // Fades in with the list of visits, like the details tab does.
+            animation: ea-fade-in 0.15s linear;
+
+            @media (prefers-reduced-motion: reduce) {
+                animation: none;
+            }
         }
     }
 
@@ -1323,6 +1398,17 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
 
         .ea-clinical-visit-meta {
             color: #6c757d;
+        }
+
+        // Comment of the appointment, by the date of the visit (clinical_record_modal.js).
+        .ea-clinical-visit-comment {
+            color: #029ecb;
+            cursor: pointer;
+
+            &:hover,
+            &:focus-visible {
+                color: #016d8c;
+            }
         }
 
         .ea-clinical-visit-notes {
@@ -1386,28 +1472,71 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
 
     // The picture fits the height of the window, so that the whole visit is seen without scrolling; the frame takes
     // the size of the picture, so that the markers stay on it.
+    // It is as wide as the original picture (--feet-width), narrower only when the window is not big enough.
     .ea-feet-picture {
         position: relative;
-        width: fit-content;
+        width: min(100%, var(--feet-width, 100%), calc((100vh - 300px) * var(--feet-ratio, 1)));
         max-width: 100%;
         margin: 0 auto;
         border: 1px solid #dee2e6;
         border-radius: 8px;
         background: #ffffff;
         overflow: hidden;
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+
+        // Keep the normal image's geometry and click target while displaying its X-ray background.
+        &.ea-feet-xray > img {
+            opacity: 0;
+        }
 
         > img {
             display: block;
-            width: auto;
-            max-width: 100%;
+            width: 100%;
             height: auto;
-            max-height: calc(100vh - 300px);
             user-select: none;
+            transition: opacity 220ms ease-out;
+
+            @media (prefers-reduced-motion: reduce) {
+                transition-duration: 0ms;
+            }
         }
 
         // While a pathology is chosen, a click on the picture places it.
         &.ea-feet-placing > img {
             cursor: crosshair;
+        }
+    }
+
+    // The X-ray switch: a round icon button on the top right corner of the picture.
+    .ea-feet-xray-toggle {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: #063f7e;
+        color: #ffffff;
+        font-size: 1.15rem;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+
+        &:hover,
+        &:focus-visible,
+        &:active,
+        &.active {
+            background: #063f7e;
+            color: #ffffff;
+        }
+
+        &:hover {
+            filter: brightness(1.2);
         }
     }
 
@@ -1434,8 +1563,20 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
             filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
         }
 
-        &:hover img {
-            transform: scale(1.2);
+        // A healed pathology: a smiling face in place of its picture, filling the same box.
+        .ea-feet-marker-healed-face {
+            display: block;
+            width: 100%;
+            height: 100%;
+            color: #198754;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+            pointer-events: none;
+        }
+
+        // Grows a little under the pointer, but not the one just placed until the pointer has left it once.
+        &:not(.ea-feet-marker-fresh):hover img,
+        &:not(.ea-feet-marker-fresh):hover .ea-feet-marker-healed-face {
+            transform: scale(1.1);
         }
     }
 
@@ -1500,20 +1641,6 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         textarea {
             flex: 1 1 auto;
             min-height: 90px;
-        }
-    }
-
-    // Note of a drawing copied from the previous visit.
-    .ea-feet-copied {
-        margin-bottom: 8px;
-        padding: 4px 8px;
-        border-radius: 6px;
-        background: #e6f6fb;
-        color: #055160;
-        font-size: 0.8rem;
-
-        &[hidden] {
-            display: none;
         }
     }
 
@@ -1618,5 +1745,243 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     .popover-body .ea-popover-tall {
         height: 2.8em;
         font-weight: 600;
+    }
+}
+
+// Amounts of money, and the fields that hold one: not shown while they are hidden with the eye of the header
+// (backend_layout.js).
+.ea-money-hidden .ea-money {
+    display: none !important;
+}
+
+// The eye of the header shows the state: open while the amounts are shown, crossed out while they are hidden.
+#toggle-money {
+    .ea-money-icon-hidden {
+        display: none;
+    }
+
+    .ea-money-hidden & {
+        .ea-money-icon-shown {
+            display: none;
+        }
+
+        .ea-money-icon-hidden {
+            display: inline;
+        }
+    }
+}
+
+// Separator between days in the views of more than one day: a dark line, so each day stands apart from the next one
+// without taking much room.
+$ea-day-separator: 3px solid #6c757d;
+
+// Week view: between the day columns, in the header and in the grid.
+#calendar .fc-timegrid {
+    th.fc-day + th.fc-day,
+    td.fc-day + td.fc-day {
+        border-left: $ea-day-separator;
+    }
+}
+
+// Table view: on the left of every day after the first one. It is drawn over the day, as a border would widen it and
+// the columns share the width of the screen exactly (setCalendarViewSize() in calendar_table_view.js).
+#calendar .calendar-view .date-column + .date-column {
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 6;
+        border-left: $ea-day-separator;
+        pointer-events: none;
+    }
+}
+
+// Horizontal scrollbar above the table view, shown while its columns do not fit on the screen (see
+// updateTopScrollbar() in calendar_table_view.js). The view itself hides its scrollbars.
+#calendar .ea-calendar-top-scrollbar {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: auto;
+
+    &[hidden] {
+        display: none;
+    }
+
+    > div {
+        height: 1px;
+    }
+}
+
+// Pathologies page (pathologies.js): the catalog with the icons, and the icon of the pathology shown.
+#pathologies-page {
+    .ea-pathologies-list {
+        max-height: 650px;
+        overflow-y: auto;
+    }
+
+    .ea-pathology-icon {
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        object-fit: contain;
+    }
+
+    .ea-pathology-description {
+        max-width: 320px;
+        opacity: 0.75;
+    }
+
+    .ea-pathology-preview {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        width: 72px;
+        height: 72px;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 8px;
+        background: #ffffff;
+
+        img {
+            max-width: 60px;
+            max-height: 60px;
+            object-fit: contain;
+        }
+    }
+}
+
+// Times of the calendar: clicking one opens a new appointment at it (calendar_table_view.js, calendar_default_view.js).
+#calendar .calendar-view .fc-timegrid-slot-label[data-time],
+#calendar .fc-timeGridDay-view .fc-timegrid-slot-label[data-time] {
+    cursor: pointer;
+
+    &:hover {
+        background: var(--bs-primary-bg-subtle);
+    }
+}
+
+// Statuses of the WhatsApp messages (whatsapp_settings.php, whatsapp_messages.php).
+#whatsapp-settings-page .ea-whatsapp-status,
+#whatsapp-messages-page .ea-whatsapp-status {
+    background: var(--bs-secondary);
+    color: #ffffff;
+
+    &.ea-whatsapp-status-accepted,
+    &.ea-whatsapp-status-sent {
+        background: var(--bs-info);
+    }
+
+    &.ea-whatsapp-status-delivered,
+    &.ea-whatsapp-status-read {
+        background: var(--bs-success);
+    }
+
+    &.ea-whatsapp-status-failed {
+        background: var(--bs-danger);
+    }
+
+    &.ea-whatsapp-status-review {
+        background: var(--bs-warning);
+        color: #212529;
+    }
+
+    &.ea-whatsapp-status-cancelled {
+        background: var(--bs-gray-500);
+    }
+
+    &.ea-whatsapp-status-manual {
+        background: var(--bs-teal);
+    }
+}
+
+// Comment of the appointment of a visit, opened from the list of visits of the clinical record.
+.ea-clinical-visit-comment-popover .popover-body {
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+// Number of WhatsApp messages that could not be sent, on the bell of the header (backend_header.php).
+#header-notifications .ea-notifications-badge {
+    position: absolute;
+    top: 8px;
+    right: 2px;
+    font-size: 0.65rem;
+}
+
+// Range chosen by dragging over the times of a day calendar (calendar_time_labels.js).
+.ea-time-range {
+    position: fixed;
+    z-index: 1050;
+    border: 2px solid var(--bs-primary);
+    border-radius: 4px;
+    background: rgba(13, 110, 253, 0.15);
+    pointer-events: none;
+}
+
+// Small animations: colours, borders, shadows and opacity only, so that nothing moves or changes size. Pages, the
+// loading screen and the calendar are left alone.
+.dropdown-menu.show,
+.backend-notification {
+    animation: ea-fade-in 0.12s ease-out;
+}
+
+// Clickable list rows (patient search, duplicates, pathologies, ...) and the rows of the tables that light up.
+.list-group-item-action,
+.table-hover > tbody > tr > * {
+    transition:
+        background-color 0.15s ease,
+        box-shadow 0.15s ease,
+        color 0.15s ease;
+}
+
+.backend-page .filter-records .results .entry,
+#clinical-record-modal .ea-clinical-visit,
+#clinical-record-modal .ea-feet-pathology {
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+#clinical-record-modal .ea-feet-view {
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+
+    &:hover:not(.active) {
+        border-color: #adb5bd;
+    }
+}
+
+#clinical-record-modal .ea-feet-marker img,
+#clinical-record-modal .ea-feet-marker .ea-feet-marker-healed-face {
+    transition: transform 0.12s ease-out;
+}
+
+#clinical-record-modal .ea-feet-xray-toggle {
+    transition: filter 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dropdown-menu.show,
+    .backend-notification {
+        animation: none;
+    }
+
+    .list-group-item-action,
+    .table-hover > tbody > tr > *,
+    .backend-page .filter-records .results .entry,
+    #clinical-record-modal .ea-clinical-visit,
+    #clinical-record-modal .ea-feet-pathology,
+    #clinical-record-modal .ea-feet-view,
+    #clinical-record-modal .ea-feet-marker img,
+    #clinical-record-modal .ea-feet-marker .ea-feet-marker-healed-face,
+    #clinical-record-modal .ea-feet-xray-toggle {
+        transition: none;
     }
 }

@@ -50,6 +50,7 @@
 
             <?php if (can('add', PRIV_APPOINTMENTS)): ?>
                 <button id="open-slot-search" class="btn btn-light" type="button">
+                    <?= lang('find_slot') ?>
                     <i class="fas fa-search me-2"></i>
                 </button>
 
@@ -176,6 +177,7 @@
 <script src="<?= asset_url('assets/js/utils/ui.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_default_view.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_midday.js') ?>"></script>
+<script src="<?= asset_url('assets/js/utils/calendar_time_labels.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_table_view.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_event_popover.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_appointment_actions.js') ?>"></script>

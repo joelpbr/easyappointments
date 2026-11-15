@@ -82,11 +82,12 @@ App.Utils.CalendarEventContent = (function () {
         const patient = [data.customer.first_name, data.customer.last_name].filter(Boolean).join(' ');
         const treatmentName = data.service_name || data.service?.name || '';
 
-        // The price of this appointment, which can differ from the treatment price: "Quiropodia (30€)".
-        const treatment =
+        // The price of this appointment, which can differ from the treatment price: "Quiropodia (30€)". It is hidden
+        // while the amounts are hidden, so the tooltip leaves it out.
+        const price =
             treatmentName && data.price !== null && data.price !== undefined && data.price !== ''
-                ? treatmentName + ' (' + App.Utils.CalendarDayTotal.format(data.price) + ')'
-                : treatmentName;
+                ? App.Utils.CalendarDayTotal.format(data.price)
+                : null;
         const start = moment(arg.event.start);
         const end = moment(arg.event.end);
         const timeFormat = vars('time_format') === 'regular' ? 'h:mm a' : 'HH:mm';
@@ -103,13 +104,20 @@ App.Utils.CalendarEventContent = (function () {
 
         const $content = $('<div/>', {
             'class': 'ea-event',
-            'title': [patient, treatment, meta.join(' · ')].filter(Boolean).join('\n'),
+            'title': [patient, treatmentName, meta.join(' · ')].filter(Boolean).join('\n'),
             'html': [
                 $('<div/>', {
                     'class': 'ea-event-line',
                     'html': [
                         $('<strong/>', {'text': patient}),
-                        treatment ? $('<span/>', {'text': ' · ' + treatment}) : null,
+                        treatmentName
+                            ? $('<span/>', {
+                                  'html': [
+                                      document.createTextNode(' · ' + treatmentName),
+                                      price ? $('<span/>', {'class': 'ea-money', 'text': ' (' + price + ')'}) : null,
+                                  ],
+                              })
+                            : null,
                     ],
                 }),
                 $('<div/>', {

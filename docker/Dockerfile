@@ -23,6 +23,13 @@ COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /u
 RUN install-php-extensions gd mysqli opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php.ini $PHP_INI_DIR/conf.d/app.ini
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-venv curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+COPY docker/install-podologo-reader.sh /usr/local/bin/install-podologo-reader
+RUN sh /usr/local/bin/install-podologo-reader
+ENV FIREBIRD=/opt/podologo/firebird
+ENV FIREBIRD_LOCK=/opt/podologo/locks
+ENV LD_LIBRARY_PATH=/opt/podologo/firebird/lib:/opt/podologo/deps/lib/x86_64-linux-gnu
 COPY docker/apache.conf /etc/apache2/conf-enabled/app.conf
 COPY --chmod=755 docker/cron.sh /usr/local/bin/ea-cron
 ENV TZ=Europe/Madrid

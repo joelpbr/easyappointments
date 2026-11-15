@@ -32,4 +32,12 @@
             <?= lang('integrations') ?>
         </a>
     </li>
+
+    <?php if (session('role_slug') === DB_SLUG_ADMIN): ?>
+        <li class="nav-item mb-3">
+            <a class="nav-link px-0 py-2" href="<?= site_url('backups') ?>">
+                <?= lang('backups') ?>
+            </a>
+        </li>
+    <?php endif; ?>
 </ul>

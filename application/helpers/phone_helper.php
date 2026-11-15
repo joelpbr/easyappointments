@@ -45,3 +45,24 @@ if (!function_exists('normalize_phone')) {
         return $international ? '+' . $digits : $digits;
     }
 }
+
+if (!function_exists('format_phone')) {
+    /**
+     * Format a phone number to show it: a Spanish one as "+34 681 34 43 44", another international one as "+" and its
+     * digits, and anything that is not a number as it was typed.
+     *
+     * @param string|null $phone Phone number, as typed or normalized.
+     *
+     * @return string
+     */
+    function format_phone(?string $phone): string
+    {
+        $normalized = normalize_phone($phone);
+
+        if ($normalized && preg_match('/^\+34(\d{3})(\d{2})(\d{2})(\d{2})$/', $normalized, $parts)) {
+            return '+34 ' . $parts[1] . ' ' . $parts[2] . ' ' . $parts[3] . ' ' . $parts[4];
+        }
+
+        return $normalized && str_starts_with($normalized, '+') ? $normalized : trim((string) $phone);
+    }
+}

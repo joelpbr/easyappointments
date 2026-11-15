@@ -373,6 +373,8 @@ App.Pages.Webhooks = (function () {
         $filterWebhooks.find('.webhook-row[data-id="' + id + '"]').addClass('selected');
 
         if (show) {
+            App.Layouts.Backend.fadeIn($('.record-details'));
+
             const webhook = filterResults.find((filterResult) => Number(filterResult.id) === Number(id));
 
             App.Pages.Webhooks.display(webhook);

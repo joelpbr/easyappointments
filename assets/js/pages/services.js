@@ -471,11 +471,8 @@ App.Pages.Services = (function () {
     function getFilterHtml(service) {
         const name = service.name;
 
-        let info = service.duration + ' min - ' + service.price + ' ' + service.currency;
-
-        if (!service.is_active) {
-            info += ' - ' + lang('inactive');
-        }
+        // The price is not shown while the amounts are hidden.
+        const price = (service.price + ' ' + (service.currency || '')).trim();
 
         return $('<div/>', {
             'class': 'service-row entry',
@@ -487,7 +484,11 @@ App.Pages.Services = (function () {
                 $('<br/>'),
                 $('<small/>', {
                     'class': 'text-muted',
-                    'text': info,
+                    'html': [
+                        document.createTextNode(service.duration + ' min - '),
+                        $('<span/>', {'class': 'ea-money', 'text': price}),
+                        service.is_active ? null : document.createTextNode(' - ' + lang('inactive')),
+                    ],
                 }),
                 $('<br/>'),
             ],
@@ -507,6 +508,8 @@ App.Pages.Services = (function () {
         $filterServices.find('.service-row[data-id="' + id + '"]').addClass('selected');
 
         if (show) {
+            App.Layouts.Backend.fadeIn($('.record-details'));
+
             const service = filterResults.find((filterResult) => Number(filterResult.id) === Number(id));
 
             App.Pages.Services.display(service);

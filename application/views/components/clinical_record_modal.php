@@ -19,7 +19,20 @@
                     <strong><?= lang('clinical_allergies') ?>:</strong>
                     <span class="ea-clinical-allergies-text"></span>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="ea-clinical-header-actions">
+                    <button type="button" id="clinical-customer-details" class="btn btn-link text-white p-1 lh-1"
+                            title="<?= e(lang('customer_details_title')) ?>"
+                            aria-label="<?= e(lang('customer_details_title')) ?>" hidden>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="2" />
+                            <circle cx="9" cy="10" r="2" />
+                            <path d="M6 16c0-3 6-3 6 0M15 9h3M15 13h3M15 16h3" />
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="<?= e(lang('close')) ?>"></button>
+                </div>
             </div>
 
             <ul class="nav nav-tabs ea-clinical-tabs" role="tablist">
@@ -94,20 +107,29 @@
                             <input id="clinical-address" class="form-control" data-customer="address" maxlength="256">
                         </div>
                         <div class="col-md-4">
+                            <label class="form-label" for="clinical-city"><?= lang('city') ?></label>
+                            <input id="clinical-city" class="form-control" data-customer="city" maxlength="256">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label" for="clinical-zip-code"><?= lang('zip_code') ?></label>
+                            <input id="clinical-zip-code" class="form-control" data-customer="zip_code"
+                                   maxlength="64" inputmode="numeric">
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label" for="clinical-referral-source"><?= lang(
                                 'clinical_referral_source',
                             ) ?></label>
                             <input id="clinical-referral-source" class="form-control" data-record="referral_source"
                                    maxlength="256">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label" for="clinical-profession"><?= lang(
                                 'clinical_profession',
                             ) ?></label>
                             <input id="clinical-profession" class="form-control" data-record="profession"
                                    maxlength="256">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label" for="clinical-physical-activity"><?= lang(
                                 'clinical_physical_activity',
                             ) ?></label>
@@ -116,7 +138,7 @@
                         </div>
                     </div>
 
-                    <!-- The medical history and the allergies take the rest of the height. -->
+                    <!-- Compact text fields; patient observations are shared with the booking form. -->
                     <div class="row g-2 ea-clinical-notes">
                         <div class="col-md-6">
                             <label class="form-label" for="clinical-medical-history"><?= lang(
@@ -129,6 +151,13 @@
                             <label class="form-label" for="clinical-allergies"><?= lang('clinical_allergies') ?></label>
                             <textarea id="clinical-allergies" class="form-control" rows="3"
                                       data-record="allergies"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="clinical-patient-notes"><?= lang(
+                                'administrative_notes',
+                            ) ?></label>
+                            <textarea id="clinical-patient-notes" class="form-control" rows="3"
+                                      data-customer="notes"></textarea>
                         </div>
                     </div>
                 </div>
@@ -163,13 +192,19 @@
                             <div class="ea-feet-picture" id="clinical-feet-board">
                                 <img id="clinical-feet-picture" alt="" draggable="false">
                                 <div id="clinical-feet-markers" class="ea-feet-markers"></div>
+                                <!-- Floats on the top right corner of the picture, as it only changes how it is shown. -->
+                                <button type="button" id="clinical-feet-xray" class="btn btn-sm ea-feet-xray-toggle"
+                                        aria-pressed="false" aria-controls="clinical-feet-board"
+                                        aria-label="<?= e(lang('clinical_feet_xray')) ?>"
+                                        title="<?= e(lang('clinical_feet_xray')) ?>">
+                                    <i class="fas fa-x-ray" aria-hidden="true"></i>
+                                </button>
                             </div>
                             <div id="clinical-feet-views" class="ea-feet-views" role="group"></div>
                         </div>
 
                         <div class="ea-feet-side">
                             <div class="form-label mb-0"><?= lang('clinical_pathologies') ?></div>
-                            <div id="clinical-feet-copied" class="ea-feet-copied" hidden></div>
                             <div id="clinical-feet-pathologies" class="list-group ea-feet-pathologies"></div>
                             <div id="clinical-feet-observations"></div>
                         </div>
@@ -206,7 +241,9 @@
                                 <option value="">—</option>
                                 <?php foreach (Clinical_record_templates::ORTHOSES as $orthosis => $price): ?>
                                     <?php $price_label = rtrim(rtrim(number_format($price, 2, ',', ''), '0'), ','); ?>
-                                    <option value="<?= $orthosis ?>" data-price="<?= $price ?>">
+                                    <!-- Shown without its price while the amounts are hidden (backend_layout.js). -->
+                                    <option value="<?= $orthosis ?>" data-price="<?= $price ?>"
+                                            data-money-label="<?= e(lang('clinical_orthosis_' . $orthosis)) ?>">
                                         <?= lang('clinical_orthosis_' . $orthosis) ?> (<?= $price_label ?>€)
                                     </option>
                                 <?php endforeach; ?>
@@ -214,7 +251,7 @@
                             <div class="form-text"><?= lang('clinical_price_hint') ?></div>
                         </div>
 
-                        <div class="col-sm-5" data-field="surgery_price">
+                        <div class="col-sm-5 ea-money" data-field="surgery_price">
                             <label class="form-label" for="clinical-visit-surgery-price"><?= lang(
                                 'clinical_surgery_price',
                             ) ?></label>
