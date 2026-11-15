@@ -1363,6 +1363,13 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
             overflow-y: auto;
             padding: 10px 16px 12px;
             border-left: 1px solid #dee2e6;
+
+            // Fades in with the list of visits, like the details tab does.
+            animation: ea-fade-in 0.15s linear;
+
+            @media (prefers-reduced-motion: reduce) {
+                animation: none;
+            }
         }
     }
 
@@ -1914,4 +1921,67 @@ $ea-day-separator: 3px solid #6c757d;
     border-radius: 4px;
     background: rgba(13, 110, 253, 0.15);
     pointer-events: none;
+}
+
+// Small animations: colours, borders, shadows and opacity only, so that nothing moves or changes size. Pages, the
+// loading screen and the calendar are left alone.
+.dropdown-menu.show,
+.backend-notification {
+    animation: ea-fade-in 0.12s ease-out;
+}
+
+// Clickable list rows (patient search, duplicates, pathologies, ...) and the rows of the tables that light up.
+.list-group-item-action,
+.table-hover > tbody > tr > * {
+    transition:
+        background-color 0.15s ease,
+        box-shadow 0.15s ease,
+        color 0.15s ease;
+}
+
+.backend-page .filter-records .results .entry,
+#clinical-record-modal .ea-clinical-visit,
+#clinical-record-modal .ea-feet-pathology {
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+#clinical-record-modal .ea-feet-view {
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+
+    &:hover:not(.active) {
+        border-color: #adb5bd;
+    }
+}
+
+#clinical-record-modal .ea-feet-marker img,
+#clinical-record-modal .ea-feet-marker .ea-feet-marker-healed-face {
+    transition: transform 0.12s ease-out;
+}
+
+#clinical-record-modal .ea-feet-xray-toggle {
+    transition: filter 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dropdown-menu.show,
+    .backend-notification {
+        animation: none;
+    }
+
+    .list-group-item-action,
+    .table-hover > tbody > tr > *,
+    .backend-page .filter-records .results .entry,
+    #clinical-record-modal .ea-clinical-visit,
+    #clinical-record-modal .ea-feet-pathology,
+    #clinical-record-modal .ea-feet-view,
+    #clinical-record-modal .ea-feet-marker img,
+    #clinical-record-modal .ea-feet-marker .ea-feet-marker-healed-face,
+    #clinical-record-modal .ea-feet-xray-toggle {
+        transition: none;
+    }
 }

@@ -508,6 +508,8 @@ App.Pages.Services = (function () {
         $filterServices.find('.service-row[data-id="' + id + '"]').addClass('selected');
 
         if (show) {
+            App.Layouts.Backend.fadeIn($('.record-details'));
+
             const service = filterResults.find((filterResult) => Number(filterResult.id) === Number(id));
 
             App.Pages.Services.display(service);

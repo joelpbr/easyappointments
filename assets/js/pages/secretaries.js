@@ -506,6 +506,8 @@ App.Pages.Secretaries = (function () {
         $('#filter-secretaries .secretary-row[data-id="' + id + '"]').addClass('selected');
 
         if (show) {
+            App.Layouts.Backend.fadeIn($('.record-details'));
+
             const secretary = filterResults.find((filterResult) => Number(filterResult.id) === Number(id));
 
             App.Pages.Secretaries.display(secretary);

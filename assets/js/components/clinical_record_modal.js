@@ -569,6 +569,7 @@ App.Components.ClinicalRecordModal = (function () {
         $visitEmpty.prop('hidden', true);
         $visitDetail.prop('hidden', false).data('start', appointment.start_datetime);
         $('#clinical-visit-column').scrollTop(0);
+        App.Layouts.Backend.fadeIn($visitDetail);
 
         savedVisit = JSON.stringify(getVisitData());
         updateSaveButtons();
@@ -1080,7 +1081,8 @@ App.Components.ClinicalRecordModal = (function () {
         $visits.on('scroll', hideComments);
         $modal.on('hide.bs.modal', hideComments);
 
-        $modal.on('shown.bs.tab', '[data-tab]', (event) => updateFooter(event.target.dataset.tab));
+        // Switch the layout as the tab starts to change, so that the new tab fades in already in its place.
+        $modal.on('show.bs.tab', '[data-tab]', (event) => updateFooter(event.target.dataset.tab));
 
         $orthosis.on('change', () => updateVisitSubtitle($visitDetail.data('start')));
 

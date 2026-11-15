@@ -735,6 +735,8 @@ App.Pages.Customers = (function () {
         $('#filter-customers .entry[data-id="' + id + '"]').addClass('selected');
 
         if (show) {
+            App.Layouts.Backend.fadeIn($('.record-details'));
+
             const customer = filterResults.find((filterResult) => Number(filterResult.id) === Number(id));
 
             if (customer) {

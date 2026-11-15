@@ -464,6 +464,8 @@ App.Pages.Admins = (function () {
         $filterAdmins.find('.admin-row[data-id="' + id + '"]').addClass('selected');
 
         if (show) {
+            App.Layouts.Backend.fadeIn($('.record-details'));
+
             const admin = filterResults.find((filterResult) => Number(filterResult.id) === Number(id));
 
             App.Pages.Admins.display(admin);

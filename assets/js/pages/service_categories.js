@@ -327,6 +327,8 @@ App.Pages.ServiceCategories = (function () {
         $filterServiceCategories.find('.service-category-row[data-id="' + id + '"]').addClass('selected');
 
         if (show) {
+            App.Layouts.Backend.fadeIn($('.record-details'));
+
             const serviceCategory = filterResults.find((serviceCategory) => Number(serviceCategory.id) === Number(id));
 
             App.Pages.ServiceCategories.display(serviceCategory);

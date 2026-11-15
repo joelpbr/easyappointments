@@ -478,6 +478,8 @@ App.Pages.BlockedPeriods = (function () {
         $filterBlockedPeriods.find('.blocked-period-row[data-id="' + id + '"]').addClass('selected');
 
         if (show) {
+            App.Layouts.Backend.fadeIn($('.record-details'));
+
             const blockedPeriod = filterResults.find((blockedPeriod) => Number(blockedPeriod.id) === Number(id));
 
             App.Pages.BlockedPeriods.display(blockedPeriod);

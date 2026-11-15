@@ -157,6 +157,20 @@ window.App.Layouts.Backend = (function () {
         });
     }
 
+    /**
+     * Fade an element in, with the fade of the Bootstrap tabs, when what it shows changes (another record, another
+     * visit). It restarts the fade when it is still running.
+     *
+     * @param {jQuery} $target
+     */
+    function fadeIn($target) {
+        $target.each((index, element) => {
+            element.classList.remove('ea-fade-in');
+            void element.offsetWidth; // Restart the animation.
+            element.classList.add('ea-fade-in');
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', initialize);
 
     return {
@@ -175,6 +189,7 @@ window.App.Layouts.Backend = (function () {
         PRIV_SYSTEM_SETTINGS,
         PRIV_USER_SETTINGS,
         displayNotification,
+        fadeIn,
         isMoneyHidden,
     };
 })();

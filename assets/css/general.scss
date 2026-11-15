@@ -465,6 +465,25 @@ li.language {
     }
 }
 
+// The fade of the Bootstrap tabs, for the parts that appear without being a tab pane themselves
+// (App.Layouts.Backend.fadeIn).
+@keyframes ea-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.ea-fade-in {
+    animation: ea-fade-in 0.15s linear;
+
+    @media (prefers-reduced-motion: reduce) {
+        animation: none;
+    }
+}
+
 .any-element {
     width: 60px;
     height: 60px;

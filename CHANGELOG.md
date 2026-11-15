@@ -53,6 +53,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- Switching tabs and visits of the clinical record, choosing a record in the lists of the management pages, opening menus and showing notifications fade in smoothly, and rows, visits and foot diagram views fade their highlight; going to the visits of a clinical record no longer pops its right column in after the fade
 - The X-ray switch of the foot diagrams is a round icon button in the corner of the picture instead of a button on a row of its own
 - A healed pathology shows a green smiling face in its place on the foot diagram, instead of the faded pathology with a small face on its corner
 - The second and third views of the foot diagrams swap places on screen, and a visit opens on the first view from the left with pathologies placed on it
