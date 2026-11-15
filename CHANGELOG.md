@@ -53,6 +53,10 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- The X-ray switch of the foot diagrams is a round icon button in the corner of the picture instead of a button on a row of its own
+- A healed pathology shows a green smiling face in its place on the foot diagram, instead of the faded pathology with a small face on its corner
+- The second and third views of the foot diagrams swap places on screen, and a visit opens on the first view from the left with pathologies placed on it
+- A pathology on the foot diagram grows less under the pointer, and one just placed only grows once the pointer has left it and comes back
 - The features the clinic does not use are removed: the video call link of the appointments (Jitsi and Google Meet), the LDAP login and import, the custom fields of the patients, the web analytics (Google Analytics and Matomo) and the mobile number of the users; online booking is turned off, so the address of the application opens the login, and patients always use the clinic's timezone
 - Absences and closures are added only as blocked periods: the calendar no longer offers new unavailabilities (the existing ones are still shown and can be edited), and selecting time in the calendar opens a new appointment at once instead of asking what to add
 - The fiscal data of a patient keeps only what differs from the patient: empty fiscal name, address, zip code, city or province use the patient's ones (shown in grey on the patients page), so changing the patient's address also changes their invoices
@@ -94,6 +98,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Fixed
 
+- All the pathologies on the foot diagrams are shown at the same size, centred where they were placed; the ones added by hand to imported visits were one and a half times bigger
 - After an update the browsers load the new styles and scripts right away instead of keeping the previous ones from their cache
 - A new appointment from the calendar toolbar starts at the next slot of the agenda, without seconds, instead of jumping to the next hour at minutes 0, 15, 30 and 45
 - Deleting a provider that has appointments is now refused instead of silently deleting all of their appointments

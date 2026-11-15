@@ -65,8 +65,12 @@ App.Components.ClinicalRecordModal = (function () {
     let visitHasFeet = false;
     let markerKey = 0;
 
-    // Size of a placed pathology on the original picture, in its pixels.
-    const MARKER_SIZE = 24;
+    // The marker just placed, which does not grow under the pointer until the pointer has left it once.
+    let freshMarkerKey = null;
+
+    // Size of a placed pathology, as a share of the width of the picture: that of the imported ones (16 pixels on
+    // their 360 pixels wide canvas). Every marker is shown at this size, whatever box it was saved with.
+    const MARKER_SCALE = 16 / 360;
 
     // Size of the original picture of each diagram, in pixels. The saved coordinates refer to it, and the picture is
     // shown at its width, whatever the size of the file now in assets/img/fotos_pies.
@@ -582,12 +586,19 @@ App.Components.ClinicalRecordModal = (function () {
         feet.markers.forEach((marker) => (marker.key = ++markerKey));
         $feetViews.empty();
 
-        feet.diagrams.forEach((diagram, index) => {
+        // On screen the second and third views swap places; the saved diagrams and their numbers stay as they are.
+        const shownDiagrams = feet.diagrams.map((diagram, index) => ({diagram, number: index + 1}));
+
+        if (shownDiagrams.length >= 3) {
+            [shownDiagrams[1], shownDiagrams[2]] = [shownDiagrams[2], shownDiagrams[1]];
+        }
+
+        shownDiagrams.forEach(({diagram, number}) => {
             $('<button/>', {
                 'type': 'button',
                 'class': 'ea-feet-view',
                 'data-diagram-id': diagram.id,
-                'title': diagram.name || lang('clinical_feet_view').replace('%s', index + 1),
+                'title': diagram.name || lang('clinical_feet_view').replace('%s', number),
                 'html': [$('<img/>', {src: diagram.image_url, alt: ''}), $('<span/>', {class: 'ea-feet-view-count'})],
             }).appendTo($feetViews);
         });
@@ -609,7 +620,13 @@ App.Components.ClinicalRecordModal = (function () {
         });
 
         updateFeetCursor();
-        showDiagram(feet.diagrams[0]?.id ?? null);
+
+        // A visit opens on the first view from the left with pathologies placed on it, or the first one when none has.
+        const firstWithMarkers = shownDiagrams.find(({diagram}) =>
+            feet.markers.some((marker) => marker.diagram_id === diagram.id),
+        );
+
+        showDiagram((firstWithMarkers ?? shownDiagrams[0])?.diagram.id ?? null);
     }
 
     /**
@@ -690,21 +707,31 @@ App.Components.ClinicalRecordModal = (function () {
 
                     const name = pathology?.name || '';
 
+                    // Centred where it was placed, at the same size as all the others.
+                    const centerX = (marker.x1 + marker.x2) / 2 / width;
+                    const centerY = (marker.y1 + marker.y2) / 2 / height;
+                    const sizeX = MARKER_SCALE;
+                    const sizeY = (MARKER_SCALE * width) / height;
+
                     $('<button/>', {
                         'type': 'button',
-                        'class': 'ea-feet-marker' + (marker.is_healed ? ' ea-feet-marker-healed' : ''),
+                        'class':
+                            'ea-feet-marker' +
+                            (marker.is_healed ? ' ea-feet-marker-healed' : '') +
+                            (marker.key === freshMarkerKey ? ' ea-feet-marker-fresh' : ''),
                         'data-marker-key': marker.key,
                         'title': marker.is_healed ? name + ' (' + lang('clinical_marker_healed_state') + ')' : name,
                         'css': {
-                            left: (marker.x1 / width) * 100 + '%',
-                            top: (marker.y1 / height) * 100 + '%',
-                            width: ((marker.x2 - marker.x1) / width) * 100 + '%',
-                            height: ((marker.y2 - marker.y1) / height) * 100 + '%',
+                            left: (centerX - sizeX / 2) * 100 + '%',
+                            top: (centerY - sizeY / 2) * 100 + '%',
+                            width: sizeX * 100 + '%',
+                            height: sizeY * 100 + '%',
                         },
-                        // A healed pathology is faded, with a smiling face on its corner.
+                        // A healed pathology is replaced by a smiling face in the same place; its name stays in the title.
                         'html': [
-                            pathology ? $('<img/>', {src: pathology.image_url, alt: pathology.name}) : null,
-                            marker.is_healed ? $('<i/>', {'class': 'fas fa-smile ea-feet-marker-badge'}) : null,
+                            marker.is_healed
+                                ? $('<i/>', {'class': 'fas fa-smile ea-feet-marker-healed-face'})
+                                : pathology && $('<img/>', {src: pathology.image_url, alt: pathology.name}),
                         ].filter(Boolean),
                     }).appendTo($feetMarkers);
                 });
@@ -740,15 +767,16 @@ App.Components.ClinicalRecordModal = (function () {
         const {width, height} = originalSize();
         const x = ((event.clientX - rect.left) * width) / rect.width;
         const y = ((event.clientY - rect.top) * height) / rect.height;
-        const half = MARKER_SIZE / 2;
+        const size = Math.max(1, Math.round(width * MARKER_SCALE));
+        const half = size / 2;
 
         const marker = {
             diagram_id: diagramId,
             pathology_id: pathologyId,
             x1: Math.round(x - half),
             y1: Math.round(y - half),
-            x2: Math.round(x - half) + MARKER_SIZE,
-            y2: Math.round(y - half) + MARKER_SIZE,
+            x2: Math.round(x - half) + size,
+            y2: Math.round(y - half) + size,
             coordinate_width: feet.diagrams.find((diagram) => diagram.id === diagramId)?.coordinate_width || null,
             coordinate_height: feet.diagrams.find((diagram) => diagram.id === diagramId)?.coordinate_height || null,
             background_image: feet.diagrams.find((diagram) => diagram.id === diagramId)?.background_image || null,
@@ -756,6 +784,7 @@ App.Components.ClinicalRecordModal = (function () {
 
         // Saved with the visit ("Save visit").
         feet.markers.push({...marker, id: null, key: ++markerKey});
+        freshMarkerKey = markerKey;
         renderMarkers();
         updateSaveButtons();
     }
@@ -1006,6 +1035,11 @@ App.Components.ClinicalRecordModal = (function () {
         });
 
         $feetPicture.on('click', placeMarker);
+
+        $feetMarkers.on('mouseleave', '.ea-feet-marker-fresh', (event) => {
+            freshMarkerKey = null;
+            event.currentTarget.classList.remove('ea-feet-marker-fresh');
+        });
 
         $feetMarkers.on('click', '.ea-feet-marker', (event) => {
             event.stopPropagation();

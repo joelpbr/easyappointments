@@ -1501,6 +1501,38 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         }
     }
 
+    // The X-ray switch: a round icon button on the top right corner of the picture.
+    .ea-feet-xray-toggle {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: #063f7e;
+        color: #ffffff;
+        font-size: 1.15rem;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+
+        &:hover,
+        &:focus-visible,
+        &:active,
+        &.active {
+            background: #063f7e;
+            color: #ffffff;
+        }
+
+        &:hover {
+            filter: brightness(1.2);
+        }
+    }
+
     // The placed pathologies, positioned in % of the original picture so that they follow its size on screen.
     .ea-feet-markers {
         position: absolute;
@@ -1524,26 +1556,20 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
             filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
         }
 
-        &:hover img {
-            transform: scale(1.2);
-        }
-
-        // A healed pathology: faded, with a smiling face on its corner.
-        &.ea-feet-marker-healed img {
-            opacity: 0.45;
-            filter: grayscale(1);
-        }
-
-        .ea-feet-marker-badge {
-            position: absolute;
-            right: -4px;
-            bottom: -4px;
-            border-radius: 50%;
-            background: #ffffff;
+        // A healed pathology: a smiling face in place of its picture, filling the same box.
+        .ea-feet-marker-healed-face {
+            display: block;
+            width: 100%;
+            height: 100%;
             color: #198754;
-            font-size: 0.85rem;
-            line-height: 1;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
             pointer-events: none;
+        }
+
+        // Grows a little under the pointer, but not the one just placed until the pointer has left it once.
+        &:not(.ea-feet-marker-fresh):hover img,
+        &:not(.ea-feet-marker-fresh):hover .ea-feet-marker-healed-face {
+            transform: scale(1.1);
         }
     }
 

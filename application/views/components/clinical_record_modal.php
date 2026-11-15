@@ -189,15 +189,16 @@
                          the pathologies on the right with the observations under them (clinical_record_modal.js). -->
                     <div class="ea-clinical-feet mb-3" data-section="feet">
                         <div class="ea-feet-diagram">
-                            <div class="d-flex justify-content-end mb-2">
-                                <button type="button" id="clinical-feet-xray" class="btn btn-outline-primary btn-sm"
-                                        aria-pressed="false" aria-controls="clinical-feet-board">
-                                    <?= lang('clinical_feet_xray') ?>
-                                </button>
-                            </div>
                             <div class="ea-feet-picture" id="clinical-feet-board">
                                 <img id="clinical-feet-picture" alt="" draggable="false">
                                 <div id="clinical-feet-markers" class="ea-feet-markers"></div>
+                                <!-- Floats on the top right corner of the picture, as it only changes how it is shown. -->
+                                <button type="button" id="clinical-feet-xray" class="btn btn-sm ea-feet-xray-toggle"
+                                        aria-pressed="false" aria-controls="clinical-feet-board"
+                                        aria-label="<?= e(lang('clinical_feet_xray')) ?>"
+                                        title="<?= e(lang('clinical_feet_xray')) ?>">
+                                    <i class="fas fa-x-ray" aria-hidden="true"></i>
+                                </button>
                             </div>
                             <div id="clinical-feet-views" class="ea-feet-views" role="group"></div>
                         </div>
