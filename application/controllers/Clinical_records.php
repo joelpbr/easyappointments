@@ -23,7 +23,7 @@ class Clinical_records extends EA_Controller
     /**
      * Patient fields that the record shows and edits; the rest of the patient is edited on the patients page.
      */
-    private const CUSTOMER_FIELDS = ['first_name', 'last_name', 'phone_number', 'address', 'city', 'zip_code'];
+    private const CUSTOMER_FIELDS = ['first_name', 'last_name', 'phone_number', 'address', 'city', 'zip_code', 'notes'];
 
     /**
      * Clinical records constructor.
@@ -394,6 +394,6 @@ class Clinical_records extends EA_Controller
      */
     private function customer_save_fields(): array
     {
-        return ['first_name', 'last_name', 'email', 'phone_number', 'address', 'city', 'zip_code'];
+        return ['first_name', 'last_name', 'email', 'phone_number', 'address', 'city', 'zip_code', 'notes'];
     }
 }

@@ -23,12 +23,7 @@ App.Components.AppointmentsModal = (function () {
     const $customerId = $('#customer-id');
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
-    const $email = $('#email');
     const $phoneNumber = $('#phone-number');
-    const $address = $('#address');
-    const $city = $('#city');
-    const $zipCode = $('#zip-code');
-    const $language = $('#language');
     const $customerNotes = $('#customer-notes');
     const $saveAppointment = $('#save-appointment');
     const $appointmentId = $('#appointment-id');
@@ -212,22 +207,11 @@ App.Components.AppointmentsModal = (function () {
                 appointment.id = $appointmentId.val();
             }
 
-            const customer = {
-                first_name: $firstName.val(),
-                last_name: $lastName.val(),
-                email: $email.val(),
-                phone_number: $phoneNumber.val(),
-                address: $address.val(),
-                city: $city.val(),
-                zip_code: $zipCode.val(),
-                language: $language.val(),
-                notes: $customerNotes.val(),
-            };
+            const customer = getCustomerData();
 
             if ($customerId.val() !== '') {
                 // Set the id value, only if we are editing an appointment.
-                customer.id = $customerId.val();
-                appointment.id_users_customer = customer.id;
+                appointment.id_users_customer = $customerId.val();
             }
 
             // Define success callback.
@@ -515,8 +499,6 @@ App.Components.AppointmentsModal = (function () {
         // A new appointment gets the WhatsApp reminder unless it is turned off.
         $sendWhatsappReminder.prop('checked', true);
 
-        $language.val(vars('default_language'));
-
         // Reset color.
         $appointmentColor.find('.color-selection-option:first').trigger('click');
 
@@ -588,10 +570,13 @@ App.Components.AppointmentsModal = (function () {
         $appointmentsModal.find('.modal-message').addClass('d-none');
 
         try {
+            const reusePatient = Boolean($customerId.val()) && isPatientLocked();
+            const $patientFields = getPatientFields();
             // Check required fields.
             let missingRequiredField = false;
 
             $appointmentsModal.find('.required').each((index, requiredField) => {
+                if (reusePatient && $patientFields.is(requiredField)) return;
                 if ($(requiredField).val() === '' || $(requiredField).val() === null) {
                     $(requiredField).addClass('is-invalid');
                     missingRequiredField = true;
@@ -607,17 +592,9 @@ App.Components.AppointmentsModal = (function () {
                 throw new Error(lang('appointment_duration_invalid'));
             }
 
-            // Check email address.
-            if (
-                $appointmentsModal.find('#email').val() &&
-                !App.Utils.Validation.email($appointmentsModal.find('#email').val())
-            ) {
-                $appointmentsModal.find('#email').addClass('is-invalid');
-                throw new Error(lang('invalid_email'));
-            }
-
             // Check phone number.
             if (
+                !reusePatient &&
                 $appointmentsModal.find('#phone-number').val() &&
                 !App.Utils.Validation.phone($appointmentsModal.find('#phone-number').val())
             ) {
@@ -659,13 +636,8 @@ App.Components.AppointmentsModal = (function () {
         $customerId.val(customer.id);
         $firstName.val(customer.first_name);
         $lastName.val(customer.last_name);
-        $email.val(customer.email);
         $phoneNumber.val(customer.phone_number);
-        $address.val(customer.address);
-        $city.val(customer.city);
-        $zipCode.val(customer.zip_code);
-        $language.val(customer.language);
-        $customerNotes.val(customer.notes);
+        $customerNotes.val(customer.notes || '');
         $appointmentsModal.find('.is-invalid').removeClass('is-invalid');
         $appointmentsModal.find('.modal-message').addClass('d-none');
 
@@ -694,6 +666,27 @@ App.Components.AppointmentsModal = (function () {
      */
     function getPatientFields() {
         return $customerId.closest('fieldset').find('input:not([type=hidden]):not(.btn-check), select, textarea');
+    }
+
+    /** Reusing a locked patient only needs their ID on the appointment; their record is not being edited. */
+    function getCustomerData() {
+        if ($customerId.val() && isPatientLocked()) return null;
+        const customer = {
+            first_name: $firstName.val(),
+            last_name: $lastName.val(),
+            phone_number: $phoneNumber.val(),
+            notes: $customerNotes.val(),
+        };
+        if ($customerId.val()) customer.id = $customerId.val();
+        else
+            Object.assign(customer, {
+                email: '',
+                address: '',
+                city: '',
+                zip_code: '',
+                language: vars('default_language'),
+            });
+        return customer;
     }
 
     /**
@@ -734,7 +727,6 @@ App.Components.AppointmentsModal = (function () {
 
         $customerId.val('');
         getPatientFields().filter('input, textarea').val('');
-        $language.val(vars('default_language'));
     }
 
     /**

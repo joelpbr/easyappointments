@@ -7,10 +7,13 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- The booking form again includes both original comment fields: the appointment's comment and the patient's administrative notes, loaded and saved independently under their original labels.
+- Clicking a patient opens their clinical record directly; a small SVG button beside its close button opens that patient's original details page and administrative history, with the existing choices for unsaved changes.
 - Imported text recovers accents, Ñ/ñ, ordinals and punctuation damaged by incorrect character encoding, including repeated conversions; existing records can be repaired with a safety backup and verification that all other fields and drawing coordinates are unchanged.
 - The legacy EMAIL2 field is imported as patient provenance, combining it with existing referral information without duplicates or changes to the patient's email address.
 - Historical visits recover missing provider assignments from the clinic's S/T comment conventions and confirmed Sara default, preventing those records from failing the calendar feed; the original visit data and drawing coordinates are retained.
 - Imported visit starts are rounded down to the preceding quarter-hour and their ends use the assigned service's default duration; existing imported times can be repaired without changing clinical content or drawings.
+- Booking an existing patient no longer fails on a hidden language field or revalidates locked patient data; the booking form asks only for name, surname and phone, with optional appointment observations, while secondary patient details remain in their record.
 - Podologo imports populate the existing patient document fields from the original NIF, retaining unrecognized values as other documents without fabricating digits or overwriting later edits.
 - Imported clinical comments omit the legacy PIESIGUALESBIO form flag while retaining its original value in the source archive.
 - Imported duplicate pathology entries and Sara/Sebas providers can be unified with existing clinic records, preserving every marker and appointment; from 2024 onward a separate uppercase T in a visit comment assigns the visit to Toñi.

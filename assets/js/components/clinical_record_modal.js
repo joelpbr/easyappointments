@@ -20,6 +20,7 @@ App.Components.ClinicalRecordModal = (function () {
     const $modal = $('#clinical-record-modal');
     const $title = $('#clinical-record-title');
     const $allergiesAlert = $('#clinical-record-allergies-alert');
+    const $customerDetails = $('#clinical-customer-details');
     const $visits = $('#clinical-visits');
     const $visitsCount = $('#clinical-visits-count');
     const $documentType = $('#clinical-document-type');
@@ -58,6 +59,7 @@ App.Components.ClinicalRecordModal = (function () {
     let feet = null;
     let diagramId = null;
     let showFeetXray = false;
+    let feetBackgroundRequest = 0;
 
     // Whether the visit shown has foot diagrams, and a key for each marker, as the new ones have no id until saved.
     let visitHasFeet = false;
@@ -82,6 +84,11 @@ App.Components.ClinicalRecordModal = (function () {
      */
     function originalSize() {
         const picture = $feetPicture[0];
+        const legacy = feet?.diagrams.find((diagram) => diagram.id === diagramId && diagram.background_image);
+
+        if (legacy) {
+            return {width: legacy.coordinate_width, height: legacy.coordinate_height};
+        }
 
         return ORIGINAL_SIZES[diagramId] || {width: picture.naturalWidth, height: picture.naturalHeight};
     }
@@ -96,7 +103,11 @@ App.Components.ClinicalRecordModal = (function () {
             return;
         }
 
-        $feetBoard[0].style.setProperty('--feet-width', originalSize().width + 'px');
+        // Keep the normal display size even when imported coordinates use a smaller legacy canvas.
+        $feetBoard[0].style.setProperty(
+            '--feet-width',
+            (ORIGINAL_SIZES[diagramId]?.width || picture.naturalWidth) + 'px',
+        );
         $feetBoard[0].style.setProperty('--feet-ratio', String(picture.naturalWidth / picture.naturalHeight));
     }
 
@@ -226,6 +237,7 @@ App.Components.ClinicalRecordModal = (function () {
         $age.val(age);
 
         $title.text(name || (customerId === 0 ? lang('clinical_new_patient') : lang('clinical_record')));
+        $customerDetails.prop('hidden', !customerId);
 
         const allergies = (data.record.allergies || '').trim();
 
@@ -618,6 +630,7 @@ App.Components.ClinicalRecordModal = (function () {
         }
 
         // The markers are placed once the picture knows its original size.
+        $feetBoard.removeClass('ea-feet-xray');
         $feetPicture.off('load.markers').on('load.markers', renderMarkers);
         $feetPicture.attr('src', diagram.image_url);
         updateFeetBackground();
@@ -632,13 +645,30 @@ App.Components.ClinicalRecordModal = (function () {
      * stay the same even though the X-ray files have a different resolution. This preference is never saved.
      */
     function updateFeetBackground() {
+        const request = ++feetBackgroundRequest;
         const diagram = feet?.diagrams.find((diagram) => diagram.id === diagramId);
         const xrayUrl = diagram?.image_url.replace(/\.png(?=[?#]|$)/i, '_x.png');
 
         $feetXray.attr('aria-pressed', String(showFeetXray)).toggleClass('active', showFeetXray);
-        $feetBoard
-            .toggleClass('ea-feet-xray', showFeetXray)
-            .css('background-image', showFeetXray && xrayUrl ? 'url("' + xrayUrl + '")' : '');
+
+        if (!showFeetXray || !xrayUrl) {
+            // Leave the X-ray underneath while the normal image fades back in.
+            $feetBoard.removeClass('ea-feet-xray');
+            return;
+        }
+
+        const picture = new Image();
+        picture.onload = () => {
+            if (request !== feetBackgroundRequest) return;
+            $feetBoard.css('background-image', 'url("' + xrayUrl + '")').addClass('ea-feet-xray');
+        };
+        picture.onerror = () => {
+            if (request !== feetBackgroundRequest) return;
+            showFeetXray = false;
+            $feetBoard.removeClass('ea-feet-xray');
+            $feetXray.attr('aria-pressed', 'false').removeClass('active');
+        };
+        picture.src = xrayUrl;
     }
 
     /**
@@ -719,6 +749,9 @@ App.Components.ClinicalRecordModal = (function () {
             y1: Math.round(y - half),
             x2: Math.round(x - half) + MARKER_SIZE,
             y2: Math.round(y - half) + MARKER_SIZE,
+            coordinate_width: feet.diagrams.find((diagram) => diagram.id === diagramId)?.coordinate_width || null,
+            coordinate_height: feet.diagrams.find((diagram) => diagram.id === diagramId)?.coordinate_height || null,
+            background_image: feet.diagrams.find((diagram) => diagram.id === diagramId)?.background_image || null,
         };
 
         // Saved with the visit ("Save visit").
@@ -823,6 +856,9 @@ App.Components.ClinicalRecordModal = (function () {
                           is_healed: Boolean(marker.is_healed),
                           annotation_title: marker.annotation_title || null,
                           annotation_text: marker.annotation_text || null,
+                          coordinate_width: marker.coordinate_width || null,
+                          coordinate_height: marker.coordinate_height || null,
+                          background_image: marker.background_image || null,
                       }))
                     : null,
         };
@@ -910,6 +946,27 @@ App.Components.ClinicalRecordModal = (function () {
     }
 
     /**
+     * Open the original customer page, keeping the same unsaved-changes choices as closing the record.
+     */
+    function openCustomerDetails() {
+        if (!customerId) {
+            return;
+        }
+
+        const navigate = () => window.location.assign(App.Utils.Url.siteUrl('customers?customer_id=' + customerId));
+
+        if (isPatientDirty() || isVisitDirty()) {
+            confirmUnsaved(() => {
+                $.when(isPatientDirty() ? savePatient() : null, isVisitDirty() ? saveVisit() : null).done(navigate);
+            }, navigate);
+
+            return;
+        }
+
+        navigate();
+    }
+
+    /**
      * The save buttons can only be pressed when there is something to save.
      */
     function updateSaveButtons() {
@@ -938,6 +995,7 @@ App.Components.ClinicalRecordModal = (function () {
         $modal.on('input change', 'input, textarea, select', updateSaveButtons);
 
         $patientSave.on('click', savePatient);
+        $customerDetails.on('click', openCustomerDetails);
         $('#clinical-visit-save').on('click', saveVisit);
 
         $feetViews.on('click', '.ea-feet-view', (event) => showDiagram(Number(event.currentTarget.dataset.diagramId)));

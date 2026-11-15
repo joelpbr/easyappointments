@@ -19,7 +19,20 @@
                     <strong><?= lang('clinical_allergies') ?>:</strong>
                     <span class="ea-clinical-allergies-text"></span>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="ea-clinical-header-actions">
+                    <button type="button" id="clinical-customer-details" class="btn btn-link text-white p-1 lh-1"
+                            title="<?= e(lang('customer_details_title')) ?>"
+                            aria-label="<?= e(lang('customer_details_title')) ?>" hidden>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="16" rx="2" />
+                            <circle cx="9" cy="10" r="2" />
+                            <path d="M6 16c0-3 6-3 6 0M15 9h3M15 13h3M15 16h3" />
+                        </svg>
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="<?= e(lang('close')) ?>"></button>
+                </div>
             </div>
 
             <ul class="nav nav-tabs ea-clinical-tabs" role="tablist">
@@ -125,7 +138,7 @@
                         </div>
                     </div>
 
-                    <!-- The medical history and the allergies take the rest of the height. -->
+                    <!-- Compact text fields; patient observations are shared with the booking form. -->
                     <div class="row g-2 ea-clinical-notes">
                         <div class="col-md-6">
                             <label class="form-label" for="clinical-medical-history"><?= lang(
@@ -138,6 +151,13 @@
                             <label class="form-label" for="clinical-allergies"><?= lang('clinical_allergies') ?></label>
                             <textarea id="clinical-allergies" class="form-control" rows="3"
                                       data-record="allergies"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="clinical-patient-notes"><?= lang(
+                                'administrative_notes',
+                            ) ?></label>
+                            <textarea id="clinical-patient-notes" class="form-control" rows="3"
+                                      data-customer="notes"></textarea>
                         </div>
                     </div>
                 </div>

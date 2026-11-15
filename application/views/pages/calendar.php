@@ -50,6 +50,7 @@
 
             <?php if (can('add', PRIV_APPOINTMENTS)): ?>
                 <button id="open-slot-search" class="btn btn-light" type="button">
+                    <?= lang('find_slot') ?>
                     <i class="fas fa-search me-2"></i>
                 </button>
 

@@ -38,7 +38,7 @@ App.Pages.Customers = (function () {
     // For admins and providers, the clinical record holds the name, phone, address (street, city and zip code) and
     // NIF/NIE of the patient, which this page then does not show: they are kept from the shown patient when the page
     // saves it.
-    const IDENTITY_FIELDS = ['first_name', 'last_name', 'phone_number', 'address', 'city', 'zip_code'];
+    const IDENTITY_FIELDS = ['first_name', 'last_name', 'phone_number', 'address', 'city', 'zip_code', 'notes'];
     const RECORD_FISCAL_FIELDS = ['document_type', 'document_number'];
     let currentCustomer = null;
     let currentFiscal = {};
@@ -83,20 +83,22 @@ App.Pages.Customers = (function () {
             const customerId = $(event.currentTarget).attr('data-id');
             const customer = filterResults.find((filterResult) => Number(filterResult.id) === Number(customerId));
 
-            App.Pages.Customers.display(customer);
+            if (!customer) {
+                return;
+            }
+
             $('#filter-customers .selected').removeClass('selected');
             $(event.currentTarget).addClass('selected');
-            $('#edit-customer, #delete-customer').prop('disabled', false);
 
-            // Automatically enter edit mode
-            $('#customers-page').addClass('editing');
-            $customers.find('.record-details').find('input, select, textarea').prop('disabled', false);
-            $customers.find('.record-details .form-label span').prop('hidden', false);
-            $customers.find('#add-edit-delete-group').hide();
-            $customers.find('#save-cancel-group').show();
-            $customers.find('#delete-customer').show(); // Show delete button when editing
-            $filterCustomers.find('button').prop('disabled', true);
-            $filterCustomers.find('.results').css('color', '#AAA');
+            if (vars('clinical_records')) {
+                currentCustomer = customer;
+                App.Components.ClinicalRecordModal.open(customer.id, {onChange: refreshIdentity});
+
+                return;
+            }
+
+            App.Pages.Customers.display(customer);
+            editCustomer();
         });
 
         /**
@@ -124,15 +126,7 @@ App.Pages.Customers = (function () {
         /**
          * Event: Edit Customer Button "Click"
          */
-        $customers.on('click', '#edit-customer', () => {
-            $('#customers-page').addClass('editing');
-            $customers.find('.record-details').find('input, select, textarea').prop('disabled', false);
-            $customers.find('.record-details .form-label span').prop('hidden', false);
-            $customers.find('#add-edit-delete-group').hide();
-            $customers.find('#save-cancel-group').show();
-            $filterCustomers.find('button').prop('disabled', true);
-            $filterCustomers.find('.results').css('color', '#AAA');
-        });
+        $customers.on('click', '#edit-customer', editCustomer);
 
         /**
          * Event: Cancel Customer Add/Edit Operation Button "Click"
@@ -269,6 +263,21 @@ App.Pages.Customers = (function () {
             $('#customers-page').removeClass('editing');
             App.Pages.Customers.filter($('#filter-customers .key').val());
         });
+    }
+
+    /**
+     * Open the original customer details form.
+     */
+    function editCustomer() {
+        $('#customers-page').addClass('editing');
+        $customers.find('.record-details').find('input, select, textarea').prop('disabled', false);
+        $customers.find('.record-details .form-label span').prop('hidden', false);
+        $customers.find('#edit-customer, #delete-customer').prop('disabled', false);
+        $customers.find('#add-edit-delete-group').hide();
+        $customers.find('#save-cancel-group').show();
+        $customers.find('#delete-customer').show();
+        $filterCustomers.find('button').prop('disabled', true);
+        $filterCustomers.find('.results').css('color', '#AAA');
     }
 
     /**
@@ -728,7 +737,11 @@ App.Pages.Customers = (function () {
         if (show) {
             const customer = filterResults.find((filterResult) => Number(filterResult.id) === Number(id));
 
-            App.Pages.Customers.display(customer);
+            if (customer) {
+                App.Pages.Customers.display(customer);
+            } else {
+                App.Http.Customers.find(id, true).done(App.Pages.Customers.display);
+            }
 
             $('#edit-customer, #delete-customer').prop('disabled', false);
         }
@@ -741,6 +754,16 @@ App.Pages.Customers = (function () {
         App.Pages.Customers.resetForm();
         App.Pages.Customers.addEventListeners();
         App.Pages.Customers.filter('');
+
+        // The clinical record links here directly, including patients outside the first search results.
+        const customerId = Number(App.Utils.Url.queryParam('customer_id'));
+
+        if (Number.isSafeInteger(customerId) && customerId > 0) {
+            App.Http.Customers.find(customerId, true).done((customer) => {
+                App.Pages.Customers.display(customer);
+                editCustomer();
+            });
+        }
     }
 
     document.addEventListener('DOMContentLoaded', initialize);
