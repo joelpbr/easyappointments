@@ -94,20 +94,29 @@
                             <input id="clinical-address" class="form-control" data-customer="address" maxlength="256">
                         </div>
                         <div class="col-md-4">
+                            <label class="form-label" for="clinical-city"><?= lang('city') ?></label>
+                            <input id="clinical-city" class="form-control" data-customer="city" maxlength="256">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label" for="clinical-zip-code"><?= lang('zip_code') ?></label>
+                            <input id="clinical-zip-code" class="form-control" data-customer="zip_code"
+                                   maxlength="64" inputmode="numeric">
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label" for="clinical-referral-source"><?= lang(
                                 'clinical_referral_source',
                             ) ?></label>
                             <input id="clinical-referral-source" class="form-control" data-record="referral_source"
                                    maxlength="256">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label" for="clinical-profession"><?= lang(
                                 'clinical_profession',
                             ) ?></label>
                             <input id="clinical-profession" class="form-control" data-record="profession"
                                    maxlength="256">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label" for="clinical-physical-activity"><?= lang(
                                 'clinical_physical_activity',
                             ) ?></label>
@@ -160,6 +169,12 @@
                          the pathologies on the right with the observations under them (clinical_record_modal.js). -->
                     <div class="ea-clinical-feet mb-3" data-section="feet">
                         <div class="ea-feet-diagram">
+                            <div class="d-flex justify-content-end mb-2">
+                                <button type="button" id="clinical-feet-xray" class="btn btn-outline-primary btn-sm"
+                                        aria-pressed="false" aria-controls="clinical-feet-board">
+                                    <?= lang('clinical_feet_xray') ?>
+                                </button>
+                            </div>
                             <div class="ea-feet-picture" id="clinical-feet-board">
                                 <img id="clinical-feet-picture" alt="" draggable="false">
                                 <div id="clinical-feet-markers" class="ea-feet-markers"></div>
@@ -169,7 +184,6 @@
 
                         <div class="ea-feet-side">
                             <div class="form-label mb-0"><?= lang('clinical_pathologies') ?></div>
-                            <div id="clinical-feet-copied" class="ea-feet-copied" hidden></div>
                             <div id="clinical-feet-pathologies" class="list-group ea-feet-pathologies"></div>
                             <div id="clinical-feet-observations"></div>
                         </div>
@@ -206,7 +220,9 @@
                                 <option value="">—</option>
                                 <?php foreach (Clinical_record_templates::ORTHOSES as $orthosis => $price): ?>
                                     <?php $price_label = rtrim(rtrim(number_format($price, 2, ',', ''), '0'), ','); ?>
-                                    <option value="<?= $orthosis ?>" data-price="<?= $price ?>">
+                                    <!-- Shown without its price while the amounts are hidden (backend_layout.js). -->
+                                    <option value="<?= $orthosis ?>" data-price="<?= $price ?>"
+                                            data-money-label="<?= e(lang('clinical_orthosis_' . $orthosis)) ?>">
                                         <?= lang('clinical_orthosis_' . $orthosis) ?> (<?= $price_label ?>€)
                                     </option>
                                 <?php endforeach; ?>
@@ -214,7 +230,7 @@
                             <div class="form-text"><?= lang('clinical_price_hint') ?></div>
                         </div>
 
-                        <div class="col-sm-5" data-field="surgery_price">
+                        <div class="col-sm-5 ea-money" data-field="surgery_price">
                             <label class="form-label" for="clinical-visit-surgery-price"><?= lang(
                                 'clinical_surgery_price',
                             ) ?></label>

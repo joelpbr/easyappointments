@@ -38,4 +38,14 @@ class PhoneHelperTest extends TestCase
         $this->assertNull(normalize_phone(''));
         $this->assertNull(normalize_phone(' - '));
     }
+
+    public function testPhonesAreFormattedToBeShown(): void
+    {
+        $this->assertSame('+34 681 34 43 44', format_phone('+34681344344'));
+        $this->assertSame('+34 681 34 43 44', format_phone('681344344'));
+        $this->assertSame('+34 937 23 61 69', format_phone('0034 937-236-169'));
+        $this->assertSame('+33612345678', format_phone('+33 6 12 34 56 78'));
+        $this->assertSame('abc', format_phone(' abc '));
+        $this->assertSame('', format_phone(null));
+    }
 }

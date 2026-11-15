@@ -36,6 +36,7 @@ App.Components.AppointmentsModal = (function () {
     const $appointmentStatus = $('#appointment-status');
     const $appointmentColor = $('#appointment-color');
     const $appointmentNotes = $('#appointment-notes');
+    const $sendWhatsappReminder = $('#send-whatsapp-reminder');
     const $reloadAppointments = $('#reload-appointments');
     const $selectFilterItem = $('#select-filter-item');
     const $selectService = $('#select-service');
@@ -47,7 +48,6 @@ App.Components.AppointmentsModal = (function () {
     const $chosenPatientActions = $('#chosen-patient-actions');
     const $unlockPatient = $('#unlock-patient');
     const $patientSearchHint = $('#patient-search-hint');
-    const $toggleMoreFields = $('#toggle-more-fields');
     const $usualProviderHint = $('#usual-provider-hint');
 
     const MIN_DURATION = 5; // Minutes, matches EVENT_MINIMUM_DURATION.
@@ -84,18 +84,6 @@ App.Components.AppointmentsModal = (function () {
 
         App.Utils.UI.setDateTimePickerValue($endDatetime, new Date(start.getTime() + duration * 60000));
         $appointmentDuration.val(duration);
-    }
-
-    /**
-     * Show or hide the secondary fields of the form.
-     *
-     * @param {Boolean} show
-     */
-    function toggleMoreFields(show) {
-        $appointmentsModal.toggleClass('ea-show-more', show);
-        $toggleMoreFields.attr('aria-expanded', String(show));
-        $toggleMoreFields.find('i').toggleClass('fa-chevron-down', !show).toggleClass('fa-chevron-up', show);
-        $toggleMoreFields.find('span').text(lang(show ? 'fewer_details' : 'more_details'));
     }
 
     const moment = window.moment;
@@ -136,27 +124,12 @@ App.Components.AppointmentsModal = (function () {
         $appointmentDuration.on('input', () => applyDuration());
 
         /**
-         * Event: More Details Button "Click"
-         */
-        $toggleMoreFields.on('click', () => toggleMoreFields(!$appointmentsModal.hasClass('ea-show-more')));
-
-        /**
          * Event: Appointments Modal "Shown"
          *
          * The start and end are set from many places (calendar selection, edit, search), so the duration is read once
-         * the modal is visible. The secondary fields are expanded when one of them has a value.
+         * the modal is visible.
          */
-        $appointmentsModal.on('shown.bs.modal', () => {
-            updateDurationField();
-
-            const hasMoreData = $appointmentsModal
-                .find('.ea-more-field')
-                .find('input[type=text], input:not([type]), textarea')
-                .toArray()
-                .some((field) => field.value.trim() !== '');
-
-            toggleMoreFields(hasMoreData);
-        });
+        $appointmentsModal.on('shown.bs.modal', () => updateDurationField());
 
         /**
          * Event: Manage Appointments Dialog Save Button "Click"
@@ -230,6 +203,7 @@ App.Components.AppointmentsModal = (function () {
                 status: $appointmentStatus.val(),
                 price: $appointmentPrice.val(),
                 notes: $appointmentNotes.val(),
+                send_whatsapp_reminder: Number($sendWhatsappReminder.prop('checked')),
                 is_unavailability: Number(false),
             };
 
@@ -276,63 +250,35 @@ App.Components.AppointmentsModal = (function () {
                 $appointmentsModal.find('.modal-body').scrollTop(0);
             };
 
-            // Check if this is an update (appointment has an ID)
-            const isUpdate = Boolean(appointment.id);
-
-            // Ask for the notification preference and save. The notification question comes last, so that the user
-            // does not commit to it for an appointment that might never be created.
-            const promptNotifyUsersAndSave = (forceSave) => {
-                const save = (notifyUsers) => {
-                    if (forceSave) {
-                        App.Http.Calendar.saveAppointment(
-                            appointment,
-                            customer,
-                            successCallback,
-                            errorCallback,
-                            notifyUsers,
-                            true,
-                        );
-
-                        return;
-                    }
-
-                    // No conflict was reported, but another user might have booked the slot in the meanwhile.
-                    App.Http.Calendar.saveAppointmentWithConflictHandling(
+            // Save without notifying anybody: the clinic never sends messages about a change of an appointment.
+            const save = (forceSave) => {
+                if (forceSave) {
+                    App.Http.Calendar.saveAppointment(
                         appointment,
                         customer,
                         successCallback,
                         errorCallback,
-                        notifyUsers,
+                        false,
+                        true,
                     );
-                };
 
-                App.Utils.Message.show(
-                    isUpdate ? lang('appointment_update') : lang('new_appointment_title'),
-                    isUpdate ? lang('notify_users_on_update_question') : lang('notify_users_on_create_question'),
-                    [
-                        {
-                            text: lang('no'),
-                            click: (event, messageModal) => {
-                                messageModal.hide();
-                                save(false);
-                            },
-                        },
-                        {
-                            text: lang('yes'),
-                            click: (event, messageModal) => {
-                                messageModal.hide();
-                                save(true);
-                            },
-                        },
-                    ],
+                    return;
+                }
+
+                // No conflict was reported, but another user might have booked the slot in the meanwhile.
+                App.Http.Calendar.saveAppointmentWithConflictHandling(
+                    appointment,
+                    customer,
+                    successCallback,
+                    errorCallback,
+                    false,
                 );
             };
 
-            // Prompt for a conflicting event first, so that the user does not answer the notification question for an
-            // appointment that will not be created after all.
+            // Prompt for a conflicting event first.
             const conflictCallback = (response) => {
                 if (!response.conflict) {
-                    promptNotifyUsersAndSave(false);
+                    save(false);
 
                     return;
                 }
@@ -358,7 +304,7 @@ App.Components.AppointmentsModal = (function () {
                             text: lang('proceed'),
                             click: (event, messageModal) => {
                                 messageModal.hide();
-                                promptNotifyUsersAndSave(true);
+                                save(true);
                             },
                         },
                     ],
@@ -565,7 +511,9 @@ App.Components.AppointmentsModal = (function () {
 
         const defaultStatusValue = $appointmentStatus.find('option:first').val();
         $appointmentStatus.val(defaultStatusValue);
-        toggleMoreFields(false);
+
+        // A new appointment gets the WhatsApp reminder unless it is turned off.
+        $sendWhatsappReminder.prop('checked', true);
 
         $language.val(vars('default_language'));
 

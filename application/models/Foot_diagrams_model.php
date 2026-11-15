@@ -48,11 +48,14 @@ class Foot_diagrams_model extends EA_Model
     {
         $pathologies = $this->db->order_by('name')->get('podology_pathologies')->result_array();
 
+        // The icons uploaded from the pathologies page have their own address.
+        $this->load->model('pathologies_model');
+
         return array_map(
             fn(array $pathology): array => [
                 'id' => (int) $pathology['id'],
                 'name' => $pathology['name'],
-                'image_url' => base_url('assets/img/podology_pathologies/' . $pathology['image_filename']),
+                'image_url' => Pathologies_model::image_url($pathology),
                 'description' => $pathology['description'],
             ],
             $pathologies,
@@ -78,7 +81,7 @@ class Foot_diagrams_model extends EA_Model
 
     /**
      * Save the pathologies placed on the diagrams of a visit: the given list is the whole list of the visit, so the
-     * markers it keeps (with their id) stay as they are, the new ones (without id) are added and the others are removed.
+     * markers it keeps (with their id) stay where they are, with their healed state updated, the new ones (without id) are added and the others are removed.
      *
      * Every new marker is checked before anything is saved.
      *
@@ -107,9 +110,9 @@ class Foot_diagrams_model extends EA_Model
             $id = (int) ($marker['id'] ?? 0);
 
             if ($id) {
-                // Only the markers of this visit can be kept.
+                // Only the markers of this visit can be kept; their healed state can change.
                 if (in_array($id, $current, true)) {
-                    $kept[] = $id;
+                    $kept[$id] = filter_var($marker['is_healed'] ?? false, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
                 }
 
                 continue;
@@ -118,9 +121,23 @@ class Foot_diagrams_model extends EA_Model
             $new[] = $this->clean_marker(is_array($marker) ? $marker : []);
         }
 
-        foreach (array_diff($current, $kept) as $marker_id) {
+        foreach (array_diff($current, array_keys($kept)) as $marker_id) {
             $this->db->delete('appointment_foot_markers', ['id' => $marker_id]);
             audit_log('deleted', 'appointment_foot_marker', $marker_id);
+        }
+
+        foreach ($kept as $marker_id => $is_healed) {
+            $this->db
+                ->where('id', $marker_id)
+                ->where('is_healed !=', $is_healed)
+                ->update('appointment_foot_markers', [
+                    'is_healed' => $is_healed,
+                    'update_datetime' => date('Y-m-d H:i:s'),
+                ]);
+
+            if ($this->db->affected_rows()) {
+                audit_log('updated', 'appointment_foot_marker', $marker_id);
+            }
         }
 
         foreach ($new as $marker) {

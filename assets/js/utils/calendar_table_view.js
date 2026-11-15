@@ -409,6 +409,12 @@ App.Utils.CalendarTableView = (function () {
         $appointmentsModal.find('#appointment-status').val(appointment.status);
         $appointmentsModal.find('#appointment-price').val(appointment.price ?? '');
         $appointmentsModal.find('#appointment-notes').val(appointment.notes);
+        $appointmentsModal
+            .find('#send-whatsapp-reminder')
+            .prop(
+                'checked',
+                appointment.send_whatsapp_reminder === undefined || Boolean(Number(appointment.send_whatsapp_reminder)),
+            );
         App.Components.ColorSelection.setColor($appointmentsModal.find('#appointment-color'), appointment.color);
         $appointmentsModal.modal('show');
     }
@@ -524,58 +530,25 @@ App.Utils.CalendarTableView = (function () {
     }
 
     /**
-     * Show appointment deletion confirmation dialog.
+     * Delete an appointment after confirming it, without notifying anybody.
      *
      * @param {number} appointmentId - Appointment ID to delete.
      */
     function handleDeleteAppointment(appointmentId) {
-        App.Utils.Message.show(lang('delete_appointment_title'), lang('notify_users_on_delete_question'), [
+        App.Utils.Message.show(lang('delete_appointment_title'), lang('delete_record_prompt'), [
             {
                 text: lang('close'),
-                click: (event, notifyModal) => notifyModal.hide(),
+                click: (event, messageModal) => messageModal.hide(),
             },
             {
-                text: lang('no'),
-                click: (event, notifyModal) => {
-                    notifyModal.hide();
+                text: lang('delete'),
+                className: 'btn btn-danger',
+                click: (event, messageModal) => {
+                    messageModal.hide();
+                    // Nobody is notified of the removal.
                     App.Http.Calendar.deleteAppointment(appointmentId, null, false).done(() => {
                         $reloadAppointments.trigger('click');
                     });
-                },
-            },
-            {
-                text: lang('yes'),
-                click: (event, notifyModal) => {
-                    notifyModal.hide();
-
-                    const reasonButtons = [
-                        {
-                            text: lang('close'),
-                            click: (event, messageModal) => messageModal.hide(),
-                        },
-                        {
-                            text: lang('delete'),
-                            click: (event, messageModal) => {
-                                const reason = $('#cancellation-reason').val();
-                                messageModal.hide();
-                                App.Http.Calendar.deleteAppointment(appointmentId, reason, true).done(() => {
-                                    $reloadAppointments.trigger('click');
-                                });
-                            },
-                        },
-                    ];
-
-                    App.Utils.Message.show(
-                        lang('delete_appointment_title'),
-                        lang('write_appointment_removal_reason'),
-                        reasonButtons,
-                    );
-
-                    $('<textarea/>', {
-                        class: 'form-control w-100',
-                        id: 'cancellation-reason',
-                        rows: '3',
-                    }).appendTo('#message-modal .modal-body');
                 },
             },
         ]);
@@ -728,6 +701,8 @@ App.Utils.CalendarTableView = (function () {
      * @param {Object} eventData - Event data.
      */
     function handleAppointmentResize(info, eventData) {
+        const previous = {start_datetime: eventData.start_datetime, end_datetime: eventData.end_datetime};
+
         eventData.end_datetime = moment(eventData.end_datetime)
             .add({days: info.endDelta.days, milliseconds: info.endDelta.milliseconds})
             .format('YYYY-MM-DD HH:mm:ss');
@@ -751,7 +726,10 @@ App.Utils.CalendarTableView = (function () {
             ]);
             info.event.setProp('data', eventData);
         };
-        showNotifyUsersDialog(appointment, successCallback, () => info.revert());
+        saveMovedAppointment(appointment, eventData.customer, successCallback, () => {
+            Object.assign(eventData, previous);
+            info.revert();
+        });
     }
 
     /**
@@ -823,6 +801,8 @@ App.Utils.CalendarTableView = (function () {
      * @param {Object} eventData - Event data.
      */
     function handleAppointmentDrop(info, eventData) {
+        const previous = {start_datetime: eventData.start_datetime, end_datetime: eventData.end_datetime};
+
         const appointment = prepareAppointmentForSave(eventData);
 
         appointment.start_datetime = moment(appointment.start_datetime)
@@ -853,7 +833,10 @@ App.Utils.CalendarTableView = (function () {
                 {label: lang('undo'), function: undoFunction},
             ]);
         };
-        showNotifyUsersDialog(appointment, successCallback, () => info.revert());
+        saveMovedAppointment(appointment, eventData.customer, successCallback, () => {
+            Object.assign(eventData, previous);
+            info.revert();
+        });
     }
 
     /**
@@ -913,43 +896,53 @@ App.Utils.CalendarTableView = (function () {
     }
 
     /**
-     * Show dialog asking whether to notify users.
+     * Ask before saving a moved or resized appointment; nobody is notified.
      *
      * @param {Object} appointment - Appointment data.
+     * @param {Object} customer - Patient of the appointment, to name it.
      * @param {Function} successCallback - Callback on success.
      * @param {Function} revertCallback - Callback to revert changes.
      */
-    function showNotifyUsersDialog(appointment, successCallback, revertCallback) {
-        App.Utils.Message.show(lang('appointment_update'), lang('notify_users_on_update_question'), [
-            {
-                text: lang('no'),
-                click: (event, messageModal) => {
-                    messageModal.hide();
-                    App.Http.Calendar.saveAppointmentWithConflictHandling(
-                        appointment,
-                        null,
-                        () => successCallback(false),
-                        null,
-                        false,
-                        revertCallback,
-                    );
+    function saveMovedAppointment(appointment, customer, successCallback, revertCallback) {
+        const timeFormat = vars('time_format') === 'regular' ? 'h:mm a' : 'HH:mm';
+        const schedule =
+            App.Utils.Date.format(appointment.start_datetime, vars('date_format'), vars('time_format'), true) +
+            ' – ' +
+            moment(appointment.end_datetime).format(timeFormat);
+        const name = [customer?.first_name, customer?.last_name].filter(Boolean).join(' ');
+
+        App.Utils.Message.show(
+            lang('appointment_update'),
+            lang('move_appointment_question')
+                .replace('%s', App.Utils.String.escapeHtml(name))
+                .replace('%s', App.Utils.String.escapeHtml(schedule)),
+            [
+                {
+                    text: lang('cancel'),
+                    className: 'btn btn-outline-secondary',
+                    click: (event, messageModal) => {
+                        messageModal.hide();
+                        revertCallback();
+                    },
                 },
-            },
-            {
-                text: lang('yes'),
-                click: (event, messageModal) => {
-                    messageModal.hide();
-                    App.Http.Calendar.saveAppointmentWithConflictHandling(
-                        appointment,
-                        null,
-                        () => successCallback(true),
-                        null,
-                        true,
-                        revertCallback,
-                    );
+                {
+                    text: lang('save'),
+                    className: 'btn btn-primary',
+                    click: (event, messageModal) => {
+                        messageModal.hide();
+                        App.Http.Calendar.saveAppointmentWithConflictHandling(
+                            appointment,
+                            null,
+                            () => successCallback(false),
+                            null,
+                            false,
+                            revertCallback,
+                        );
+                    },
                 },
-            },
-        ]);
+            ],
+            false,
+        );
     }
 
     /**
@@ -999,6 +992,25 @@ App.Utils.CalendarTableView = (function () {
         fullCalendar.unselect();
 
         return false;
+    }
+
+    /**
+     * Get the calendar of a time label, for a new appointment of the provider and the day of its column.
+     *
+     * @param {HTMLElement} label
+     *
+     * @return {Object|null} {fullCalendar, day, scope}, or null when the column is not a day calendar.
+     */
+    function getTimeLabelContext(label) {
+        const providerColumn = label.closest('.provider-column');
+        const fullCalendar = $(providerColumn).find('.calendar-wrapper').data('fullCalendar');
+        const day = $(providerColumn).closest('.date-column').data('date');
+
+        if (!fullCalendar || !day || fullCalendar.view.type !== 'timeGridDay') {
+            return null;
+        }
+
+        return {fullCalendar, day, scope: providerColumn};
     }
 
     // Calendar Event Source Creation
@@ -1509,6 +1521,8 @@ App.Utils.CalendarTableView = (function () {
         $('#calendar .calendar-view').remove();
         const $calendarView = $('<div/>', {class: 'calendar-view'}).appendTo('#calendar');
 
+        attachTopScrollbar($calendarView);
+
         $calendarView.data({
             startDate: moment(startDate).format('YYYY-MM-DD'),
             endDate: moment(endDate).format('YYYY-MM-DD'),
@@ -1762,7 +1776,7 @@ App.Utils.CalendarTableView = (function () {
             html: [
                 $('<span/>', {
                     class: 'ea-provider-name',
-                    html: [document.createTextNode(providerName), $('<span/>', {class: 'ea-provider-total'})],
+                    html: [document.createTextNode(providerName), $('<span/>', {class: 'ea-provider-total ea-money'})],
                 }),
                 $('<span/>', {class: 'ea-provider-date', text: dayLabel}),
                 $viewButtons,
@@ -1805,11 +1819,66 @@ App.Utils.CalendarTableView = (function () {
     }
 
     /**
+     * Put a horizontal scrollbar above a new view, linked to its horizontal scroll both ways. The view hides its own
+     * scrollbars, and this one is only shown while the columns do not fit (see updateTopScrollbar()).
+     *
+     * @param {jQuery} $calendarView
+     */
+    function attachTopScrollbar($calendarView) {
+        let $scrollbar = $('#calendar .ea-calendar-top-scrollbar');
+
+        if (!$scrollbar.length) {
+            $scrollbar = $('<div/>', {
+                'class': 'ea-calendar-top-scrollbar',
+                'aria-hidden': 'true',
+                'html': $('<div/>'),
+            }).on('scroll', () => {
+                const calendarView = document.querySelector('#calendar .calendar-view');
+
+                if (calendarView && calendarView.scrollLeft !== $scrollbar[0].scrollLeft) {
+                    calendarView.scrollLeft = $scrollbar[0].scrollLeft;
+                }
+            });
+        }
+
+        $scrollbar.insertBefore($calendarView);
+
+        $calendarView.on('scroll', () => {
+            if ($scrollbar[0].scrollLeft !== $calendarView[0].scrollLeft) {
+                $scrollbar[0].scrollLeft = $calendarView[0].scrollLeft;
+            }
+        });
+    }
+
+    /**
+     * Give the scrollbar above the view the width of the columns, and show it only while they do not fit.
+     *
+     * @return {Number} Height of the scrollbar, 0 when it is hidden.
+     */
+    function updateTopScrollbar() {
+        const calendarView = document.querySelector('#calendar .calendar-view');
+        const $scrollbar = $('#calendar .ea-calendar-top-scrollbar');
+
+        if (!calendarView || !$scrollbar.length) {
+            return 0;
+        }
+
+        const overflows = calendarView.scrollWidth > calendarView.clientWidth + 1;
+
+        $scrollbar.prop('hidden', !overflows);
+        $scrollbar.children().css('width', calendarView.scrollWidth);
+        $scrollbar[0].scrollLeft = calendarView.scrollLeft;
+
+        return overflows ? $scrollbar.outerHeight() : 0;
+    }
+
+    /**
      * Set calendar view size to fit the page.
      */
     function setCalendarViewSize() {
         // The provider columns share the available width, so two or three providers fill the screen, and only scroll
-        // horizontally when they would become narrower than MIN_PROVIDER_COLUMN_WIDTH (e.g. a week of every provider).
+        // horizontally, with the scrollbar above them, when they would become narrower than MIN_PROVIDER_COLUMN_WIDTH
+        // (e.g. a week of every provider).
         const $providerColumns = $('.provider-column');
 
         if ($providerColumns.length) {
@@ -1832,11 +1901,13 @@ App.Utils.CalendarTableView = (function () {
         });
         $('.calendar-view > div').css('min-width', '100%');
 
-        // One scroll for every column, as high as the calendars used to be plus the provider headings.
+        // One scroll for every column, as high as the calendars used to be plus the provider headings, less the
+        // scrollbar above them when there is one.
         const $calendarView = $('#calendar .calendar-view');
+        const topScrollbarHeight = updateTopScrollbar();
 
         $calendarView.outerHeight(
-            getCalendarHeight() + ($calendarView.find('.ea-provider-heading').outerHeight() || 0),
+            getCalendarHeight() + ($calendarView.find('.ea-provider-heading').outerHeight() || 0) - topScrollbarHeight,
         );
 
         getCalendars().forEach(fitListView);
@@ -2013,6 +2084,11 @@ App.Utils.CalendarTableView = (function () {
         $(window).on('resize', () => {
             setCalendarViewSize();
         });
+
+        // Time labels: a click or a drag over them opens a new appointment at that time or range, for the provider
+        // and day of the column.
+
+        App.Utils.CalendarTimeLabels.listen($calendar, getTimeLabelContext, onSelect);
 
         // Popover close button
 

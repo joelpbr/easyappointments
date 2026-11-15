@@ -170,7 +170,7 @@
                                            max="1440" step="1">
                                 </div>
 
-                                <div class="mb-3">
+                                <div class="mb-3 ea-money">
                                     <label for="appointment-price" class="form-label">
                                         <?= lang('appointment_price') ?>
                                     </label>
@@ -221,17 +221,17 @@
                                         : '' ?> form-control" rows="2"></textarea>
                                 </div>
 
+                                <!-- Reminder the day before at 10:00 (Whatsapp_reminders library); on by default. -->
+                                <div class="mb-3 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="send-whatsapp-reminder" checked>
+                                    <label class="form-check-label" for="send-whatsapp-reminder">
+                                        <?= lang('send_whatsapp_reminder') ?>
+                                    </label>
+                                </div>
+
                             </div>
                         </div>
                     </fieldset>
-
-                    <div class="mb-3">
-                        <button id="toggle-more-fields" class="btn btn-link btn-sm px-0" type="button"
-                                aria-expanded="false">
-                            <i class="fas fa-chevron-down me-1"></i>
-                            <span><?= lang('more_details') ?></span>
-                        </button>
-                    </div>
 
                     <fieldset>
                         <h5 class="mb-2 fw-light">
@@ -264,11 +264,6 @@
                             </div>
                         </div>
 
-                        <p id="patient-search-hint" class="form-text mt-0 mb-2">
-                            <i class="fas fa-search me-1"></i>
-                            <?= lang('patient_search_hint') ?>
-                        </p>
-
                         <div id="no-show-warning" class="alert alert-warning py-2" role="alert" hidden></div>
 
                         <input id="customer-id" type="hidden">
@@ -299,17 +294,8 @@
                                            maxlength="120"/>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">
-                                        <?= lang('email') ?>
-                                        <?php if ($require_email): ?>
-                                            <span class="text-danger">*</span>
-                                        <?php endif; ?>
-                                    </label>
-                                    <input type="text" id="email"
-                                           class="<?= $require_email ? 'required' : '' ?> form-control"
-                                           maxlength="120"/>
-                                </div>
+                                <!-- The email is not asked when booking; the patient's saved one is kept. -->
+                                <input type="hidden" id="email">
 
                                 <div class="mb-3">
                                     <label for="phone-number" class="form-label">

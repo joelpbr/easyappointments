@@ -80,7 +80,7 @@
                        disabled>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3 ea-money">
                 <label class="form-label" for="price">
                     <?= lang('price') ?>
                     <span class="text-danger" hidden>*</span>

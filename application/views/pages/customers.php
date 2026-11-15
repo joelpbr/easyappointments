@@ -177,18 +177,33 @@
                                class="<?= vars('require_address') ? 'required' : '' ?> form-control"
                                maxlength="120" disabled/>
                     </div>
-                    <?php endif; ?>
 
-                    <div class="mb-3">
-                        <label for="city" class="form-label">
-                            <?= lang('city') ?>
-                            <?php if (vars('require_city')): ?>
-                                <span class="text-danger" hidden>*</span>
-                            <?php endif; ?>
-                        </label>
-                        <input type="text" id="city" class="<?= vars('require_city') ? 'required' : '' ?> form-control"
-                               maxlength="120" disabled/>
+                    <div class="row">
+                        <div class="col-8 mb-3">
+                            <label for="city" class="form-label">
+                                <?= lang('city') ?>
+                                <?php if (vars('require_city')): ?>
+                                    <span class="text-danger" hidden>*</span>
+                                <?php endif; ?>
+                            </label>
+                            <input type="text" id="city"
+                                   class="<?= vars('require_city') ? 'required' : '' ?> form-control"
+                                   maxlength="120" disabled/>
+                        </div>
+
+                        <div class="col-4 mb-3">
+                            <label for="zip-code" class="form-label">
+                                <?= lang('zip_code') ?>
+                                <?php if (vars('require_zip_code')): ?>
+                                    <span class="text-danger" hidden>*</span>
+                                <?php endif; ?>
+                            </label>
+                            <input type="text" id="zip-code"
+                                   class="<?= vars('require_zip_code') ? 'required' : '' ?> form-control"
+                                   maxlength="64" inputmode="numeric" disabled/>
+                        </div>
                     </div>
+                    <?php endif; ?>
 
                     <div class="mb-3">
                         <label class="form-label" for="language">

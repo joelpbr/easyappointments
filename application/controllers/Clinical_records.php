@@ -23,7 +23,7 @@ class Clinical_records extends EA_Controller
     /**
      * Patient fields that the record shows and edits; the rest of the patient is edited on the patients page.
      */
-    private const CUSTOMER_FIELDS = ['first_name', 'last_name', 'phone_number', 'address'];
+    private const CUSTOMER_FIELDS = ['first_name', 'last_name', 'phone_number', 'address', 'city', 'zip_code'];
 
     /**
      * Clinical records constructor.
@@ -353,7 +353,7 @@ class Clinical_records extends EA_Controller
     {
         $appointments = $this->db
             ->select(
-                'appointments.id, appointments.start_datetime, appointments.status, appointments.price, ' .
+                'appointments.id, appointments.start_datetime, appointments.status, appointments.price, appointments.notes, ' .
                     'appointments.service_name, services.name AS current_service_name, ' .
                     'services.record_template, providers.first_name AS provider_first_name, ' .
                     'providers.last_name AS provider_last_name',
@@ -380,6 +380,8 @@ class Clinical_records extends EA_Controller
                 'template' => Clinical_record_templates::template($appointment['record_template']),
                 'provider_name' => trim($appointment['provider_first_name'] . ' ' . $appointment['provider_last_name']),
                 'has_record' => in_array((int) $appointment['id'], $recorded_ids, true),
+                // The comment of the appointment (its details in the calendar), shown from an icon by its date.
+                'notes' => trim((string) $appointment['notes']),
             ],
             $appointments,
         );

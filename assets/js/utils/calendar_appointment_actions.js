@@ -19,7 +19,7 @@ App.Utils.CalendarAppointmentActions = (function () {
     const STATUS_NO_SHOW = 'no_show';
 
     /**
-     * Cancel an appointment after asking whether the users must be notified.
+     * Cancel an appointment after confirming it, without notifying anybody.
      *
      * @param {Object} eventData Appointment data of the calendar event.
      * @param {Function} onDone Called once the appointment is cancelled.
@@ -32,8 +32,6 @@ App.Utils.CalendarAppointmentActions = (function () {
         delete appointment.provider;
         delete appointment.service;
 
-        const save = (notifyUsers) => App.Http.Calendar.saveAppointment(appointment, null, onDone, null, notifyUsers);
-
         App.Utils.Message.show(lang('cancel_appointment'), lang('cancel_appointment_question'), [
             {
                 text: lang('close'),
@@ -41,19 +39,12 @@ App.Utils.CalendarAppointmentActions = (function () {
                 click: (event, messageModal) => messageModal.hide(),
             },
             {
-                text: lang('cancel_without_notifying'),
-                className: 'btn btn-outline-danger',
-                click: (event, messageModal) => {
-                    messageModal.hide();
-                    save(false);
-                },
-            },
-            {
-                text: lang('cancel_and_notify'),
+                text: lang('cancel_appointment'),
                 className: 'btn btn-danger',
                 click: (event, messageModal) => {
                     messageModal.hide();
-                    save(true);
+                    // Nobody is notified of the cancellation.
+                    App.Http.Calendar.saveAppointment(appointment, null, onDone, null, false);
                 },
             },
         ]);

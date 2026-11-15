@@ -166,20 +166,9 @@ class Instance
      */
     public function backup(?string $path = null): void
     {
-        $path = $path ?? APPPATH . '/../storage/backups';
+        // A copy that can be restored as it is, from Settings › Backups or with "console restore".
+        $this->CI->load->library('database_backup');
 
-        if (!file_exists($path)) {
-            throw new InvalidArgumentException('The backup path does not exist: ' . $path);
-        }
-
-        if (!is_writable($path)) {
-            throw new RuntimeException('The backup path is not writable: ' . $path);
-        }
-
-        $contents = $this->CI->dbutil->backup();
-
-        $filename = 'easyappointments-backup-' . date('Y-m-d-His') . '.gz';
-
-        write_file(rtrim($path, '/') . '/' . $filename, $contents);
+        $this->CI->database_backup->create('', $path);
     }
 }

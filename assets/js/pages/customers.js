@@ -24,6 +24,7 @@ App.Pages.Customers = (function () {
     const $phoneNumber = $('#phone-number');
     const $address = $('#address');
     const $city = $('#city');
+    const $zipCode = $('#zip-code');
     const $language = $('#language');
     const $preferredProvider = $('#preferred-provider');
     const $fiscalFields = $('#fiscal-data [data-fiscal]');
@@ -34,9 +35,10 @@ App.Pages.Customers = (function () {
     const $recordName = $('#customer-record-name');
     const $openClinicalRecord = $('#open-clinical-record');
 
-    // For admins and providers, the clinical record holds the name, phone, address and NIF/NIE of the patient, which
-    // this page then does not show: they are kept from the shown patient when the page saves it.
-    const IDENTITY_FIELDS = ['first_name', 'last_name', 'phone_number', 'address'];
+    // For admins and providers, the clinical record holds the name, phone, address (street, city and zip code) and
+    // NIF/NIE of the patient, which this page then does not show: they are kept from the shown patient when the page
+    // saves it.
+    const IDENTITY_FIELDS = ['first_name', 'last_name', 'phone_number', 'address', 'city', 'zip_code'];
     const RECORD_FISCAL_FIELDS = ['document_type', 'document_number'];
     let currentCustomer = null;
     let currentFiscal = {};
@@ -171,8 +173,8 @@ App.Pages.Customers = (function () {
                 phone_number: $phoneNumber.val(),
                 address: $address.val(),
                 city: $city.val(),
-                // The page no longer shows the zip code nor the notes, which are kept as they are.
-                zip_code: currentCustomer?.zip_code ?? '',
+                zip_code: $zipCode.val(),
+                // The page no longer shows the notes, which are kept as they are.
                 notes: currentCustomer?.notes ?? '',
                 language: $language.val() || 'english',
                 id_users_preferred_provider: $preferredProvider.val(),
@@ -437,6 +439,7 @@ App.Pages.Customers = (function () {
         $phoneNumber.val(customer.phone_number);
         $address.val(customer.address);
         $city.val(customer.city);
+        $zipCode.val(customer.zip_code);
         $language.val(customer.language || 'english');
         $preferredProvider.val(customer.id_users_preferred_provider || '');
 

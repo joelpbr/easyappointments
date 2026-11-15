@@ -20,6 +20,41 @@
 
     <div id="header-menu" class="collapse navbar-collapse flex-row-reverse px-2">
         <ul class="navbar-nav">
+            <!-- Notifications: only while some WhatsApp message could not be sent, with how many. -->
+            <?php
+            if (can('view', PRIV_APPOINTMENTS)) {
+                $CI = &get_instance();
+                $CI->load->library('whatsapp_reminders');
+                $whatsapp_problems = $CI->whatsapp_reminders->problem_count();
+            } else {
+                $whatsapp_problems = 0;
+            }
+            ?>
+            <?php if ($whatsapp_problems): ?>
+                <li class="nav-item text-center d-flex align-items-center">
+                    <a href="<?= site_url('whatsapp_messages?problems=1') ?>"
+                       id="header-notifications" class="nav-link text-white py-3 px-3 position-relative"
+                       title="<?= e(lang('whatsapp_notifications')) ?>"
+                       aria-label="<?= e(lang('whatsapp_notifications')) ?>">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge rounded-pill bg-danger ea-notifications-badge">
+                            <?= $whatsapp_problems > 99 ? '99+' : (int) $whatsapp_problems ?>
+                        </span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <!-- Hides or shows every amount of money of the pages (backend_layout.js). -->
+            <li class="nav-item text-center d-flex align-items-center">
+                <button type="button" id="toggle-money" class="btn btn-link nav-link text-white py-3 px-3"
+                        aria-pressed="false" aria-label="<?= e(lang('hide_amounts')) ?>"
+                        data-label-hide="<?= e(lang('hide_amounts')) ?>"
+                        data-label-show="<?= e(lang('show_amounts')) ?>">
+                    <span class="ea-money-icon-shown"><i class="fas fa-eye"></i></span>
+                    <span class="ea-money-icon-hidden"><i class="fas fa-eye-slash"></i></span>
+                </button>
+            </li>
+
             <?php $hidden = can('view', PRIV_APPOINTMENTS) ? '' : 'd-none'; ?>
             <?php $active = $active_menu == PRIV_APPOINTMENTS ? 'active' : ''; ?>
             <li class="nav-item text-center <?= $active . $hidden ?>" style="min-width: 100px;">
@@ -57,6 +92,9 @@
                     </a>
                     <a class="dropdown-item" href="<?= site_url('service_categories') ?>">
                         <?= lang('categories') ?>
+                    </a>
+                    <a class="dropdown-item" href="<?= site_url('pathologies') ?>">
+                        <?= lang('pathologies') ?>
                     </a>
                 </div>
             </li>

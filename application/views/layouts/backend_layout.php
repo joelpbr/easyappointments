@@ -11,6 +11,17 @@
 
     <title><?= vars('page_title') ?? lang('backend_section') ?> | Easy!Appointments</title>
 
+    <!-- The amounts stay hidden from the first paint when they were hidden on this browser (backend_layout.js). -->
+    <script>
+        try {
+            if (localStorage.getItem('ea-money-hidden') === '1') {
+                document.documentElement.classList.add('ea-money-hidden');
+            }
+        } catch (error) {
+            // Without storage the amounts are shown.
+        }
+    </script>
+
     <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
     <link rel="icon" sizes="192x192" href="<?= asset_url('assets/img/logo-192.png') ?>">
     <link rel="apple-touch-icon" href="<?= asset_url('assets/img/logo-192.png') ?>">
