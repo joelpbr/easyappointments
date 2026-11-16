@@ -1620,6 +1620,30 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         &:hover {
             filter: brightness(1.2);
         }
+
+        // The two arrows swap the picture and the X-ray: they turn half a round at each switch and grow a little
+        // under the pointer.
+        svg {
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        &:hover svg {
+            transform: scale(1.12);
+        }
+
+        &.active svg {
+            transform: rotate(180deg);
+        }
+
+        &.active:hover svg {
+            transform: rotate(180deg) scale(1.12);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            svg {
+                transition: none;
+            }
+        }
     }
 
     // The placed pathologies, positioned in % of the original picture so that they follow its size on screen.
@@ -1830,13 +1854,14 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     }
 }
 
-// Amounts of money, and the fields that hold one: not shown while they are hidden with the eye of the header
+// Amounts of money, and the fields that hold one: not shown while they are hidden from the user menu
 // (backend_layout.js).
 .ea-money-hidden .ea-money {
     display: none !important;
 }
 
-// The eye of the header shows the state: open while the amounts are shown, crossed out while they are hidden.
+// The eye of "Hide amounts" in the user menu shows the state: open while the amounts are shown, crossed out while
+// they are hidden.
 #toggle-money {
     .ea-money-icon-hidden {
         display: none;
@@ -2671,4 +2696,9 @@ $ea-day-separator: 3px solid #6c757d;
             }
         }
     }
+}
+
+// "Hide amounts" in the user menu lines its text up with the other items: its eye takes the width of their icons.
+#toggle-money svg {
+    width: 14px;
 }

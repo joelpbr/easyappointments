@@ -109,8 +109,8 @@ window.App.Layouts.Backend = (function () {
         const $toggle = $('#toggle-money');
         const label = $toggle.data(hidden ? 'labelShow' : 'labelHide');
 
-        $toggle.attr({'aria-pressed': String(hidden), 'aria-label': label, 'data-tippy-content': label});
-        $toggle[0]?._tippy?.setContent(label);
+        $toggle.attr('aria-pressed', String(hidden));
+        $toggle.find('.ea-money-toggle-label').text(label);
     }
 
     /**

@@ -64,17 +64,6 @@
                 </li>
             <?php endif; ?>
 
-            <!-- Hides or shows every amount of money of the pages (backend_layout.js). -->
-            <li class="nav-item text-center d-flex align-items-center">
-                <button type="button" id="toggle-money" class="btn btn-link nav-link text-white py-3 px-3"
-                        aria-pressed="false" aria-label="<?= e(lang('hide_amounts')) ?>"
-                        data-label-hide="<?= e(lang('hide_amounts')) ?>"
-                        data-label-show="<?= e(lang('show_amounts')) ?>">
-                    <span class="ea-money-icon-shown"><i class="fas fa-eye"></i></span>
-                    <span class="ea-money-icon-hidden"><i class="fas fa-eye-slash"></i></span>
-                </button>
-            </li>
-
             <?php $hidden = can('view', PRIV_APPOINTMENTS) ? '' : 'd-none'; ?>
             <?php $active = $active_menu == PRIV_APPOINTMENTS ? 'active' : ''; ?>
             <li class="nav-item text-center <?= $active . $hidden ?>" style="min-width: 100px;">
@@ -173,6 +162,15 @@
                         </a>
                     <?php endforeach; ?>
                     <div class="dropdown-divider"></div>
+                    <!-- Hides or shows every amount of money of the pages (backend_layout.js); the eye shows the
+                         state and the text says what a click does. -->
+                    <button type="button" id="toggle-money" class="dropdown-item" aria-pressed="false"
+                            data-label-hide="<?= e(lang('hide_amounts')) ?>"
+                            data-label-show="<?= e(lang('show_amounts')) ?>">
+                        <span class="ea-money-icon-shown"><i class="fas fa-eye"></i></span>
+                        <span class="ea-money-icon-hidden"><i class="fas fa-eye-slash"></i></span>
+                        <span class="ea-money-toggle-label"><?= lang('hide_amounts') ?></span>
+                    </button>
                     <a class="dropdown-item" href="<?= site_url('booking') ?>" target="_blank">
                         <i class="fas fa-external-link me-2"></i>
                         <?= lang('booking') ?>

@@ -54,6 +54,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- Hiding the amounts of money is "Hide balances" in the user menu, above "Booking", instead of an eye in the header, and the X-ray switch of the foot diagrams shows two swapping arrows that turn at each switch
 - The calendar toolbar, the dropdown menus and the treatment, provider, status and document type lists follow the look of the appointment form (thin borders, rounded corners, the clinic dark blue), the list and calendar switch matches the existing or new patient switch, the midday button just says "Midday" and sits by the refresh button, and the hour under the mouse lights up across the whole row of the provider
 - On phones the full version folds the calendar toolbar behind its own button in the header, next to the main menu and a button back to the simple version, and on tablets the header and the toolbar fit on one line
 - The date and time pickers of the management pages are a new, faster and smaller calendar card in the clinic colours, with a "Today" button ("Now" on time pickers), a time slider in 5-minute steps, typed dates and times that are checked instead of misread, and it opens above the field when there is no room below so it never needs scrolling
