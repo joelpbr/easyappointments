@@ -115,6 +115,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Fixed
 
+- The activity log names the right patient on the changes of a clinical record and lists them when searching by that patient.
 - Placing a pathology on a foot drawing uses the marker layer's position and size to center the icon at the pointer.
 
 - The hours out of work, the midday break and the blocked periods keep their grey stripes in the calendar once their time has passed, instead of being covered by the yellow of the past time

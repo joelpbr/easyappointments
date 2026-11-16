@@ -261,7 +261,10 @@ class Audit_trail
                 " AND $log.entity_id IN ($select))";
 
             $conditions[] = "$log.id_users IN ($ids)";
-            $conditions[] = "($log.entity IN ('customer', 'provider', 'secretary', 'admin', 'user') AND $log.entity_id IN ($ids))";
+            // The entries of a patient record carry the ID of the patient too.
+            $conditions[] =
+                "($log.entity IN ('customer', 'provider', 'secretary', 'admin', 'user', 'patient_record') " .
+                "AND $log.entity_id IN ($ids))";
 
             $appointments =
                 'SELECT id FROM ' .
@@ -273,10 +276,6 @@ class Audit_trail
             $conditions[] = $in(
                 'whatsapp_message',
                 'SELECT id FROM ' . $t('whatsapp_reminders') . " WHERE id_users_customer IN ($ids)",
-            );
-            $conditions[] = $in(
-                'patient_record',
-                'SELECT id FROM ' . $t('patient_records') . " WHERE id_users_customer IN ($ids)",
             );
             $conditions[] = $in(
                 'fiscal_party',
@@ -804,11 +803,8 @@ class Audit_trail
                 );
 
             case 'patient_record':
-                $customer = $id
-                    ? $this->CI->db->get_where('patient_records', ['id' => $id])->row('id_users_customer')
-                    : null;
-
-                return $customer ? $this->name('user', (int) $customer) : null;
+                // Logged with the ID of the patient, not with the one of the record (see Patient_records_model).
+                return $id ? $this->name('user', $id) : null;
 
             case 'appointment_record':
             case 'appointment_foot_marker':
