@@ -11,6 +11,14 @@
  * @since       v1.1.0
  * ---------------------------------------------------------------------------- */
 
+if (!function_exists('normalize_language')) {
+    /** Only the clinic's two supported languages may be stored or loaded. */
+    function normalize_language(mixed $language): string
+    {
+        return in_array($language, ['catalan', 'spanish'], true) ? $language : 'catalan';
+    }
+}
+
 if (!function_exists('lang')) {
     /**
      * Lang

@@ -76,7 +76,7 @@ class Notifications
                 !empty($customer['email']) && filter_var(setting('customer_notifications'), FILTER_VALIDATE_BOOLEAN);
 
             if ($send_customer === true) {
-                config(['language' => $customer['language']]);
+                config(['language' => normalize_language($customer['language'])]);
                 $this->CI->lang->load('translations');
                 $subject = $manage_mode ? lang('appointment_details_changed') : lang('appointment_booked');
                 $message = $manage_mode ? '' : lang('thank_you_for_appointment');
@@ -107,7 +107,7 @@ class Notifications
             );
 
             if ($send_provider === true) {
-                config(['language' => $provider['language']]);
+                config(['language' => normalize_language($provider['language'])]);
                 $this->CI->lang->load('translations');
                 $subject = $manage_mode ? lang('appointment_details_changed') : lang('appointment_added_to_your_plan');
                 $message = $manage_mode ? '' : lang('appointment_link_description');
@@ -139,7 +139,7 @@ class Notifications
                     continue;
                 }
 
-                config(['language' => $admin['language']]);
+                config(['language' => normalize_language($admin['language'])]);
                 $this->CI->lang->load('translations');
                 $subject = $manage_mode ? lang('appointment_details_changed') : lang('appointment_added_to_your_plan');
                 $message = $manage_mode ? '' : lang('appointment_link_description');
@@ -175,7 +175,7 @@ class Notifications
                     continue;
                 }
 
-                config(['language' => $secretary['language']]);
+                config(['language' => normalize_language($secretary['language'])]);
                 $this->CI->lang->load('translations');
                 $subject = $manage_mode ? lang('appointment_details_changed') : lang('appointment_added_to_your_plan');
                 $message = $manage_mode ? '' : lang('appointment_link_description');
@@ -201,7 +201,7 @@ class Notifications
         } catch (Throwable $e) {
             $this->log_exception($e, 'appointment-saved (general exception)', $appointment['id'] ?? null);
         } finally {
-            config(['language' => $current_language ?? 'english']);
+            config(['language' => normalize_language($current_language ?? null)]);
             $this->CI->lang->load('translations');
         }
     }
@@ -233,7 +233,7 @@ class Notifications
             );
 
             if ($send_provider === true) {
-                config(['language' => $provider['language']]);
+                config(['language' => normalize_language($provider['language'])]);
                 $this->CI->lang->load('translations');
 
                 try {
@@ -257,7 +257,7 @@ class Notifications
                 !empty($customer['email']) && filter_var(setting('customer_notifications'), FILTER_VALIDATE_BOOLEAN);
 
             if ($send_customer === true) {
-                config(['language' => $customer['language']]);
+                config(['language' => normalize_language($customer['language'])]);
                 $this->CI->lang->load('translations');
 
                 try {
@@ -284,7 +284,7 @@ class Notifications
                     continue;
                 }
 
-                config(['language' => $admin['language']]);
+                config(['language' => normalize_language($admin['language'])]);
                 $this->CI->lang->load('translations');
 
                 try {
@@ -315,7 +315,7 @@ class Notifications
                     continue;
                 }
 
-                config(['language' => $secretary['language']]);
+                config(['language' => normalize_language($secretary['language'])]);
                 $this->CI->lang->load('translations');
 
                 try {
@@ -343,7 +343,7 @@ class Notifications
             );
             log_message('error', $e->getTraceAsString());
         } finally {
-            config(['language' => $current_language ?? 'english']);
+            config(['language' => normalize_language($current_language ?? null)]);
             $this->CI->lang->load('translations');
         }
     }

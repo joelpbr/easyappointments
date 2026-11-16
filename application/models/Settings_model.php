@@ -46,6 +46,9 @@ class Settings_model extends EA_Model
      */
     public function save(array $setting): int
     {
+        if (($setting['name'] ?? null) === 'default_language') {
+            $setting['value'] = normalize_language($setting['value'] ?? null);
+        }
         $this->validate($setting);
 
         if (empty($setting['id'])) {

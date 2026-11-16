@@ -2365,7 +2365,7 @@ $ea-day-separator: 3px solid #6c757d;
 // Phones (where the header menu folds, below md): a compact header with three buttons on the right (the simple
 // version, the main menu and the toolbar of the calendar), the main menu as a list panel, and the toolbar of the
 // calendar folded until its button opens it, then laid out as a tidy panel.
-.ea-header-mobile-actions {
+.ea-header-compact-actions {
     display: none;
 }
 
@@ -2397,14 +2397,14 @@ $ea-day-separator: 3px solid #6c757d;
             }
         }
 
-        .ea-header-mobile-actions {
+        .ea-header-compact-actions {
             display: flex;
             align-items: center;
             gap: 6px;
             margin-left: auto;
 
             .navbar-toggler,
-            .ea-header-mobile-button {
+            .ea-header-simple-button {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;

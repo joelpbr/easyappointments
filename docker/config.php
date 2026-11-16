@@ -16,7 +16,7 @@
  */
 
 define('DOCKER_BASE_URL', (string) getenv('BASE_URL'));
-define('DOCKER_LANGUAGE', getenv('LANGUAGE') ?: 'english');
+define('DOCKER_LANGUAGE', getenv('LANGUAGE') ?: 'catalan');
 define('DOCKER_DEBUG_MODE', filter_var(getenv('DEBUG_MODE'), FILTER_VALIDATE_BOOLEAN));
 define('DOCKER_DB_HOST', (string) getenv('DB_HOST'));
 define('DOCKER_DB_NAME', (string) getenv('DB_NAME'));

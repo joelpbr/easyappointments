@@ -136,16 +136,16 @@ class Calendar extends EA_Controller
             return;
         }
 
-        // Phones get the mobile version (see the Mobile controller), unless they chose the full one, which is
+        // Phones get the simple version (see the Simple controller), unless they chose the full one, which is
         // remembered. A link to an appointment always opens the full calendar.
         if (request('full')) {
-            setcookie(MOBILE_FULL_VERSION_COOKIE, '1', cookie_options(time() + 180 * 24 * 3600));
+            setcookie(FULL_CALENDAR_COOKIE, '1', cookie_options(time() + 180 * 24 * 3600));
         } elseif (
             $appointment_hash === '' &&
-            !isset($_COOKIE[MOBILE_FULL_VERSION_COOKIE]) &&
+            !isset($_COOKIE[FULL_CALENDAR_COOKIE]) &&
             is_phone_user_agent($this->input->user_agent())
         ) {
-            redirect('mobile');
+            redirect('simple');
 
             return;
         }

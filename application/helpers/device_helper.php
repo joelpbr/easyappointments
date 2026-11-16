@@ -12,7 +12,7 @@
 
 if (!function_exists('is_phone_user_agent')) {
     /**
-     * Whether a browser is a phone, so that the calendar can open its mobile version (see the Mobile controller).
+     * Whether a browser is a phone, so that the calendar can open its simple version (see the Simple controller).
      *
      * Tablets are not phones: they have room for the full calendar. Android tablets leave "Mobile" out of their user
      * agent, and iPads either say "iPad" or present themselves as a Mac.
@@ -29,6 +29,9 @@ if (!function_exists('is_phone_user_agent')) {
             return false;
         }
 
-        return (bool) preg_match('/iPhone|iPod|Android.*Mobile|Windows Phone|Mobile.*Firefox|BlackBerry|Opera Mini/i', $user_agent);
+        return (bool) preg_match(
+            '/iPhone|iPod|Android.*Mobile|Windows Phone|Mobile.*Firefox|BlackBerry|Opera Mini/i',
+            $user_agent,
+        );
     }
 }

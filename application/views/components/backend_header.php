@@ -16,11 +16,11 @@
 
     <!-- On phones: the simple version, the main menu and, on the calendar, the folded toolbar of the calendar
          (backend_layout.js). -->
-    <div class="ea-header-mobile-actions">
+    <div class="ea-header-compact-actions">
         <?php if (can('view', PRIV_APPOINTMENTS)): ?>
-            <a href="<?= site_url('mobile') ?>" class="ea-header-mobile-button"
-               title="<?= e(lang('mobile_version')) ?>" aria-label="<?= e(lang('mobile_version')) ?>">
-                <i class="fas fa-mobile-alt"></i>
+            <a href="<?= site_url('simple') ?>" class="ea-header-simple-button"
+               title="<?= e(lang('simple_version')) ?>" aria-label="<?= e(lang('simple_version')) ?>">
+                <i class="fa-solid fa-puzzle-piece"></i>
             </a>
         <?php endif; ?>
 
@@ -41,15 +41,13 @@
     <div id="header-menu" class="collapse navbar-collapse flex-row-reverse px-2">
         <ul class="navbar-nav">
             <!-- Notifications: only while some WhatsApp message could not be sent, with how many. -->
-            <?php
-            if (can('view', PRIV_APPOINTMENTS)) {
+            <?php if (can('view', PRIV_APPOINTMENTS)) {
                 $CI = &get_instance();
                 $CI->load->library('whatsapp_reminders');
                 $whatsapp_problems = $CI->whatsapp_reminders->problem_count();
             } else {
                 $whatsapp_problems = 0;
-            }
-            ?>
+            } ?>
             <?php if ($whatsapp_problems): ?>
                 <li class="nav-item text-center d-flex align-items-center">
                     <a href="<?= site_url('whatsapp_messages?problems=1') ?>"
@@ -149,10 +147,6 @@
                         <i class="fas fa-user me-2"></i>
                         <?= lang('account') ?>
                     </a>
-                    <a class="dropdown-item" href="<?= site_url('about') ?>">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <?= lang('about') ?>
-                    </a>
                     <div class="dropdown-divider"></div>
                     <?php foreach (['catalan' => 'Català', 'spanish' => 'Castellano'] as $code => $name): ?>
                         <a class="dropdown-item ea-change-language <?= config('language') === $code ? 'active' : '' ?>"
@@ -171,15 +165,11 @@
                         <span class="ea-money-icon-hidden"><i class="fas fa-eye-slash"></i></span>
                         <span class="ea-money-toggle-label"><?= lang('hide_amounts') ?></span>
                     </button>
-                    <a class="dropdown-item" href="<?= site_url('booking') ?>" target="_blank">
-                        <i class="fas fa-external-link me-2"></i>
-                        <?= lang('booking') ?>
-                    </a>
                     <?php if (can('view', PRIV_APPOINTMENTS)): ?>
-                        <!-- The simple agenda for phones (Mobile controller). -->
-                        <a class="dropdown-item" href="<?= site_url('mobile') ?>">
-                            <i class="fas fa-mobile-alt me-2"></i>
-                            <?= lang('mobile_version') ?>
+                        <!-- The simple agenda for phones (Simple controller). -->
+                        <a class="dropdown-item" href="<?= site_url('simple') ?>">
+                            <i class="fa-solid fa-puzzle-piece me-2"></i>
+                            <?= lang('simple_version') ?>
                         </a>
                     <?php endif; ?>
                     <div class="dropdown-divider"></div>

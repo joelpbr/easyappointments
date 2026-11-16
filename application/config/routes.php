@@ -57,6 +57,10 @@ $route['404_override'] = '';
 
 $route['translate_uri_dashes'] = false;
 
+// The simple agenda replaces the former mobile URL; keep existing bookmarks working.
+$route['mobile'] = 'simple/legacy_redirect';
+$route['mobile/index'] = 'simple/legacy_redirect';
+
 /*
 | -------------------------------------------------------------------------
 | SECURITY HEADERS

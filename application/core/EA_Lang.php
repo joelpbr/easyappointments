@@ -41,5 +41,11 @@
  */
 class EA_Lang extends CI_Lang
 {
-    //
+    /** Old backups/preferences may still request a removed language. */
+    public function load($langfile, $idiom = '', $return = false, $add_suffix = true, $alt_path = '')
+    {
+        $idiom = $idiom ?: config_item('language');
+        $idiom = in_array($idiom, ['catalan', 'spanish'], true) ? $idiom : 'catalan';
+        return parent::load($langfile, $idiom, $return, $add_suffix, $alt_path);
+    }
 }
