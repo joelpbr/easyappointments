@@ -2702,3 +2702,11 @@ $ea-day-separator: 3px solid #6c757d;
 #toggle-money svg {
     width: 14px;
 }
+
+// "Save" of an appointment that is being edited is grey while there is nothing to save (appointments_modal.js).
+#appointments-modal #save-appointment:disabled {
+    color: #ffffff;
+    background-color: var(--bs-gray-400);
+    border-color: var(--bs-gray-400);
+    opacity: 1;
+}
