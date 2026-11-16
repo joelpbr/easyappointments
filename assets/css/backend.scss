@@ -2337,3 +2337,338 @@ $ea-day-separator: 3px solid #6c757d;
     }
 }
 
+// Phones (where the header menu folds, below md): a compact header with three buttons on the right (the simple
+// version, the main menu and the toolbar of the calendar), the main menu as a list panel, and the toolbar of the
+// calendar folded until its button opens it, then laid out as a tidy panel.
+.ea-header-mobile-actions {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    #header {
+        flex-wrap: wrap;
+        min-height: 54px;
+        padding: 0 8px !important;
+        box-shadow: 0 2px 10px rgba(6, 63, 126, 0.25);
+
+        #header-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            margin: 0;
+            padding: 8px 0 !important;
+
+            img {
+                width: 34px !important;
+                height: 34px !important;
+                margin: 0 !important;
+                border-radius: 8px;
+            }
+
+            // The logo is enough on a phone; the name of the clinic would take the room of the buttons.
+            h6 {
+                display: none;
+            }
+        }
+
+        .ea-header-mobile-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+
+            .navbar-toggler,
+            .ea-header-mobile-button {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                border: 0;
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+                font-size: 17px;
+                text-decoration: none;
+                transition: background-color 0.15s ease;
+
+                &:hover,
+                &:active {
+                    background: rgba(255, 255, 255, 0.18);
+                }
+
+                &:focus {
+                    box-shadow: none;
+                }
+
+                &:focus-visible {
+                    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6);
+                }
+
+                // The open one stands out: white with the dark blue icon.
+                &.active,
+                &[aria-expanded='true'] {
+                    background: #ffffff;
+                    color: var(--bs-primary);
+                }
+            }
+        }
+
+        // The main menu: a list panel, one item per row with its icon, the current page lit.
+        #header-menu {
+            flex-basis: 100%;
+
+            > .navbar-nav {
+                gap: 2px;
+                padding: 4px 0 10px;
+            }
+
+            .nav-item {
+                min-width: 0 !important;
+                text-align: left !important;
+            }
+
+            .nav-link {
+                display: flex !important;
+                align-items: center;
+                gap: 12px;
+                width: 100%;
+                padding: 11px 12px !important;
+                border-radius: 10px;
+                font-size: 15px;
+                font-weight: 500 !important;
+
+                > svg,
+                > i {
+                    width: 18px;
+                    margin: 0 !important;
+                }
+
+                &.dropdown-toggle::after {
+                    margin-left: auto;
+                }
+            }
+
+            .nav-item.active > .nav-link,
+            .nav-link:hover,
+            .nav-link.show {
+                background: rgba(255, 255, 255, 0.12);
+            }
+
+            // The submenus open inside the panel, under their item.
+            .dropdown-menu {
+                margin: 4px 0 6px;
+            }
+        }
+    }
+
+    #calendar-page #calendar-toolbar:not(.ea-toolbar-open) {
+        display: none !important;
+    }
+
+    // The toolbar of the calendar, open: days and date on the first row, the provider and treatment filters on the
+    // second and the actions as a grid of three, with controls of 38px for the fingers.
+    #calendar-page #calendar-toolbar.ea-unified-toolbar.ea-toolbar-open {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 12px 12px;
+
+        // The parts of the date header take their place in the panel.
+        .calendar-header {
+            display: contents;
+        }
+
+        .btn,
+        .form-control,
+        .form-select {
+            height: 38px;
+            min-height: 38px;
+            font-size: 14px;
+        }
+
+        #calendar-filter {
+            flex: 0 0 104px;
+            width: 104px;
+            order: 1;
+        }
+
+        .calendar-header > .previous {
+            flex: 0 0 38px;
+            width: 38px;
+            order: 2;
+        }
+
+        .calendar-header > .select-date {
+            flex: 1 1 0;
+            width: auto;
+            min-width: 0;
+            order: 3;
+        }
+
+        .calendar-header > .next {
+            flex: 0 0 38px;
+            width: 38px;
+            order: 4;
+        }
+
+        .filter-group {
+            flex: 1 1 calc(50% - 4px);
+            width: auto;
+            min-width: 0;
+            order: 5;
+        }
+
+        #calendar-actions {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            flex: 1 1 100%;
+            gap: 8px;
+            order: 6;
+            margin: 2px 0 0;
+
+            // Every action fills its cell, the icon ones too (they are square on the desktop bar).
+            > *,
+            > .dropdown > .btn {
+                width: 100% !important;
+                min-width: 0;
+            }
+
+            > [hidden] {
+                display: none !important;
+            }
+        }
+    }
+}
+
+// Tablets and narrow windows (md to lg): the header and the toolbar of the calendar stay on one line each. The menus
+// of the header show their icon only (their name is in their tooltip), the main actions of the toolbar become square
+// icon buttons and the filters narrow, their text ending in "…" when it does not fit.
+@media (min-width: 768px) and (max-width: 1199.98px) {
+    #header {
+        flex-wrap: nowrap;
+
+        .navbar-nav {
+            flex-wrap: nowrap;
+        }
+
+        .nav-item {
+            min-width: 0 !important;
+        }
+
+        .nav-link {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 0 13px !important;
+            height: 38px;
+            font-size: 0 !important;
+
+            > svg,
+            > i {
+                width: 17px;
+                height: 17px;
+                margin: 0 !important;
+            }
+
+            &.dropdown-toggle::after {
+                border-top-width: 5px;
+                border-right-width: 4px;
+                border-left-width: 4px;
+            }
+        }
+    }
+
+    #calendar-page #calendar-toolbar.ea-unified-toolbar {
+        flex-wrap: nowrap;
+        gap: 6px;
+
+        #calendar-filter {
+            flex: 0 0 96px;
+            width: 96px;
+        }
+
+        .calendar-header {
+            flex: 1 1 auto;
+            flex-wrap: nowrap;
+            min-width: 0;
+        }
+
+        .select-date {
+            flex: 0 0 100px;
+            width: 100px;
+        }
+
+        .filter-group {
+            flex: 0 1 140px;
+            width: 140px;
+            min-width: 92px;
+        }
+
+        // "Provider: all" shows "all" only (the name of the filter is in its label for screen readers).
+        .ea-dropdown-label-prefix {
+            display: none;
+        }
+
+        #calendar-actions {
+            flex-wrap: nowrap;
+            justify-content: flex-end;
+            margin-left: auto;
+        }
+
+        #calendar-actions > .dropdown > .btn,
+        #open-slot-search,
+        #agenda-blocks {
+            width: 30px;
+            padding: 0;
+            gap: 0;
+            font-size: 0;
+
+            > svg,
+            > i {
+                width: 13px;
+                height: 13px;
+            }
+        }
+    }
+}
+
+// Phones: the filters show their value only and the actions of the open toolbar keep their text inside the narrowest
+// cells, in every language.
+@media (max-width: 767.98px) {
+    #calendar-page #calendar-toolbar.ea-unified-toolbar.ea-toolbar-open {
+        .ea-dropdown-label-prefix {
+            display: none;
+        }
+
+        #calendar-actions .btn {
+            gap: 4px;
+            padding: 0 4px;
+            overflow: hidden;
+            font-size: 12.5px;
+            text-overflow: ellipsis;
+
+            > svg,
+            > i {
+                width: 12px;
+                height: 12px;
+            }
+        }
+    }
+}
+
+// Very narrow phones: the actions with a text drop their icon, so that the whole text fits.
+@media (max-width: 359.98px) {
+    #calendar-page #calendar-toolbar.ea-unified-toolbar.ea-toolbar-open #calendar-actions {
+        #open-slot-search,
+        #agenda-blocks,
+        > .dropdown > .btn {
+            > svg,
+            > i {
+                display: none;
+            }
+        }
+    }
+}

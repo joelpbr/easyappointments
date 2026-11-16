@@ -136,6 +136,20 @@ class Calendar extends EA_Controller
             return;
         }
 
+        // Phones get the mobile version (see the Mobile controller), unless they chose the full one, which is
+        // remembered. A link to an appointment always opens the full calendar.
+        if (request('full')) {
+            setcookie(MOBILE_FULL_VERSION_COOKIE, '1', cookie_options(time() + 180 * 24 * 3600));
+        } elseif (
+            $appointment_hash === '' &&
+            !isset($_COOKIE[MOBILE_FULL_VERSION_COOKIE]) &&
+            is_phone_user_agent($this->input->user_agent())
+        ) {
+            redirect('mobile');
+
+            return;
+        }
+
         $role_slug = session('role_slug');
 
         $user = $this->users_model->find($user_id);
@@ -241,6 +255,8 @@ class Calendar extends EA_Controller
 
         html_vars([
             'page_title' => lang('calendar'),
+            // On phones the toolbar of the calendar folds behind its own button in the header (backend_header.php).
+            'calendar_toolbar' => true,
             'clinical_records' => Clinical_record_templates::can_access($role_slug),
             'active_menu' => PRIV_APPOINTMENTS,
             'user_display_name' => $this->accounts->get_user_display_name($user_id),

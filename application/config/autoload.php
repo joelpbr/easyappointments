@@ -72,6 +72,7 @@ $autoload['helper'] = [
     'config',
     'date',
     'debug',
+    'device',
     'env',
     'file',
     'fiscal_id',

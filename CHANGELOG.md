@@ -7,6 +7,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- A simple agenda for phones at /mobile: the appointments of a day one below the other, with day navigation (arrows, swipe or the phone date picker), a provider filter and each appointment's details with buttons to call or WhatsApp the patient; phones opening the calendar go there automatically, and "Full version" (remembered by the browser) or "Mobile version" in the user menu switch between both
 - The booking form again includes both original comment fields: the appointment's comment and the patient's administrative notes, loaded and saved independently under their original labels.
 - Clicking a patient opens their clinical record directly; a small SVG button beside its close button opens that patient's original details page and administrative history, with the existing choices for unsaved changes.
 - Imported text recovers accents, Ñ/ñ, ordinals and punctuation damaged by incorrect character encoding, including repeated conversions; existing records can be repaired with a safety backup and verification that all other fields and drawing coordinates are unchanged.
@@ -54,6 +55,7 @@ developers to maintain and readjust their custom modifications on the main proje
 ### Changed
 
 - The calendar toolbar, the dropdown menus and the treatment, provider, status and document type lists follow the look of the appointment form (thin borders, rounded corners, the clinic dark blue), the list and calendar switch matches the existing or new patient switch, the midday button just says "Midday" and sits by the refresh button, and the hour under the mouse lights up across the whole row of the provider
+- On phones the full version folds the calendar toolbar behind its own button in the header, next to the main menu and a button back to the simple version, and on tablets the header and the toolbar fit on one line
 - The date and time pickers of the management pages are a new, faster and smaller calendar card in the clinic colours, with a "Today" button ("Now" on time pickers), a time slider in 5-minute steps, typed dates and times that are checked instead of misread, and it opens above the field when there is no room below so it never needs scrolling
 - Switching tabs and visits of the clinical record, choosing a record in the lists of the management pages, opening menus and showing notifications fade in smoothly, and rows, visits and foot diagram views fade their highlight; going to the visits of a clinical record no longer pops its right column in after the fade
 - The X-ray switch of the foot diagrams is a round icon button in the corner of the picture instead of a button on a row of its own
