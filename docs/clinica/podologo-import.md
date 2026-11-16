@@ -1,12 +1,14 @@
 # Importing the original Podologo database
 
+Read [MIGRATION_RULES.md](../../MIGRATION_RULES.md) first for the consolidated clinic rules, final mappings, preservation requirements and verification procedure. That document records the final decisions where older change-history entries differ.
+
 Use **Settings → Backups → Upload** and select `podologo.db` directly. The application detects the Firebird ODS 11 header from the file contents; it does not treat the binary database as a SQL or text file. SQL backup restoration keeps its existing behavior.
 
 The `.db` import adds patients, clinical visits, pathology catalog entries and foot markers. It preserves the current application accounts and data, creates a safety backup first, and rejects a second legacy import to prevent duplicates. Historical staff reuse matching clinic providers or receive inactive accounts with random credentials; original login credentials are never activated. Historical visits reuse the existing treatment catalog. Their start times are rounded down to the preceding quarter-hour and their end times use the assigned service's default duration. The original timestamps remain unchanged in the source archive. Prescribed Cura PV and Cura override the general chiropody flag. Other legacy tables and fields, including the original dates with fractions of seconds, binary values and identifiers, are preserved in `podologo_source_rows`; they are not all exposed as native application screens.
 
 ## Drawings and icons
 
-The converter uses only the existing `feet`, `surgery`, `exploration`, `silicone` and `notes` templates. No imported-only template or new visible fields are added. Motive, diagnosis and treatment go into the existing matching fields. Information that does not have its own field in that template is combined under readable headings in an existing visible field: observations when available, treatment for exploration, or diagnosis for silicone. Saving the form therefore retains the complete narrative even when the form has fewer fields.
+The converter uses only the existing `feet`, `surgery`, `exploration`, `silicone` and `notes` templates. No imported-only template or new visible fields are added. Motive, diagnosis and treatment go into the existing matching fields. Information that does not have its own field in that template is combined as readable prose in an existing visible field: observations when available, treatment for exploration, or diagnosis for silicone. Do not prepend technical IDs or generated treatment headings; label measurements only when needed to preserve their meaning. Saving the form therefore retains the complete narrative even when the form has fewer fields.
 
 Original linked treatments identify Cura PV (including Cura PV 1a), Cura, Wallet, Ortonixia, infiltration and orthoses. Existing catalog entries are reused; the general QUIROPODIA flag does not erase a more specific prescribed care treatment. Internal IDs and default unselected form flags are excluded from clinical prose. The complete unchanged source stays archived for traceability.
 
