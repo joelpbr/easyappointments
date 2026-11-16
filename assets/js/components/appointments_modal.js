@@ -47,6 +47,9 @@ App.Components.AppointmentsModal = (function () {
 
     const MIN_DURATION = 5; // Minutes, matches EVENT_MINIMUM_DURATION.
 
+    // The form closes without asking about unsaved changes: after saving, or after choosing not to save.
+    let closeWithoutAsking = false;
+
     let patientSearch = null;
     let newPatientConfirmed = false;
     let usualProviderId = null;
@@ -219,8 +222,9 @@ App.Components.AppointmentsModal = (function () {
                 // Display success message to the user.
                 App.Layouts.Backend.displayNotification(lang('appointment_saved'));
 
-                // Close the modal dialog and refresh the calendar appointments.
+                // Close the modal dialog and refresh the calendar appointments; saved, so without asking.
                 $appointmentsModal.find('.alert').addClass('d-none');
+                closeWithoutAsking = true;
                 $appointmentsModal.modal('hide');
                 $reloadAppointments.trigger('click');
             };
@@ -804,6 +808,108 @@ App.Components.AppointmentsModal = (function () {
     }
 
     /**
+     * The values of the form: every field, the patient mode, the chosen patient and the colour. The inputs of the
+     * dropdown lists (App.Utils.UI.initializeSelectDropdown) are left out; their select is in.
+     *
+     * @return {String}
+     */
+    function getFormState() {
+        const fields = $appointmentsModal
+            .find('input, select, textarea')
+            .not('.dropdown-menu input')
+            .toArray()
+            .filter((field) => field.id || field.name)
+            .map((field) => [
+                field.id || field.name + ':' + field.value,
+                field.type === 'checkbox' || field.type === 'radio' ? field.checked : field.value,
+            ]);
+
+        return JSON.stringify([fields, App.Components.ColorSelection.getColor($appointmentsModal.find('#appointment-color'))]);
+    }
+
+    /**
+     * Grey out "Save" while an appointment that is being edited has no changes, and ask before closing the form with
+     * changes (new or edited appointments). The form is compared with its values once it is open and filled, after
+     * every change and, for the values that the code sets without an event, a few times a second while it is open.
+     * New appointments can always be saved.
+     */
+    function watchUnsavedChanges() {
+        let savedState = null;
+        let timer = null;
+
+        const hasChanges = () => savedState !== null && getFormState() !== savedState;
+
+        const update = () => {
+            const unchanged = Boolean($appointmentId.val()) && savedState !== null && getFormState() === savedState;
+
+            $saveAppointment.prop('disabled', unchanged);
+        };
+
+        // Closing with changes (Close, the cross, Escape or a click outside) asks first: keep editing, close without
+        // saving, or save (which closes the form when it works).
+        $appointmentsModal.on('hide.bs.modal', (event) => {
+            if (event.target !== $appointmentsModal[0] || closeWithoutAsking || !hasChanges()) {
+                return;
+            }
+
+            event.preventDefault();
+
+            App.Utils.Message.show($appointmentsModal.find('.modal-header h3').text(), lang('clinical_unsaved_changes'), [
+                {
+                    text: lang('cancel'),
+                    className: 'btn btn-secondary',
+                    click: (clickEvent, messageModal) => messageModal.hide(),
+                },
+                {
+                    text: lang('clinical_dont_save'),
+                    className: 'btn btn-outline-danger',
+                    click: (clickEvent, messageModal) => {
+                        messageModal.hide();
+                        closeWithoutAsking = true;
+                        $appointmentsModal.modal('hide');
+                    },
+                },
+                {
+                    text: lang('save'),
+                    className: 'btn btn-primary',
+                    click: (clickEvent, messageModal) => {
+                        messageModal.hide();
+                        $saveAppointment.trigger('click');
+                    },
+                },
+            ]);
+        });
+
+        $appointmentsModal.on('shown.bs.modal', () => {
+            closeWithoutAsking = false;
+            savedState = null;
+            update();
+
+            // Once the values set while opening it (provider list, duration, dropdowns) have settled.
+            setTimeout(() => {
+                savedState = getFormState();
+                update();
+            }, 300);
+
+            clearInterval(timer);
+            timer = setInterval(update, 400);
+        });
+
+        $appointmentsModal.on('hidden.bs.modal', (event) => {
+            if (event.target !== $appointmentsModal[0]) {
+                return;
+            }
+
+            clearInterval(timer);
+            savedState = null;
+            closeWithoutAsking = false;
+            $saveAppointment.prop('disabled', false);
+        });
+
+        $appointmentsModal.on('input change', update);
+    }
+
+    /**
      * Initialize the module.
      */
     function initialize() {
@@ -812,6 +918,8 @@ App.Components.AppointmentsModal = (function () {
         // The treatment, provider and status lists look like the dropdowns of the calendar bar, with the treatment
         // colours; the selects stay underneath (App.Utils.UI.initializeSelectDropdown).
         App.Utils.UI.initializeSelectDropdown($selectService.add($selectProvider).add($appointmentStatus));
+
+        watchUnsavedChanges();
 
         // The status is only chosen when editing: a new appointment starts with the first one (scheduled). Whether it
         // is the first visit of the patient is worked out when it is saved.
