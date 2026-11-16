@@ -764,7 +764,13 @@ App.Components.ClinicalRecordModal = (function () {
             return;
         }
 
-        const rect = picture.getBoundingClientRect();
+        // Measure the same layer that positions the marker buttons. Its box can differ from the image's
+        // (borders, responsive sizing), so mixing the two offsets the marker from the pointer.
+        sizeFeetPicture();
+        const rect = $feetMarkers[0].getBoundingClientRect();
+        if (!rect.width || !rect.height) {
+            return;
+        }
         const {width, height} = originalSize();
         const x = ((event.clientX - rect.left) * width) / rect.width;
         const y = ((event.clientY - rect.top) * height) / rect.height;

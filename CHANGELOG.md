@@ -115,6 +115,8 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Fixed
 
+- Placing a pathology on a foot drawing uses the marker layer's position and size to center the icon at the pointer.
+
 - The hours out of work, the midday break and the blocked periods keep their grey stripes in the calendar once their time has passed, instead of being covered by the yellow of the past time
 - The time of a new or edited appointment can be changed again: the hours and the minutes shown in the date picker can be typed over (or moved with the arrow keys), and a time typed in the field is kept instead of going back to the previous one
 - Moving the start of a blocked period moves its end by the same amount, keeping its length, instead of pushing the end further each time
