@@ -205,17 +205,18 @@ App.Pages.BlockedPeriods = (function () {
          * Event: Start Date Time Input "Change"
          */
         $blockedPeriods.on('change', '#start-date-time', (event) => {
+            const startDateTimeObject = App.Utils.UI.getDateTimePickerValue($startDateTime);
             const endDateTimeObject = App.Utils.UI.getDateTimePickerValue($endDateTime);
 
-            if (!backupStartDateTimeObject || !endDateTimeObject) {
+            if (!backupStartDateTimeObject || !startDateTimeObject || !endDateTimeObject) {
                 return;
             }
 
-            const endDateTimeMoment = moment(endDateTimeObject);
-            const backupStartDateTimeMoment = moment(backupStartDateTimeObject);
-            const diff = endDateTimeMoment.diff(backupStartDateTimeMoment);
-            const newEndDateTimeMoment = endDateTimeMoment.clone().add(diff, 'milliseconds');
+            // The end moves as much as the start did, so the period keeps its length.
+            const diff = moment(startDateTimeObject).diff(moment(backupStartDateTimeObject));
+            const newEndDateTimeMoment = moment(endDateTimeObject).add(diff, 'milliseconds');
             App.Utils.UI.setDateTimePickerValue($endDateTime, newEndDateTimeMoment.toDate());
+            backupStartDateTimeObject = startDateTimeObject;
         });
     }
 

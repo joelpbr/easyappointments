@@ -205,7 +205,17 @@ function vendor(done) {
 
     gulp.src(['node_modules/trumbowyg/dist/ui/icons.svg']).pipe(gulp.dest('assets/vendor/trumbowyg/ui'));
 
-    // flatpickr
+    // air-datepicker (the date and time pickers of the management pages)
+    gulp.src(['node_modules/air-datepicker/air-datepicker.js'])
+        .pipe(rename({suffix: '.min'}))
+        .pipe(gulp.dest('assets/vendor/air-datepicker'));
+
+    gulp.src(['node_modules/air-datepicker/air-datepicker.css'])
+        .pipe(css())
+        .pipe(rename({suffix: '.min'}))
+        .pipe(gulp.dest('assets/vendor/air-datepicker'));
+
+    // flatpickr (the booking page)
     gulp.src(['node_modules/flatpickr/dist/flatpickr.min.js', 'node_modules/flatpickr/dist/flatpickr.min.css']).pipe(
         gulp.dest('assets/vendor/flatpickr'),
     );
