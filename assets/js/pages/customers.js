@@ -519,11 +519,11 @@ App.Pages.Customers = (function () {
         const visible = appointments.filter((appointment) => {
             const providerId = Number(appointment.id_users_provider);
 
-            if (vars('role_slug') === App.Layouts.Backend.DB_SLUG_PROVIDER) {
+            if (!vars('shared_clinic_access') && vars('role_slug') === App.Layouts.Backend.DB_SLUG_PROVIDER) {
                 return providerId === Number(vars('user_id'));
             }
 
-            if (vars('role_slug') === App.Layouts.Backend.DB_SLUG_SECRETARY) {
+            if (!vars('shared_clinic_access') && vars('role_slug') === App.Layouts.Backend.DB_SLUG_SECRETARY) {
                 return vars('secretary_providers').map(Number).includes(providerId);
             }
 

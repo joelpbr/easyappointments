@@ -16,6 +16,7 @@ App.Pages.Providers = (function () {
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
     const $shortName = $('#short-name');
+    const $calendarOrder = $('#calendar-order');
     const $email = $('#email');
     const $phoneNumber = $('#phone-number');
     const $address = $('#address');
@@ -189,6 +190,7 @@ App.Pages.Providers = (function () {
                 first_name: $firstName.val(),
                 last_name: $lastName.val(),
                 short_name: $shortName.val().trim(),
+                calendar_order: $calendarOrder.val(),
                 email: $email.val(),
                 phone_number: $phoneNumber.val(),
                 address: $address.val(),
@@ -332,6 +334,12 @@ App.Pages.Providers = (function () {
                 throw new Error(lang('fields_are_required'));
             }
 
+            const calendarOrder = Number($calendarOrder.val());
+            if (!Number.isInteger(calendarOrder) || calendarOrder < 1 || calendarOrder > 9999) {
+                $calendarOrder.addClass('is-invalid');
+                throw new Error(lang('provider_calendar_order_invalid'));
+            }
+
             // Validate passwords.
             if ($password.val() !== $passwordConfirmation.val()) {
                 $('#password, #password-confirm').addClass('is-invalid');
@@ -382,6 +390,7 @@ App.Pages.Providers = (function () {
         $providers.find('.save-cancel-group').hide();
         $providers.find('.record-details h4 a').remove();
         $providers.find('.record-details').find('input, select, textarea').val('').prop('disabled', true);
+        $calendarOrder.val(1000);
         $providers.find('.record-details .form-label span').prop('hidden', true);
         $providers.find('.record-details #calendar-view').val('default');
         $providers.find('.record-details #language').val(vars('default_language'));
@@ -420,6 +429,7 @@ App.Pages.Providers = (function () {
         $firstName.val(provider.first_name);
         $lastName.val(provider.last_name);
         $shortName.val(provider.short_name || '');
+        $calendarOrder.val(provider.calendar_order ?? 1000);
         $email.val(provider.email);
         $phoneNumber.val(provider.phone_number);
         $address.val(provider.address);

@@ -90,6 +90,13 @@ if (!function_exists('is_current_provider')) {
     }
 }
 
+/** Shared operational access for the clinic team; never grants settings or user administration. */
+function has_shared_clinic_access(?string $role_slug = null): bool
+{
+    return in_array($role_slug ?? session('role_slug'), [DB_SLUG_ADMIN, DB_SLUG_PROVIDER, DB_SLUG_SECRETARY], true) &&
+        (bool) setting('shared_clinic_access', false);
+}
+
 if (!function_exists('can_manage_provider')) {
     /**
      * Check whether the currently logged-in user is allowed to manage the records of the provided provider.
@@ -103,6 +110,9 @@ if (!function_exists('can_manage_provider')) {
      */
     function can_manage_provider(int $provider_id): bool
     {
+        if (has_shared_clinic_access()) {
+            return true;
+        }
         /** @var EA_Controller $CI */
         $CI = &get_instance();
 

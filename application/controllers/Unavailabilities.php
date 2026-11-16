@@ -77,7 +77,7 @@ class Unavailabilities extends EA_Controller
             $role_slug = session('role_slug');
 
             // If the current user is a provider he must only see his own appointments.
-            if ($role_slug === DB_SLUG_PROVIDER) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
                 foreach ($unavailabilities as $index => $unavailability) {
                     if ((int) $unavailability['id_users_provider'] !== (int) $user_id) {
                         unset($unavailabilities[$index]);
@@ -88,7 +88,7 @@ class Unavailabilities extends EA_Controller
             }
 
             // If the current user is a secretary he must only see the unavailabilities of his providers.
-            if ($role_slug === DB_SLUG_SECRETARY) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
                 $provider_ids = $this->secretaries_model->find($user_id)['providers'];
 
                 foreach ($unavailabilities as $index => $unavailability) {
@@ -126,7 +126,7 @@ class Unavailabilities extends EA_Controller
             $role_slug = session('role_slug');
 
             // Providers may only manage their own unavailabilities.
-            if ($role_slug === DB_SLUG_PROVIDER) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
                 $unavailability['id_users_provider'] = $user_id;
             }
 
@@ -210,7 +210,7 @@ class Unavailabilities extends EA_Controller
             $role_slug = session('role_slug');
 
             // Providers may only manage their own unavailabilities.
-            if ($role_slug === DB_SLUG_PROVIDER) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
                 $unavailability['id_users_provider'] = $user_id;
             }
 

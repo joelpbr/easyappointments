@@ -403,6 +403,7 @@ App.Components.AppointmentsModal = (function () {
             vars('available_providers').forEach((provider) => {
                 provider.services.forEach((providerServiceId) => {
                     if (
+                        !vars('shared_clinic_access') &&
                         vars('role_slug') === App.Layouts.Backend.DB_SLUG_PROVIDER &&
                         Number(provider.id) !== vars('user_id')
                     ) {
@@ -410,6 +411,7 @@ App.Components.AppointmentsModal = (function () {
                     }
 
                     if (
+                        !vars('shared_clinic_access') &&
                         vars('role_slug') === App.Layouts.Backend.DB_SLUG_SECRETARY &&
                         vars('secretary_providers').indexOf(Number(provider.id)) === -1
                     ) {

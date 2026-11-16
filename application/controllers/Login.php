@@ -129,7 +129,7 @@ class Login extends EA_Controller
             }
 
             // Validate username format to prevent injection
-            if (!preg_match('/^[a-zA-Z0-9_@.\-]+$/', $username) || strlen($username) > 255) {
+            if (!preg_match('/^[\p{L}\p{M}\p{N}_@.\-]+$/u', $username) || strlen($username) > 255) {
                 throw new InvalidArgumentException(lang('invalid_credentials_provided'));
             }
 

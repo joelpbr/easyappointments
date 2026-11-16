@@ -21,6 +21,7 @@ class Providers extends EA_Controller
         'first_name',
         'last_name',
         'short_name',
+        'calendar_order',
         'legal_name',
         'college_number',
         'tax_id',

@@ -152,7 +152,7 @@ class Calendar extends EA_Controller
 
         $secretary_providers = [];
 
-        if ($role_slug === DB_SLUG_SECRETARY) {
+        if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
             $secretary = $this->secretaries_model->find(session('user_id'));
 
             $secretary_providers = $secretary['providers'];
@@ -169,6 +169,7 @@ class Calendar extends EA_Controller
 
                 // Only expose the appointment if the logged-in user is allowed to see this provider.
                 $owns_appointment =
+                    has_shared_clinic_access() ||
                     ($role_slug === DB_SLUG_PROVIDER && $provider_id === (int) $user_id) ||
                     ($role_slug === DB_SLUG_SECRETARY &&
                         $this->secretaries_model->is_provider_supported((int) $user_id, $provider_id)) ||
@@ -185,7 +186,7 @@ class Calendar extends EA_Controller
 
         $available_providers = $this->providers_model->get_available_providers();
 
-        if ($role_slug === DB_SLUG_PROVIDER) {
+        if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
             $available_providers = array_values(
                 array_filter($available_providers, function ($available_provider) use ($user_id) {
                     return (int) $available_provider['id'] === (int) $user_id;
@@ -193,7 +194,7 @@ class Calendar extends EA_Controller
             );
         }
 
-        if ($role_slug === DB_SLUG_SECRETARY) {
+        if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
             $available_providers = array_values(
                 array_filter($available_providers, function ($available_provider) use ($secretary_providers) {
                     return in_array($available_provider['id'], $secretary_providers);
@@ -750,7 +751,7 @@ class Calendar extends EA_Controller
         try {
             method('post');
 
-            if (cannot('edit', PRIV_USERS)) {
+            if (cannot('edit', PRIV_APPOINTMENTS)) {
                 throw new RuntimeException('You do not have the required permissions for this task.');
             }
 
@@ -782,7 +783,7 @@ class Calendar extends EA_Controller
         try {
             method('post');
 
-            if (cannot('edit', PRIV_USERS)) {
+            if (cannot('edit', PRIV_APPOINTMENTS)) {
                 throw new RuntimeException('You do not have the required permissions for this task.');
             }
 
@@ -856,7 +857,7 @@ class Calendar extends EA_Controller
             $role_slug = session('role_slug');
 
             // If the current user is a provider he must only see his own appointments.
-            if ($role_slug === DB_SLUG_PROVIDER) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
                 foreach ($response['appointments'] as $index => $appointment) {
                     if ((int) $appointment['id_users_provider'] !== (int) $user_id) {
                         unset($response['appointments'][$index]);
@@ -875,7 +876,7 @@ class Calendar extends EA_Controller
             }
 
             // If the current user is a secretary he must only see the appointments of his providers.
-            if ($role_slug === DB_SLUG_SECRETARY) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
                 $providers = $this->secretaries_model->find($user_id)['providers'];
 
                 foreach ($response['appointments'] as $index => $appointment) {
@@ -1047,7 +1048,7 @@ class Calendar extends EA_Controller
             $role_slug = session('role_slug');
 
             // If the current user is a provider he must only see his own appointments.
-            if ($role_slug === DB_SLUG_PROVIDER) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
                 foreach ($response['appointments'] as $index => $appointment) {
                     if ((int) $appointment['id_users_provider'] !== (int) $user_id) {
                         unset($response['appointments'][$index]);
@@ -1068,7 +1069,7 @@ class Calendar extends EA_Controller
             }
 
             // If the current user is a secretary he must only see the appointments of his providers.
-            if ($role_slug === DB_SLUG_SECRETARY) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
                 $providers = $this->secretaries_model->find($user_id)['providers'];
 
                 foreach ($response['appointments'] as $index => $appointment) {

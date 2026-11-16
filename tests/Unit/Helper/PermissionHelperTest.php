@@ -15,6 +15,7 @@ class PermissionHelperTest extends TestCase
 {
     protected function setUp(): void
     {
+        $GLOBALS['ea_test_settings']['shared_clinic_access'] = '0';
         // Provider 11 owns appointment 1207, provider 45 owns appointment 481.
         $GLOBALS['ea_test_records'] = [
             1207 => ['id' => 1207, 'id_users_provider' => 11],
@@ -28,6 +29,20 @@ class PermissionHelperTest extends TestCase
     private function login(int $user_id, string $role_slug): void
     {
         $GLOBALS['ea_test_session'] = ['user_id' => $user_id, 'role_slug' => $role_slug];
+    }
+
+    public function testSharedTeamCanManageEveryProviderWithoutAdmittingCustomers(): void
+    {
+        $GLOBALS['ea_test_settings']['shared_clinic_access'] = '1';
+        foreach ([DB_SLUG_PROVIDER, DB_SLUG_SECRETARY] as $role) {
+            $this->login(7, $role);
+            $this->assertTrue(can_manage_provider(45));
+            authorize_event_write(481, 11);
+            authorize_event_write(1207, 45);
+        }
+        $this->login(8, DB_SLUG_CUSTOMER);
+        $this->assertFalse(has_shared_clinic_access());
+        $GLOBALS['ea_test_settings']['shared_clinic_access'] = '0';
     }
 
     public function testProviderCannotOverwriteAppointmentOfAnotherProvider(): void

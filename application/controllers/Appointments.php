@@ -103,7 +103,7 @@ class Appointments extends EA_Controller
             $role_slug = session('role_slug');
 
             // If the current user is a provider he must only see his own appointments.
-            if ($role_slug === DB_SLUG_PROVIDER) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
                 foreach ($appointments as $index => $appointment) {
                     if ((int) $appointment['id_users_provider'] !== (int) $user_id) {
                         unset($appointments[$index]);
@@ -114,7 +114,7 @@ class Appointments extends EA_Controller
             }
 
             // If the current user is a secretary he must only see the appointments of his providers.
-            if ($role_slug === DB_SLUG_SECRETARY) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
                 $provider_ids = $this->secretaries_model->find($user_id)['providers'];
 
                 foreach ($appointments as $index => $appointment) {
@@ -156,7 +156,7 @@ class Appointments extends EA_Controller
             $user_id = (int) session('user_id');
             $role_slug = session('role_slug');
 
-            if ($role_slug === DB_SLUG_PROVIDER) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
                 $appointment['id_users_provider'] = $user_id;
             }
 
@@ -243,7 +243,7 @@ class Appointments extends EA_Controller
             $user_id = (int) session('user_id');
             $role_slug = session('role_slug');
 
-            if ($role_slug === DB_SLUG_PROVIDER) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
                 $appointment['id_users_provider'] = $user_id;
             }
 

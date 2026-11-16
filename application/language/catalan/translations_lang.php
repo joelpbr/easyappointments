@@ -1056,3 +1056,8 @@ $lang['audit_field_level'] = 'Àmbit';
 $lang['activity_log_search'] = 'Cerca';
 $lang['activity_log_search_placeholder'] = 'Pacient, professional, telèfon, tractament, ajust, data (16/11/2026)...';
 $lang['audit_field_previous'] = 'Còpia de seguretat prèvia';
+
+$lang['provider_calendar_order'] = 'Ordre al calendari';
+$lang['provider_calendar_order_hint'] = 'Els números més baixos surten primer (1, 2, 3...). En cas d’empat, s’ordenen alfabèticament pel nom complet.';
+$lang['provider_calendar_order_invalid'] = 'Introdueix un número enter entre 1 i 9999.';
+$lang['audit_field_calendar_order'] = 'Ordre al calendari';
