@@ -5,7 +5,11 @@
 $messages = vars('messages');
 $only_problems = vars('only_problems');
 $problem_count = vars('problem_count');
+$change_count = vars('change_count');
 $can_edit = vars('can_edit');
+
+// The messages that could not be sent; the rest of the problems are appointments moved after their message.
+$failed_count = $problem_count - $change_count;
 ?>
 
 <?php section('content'); ?>
@@ -28,10 +32,17 @@ $can_edit = vars('can_edit');
         </div>
     </div>
 
-    <?php if ($problem_count): ?>
+    <?php if ($failed_count > 0): ?>
         <div class="alert alert-danger py-2">
             <i class="fas fa-exclamation-triangle me-2"></i>
-            <?= e(sprintf(lang('whatsapp_problems_warning'), (int) $problem_count)) ?>
+            <?= e(sprintf(lang('whatsapp_problems_warning'), (int) $failed_count)) ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($change_count): ?>
+        <div class="alert alert-warning py-2">
+            <i class="fas fa-phone me-2"></i>
+            <?= e(sprintf(lang('whatsapp_changes_warning'), (int) $change_count)) ?>
         </div>
     <?php endif; ?>
 
@@ -54,9 +65,13 @@ $can_edit = vars('can_edit');
                 </thead>
                 <tbody>
                 <?php foreach ($messages as $message): ?>
-                    <?php $is_problem = in_array($message['status'], Whatsapp_reminders::PROBLEM_STATUSES, true); ?>
+                    <?php
+                    $is_problem = in_array($message['status'], Whatsapp_reminders::PROBLEM_STATUSES, true);
+                    // The appointment changed after the message went out and the patient was not told yet.
+                    $change_pending = $message['change_to_datetime'] && !$message['change_handled_datetime'];
+                    ?>
                     <tr data-id="<?= (int) $message['id'] ?>" data-status="<?= e($message['status']) ?>"
-                        class="<?= $is_problem ? 'table-danger' : '' ?>">
+                        class="<?= $is_problem ? 'table-danger' : ($change_pending ? 'table-warning' : '') ?>">
                         <td class="text-nowrap">
                             <?php if ($message['is_test']): ?>
                                 <span class="badge text-bg-secondary"><?= lang('whatsapp_test') ?></span>
@@ -80,6 +95,15 @@ $can_edit = vars('can_edit');
                                     <?= e(Whatsapp_reminders::describe_error($message['error'])) ?>
                                 </div>
                             <?php endif; ?>
+                            <?php if ($message['change_to_datetime']): ?>
+                                <div class="small <?= $change_pending ? 'text-warning-emphasis fw-semibold' : 'text-muted' ?>">
+                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                    <?= e(sprintf(
+                                        lang($change_pending ? 'whatsapp_change_pending' : 'whatsapp_change_told'),
+                                        date('d/m/Y H:i', strtotime($message['change_to_datetime'])),
+                                    )) ?>
+                                </div>
+                            <?php endif; ?>
                         </td>
                         <td class="text-nowrap small text-muted">
                             <?= $message['last_attempt_datetime']
@@ -88,6 +112,11 @@ $can_edit = vars('can_edit');
                         </td>
                         <?php if ($can_edit): ?>
                             <td class="text-end text-nowrap">
+                                <?php if ($change_pending): ?>
+                                    <button type="button" class="btn btn-sm btn-warning ea-whatsapp-change-handled">
+                                        <i class="fas fa-phone me-1"></i><?= lang('whatsapp_change_handled') ?>
+                                    </button>
+                                <?php endif; ?>
                                 <?php if (!in_array($message['status'], ['pending', 'processing'], true)): ?>
                                     <button type="button" class="btn btn-sm btn-outline-primary ea-whatsapp-retry">
                                         <i class="fas fa-redo me-1"></i><?= lang('whatsapp_retry') ?>

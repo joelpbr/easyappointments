@@ -18,6 +18,32 @@
  */
 App.Http.Calendar = (function () {
     /**
+     * Tell the user that the patient got the WhatsApp reminder with the former day and time of an appointment that was
+     * just moved, so that the patient is told by other means (no second reminder is sent). Whatever moved it: the
+     * appointment window (once it has closed), dragging it or the actions of its popover.
+     *
+     * @param {Object} reminder sent_datetime and appointment_datetime of the reminder (Y-m-d H:i:s).
+     */
+    function warnOutdatedWhatsappReminder(reminder) {
+        const format = (datetime) => App.Utils.Date.format(datetime, vars('date_format'), vars('time_format'), true);
+
+        const show = () =>
+            App.Utils.Message.show(
+                lang('whatsapp_reminder_outdated_title'),
+                $('<p/>', {
+                    class: 'mb-0',
+                    text: lang('whatsapp_reminder_outdated_text')
+                        .replace('%1$s', reminder.sent_datetime ? format(reminder.sent_datetime) : '—')
+                        .replace('%2$s', format(reminder.appointment_datetime)),
+                }).prop('outerHTML'),
+            );
+
+        const $appointmentsModal = $('#appointments-modal.show');
+
+        $appointmentsModal.length ? $appointmentsModal.one('hidden.bs.modal', show) : show();
+    }
+
+    /**
      * Save Appointment
      *
      * This method stores the changes of an already registered appointment into the database, via an ajax call.
@@ -62,6 +88,10 @@ App.Http.Calendar = (function () {
                     }
 
                     return;
+                }
+
+                if (response?.whatsapp_reminder_outdated) {
+                    warnOutdatedWhatsappReminder(response.whatsapp_reminder_outdated);
                 }
 
                 if (successCallback) {

@@ -11,8 +11,9 @@
 /**
  * WhatsApp settings page.
  *
- * Saves the settings of the WhatsApp reminders and sends a test message with the saved ones. The access token and the
- * app secret are never shown: an empty field keeps the saved value.
+ * Saves the settings of the WhatsApp reminders, also the rules of when they go out (said in words under them), and
+ * sends a test message with the saved ones. The access token and the app secret are never shown: an empty field keeps
+ * the saved value.
  */
 App.Pages.WhatsappSettings = (function () {
     const $page = $('#whatsapp-settings');
@@ -46,12 +47,74 @@ App.Pages.WhatsappSettings = (function () {
     }
 
     /**
+     * Get minutes in words: "2 h", "1 h 30 min" or "45 min".
+     *
+     * @param {Number} minutes
+     *
+     * @return {String}
+     */
+    function formatMinutes(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const rest = minutes % 60;
+
+        if (!hours) {
+            return rest + ' min';
+        }
+
+        return hours + ' h' + (rest ? ' ' + rest + ' min' : '');
+    }
+
+    /**
+     * Say in words when the reminders go out, with the rules of the form.
+     */
+    function showScheduleSummary() {
+        const days = Number($('#whatsapp-days-before').val());
+        const time = $('#whatsapp-send-time').val();
+        const delay = Number($('#whatsapp-booking-delay').val());
+        const notice = Number($('#whatsapp-min-notice').val());
+
+        if (!time || [days, delay, notice].some((value) => Number.isNaN(value) || value < 0)) {
+            $('#whatsapp-schedule-summary').text('');
+
+            return;
+        }
+
+        const when =
+            days === 0
+                ? lang('whatsapp_same_day')
+                : days === 1
+                  ? lang('whatsapp_day_before')
+                  : lang('whatsapp_days_before_n').replace('%s', days);
+
+        $('#whatsapp-schedule-summary').text(
+            lang('whatsapp_schedule_summary')
+                .replace('%1$s', when)
+                .replace('%2$s', time)
+                .replace('%3$s', formatMinutes(delay))
+                .replace('%4$s', formatMinutes(notice)),
+        );
+    }
+
+    /**
      * Check that an active integration has what it needs to send.
      *
      * @return {Boolean}
      */
     function validate() {
         $page.find('.is-invalid').removeClass('is-invalid');
+
+        // The rules are checked always: they are saved whether the integration is on or not.
+        const $wrongRules = $(
+            '#whatsapp-send-time, #whatsapp-days-before, #whatsapp-booking-delay, #whatsapp-min-notice',
+        )
+            .filter((index, field) => !field.value.trim() || !field.checkValidity())
+            .addClass('is-invalid');
+
+        if ($wrongRules.length) {
+            App.Layouts.Backend.displayNotification(lang('whatsapp_rules_invalid'));
+
+            return false;
+        }
 
         if (!$('#whatsapp-enabled').prop('checked')) {
             return true;
@@ -131,6 +194,13 @@ App.Pages.WhatsappSettings = (function () {
      */
     function initialize() {
         deserialize(vars('whatsapp_settings'));
+        showScheduleSummary();
+
+        $page.on(
+            'input change',
+            '#whatsapp-send-time, #whatsapp-days-before, #whatsapp-booking-delay, #whatsapp-min-notice',
+            showScheduleSummary,
+        );
 
         $('#save-settings').on('click', save);
         $('#whatsapp-send-test').on('click', sendTest);

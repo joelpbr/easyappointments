@@ -20,7 +20,7 @@ App.Pages.WhatsappMessages = (function () {
     /**
      * Do something with a message.
      *
-     * @param {String} action retry, mark_sent, cancel or destroy.
+     * @param {String} action retry, mark_sent, cancel, change_handled or destroy.
      * @param {Number} id
      *
      * @return {jQuery.jqXHR}
@@ -180,6 +180,15 @@ App.Pages.WhatsappMessages = (function () {
             const $row = $(event.currentTarget).closest('tr');
 
             confirmRetry(Number($row.data('id')), String($row.data('status')));
+        });
+
+        // The patient was told about the change of the appointment by other means.
+        $page.on('click', '.ea-whatsapp-change-handled', (event) => {
+            const $button = $(event.currentTarget).prop('disabled', true);
+
+            request('change_handled', Number($button.closest('tr').data('id')))
+                .done(reload)
+                .fail(() => $button.prop('disabled', false));
         });
 
         $page.on('click', '.ea-whatsapp-delete', (event) => {

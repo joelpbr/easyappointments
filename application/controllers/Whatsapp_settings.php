@@ -31,6 +31,18 @@ class Whatsapp_settings extends EA_Controller
         'whatsapp_template_language',
     ];
 
+    /**
+     * Rules of the sending (see Whatsapp_reminders::rules()), by setting name: they are saved checked, a wrong value
+     * taking its default and a number out of its limits the nearest limit.
+     */
+    private const RULE_FIELDS = [
+        'whatsapp_send_time' => 'send_time',
+        'whatsapp_days_before' => 'days_before',
+        'whatsapp_booking_delay' => 'booking_delay',
+        'whatsapp_min_notice' => 'min_notice',
+        'whatsapp_template_says_tomorrow' => 'template_says_tomorrow',
+    ];
+
     private const SECRET_FIELDS = ['whatsapp_access_token', 'whatsapp_app_secret'];
 
     /**
@@ -68,6 +80,12 @@ class Whatsapp_settings extends EA_Controller
             $settings[] = ['name' => $field, 'value' => setting($field, '')];
         }
 
+        $rules = $this->whatsapp_reminders->rules();
+
+        foreach (self::RULE_FIELDS as $field => $rule) {
+            $settings[] = ['name' => $field, 'value' => is_bool($rules[$rule]) ? (int) $rules[$rule] : $rules[$rule]];
+        }
+
         script_vars([
             'user_id' => $user_id,
             'role_slug' => session('role_slug'),
@@ -100,6 +118,8 @@ class Whatsapp_settings extends EA_Controller
 
             check('whatsapp_settings', 'array|null');
 
+            $rules = [];
+
             foreach (request('whatsapp_settings', []) as $item) {
                 $name = (string) ($item['name'] ?? '');
                 $value = trim((string) ($item['value'] ?? ''));
@@ -108,6 +128,17 @@ class Whatsapp_settings extends EA_Controller
                     setting([$name => $value]);
                 } elseif (in_array($name, self::SECRET_FIELDS, true) && $value !== '') {
                     setting([$name => $value]);
+                } elseif (isset(self::RULE_FIELDS[$name])) {
+                    $rules[self::RULE_FIELDS[$name]] = $value;
+                }
+            }
+
+            // Only the rules sent are saved, checked.
+            $checked = Whatsapp_reminders::normalize_rules($rules);
+
+            foreach (self::RULE_FIELDS as $field => $rule) {
+                if (array_key_exists($rule, $rules)) {
+                    setting([$field => is_bool($checked[$rule]) ? (string) (int) $checked[$rule] : (string) $checked[$rule]]);
                 }
             }
 

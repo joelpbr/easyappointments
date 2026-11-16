@@ -66,6 +66,7 @@ class Whatsapp_messages extends EA_Controller
             'messages' => $this->whatsapp_reminders->messages($only_problems),
             'only_problems' => $only_problems,
             'problem_count' => $this->whatsapp_reminders->problem_count(),
+            'change_count' => $this->whatsapp_reminders->change_pending_count(),
             'can_edit' => can('edit', PRIV_APPOINTMENTS),
         ]);
 
@@ -95,6 +96,45 @@ class Whatsapp_messages extends EA_Controller
     public function mark_sent(): void
     {
         $this->act(fn(int $id) => $this->whatsapp_reminders->mark_sent($id));
+    }
+
+    /**
+     * Say that the patient was told about the change of the appointment made after the message went out.
+     */
+    public function change_handled(): void
+    {
+        $this->act(fn(int $id) => $this->whatsapp_reminders->mark_change_handled($id));
+    }
+
+    /**
+     * Get the reminder of an appointment, for the appointment window (see Whatsapp_reminders::appointment_reminder()).
+     */
+    public function appointment(): void
+    {
+        try {
+            method('get');
+
+            if (cannot('view', PRIV_APPOINTMENTS)) {
+                abort(403, 'Forbidden');
+            }
+
+            check('id', 'numeric');
+
+            $appointment_id = (int) request('id');
+
+            $provider_id = $this->db->select('id_users_provider')
+                ->get_where('appointments', ['id' => $appointment_id])
+                ->row('id_users_provider');
+
+            // Only for those who can see the appointment.
+            if ($provider_id && !can_manage_provider((int) $provider_id)) {
+                abort(403, 'Forbidden');
+            }
+
+            json_response($this->whatsapp_reminders->appointment_reminder($appointment_id));
+        } catch (Throwable $e) {
+            json_exception($e);
+        }
     }
 
     /**

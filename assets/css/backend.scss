@@ -303,6 +303,23 @@ body .modal.full-screen .modal-push {
     }
 }
 
+#appointments-modal .ea-whatsapp-reminder-group {
+    min-width: 0;
+}
+
+// When the reminder will go out or how it went, under the checkbox and lined up with its text.
+#appointments-modal .ea-whatsapp-reminder-status {
+    margin: -8px 0 0 1.75rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.78rem;
+    line-height: 1.3;
+
+    &.ea-whatsapp-reminder-warning {
+        color: var(--bs-warning-text-emphasis);
+        font-weight: 600;
+    }
+}
+
 // The data of a chosen patient is protected until "Edit data" is clicked (see appointments_modal.js).
 #appointments-modal fieldset :is(input, textarea)[readonly],
 #appointments-modal fieldset select:disabled {
@@ -2852,7 +2869,7 @@ $ea-day-separator: 3px solid #6c757d;
             margin: 0;
         }
 
-        .ea-whatsapp-reminder {
+        .ea-whatsapp-reminder-group {
             flex: 1 1 100%;
         }
 

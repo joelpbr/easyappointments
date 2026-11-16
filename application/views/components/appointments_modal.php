@@ -334,13 +334,17 @@
             </div>
 
             <div class="modal-footer">
-                <!-- Reminder the day before at 10:00; on by default. -->
-                <label class="ea-whatsapp-reminder form-check me-auto"
-                       for="send-whatsapp-reminder" title="<?= e(lang('send_whatsapp_reminder')) ?>">
-                    <input class="form-check-input" type="checkbox" id="send-whatsapp-reminder"
-                           aria-label="<?= e(lang('send_whatsapp_reminder')) ?>" checked>
-                    <span><?= lang('send_whatsapp_reminder') ?></span>
-                </label>
+                <!-- WhatsApp reminder, on by default (when it goes out: its settings); under it, for an appointment
+                     that exists, when it will go out or how it went (appointments_modal.js). -->
+                <div class="ea-whatsapp-reminder-group me-auto">
+                    <label class="ea-whatsapp-reminder form-check"
+                           for="send-whatsapp-reminder" title="<?= e(lang('send_whatsapp_reminder')) ?>">
+                        <input class="form-check-input" type="checkbox" id="send-whatsapp-reminder"
+                               aria-label="<?= e(lang('send_whatsapp_reminder')) ?>" checked>
+                        <span><?= lang('send_whatsapp_reminder') ?></span>
+                    </label>
+                    <div id="whatsapp-reminder-status" class="ea-whatsapp-reminder-status" hidden></div>
+                </div>
 
                 <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
                     <?= lang('close') ?>

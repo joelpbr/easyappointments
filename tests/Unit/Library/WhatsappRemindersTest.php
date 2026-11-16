@@ -20,70 +20,159 @@ class WhatsappRemindersTest extends TestCase
         return new DateTimeImmutable($datetime, new DateTimeZone('Europe/Madrid'));
     }
 
-    public function testFromTenTheAppointmentsOfTheNextDayAreDue(): void
+    /**
+     * The rules of the protocol of the clinic: the day before at 10:00, 30 minutes after the creation at the soonest,
+     * nothing with less than 2 hours left.
+     */
+    private static function rules(array $changes = []): array
     {
-        $this->assertSame('2026-11-17', Whatsapp_reminders::due_date(self::madrid('2026-11-16 10:00:00')));
-        $this->assertSame('2026-11-17', Whatsapp_reminders::due_date(self::madrid('2026-11-16 19:59:00')));
+        return $changes + Whatsapp_reminders::RULE_DEFAULTS;
     }
 
-    public function testNothingIsDueBeforeTenNorAfterTheWindow(): void
+    /**
+     * Get when the reminder goes out, or null when it is never sent.
+     */
+    private static function sent_at(string $created, string $start, array $rules = []): ?string
     {
-        $this->assertNull(Whatsapp_reminders::due_date(self::madrid('2026-11-16 09:59:00')));
-        $this->assertNull(Whatsapp_reminders::due_date(self::madrid('2026-11-16 20:00:00')));
+        $rules = self::rules($rules);
+        $moment = Whatsapp_reminders::send_moment($start, self::madrid($created), $rules);
+
+        return $moment < Whatsapp_reminders::send_deadline($start, $rules) ? $moment->format('Y-m-d H:i') : null;
     }
 
-    public function testFridayRemindsSaturdayAndSundayRemindsMonday(): void
+    public function testTheExamplesOfTheProtocolOfTheClinic(): void
     {
-        $this->assertSame('2026-11-21', Whatsapp_reminders::due_date(self::madrid('2026-11-20 10:15:00')));
-        $this->assertSame('2026-11-23', Whatsapp_reminders::due_date(self::madrid('2026-11-22 10:15:00')));
+        // Monday 16/11/2026 to Monday 23/11/2026.
+        $this->assertSame('2026-11-16 10:00', self::sent_at('2026-11-16 09:00', '2026-11-17 09:00:00'));
+        $this->assertSame('2026-11-16 10:15', self::sent_at('2026-11-16 09:45', '2026-11-17 09:00:00'));
+        $this->assertSame('2026-11-16 11:30', self::sent_at('2026-11-16 11:00', '2026-11-17 09:00:00'));
+        $this->assertSame('2026-11-16 19:00', self::sent_at('2026-11-16 18:30', '2026-11-17 09:00:00'));
+        $this->assertSame('2026-11-16 19:30', self::sent_at('2026-11-16 19:00', '2026-11-17 09:00:00'));
+        $this->assertSame('2026-11-19 10:00', self::sent_at('2026-11-16 09:00', '2026-11-20 16:00:00'));
+        $this->assertSame('2026-11-22 10:00', self::sent_at('2026-11-20 17:00', '2026-11-23 09:00:00'));
+        $this->assertSame('2026-11-22 18:30', self::sent_at('2026-11-22 18:00', '2026-11-23 09:00:00'));
+        $this->assertSame('2026-11-17 09:30', self::sent_at('2026-11-17 09:00', '2026-11-17 18:00:00'));
+        $this->assertNull(self::sent_at('2026-11-17 17:45', '2026-11-17 18:00:00'));
     }
 
-    public function testTheTenOClockIsTheOneOfMadridWhateverTheZoneOfTheServer(): void
+    public function testNothingIsSentWithLessThanTheMinimumNoticeLeft(): void
     {
-        // 09:00 UTC is 10:00 in Madrid in winter and 11:00 in summer; 08:30 UTC in summer is 10:30 in Madrid.
+        // Booked at 16:30 for 18:00: it would go out at 17:00, with one hour left.
+        $this->assertNull(self::sent_at('2026-11-17 16:30', '2026-11-17 18:00:00'));
+        $this->assertSame('2026-11-17 15:30', self::sent_at('2026-11-17 15:00', '2026-11-17 18:00:00'));
+
+        // With the minimum notice turned off, the formula alone decides.
         $this->assertSame(
-            '2026-01-16',
-            Whatsapp_reminders::due_date(new DateTimeImmutable('2026-01-15 09:00:00', new DateTimeZone('UTC'))),
+            '2026-11-17 17:00',
+            self::sent_at('2026-11-17 16:30', '2026-11-17 18:00:00', ['min_notice' => 0]),
         );
+    }
+
+    public function testTheRulesComeFromTheSettings(): void
+    {
+        $rules = ['send_time' => '18:30', 'days_before' => 2, 'booking_delay' => 60];
+
+        $this->assertSame('2026-11-14 18:30', self::sent_at('2026-11-10 09:00', '2026-11-16 09:00:00', $rules));
+        $this->assertSame('2026-11-15 10:00', self::sent_at('2026-11-15 09:00', '2026-11-16 12:00:00', $rules));
         $this->assertSame(
-            '2026-07-16',
-            Whatsapp_reminders::due_date(new DateTimeImmutable('2026-07-15 08:30:00', new DateTimeZone('UTC'))),
+            '2026-11-16 08:00',
+            self::sent_at('2026-11-15 09:00', '2026-11-16 12:00:00', ['days_before' => 0, 'send_time' => '08:00']),
         );
-        $this->assertNull(
-            Whatsapp_reminders::due_date(new DateTimeImmutable('2026-01-15 08:30:00', new DateTimeZone('UTC'))),
+    }
+
+    public function testAnAppointmentWhoseCreationIsNotKnownGetsTheUsualMoment(): void
+    {
+        $this->assertSame(
+            '2026-11-16 10:00',
+            Whatsapp_reminders::send_moment('2026-11-17 09:00:00', null, self::rules())->format('Y-m-d H:i'),
+        );
+    }
+
+    public function testAReminderIsDueFromItsMomentUntilTheMinimumNotice(): void
+    {
+        $created = self::madrid('2026-11-10 12:00');
+        $rules = self::rules();
+
+        $this->assertFalse(Whatsapp_reminders::is_due('2026-11-17 16:30:00', $created, self::madrid('2026-11-16 09:59'), $rules));
+        $this->assertTrue(Whatsapp_reminders::is_due('2026-11-17 16:30:00', $created, self::madrid('2026-11-16 10:00'), $rules));
+
+        // A server that was off at 10:00 still sends it when it is back, while there is time.
+        $this->assertTrue(Whatsapp_reminders::is_due('2026-11-17 16:30:00', $created, self::madrid('2026-11-17 14:29'), $rules));
+        $this->assertFalse(Whatsapp_reminders::is_due('2026-11-17 16:30:00', $created, self::madrid('2026-11-17 14:30'), $rules));
+    }
+
+    public function testTheTimesAreTheOnesOfMadridWhateverTheZoneOfTheServer(): void
+    {
+        $created = self::madrid('2026-01-01 12:00');
+        $rules = self::rules();
+
+        // 09:00 UTC is 10:00 in Madrid in winter; 08:30 UTC in summer is 10:30 in Madrid.
+        $this->assertTrue(
+            Whatsapp_reminders::is_due('2026-01-16 12:00:00', $created, new DateTimeImmutable('2026-01-15 09:00', new DateTimeZone('UTC')), $rules),
+        );
+        $this->assertFalse(
+            Whatsapp_reminders::is_due('2026-01-16 12:00:00', $created, new DateTimeImmutable('2026-01-15 08:30', new DateTimeZone('UTC')), $rules),
+        );
+        $this->assertTrue(
+            Whatsapp_reminders::is_due('2026-07-16 12:00:00', $created, new DateTimeImmutable('2026-07-15 08:30', new DateTimeZone('UTC')), $rules),
         );
     }
 
     public function testTheChangesOfTimeAndOfYearAreFollowed(): void
     {
         // The night of the change to summer time (29/03/2026) and to winter time (25/10/2026).
-        $this->assertSame('2026-03-29', Whatsapp_reminders::due_date(self::madrid('2026-03-28 10:00:00')));
-        $this->assertSame('2026-10-26', Whatsapp_reminders::due_date(self::madrid('2026-10-25 10:00:00')));
-        $this->assertSame('2027-01-01', Whatsapp_reminders::due_date(self::madrid('2026-12-31 10:00:00')));
+        $this->assertSame('2026-03-28 10:00', self::sent_at('2026-03-01 10:00', '2026-03-29 09:00:00'));
+        $this->assertSame('2026-10-25 10:00', self::sent_at('2026-10-01 10:00', '2026-10-26 09:00:00'));
+        $this->assertSame('2026-12-31 10:00', self::sent_at('2026-12-01 10:00', '2027-01-01 12:00:00'));
     }
 
-    public function testTheWindowOfADayClosesAtEightInTheEvening(): void
+    public function testTheCreationIsReadInTheZoneOfTheApplication(): void
     {
-        $this->assertSame('2026-11-15', Whatsapp_reminders::last_closed_day(self::madrid('2026-11-16 19:59:00')));
-        $this->assertSame('2026-11-16', Whatsapp_reminders::last_closed_day(self::madrid('2026-11-16 20:00:00')));
-    }
+        $zone = date_default_timezone_get();
 
-    public function testAReminderIsScheduledTheDayBeforeAtTen(): void
-    {
-        $this->assertSame('2026-11-16 10:00:00', Whatsapp_reminders::scheduled_datetime('2026-11-17 16:30:00'));
-        $this->assertSame('2026-12-31 10:00:00', Whatsapp_reminders::scheduled_datetime('2027-01-01 09:00:00'));
-    }
+        date_default_timezone_set('UTC');
 
-    public function testTheKeyIsOnePerAppointmentAndDay(): void
-    {
+        try {
+            $created = Whatsapp_reminders::created_moment(['create_datetime' => '2026-11-16 08:00:00']);
+        } finally {
+            date_default_timezone_set($zone);
+        }
+
         $this->assertSame(
-            Whatsapp_reminders::idempotency_key(7, '2026-11-17 09:00:00'),
-            Whatsapp_reminders::idempotency_key(7, '2026-11-17 16:30:00'),
+            '2026-11-16 09:00',
+            $created->setTimezone(new DateTimeZone('Europe/Madrid'))->format('Y-m-d H:i'),
         );
-        $this->assertNotSame(
-            Whatsapp_reminders::idempotency_key(7, '2026-11-17 09:00:00'),
-            Whatsapp_reminders::idempotency_key(7, '2026-11-18 09:00:00'),
-        );
+        $this->assertNull(Whatsapp_reminders::created_moment(['create_datetime' => null]));
+    }
+
+    public function testWrongRulesTakeTheirDefaultOrTheirLimit(): void
+    {
+        $rules = Whatsapp_reminders::normalize_rules([
+            'send_time' => '9:5',
+            'days_before' => '30',
+            'booking_delay' => '-5',
+            'min_notice' => 'abc',
+            'template_says_tomorrow' => '1',
+        ]);
+
+        $this->assertSame('10:00', $rules['send_time']);
+        $this->assertSame(7, $rules['days_before']);
+        $this->assertSame(30, $rules['booking_delay']);
+        $this->assertSame(120, $rules['min_notice']);
+        $this->assertTrue($rules['template_says_tomorrow']);
+
+        $rules = Whatsapp_reminders::normalize_rules(['send_time' => '9:05', 'days_before' => '0', 'min_notice' => '0']);
+
+        $this->assertSame('09:05', $rules['send_time']);
+        $this->assertSame(0, $rules['days_before']);
+        $this->assertSame(0, $rules['min_notice']);
+        $this->assertFalse($rules['template_says_tomorrow']);
+    }
+
+    public function testTheKeyIsOnePerAppointmentWhateverItsDay(): void
+    {
+        $this->assertSame('reminder:7', Whatsapp_reminders::idempotency_key(7));
+        $this->assertNotSame(Whatsapp_reminders::idempotency_key(7), Whatsapp_reminders::idempotency_key(8));
     }
 
     public function testTheNumberIsSentWithItsCountryCodeAndWithoutPlus(): void
@@ -100,14 +189,15 @@ class WhatsappRemindersTest extends TestCase
         $this->assertNull(Whatsapp_reminders::recipient('12345'));
     }
 
-    public function testTheTemplateGetsNameDateAndTimeOnly(): void
+    public function testTheTemplateGetsNameDayAndTimeOnly(): void
     {
         $parameters = Whatsapp_reminders::template_parameters(
             ['start_datetime' => '2026-11-17 09:05:00', 'notes' => 'Private note'],
             ['first_name' => 'Pau', 'last_name' => 'Prat'],
+            self::madrid('2026-11-16 10:00'),
         );
 
-        $this->assertSame(['Pau', 'dimarts 17 de novembre', '09:05'], $parameters);
+        $this->assertSame(['Pau', 'demà, dimarts 17 de novembre', '09:05'], $parameters);
 
         $payload = Whatsapp_reminders::message_payload('34600123456', 'recordatori_cita', 'ca', $parameters);
 
@@ -116,23 +206,45 @@ class WhatsappRemindersTest extends TestCase
         $this->assertSame('recordatori_cita', $payload['template']['name']);
         $this->assertSame('ca', $payload['template']['language']['code']);
         $this->assertSame(
-            ['Pau', 'dimarts 17 de novembre', '09:05'],
+            ['Pau', 'demà, dimarts 17 de novembre', '09:05'],
             array_column($payload['template']['components'][0]['parameters'], 'text'),
         );
     }
 
+    public function testTheDaySaysTodayTomorrowOrTheDate(): void
+    {
+        $now = self::madrid('2026-11-17 09:30');
+
+        $this->assertSame('avui, dimarts 17 de novembre', Whatsapp_reminders::day_text('2026-11-17 18:00:00', $now));
+        $this->assertSame('demà, dimecres 18 de novembre', Whatsapp_reminders::day_text('2026-11-18 09:00:00', $now));
+        $this->assertSame('el dijous 19 de novembre', Whatsapp_reminders::day_text('2026-11-19 09:00:00', $now));
+
+        // Late in the evening in UTC it is already the next day in Madrid.
+        $this->assertSame(
+            'avui, dimecres 18 de novembre',
+            Whatsapp_reminders::day_text('2026-11-18 09:00:00', new DateTimeImmutable('2026-11-17 23:30', new DateTimeZone('UTC'))),
+        );
+    }
+
+    public function testATemplateThatSaysTomorrowGetsTheDateAlone(): void
+    {
+        $parameters = Whatsapp_reminders::template_parameters(
+            ['start_datetime' => '2026-11-17 09:05:00'],
+            ['first_name' => 'Pau'],
+            self::madrid('2026-11-16 10:00'),
+            true,
+        );
+
+        $this->assertSame(['Pau', 'dimarts 17 de novembre', '09:05'], $parameters);
+    }
+
     public function testTheDateOfTheTemplateIsInCatalan(): void
     {
-        $date = fn(string $datetime): string => Whatsapp_reminders::template_parameters(
-            ['start_datetime' => $datetime],
-            ['first_name' => ''],
-        )[1];
-
-        $this->assertSame("dijous 15 d'abril", $date('2027-04-15 11:45:00'));
-        $this->assertSame("diumenge 1 d'agost", $date('2027-08-01 10:00:00'));
-        $this->assertSame("dissabte 9 d'octubre", $date('2027-10-09 10:00:00'));
-        $this->assertSame('divendres 5 de març', $date('2027-03-05 10:00:00'));
-        $this->assertSame('dissabte 16 de gener', $date('2027-01-16 09:00:00'));
+        $this->assertSame("dijous 15 d'abril", Whatsapp_reminders::date_text('2027-04-15 11:45:00'));
+        $this->assertSame("diumenge 1 d'agost", Whatsapp_reminders::date_text('2027-08-01 10:00:00'));
+        $this->assertSame("dissabte 9 d'octubre", Whatsapp_reminders::date_text('2027-10-09 10:00:00'));
+        $this->assertSame('divendres 5 de març', Whatsapp_reminders::date_text('2027-03-05 10:00:00'));
+        $this->assertSame('dissabte 16 de gener', Whatsapp_reminders::date_text('2027-01-16 09:00:00'));
         $this->assertSame('-', Whatsapp_reminders::template_parameters(['start_datetime' => '2027-03-05'], [])[0]);
     }
 
@@ -153,18 +265,23 @@ class WhatsappRemindersTest extends TestCase
         $this->assertNull(Whatsapp_reminders::error_key(null));
     }
 
-    public function testAReminderIsSentAgainByHandOnlyTheDayBefore(): void
+    public function testATemplateThatSaysTomorrowOnlyFitsTheDayBefore(): void
     {
-        $now = new DateTimeImmutable('2026-11-15 18:30:00', new DateTimeZone('Europe/Madrid'));
+        $now = self::madrid('2026-11-15 18:30');
+        $old = self::rules(['template_says_tomorrow' => true]);
 
-        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-16 09:00:00', $now));
-        $this->assertSame('whatsapp_not_tomorrow', Whatsapp_reminders::retry_blocker('2026-11-15 19:00:00', $now));
-        $this->assertSame('whatsapp_not_tomorrow', Whatsapp_reminders::retry_blocker('2026-11-17 09:00:00', $now));
+        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-16 09:00:00', $now, $old));
+        $this->assertSame('whatsapp_not_tomorrow', Whatsapp_reminders::retry_blocker('2026-11-15 19:00:00', $now, $old));
+        $this->assertSame('whatsapp_not_tomorrow', Whatsapp_reminders::retry_blocker('2026-11-17 09:00:00', $now, $old));
 
         // The day of the clinic, whatever the time zone of the server: 23:30 in UTC is already the next day in Madrid.
         $utc = new DateTimeImmutable('2026-11-15 23:30:00', new DateTimeZone('UTC'));
 
-        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-17 09:00:00', $utc));
+        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-17 09:00:00', $utc, $old));
+
+        // The template without "demà" fits any day.
+        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-15 19:00:00', $now, self::rules()));
+        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-19 09:00:00', $now, self::rules()));
     }
 
     public function testTheStatusOnlyMovesForward(): void

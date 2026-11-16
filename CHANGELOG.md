@@ -56,6 +56,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- Every appointment gets exactly one WhatsApp reminder, the day before at 10:00 or 30 minutes after it was booked when that is later, never with less than 2 hours left and also on weekends and holidays; the four values are set in the WhatsApp settings, an appointment moved before the reminder gets it for its new day, the reminder says "avui" or "demà" itself, the appointment form shows when it will go out or how it went, and moving an appointment whose reminder already went out warns that the patient must be told by phone and lists it in the WhatsApp messages until marked as told
 - On phones, the details of an appointment opened from the full calendar slide up from the bottom of the screen with the patient's name, the delete and close buttons and every action in view and easy to touch (touching outside closes them), and the foot of the appointment form shows the WhatsApp reminder on its own line with "Close" and "Save" side by side
 - Hiding the amounts of money is "Hide balances" in the user menu, above "Booking", instead of an eye in the header, and the X-ray switch of the foot diagrams shows two swapping arrows that turn at each switch
 - Editing an appointment greys out "Save" while there is nothing to save, and closing the appointment form with unsaved changes asks whether to save them, close without saving or keep editing

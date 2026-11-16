@@ -226,17 +226,18 @@ class Console extends EA_Controller
     }
 
     /**
-     * Send the WhatsApp reminders that are due: the day before each appointment, from 10:00 (Europe/Madrid).
+     * Send the WhatsApp reminders that are due, following the rules of their settings (by default the day before each
+     * appointment at 10:00, Europe/Madrid, or 30 minutes after it was created when that is later).
      *
-     * Use this method in a cronjob that runs every few minutes: a run outside the sending window does nothing, and a
-     * run that repeats never sends a reminder twice.
+     * Use this method in a cronjob that runs every few minutes (the reminders go out at the first run after their
+     * moment): a run when nothing is due does nothing, and a run that repeats never sends a reminder twice.
      *
      * Usage:
      *
      * php index.php console whatsapp
      *
      * php index.php console whatsapp 2026-11-16T10:05 (as if it were that moment in Europe/Madrid: to recover a
-     * missed run by hand or to try it; the window and the duplicate control still apply)
+     * missed run by hand or to try it; the rules and the duplicate control still apply)
      *
      * @param string $at Optional moment, Y-m-dTH:i.
      */
@@ -258,7 +259,7 @@ class Console extends EA_Controller
 
         $report = $this->whatsapp_reminders->run($now ?: null);
 
-        if ($report['due_date'] || $report['review']) {
+        if (array_filter($report)) {
             echo 'WhatsApp reminders ' . json_encode($report) . PHP_EOL;
         }
     }

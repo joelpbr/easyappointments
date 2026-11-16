@@ -542,8 +542,19 @@ class Calendar extends EA_Controller
 
             $this->webhooks_client->trigger(WEBHOOK_APPOINTMENT_SAVE, $appointment);
 
+            // Moved after its WhatsApp reminder went out: the reminder is marked and the user is told, so that the
+            // patient is told by other means (no second reminder is sent).
+            $whatsapp_reminder_outdated = null;
+
+            if ($manage_mode && !$frees_slot) {
+                $this->load->library('whatsapp_reminders');
+
+                $whatsapp_reminder_outdated = $this->whatsapp_reminders->flag_change((int) $appointment['id']);
+            }
+
             json_response([
                 'success' => true,
+                'whatsapp_reminder_outdated' => $whatsapp_reminder_outdated,
             ]);
         } catch (Throwable $e) {
             json_exception($e);

@@ -54,6 +54,9 @@ App.Components.AppointmentsModal = (function () {
     let newPatientConfirmed = false;
     let usualProviderId = null;
 
+    // The WhatsApp reminder of the appointment being edited (see showWhatsappReminder()).
+    let whatsappReminder = null;
+
     /**
      * Show the duration of the start and end currently selected.
      */
@@ -910,6 +913,70 @@ App.Components.AppointmentsModal = (function () {
     }
 
     /**
+     * Show, under the WhatsApp checkbox, when the reminder of the appointment will go out or how it went
+     * (Whatsapp_reminders::appointment_reminder()). A new appointment shows nothing.
+     *
+     * @param {Object|null} reminder
+     */
+    function renderWhatsappReminder(reminder) {
+        const $status = $('#whatsapp-reminder-status').removeClass('ea-whatsapp-reminder-warning');
+        const format = (datetime) => App.Utils.Date.format(datetime, vars('date_format'), vars('time_format'), true);
+        const state = reminder?.state;
+        let text = '';
+
+        if (state === 'sent') {
+            const sent = reminder.sent_datetime ? format(reminder.sent_datetime) : '—';
+
+            text =
+                lang('whatsapp_reminder_line_sent').replace('%s', sent) +
+                ' · ' +
+                lang('whatsapp_state_' + reminder.status);
+
+            // Sent with the former day and time, and the patient not told yet.
+            if (reminder.change_to_datetime && !reminder.change_handled) {
+                const former = format(reminder.appointment_datetime);
+
+                text += '. ' + lang('whatsapp_reminder_line_changed').replace('%s', former);
+                $status.addClass('ea-whatsapp-reminder-warning');
+            }
+        } else if (!$sendWhatsappReminder.prop('checked')) {
+            text = '';
+        } else if (state === 'scheduled') {
+            text = lang('whatsapp_reminder_line_scheduled').replace('%s', format(reminder.datetime));
+        } else if (state === 'too_late') {
+            text = lang('whatsapp_reminder_line_too_late');
+        } else if (state === 'not_tomorrow') {
+            text = lang('whatsapp_reminder_line_not_tomorrow');
+        } else if (['pending', 'failed', 'review', 'cancelled'].includes(state)) {
+            text = lang('whatsapp_reminder_line_status').replace('%s', lang('whatsapp_state_' + state));
+        }
+
+        $status.text(text).prop('hidden', !text);
+    }
+
+    /**
+     * Get the WhatsApp reminder of the appointment being edited and show it.
+     */
+    function showWhatsappReminder() {
+        const appointmentId = $appointmentId.val();
+
+        whatsappReminder = null;
+        renderWhatsappReminder(null);
+
+        if (!appointmentId) {
+            return;
+        }
+
+        $.getJSON(App.Utils.Url.siteUrl('whatsapp_messages/appointment'), {id: appointmentId}).done((reminder) => {
+            // Another appointment may have been opened meanwhile.
+            if ($appointmentId.val() === String(appointmentId)) {
+                whatsappReminder = reminder;
+                renderWhatsappReminder(reminder);
+            }
+        });
+    }
+
+    /**
      * Initialize the module.
      */
     function initialize() {
@@ -942,7 +1009,10 @@ App.Components.AppointmentsModal = (function () {
             }
 
             updatePatientState();
+            showWhatsappReminder();
         });
+
+        $sendWhatsappReminder.on('change', () => renderWhatsappReminder(whatsappReminder));
 
         patientSearch = App.Components.PatientSearch.attach({
             $firstName,
