@@ -809,6 +809,10 @@ App.Components.AppointmentsModal = (function () {
     function initialize() {
         addEventListeners();
 
+        // The treatment, provider and status lists look like the dropdowns of the calendar bar, with the treatment
+        // colours; the selects stay underneath (App.Utils.UI.initializeSelectDropdown).
+        App.Utils.UI.initializeSelectDropdown($selectService.add($selectProvider).add($appointmentStatus));
+
         // The status is only chosen when editing: a new appointment starts with the first one (scheduled). Whether it
         // is the first visit of the patient is worked out when it is saved.
         $appointmentsModal.on('show.bs.modal', () => {

@@ -753,6 +753,9 @@ App.Pages.Customers = (function () {
      * Initialize the module.
      */
     function initialize() {
+        // The fiscal document type looks like the other dropdowns; the select stays underneath.
+        App.Utils.UI.initializeSelectDropdown($fiscalDocumentType);
+
         App.Pages.Customers.resetForm();
         App.Pages.Customers.addEventListeners();
         App.Pages.Customers.filter('');

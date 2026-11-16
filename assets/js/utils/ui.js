@@ -562,30 +562,98 @@ window.App.Utils.UI = (function () {
      * Show a select as a dropdown like the provider filter of the calendar: a button with the chosen option and a list
      * with a round check per option (and a header per option group).
      *
-     * The select stays in the page, hidden, so its value and change event work as before: choosing an option sets it
-     * and triggers "change". The button follows the changes of the select.
+     * The select stays in the page, hidden, so its value, its change event and the form validation work as before:
+     * choosing an option sets it and triggers "change". Hidden options are left out, disabled ones cannot be chosen
+     * and the colours of an option (style background and text colour) are kept. The button follows the select: its
+     * chosen option, whether it is disabled and whether it is marked invalid, also when the code changes the select
+     * without a change event.
      *
      * @param {jQuery} $select
      */
     function initializeSelectDropdown($select) {
+        $select.each((index, select) => {
+            if (select.closest('.ea-select-dropdown')) {
+                return;
+            }
+
+            createSelectDropdown($(select));
+        });
+    }
+
+    /**
+     * Set the text of a dropdown button, with what comes before ": " (e.g. "Provider: " in "Provider: all") in its own
+     * element, so that narrow toolbars can leave it out and show the value only.
+     *
+     * @param {HTMLElement} element
+     * @param {String} text
+     */
+    function setDropdownLabel(element, text) {
+        const index = text.indexOf(': ');
+
+        if (index < 0) {
+            element.textContent = text;
+            return;
+        }
+
+        const prefix = document.createElement('span');
+
+        prefix.className = 'ea-dropdown-label-prefix';
+        prefix.textContent = text.slice(0, index + 2);
+        element.replaceChildren(prefix, document.createTextNode(text.slice(index + 2)));
+    }
+
+    // The dropdowns made from a select, kept in step with their select (see syncSelectDropdowns()).
+    const selectDropdowns = [];
+
+    /**
+     * Keep every dropdown made from a select in step with it while it is on screen: the code often sets a select with
+     * val() or prop('selected') without a change event.
+     */
+    function syncSelectDropdowns() {
+        selectDropdowns.forEach((dropdown) => {
+            if (dropdown.button.isConnected && dropdown.button.offsetParent) {
+                dropdown.sync();
+            }
+        });
+    }
+
+    setInterval(syncSelectDropdowns, 250);
+
+    /**
+     * Make the dropdown of one select (see initializeSelectDropdown()).
+     *
+     * @param {jQuery} $select
+     */
+    function createSelectDropdown($select) {
+        const select = $select[0];
         const $group = $('<div/>', {class: 'dropdown ea-select-dropdown'}).insertAfter($select);
         const name = 'ea-select-' + ($select.attr('id') || Math.random().toString(36).slice(2));
 
         $select.prop('hidden', true).appendTo($group);
 
+        // The form classes of the select, but not "required": the validation reads the fields that have it.
+        const classes = ['form-select', 'text-start'].concat(
+            ['ea-simple-filter', 'form-select-sm', 'form-select-lg'].filter((className) => $select.hasClass(className)),
+        );
+
         const $button = $('<button/>', {
             type: 'button',
-            class: 'form-select text-start ' + ($select.hasClass('ea-simple-filter') ? 'ea-simple-filter' : ''),
+            class: classes.join(' '),
             'data-bs-toggle': 'dropdown',
             'aria-expanded': 'false',
-            'aria-label': $select.attr('aria-label') || '',
+            'aria-label': $select.attr('aria-label') || $('label[for="' + select.id + '"]').text().trim() || '',
         }).appendTo($group);
 
         const $menu = $('<div/>', {class: 'dropdown-menu ea-select-dropdown-menu'}).appendTo($group);
 
         const option = (element) =>
             $('<label/>', {
-                class: 'dropdown-item d-flex align-items-center gap-2',
+                class: 'dropdown-item d-flex align-items-center gap-2' + (element.disabled ? ' disabled' : ''),
+                // The colours of the option, e.g. the colour of each treatment.
+                css: {
+                    backgroundColor: element.style.backgroundColor || '',
+                    color: element.style.color || '',
+                },
                 html: [
                     $('<input/>', {
                         type: 'radio',
@@ -593,12 +661,23 @@ window.App.Utils.UI = (function () {
                         class: 'form-check-input m-0',
                         value: element.value,
                         checked: element.selected,
+                        disabled: element.disabled,
                     }),
                     $('<span/>', {text: element.text}),
                 ],
             });
 
-        const updateLabel = () => $button.text($select.find('option:selected').text());
+        const sync = () => {
+            const text = select.selectedIndex >= 0 ? select.options[select.selectedIndex].text : '';
+            const disabled = select.disabled || Boolean(select.closest('fieldset:disabled'));
+            const invalid = select.classList.contains('is-invalid');
+
+            if ($button.text() !== text) {
+                setDropdownLabel($button[0], text);
+            }
+
+            $button.prop('disabled', disabled).toggleClass('is-invalid', invalid);
+        };
 
         // The options are read when the list opens, so that options added later are shown too.
         $group.on('show.bs.dropdown', () => {
@@ -606,24 +685,35 @@ window.App.Utils.UI = (function () {
 
             $select.children().each((index, child) => {
                 if (child.tagName === 'OPTGROUP') {
-                    $('<h6/>', {class: 'dropdown-header', text: child.label}).appendTo($menu);
-                    $(child)
+                    const options = $(child)
                         .children('option')
-                        .each((childIndex, element) => $menu.append(option(element)));
-                } else {
+                        .filter((childIndex, element) => !element.hidden);
+
+                    if (options.length) {
+                        $('<h6/>', {class: 'dropdown-header', text: child.label}).appendTo($menu);
+                        options.each((childIndex, element) => $menu.append(option(element)));
+                    }
+                } else if (!child.hidden) {
                     $menu.append(option(child));
                 }
             });
         });
 
+        // The chosen option is in view when the list opens.
+        $group.on('shown.bs.dropdown', () => {
+            $menu.find('input:checked').closest('.dropdown-item')[0]?.scrollIntoView({block: 'nearest'});
+        });
+
         $menu.on('change', 'input', (event) => {
             $select.val(event.target.value).trigger('change');
+            select.classList.remove('is-invalid');
             bootstrap.Dropdown.getOrCreateInstance($button[0]).hide();
         });
 
-        $select.on('change', updateLabel);
+        $select.on('change', sync);
 
-        updateLabel();
+        selectDropdowns.push({button: $button[0], sync});
+        sync();
     }
 
     return {
@@ -633,6 +723,7 @@ window.App.Utils.UI = (function () {
         initializeDropdown,
         initializeSelectDropdown,
         initializeTextEditor,
+        setDropdownLabel,
         getDateTimePickerValue,
         setDateTimePickerValue,
     };

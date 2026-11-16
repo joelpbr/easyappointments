@@ -878,8 +878,8 @@ body .modal.full-screen .modal-push {
     padding: 2px 12px;
 
     #calendar-filter {
-        flex: 0 0 90px;
-        width: 90px;
+        flex: 0 0 112px;
+        width: 112px;
         padding: 0;
     }
 
@@ -927,83 +927,146 @@ body .modal.full-screen .modal-push {
         white-space: nowrap;
     }
 
-    .btn {
-        min-height: 34px;
-        padding: 6px;
-        font-size: 0.85rem;
-        line-height: 20px;
-    }
+    // The bar looks like the inside of the appointment form: a light surface (Bootstrap's bg-dark is !important) with
+    // a line under it drawn as a shadow, so the bar keeps its 38px: 4px + 30px controls + 4px.
+    padding-block: 4px;
+    background-color: var(--bs-light) !important;
+    box-shadow: inset 0 -1px 0 var(--bs-border-color);
 
-    .form-control,
-    .form-select {
-        min-height: 30px;
-        padding-top: 4px;
-        padding-bottom: 4px;
-        font-size: 0.85rem;
-        line-height: 20px;
-    }
-
-    .ea-simple-filter {
-        width: 100%;
-        height: 32px;
-        min-height: 32px;
-        padding: 4px 24px 4px 8px;
-        line-height: 20px;
-        text-overflow: ellipsis;
-        cursor: pointer;
-    }
-
-    .ea-midday-toggle {
-        flex: 0 0 auto;
-        align-self: center;
-        min-width: max-content;
-        white-space: nowrap;
-    }
-
-    // Every control of the bar looks the same: white, black text, the same font and no border; only the arrows
-    // that change the day are clinic cyan. Only the background colour is set, so that the selects keep their arrow.
+    // Every control has the same box: 30px high (border included), 8px corners, 13px text, the icon before the text.
     .btn,
     .form-control,
     .form-select {
-        color: #000000;
-        background-color: #ffffff;
-        border: 0;
-        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-sizing: border-box;
+        height: 30px;
+        min-height: 30px;
+        padding: 0 10px;
+        color: var(--bs-body-color);
+        background-color: var(--bs-white);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 8px;
+        box-shadow: none;
+        font-size: 13px;
         font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
+
+        > svg,
+        > i {
+            order: -1;
+            flex: 0 0 auto;
+            width: 13px;
+            height: 13px;
+            margin: 0 !important;
+        }
 
         &:hover,
-        &:focus,
-        &.active,
         &.show {
-            color: #000000;
-            background-color: #e9ecef;
+            color: var(--bs-body-color);
+            background-color: rgba(var(--bs-primary-rgb), 0.05);
+            border-color: var(--bs-gray-400);
+        }
+
+        &:focus,
+        &:focus-visible {
+            position: relative;
+            z-index: 1;
+            color: var(--bs-body-color);
+            border-color: var(--bs-info);
+            box-shadow: 0 0 0 0.2rem rgba(var(--bs-info-rgb), 0.17);
+        }
+
+        &.active {
+            color: var(--bs-white);
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
         }
 
         &:disabled,
         &.disabled {
-            color: #000000;
-            background-color: #ffffff;
+            color: var(--bs-body-color);
+            background-color: var(--bs-white);
             opacity: 0.6;
         }
     }
 
+    // The selects (and the buttons drawn like one) keep their text on the left and room for the arrow on the right.
+    .form-select {
+        justify-content: flex-start;
+        padding-right: 28px;
+        background-position: right 9px center;
+        background-size: 11px 11px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+
+    // Buttons with an icon only are square.
+    #reload-appointments,
+    #calendar-actions > a.btn:not(#agenda-blocks) {
+        width: 30px;
+        padding: 0;
+    }
+
+    // Previous day, date and next day are one joined control.
     .calendar-header > .previous,
     .calendar-header > .next {
+        width: 30px;
+        padding: 0;
+        color: var(--bs-primary);
+    }
+
+    .calendar-header > .previous {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    .calendar-header > .select-date {
+        // 6px is the gap of the header; 1px more lays the borders on top of each other.
+        margin-left: -7px !important;
+        border-radius: 0;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .calendar-header > .next {
+        margin-left: -7px !important;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    // "New appointment" is the main action, filled cyan like "Save" in the form.
+    #calendar-actions > .dropdown > .btn {
+        color: var(--bs-white);
         background-color: #029ecb;
+        border-color: #029ecb;
+        font-weight: 600;
 
         &:hover,
-        &:focus {
-            background-color: #028bb3;
-        }
-
-        &:disabled,
-        &.disabled {
-            background-color: #029ecb;
+        &:focus,
+        &:focus-visible,
+        &.show {
+            color: var(--bs-white);
+            background-color: #03508d;
+            border-color: #03508d;
         }
     }
 
     .form-control::placeholder {
-        color: rgba(0, 0, 0, 0.6);
+        color: var(--bs-secondary-color);
+    }
+
+    .ea-simple-filter {
+        width: 100%;
+    }
+
+    .ea-midday-toggle {
+        flex: 0 0 auto;
+        min-width: max-content;
     }
 
     @media (max-width: 1199.98px) {
@@ -1139,10 +1202,28 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
         overscroll-behavior: contain;
     }
 
+    // The list and calendar switch looks like the existing and new patient switch of the appointment form: the chosen
+    // one filled in the dark blue, the other white with a dark blue border and text. Same size as before.
     .ea-provider-views .btn {
         padding: 2px 5px;
         font-size: 11px;
+        font-weight: 600;
         line-height: 20px;
+        color: var(--bs-primary);
+        background-color: var(--bs-white);
+        border-color: var(--bs-primary);
+
+        &:hover {
+            color: var(--bs-primary);
+            background-color: rgba(var(--bs-primary-rgb), 0.08);
+            border-color: var(--bs-primary);
+        }
+
+        &.active {
+            color: var(--bs-white);
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+        }
     }
 }
 
@@ -1861,8 +1942,14 @@ $ea-day-separator: 3px solid #6c757d;
     cursor: pointer;
 
     &:hover {
-        background: var(--bs-primary-bg-subtle);
+        background: rgba(var(--bs-primary-rgb), 0.07);
     }
+}
+
+// The row of the time under the mouse, lit across the calendar (calendar_time_labels.js): its time and its line, under
+// the appointments and the periods out of work, in a very light dark blue.
+#calendar tr.ea-time-hover > .fc-timegrid-slot {
+    background: rgba(var(--bs-primary-rgb), 0.07);
 }
 
 // Statuses of the WhatsApp messages (whatsapp_settings.php, whatsapp_messages.php).
@@ -2097,6 +2184,156 @@ $ea-day-separator: 3px solid #6c757d;
     // The "Today" (or "Now") button.
     .ea-picker-today {
         font-weight: 600;
+    }
+}
+
+// Dropdown menus everywhere (header menus, calendar menus, filters and the select2 lists) look like the calendar bar:
+// 13px text, a thin border, rounded corners, a soft shadow, rounded items with a light dark-blue hover and the dark
+// blue for the chosen one.
+.dropdown-menu {
+    --bs-dropdown-min-width: 10rem;
+    --bs-dropdown-padding-x: 4px;
+    --bs-dropdown-padding-y: 4px;
+    --bs-dropdown-font-size: 13px;
+    --bs-dropdown-color: var(--bs-body-color);
+    --bs-dropdown-bg: var(--bs-white);
+    --bs-dropdown-border-color: var(--bs-border-color);
+    --bs-dropdown-border-radius: 10px;
+    --bs-dropdown-box-shadow: 0 8px 24px rgba(var(--bs-primary-rgb), 0.12);
+    --bs-dropdown-divider-margin-y: 4px;
+    --bs-dropdown-link-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-bg: rgba(var(--bs-primary-rgb), 0.06);
+    --bs-dropdown-link-active-color: var(--bs-white);
+    --bs-dropdown-link-active-bg: var(--bs-primary);
+    --bs-dropdown-item-padding-x: 10px;
+    --bs-dropdown-item-padding-y: 6px;
+    --bs-dropdown-header-color: var(--bs-secondary-color);
+    --bs-dropdown-header-padding-x: 10px;
+    --bs-dropdown-header-padding-y: 6px;
+
+    box-shadow: var(--bs-dropdown-box-shadow);
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 6px;
+        font-weight: 500;
+        line-height: 1.35;
+
+        > svg,
+        > i {
+            flex: 0 0 auto;
+            width: 14px;
+            margin: 0 !important;
+        }
+    }
+
+    .dropdown-header {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .form-check-input {
+        flex: 0 0 auto;
+        width: 15px;
+        height: 15px;
+        margin: 0;
+    }
+}
+
+// The select2 lists (e.g. the providers of the slot search) follow the same look.
+.select2-container--default {
+    .select2-dropdown {
+        overflow: hidden;
+        border-color: var(--bs-border-color);
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(var(--bs-primary-rgb), 0.12);
+        font-size: 13px;
+    }
+
+    .select2-results__options {
+        padding: 4px;
+    }
+
+    .select2-results__option {
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-weight: 500;
+    }
+
+    .select2-results__option--highlighted[aria-selected],
+    .select2-results__option--highlighted.select2-results__option--selectable {
+        color: var(--bs-body-color);
+        background-color: rgba(var(--bs-primary-rgb), 0.06);
+    }
+
+    .select2-results__option[aria-selected='true'],
+    .select2-results__option--selected {
+        color: var(--bs-white);
+        background-color: var(--bs-primary);
+    }
+}
+
+// The lists of the dropdowns made from a select: at least as wide as the field, scrolling when they are long. Options
+// with their own colour (the treatments) keep it and darken a little under the mouse; the chosen one is bold.
+.ea-select-dropdown-menu {
+    min-width: 100%;
+    max-height: min(320px, 60vh);
+    overflow-y: auto;
+
+    .dropdown-item {
+        margin-bottom: 1px;
+        cursor: pointer;
+
+        &[style*='background-color']:hover,
+        &[style*='background-color']:focus-within {
+            filter: brightness(0.94);
+        }
+
+        &:has(input:checked) {
+            font-weight: 700;
+        }
+
+        &.disabled {
+            cursor: default;
+            opacity: 0.5;
+        }
+    }
+}
+
+// A dropdown made from a select inside an input group (the document type next to its number) keeps its own width and
+// joins the field next to it, like the select did.
+.input-group > .ea-select-dropdown {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 45%;
+
+    > .form-select {
+        width: auto;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &:not(:last-child) > .form-select {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    &:not(:first-child) > .form-select {
+        margin-left: calc(var(--bs-border-width) * -1);
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    > .form-select:focus {
+        position: relative;
+        z-index: 5;
     }
 }
 

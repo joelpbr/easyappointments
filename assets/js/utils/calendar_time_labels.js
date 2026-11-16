@@ -37,6 +37,57 @@ App.Utils.CalendarTimeLabels = (function () {
     }
 
     /**
+     * Light up the whole row of the time under the mouse: its time on the left and its line across the calendar, with
+     * the same colour as a hovered time. The line is the background of the grid, so appointments and the periods out
+     * of work stay on top of it.
+     *
+     * @param {jQuery} $container Element that holds the calendars.
+     */
+    function listenHover($container) {
+        let row = null;
+        let frame = null;
+
+        const light = (newRow) => {
+            if (newRow === row) {
+                return;
+            }
+
+            row?.classList.remove('ea-time-hover');
+            newRow?.classList.add('ea-time-hover');
+            row = newRow;
+        };
+
+        $container.on('mousemove', '.fc-timegrid-body', (event) => {
+            const body = event.currentTarget;
+            const y = event.clientY;
+
+            if (frame) {
+                return;
+            }
+
+            frame = requestAnimationFrame(() => {
+                frame = null;
+
+                // Not while a range of times is being dragged; it has its own highlight.
+                if (document.querySelector('.ea-time-range')) {
+                    light(null);
+                    return;
+                }
+
+                const label = [...body.querySelectorAll(LABEL)].find((element) => {
+                    const rect = element.getBoundingClientRect();
+
+                    return y >= rect.top && y < rect.bottom;
+                });
+
+                light(label?.closest('tr') || null);
+            });
+        });
+
+        $container.on('mouseleave', '.fc-timegrid-body', () => light(null));
+    }
+
+    /**
      * Listen to the time labels of some calendars.
      *
      * @param {jQuery} $container Element that holds the calendars.
@@ -45,6 +96,8 @@ App.Utils.CalendarTimeLabels = (function () {
      * @param {Function} onChoose Called with the chosen range ({start, end, allDay, jsEvent}) and the calendar.
      */
     function listen($container, getContext, onChoose) {
+        listenHover($container);
+
         $container.on('mousedown', LABEL, (event) => {
             if (event.button !== 0) {
                 return;

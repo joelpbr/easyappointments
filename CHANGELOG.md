@@ -53,6 +53,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- The calendar toolbar, the dropdown menus and the treatment, provider, status and document type lists follow the look of the appointment form (thin borders, rounded corners, the clinic dark blue), the list and calendar switch matches the existing or new patient switch, the midday button just says "Midday" and sits by the refresh button, and the hour under the mouse lights up across the whole row of the provider
 - The date and time pickers of the management pages are a new, faster and smaller calendar card in the clinic colours, with a "Today" button ("Now" on time pickers), a time slider in 5-minute steps, typed dates and times that are checked instead of misread, and it opens above the field when there is no room below so it never needs scrolling
 - Switching tabs and visits of the clinical record, choosing a record in the lists of the management pages, opening menus and showing notifications fade in smoothly, and rows, visits and foot diagram views fade their highlight; going to the visits of a clinical record no longer pops its right column in after the fade
 - The X-ray switch of the foot diagrams is a round icon button in the corner of the picture instead of a button on a row of its own

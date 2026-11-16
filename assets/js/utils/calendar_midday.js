@@ -160,9 +160,18 @@ App.Utils.CalendarMidday = (() => {
                 });
             }
 
-            toolbar.append(button);
+            // Among the actions, between the agenda blocks and the refresh button.
+            const refresh = document.getElementById('reload-appointments');
+
+            if (refresh?.parentElement) {
+                refresh.before(button);
+            } else {
+                toolbar.append(button);
+            }
+
             button.disabled = occupied;
-            button.textContent = lang('midday') + ' ' + (folded ? '▾' : '▴');
+            // Just "Midday" on the button; the hours are in its title (and in the full label of the break).
+            button.textContent = lang('midday_button') + ' ' + (folded ? '▾' : '▴');
             button.title = clock(range[0]) + '–' + clock(range[1]) + ' · ' + hint;
             button.setAttribute('aria-label', button.title);
             button.setAttribute('aria-expanded', String(!folded));
