@@ -193,7 +193,7 @@
                                             <span class="text-danger">*</span>
                                         </label>
                                         <input id="appointment-duration" class="required form-control" type="number" min="5"
-                                               max="1440" step="1" aria-label="<?= e(lang('duration_minutes')) ?>">
+                                               max="1440" step="5" aria-label="<?= e(lang('duration_minutes')) ?>">
                                     </div>
                                 </div>
 

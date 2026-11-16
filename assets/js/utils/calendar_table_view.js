@@ -1394,21 +1394,8 @@ App.Utils.CalendarTableView = (function () {
             class: 'btn btn-xs btn-outline-secondary next',
             html: [$('<span/>', {class: 'fas fa-chevron-right'})],
         }).appendTo($calendarHeader);
+        // The picker has a "Today" button that goes straight to today (App.Utils.UI).
         App.Utils.UI.initializeDatePicker($calendarHeader.find('.select-date'), {
-            // A "Today" button under the month goes straight to today.
-            onReady(selectedDates, dateString, instance) {
-                $('<button/>', {
-                    type: 'button',
-                    class: 'btn btn-sm btn-primary w-100 mt-1 ea-picker-today',
-                    text: lang('today'),
-                    on: {
-                        click: () => {
-                            instance.setDate(new Date(), true);
-                            instance.close();
-                        },
-                    },
-                }).appendTo(instance.calendarContainer);
-            },
             onChange(selectedDates) {
                 const startDate = selectedDates[0];
 
@@ -1419,7 +1406,6 @@ App.Utils.CalendarTableView = (function () {
                 createView(startDate, endDate);
             },
         });
-        $calendarHeader.find('.flatpickr-wrapper').addClass('w-auto');
         const providers = getAvailableProviders();
 
         // Provider filter

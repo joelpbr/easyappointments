@@ -53,6 +53,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- The date and time pickers of the management pages are a new, faster and smaller calendar card in the clinic colours, with a "Today" button ("Now" on time pickers), a time slider in 5-minute steps, typed dates and times that are checked instead of misread, and it opens above the field when there is no room below so it never needs scrolling
 - Switching tabs and visits of the clinical record, choosing a record in the lists of the management pages, opening menus and showing notifications fade in smoothly, and rows, visits and foot diagram views fade their highlight; going to the visits of a clinical record no longer pops its right column in after the fade
 - The X-ray switch of the foot diagrams is a round icon button in the corner of the picture instead of a button on a row of its own
 - A healed pathology shows a green smiling face in its place on the foot diagram, instead of the faded pathology with a small face on its corner
@@ -99,6 +100,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Fixed
 
+- Moving the start of a blocked period moves its end by the same amount, keeping its length, instead of pushing the end further each time
 - All the pathologies on the foot diagrams are shown at the same size, centred where they were placed; the ones added by hand to imported visits were one and a half times bigger
 - After an update the browsers load the new styles and scripts right away instead of keeping the previous ones from their cache
 - A new appointment from the calendar toolbar starts at the next slot of the agenda, without seconds, instead of jumping to the next hour at minutes 0, 15, 30 and 45

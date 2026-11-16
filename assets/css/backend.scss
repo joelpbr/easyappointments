@@ -861,7 +861,8 @@ body .modal.full-screen .modal-push {
 }
 
 // Slot search: the time window pickers stay on one line next to the presets.
-#slot-search-modal .slot-search-time-range .flatpickr-wrapper {
+#slot-search-modal .slot-search-time-range .flatpickr-wrapper,
+#slot-search-modal .slot-search-time-range input {
     width: 6rem;
 }
 
@@ -1985,3 +1986,117 @@ $ea-day-separator: 3px solid #6c757d;
         transition: none;
     }
 }
+
+// Date and time pickers (Air Datepicker, see App.Utils.UI): a small card in the colours, font and rounded corners of
+// the theme, short enough to open next to its input without scrolling.
+.air-datepicker {
+    --adp-font-family: var(--bs-body-font-family);
+    --adp-font-size: 13px;
+    --adp-width: 236px;
+    --adp-padding: 4px;
+    --adp-z-index: 1090;
+    --adp-color: var(--bs-body-color);
+    --adp-color-secondary: var(--bs-secondary-color);
+    --adp-accent-color: var(--bs-primary);
+    --adp-color-current-date: var(--bs-primary);
+    --adp-color-other-month: var(--bs-gray-400);
+    --adp-color-other-month-hover: var(--bs-gray-500);
+    --adp-color-disabled: var(--bs-gray-400);
+    --adp-background-color: var(--bs-body-bg);
+    --adp-background-color-hover: rgba(var(--bs-primary-rgb), 0.08);
+    --adp-background-color-active: rgba(var(--bs-primary-rgb), 0.14);
+    --adp-cell-background-color-hover: rgba(var(--bs-primary-rgb), 0.08);
+    --adp-cell-background-color-selected: var(--bs-primary);
+    --adp-cell-background-color-selected-hover: var(--bs-primary);
+    --adp-border-color: var(--bs-border-color);
+    --adp-border-color-inner: var(--bs-border-color-translucent);
+    --adp-border-radius: 0.8rem;
+    --adp-cell-border-radius: 0.5rem;
+    --adp-day-cell-height: 26px;
+    --adp-month-cell-height: 36px;
+    --adp-year-cell-height: 44px;
+    --adp-nav-height: 28px;
+    --adp-nav-action-size: 26px;
+    --adp-nav-arrow-color: var(--bs-primary);
+    --adp-nav-color-secondary: var(--bs-secondary-color);
+    --adp-day-name-color: var(--bs-primary);
+    --adp-day-name-color-hover: var(--bs-primary);
+    --adp-btn-height: 28px;
+    --adp-btn-color: var(--bs-primary);
+    --adp-btn-color-hover: var(--bs-primary);
+    --adp-btn-background-color-hover: rgba(var(--bs-primary-rgb), 0.08);
+    --adp-btn-background-color-active: rgba(var(--bs-primary-rgb), 0.14);
+    --adp-btn-border-radius: 0.5rem;
+    --adp-time-track-color: var(--bs-border-color);
+    --adp-time-track-color-hover: var(--bs-gray-500);
+    --adp-time-thumb-size: 14px;
+    --adp-time-padding-inner: 8px;
+    --adp-time-day-period-color: var(--bs-secondary-color);
+
+    box-shadow: 0 8px 28px rgba(var(--bs-primary-rgb), 0.16);
+
+    // Placed by App.Utils.UI next to the input, so the arrow pointing at it is not needed.
+    .air-datepicker--pointer {
+        display: none;
+    }
+
+    .air-datepicker-nav--title {
+        font-weight: 600;
+
+        i {
+            color: var(--bs-secondary-color);
+        }
+    }
+
+    .air-datepicker-body--day-name {
+        font-weight: 600;
+        text-transform: none;
+    }
+
+    .air-datepicker-cell.-selected- {
+        font-weight: 600;
+    }
+
+    // Today in the dark blue and bold, with a light fill (the chosen day is fully filled).
+    .air-datepicker-cell.-current-:not(.-selected-) {
+        color: var(--bs-primary);
+        font-weight: 800;
+        background: rgba(var(--bs-primary-rgb), 0.1);
+    }
+
+    // The time is only shown, big and centred, without sliders: it is typed in the field.
+    .air-datepicker--time,
+    .air-datepicker-time {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .air-datepicker-time--sliders {
+        display: none;
+    }
+
+    .air-datepicker-time--current {
+        justify-content: center;
+        color: var(--bs-primary);
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .air-datepicker-time--current-hours,
+    .air-datepicker-time--current-minutes {
+        font-family: inherit;
+        font-size: 1.35rem;
+    }
+
+    .air-datepicker-time--current-colon {
+        animation: none;
+    }
+
+    // The "Today" (or "Now") button.
+    .ea-picker-today {
+        font-weight: 600;
+    }
+}
+

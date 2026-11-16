@@ -28,8 +28,7 @@
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/trumbowyg/trumbowyg.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/select2/select2.min.css') ?>">
-    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/flatpickr/flatpickr.min.css') ?>">
-    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/flatpickr/material_green.min.css') ?>">
+    <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/air-datepicker/air-datepicker.min.css') ?>">
     <link rel="stylesheet" type="text/css"
           href="<?= asset_url('assets/css/themes/' . html_escape(setting('theme', 'default')) . '.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/general.css') ?>">
@@ -59,7 +58,7 @@
 <script src="<?= asset_url('assets/vendor/tippy.js/tippy-bundle.umd.min.js') ?>"></script>
 <script src="<?= asset_url('assets/vendor/trumbowyg/trumbowyg.min.js') ?>"></script>
 <script src="<?= asset_url('assets/vendor/select2/select2.min.js') ?>"></script>
-<script src="<?= asset_url('assets/vendor/flatpickr/flatpickr.min.js') ?>"></script>
+<script src="<?= asset_url('assets/vendor/air-datepicker/air-datepicker.min.js') ?>"></script>
 
 <script src="<?= asset_url('assets/js/app.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/date.js') ?>"></script>
