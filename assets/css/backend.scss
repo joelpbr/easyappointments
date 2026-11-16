@@ -1090,7 +1090,8 @@ body .modal.full-screen .modal-push {
     }
 }
 
-body:has(#calendar-toolbar.ea-unified-toolbar) #header {
+// The header is the same compact bar on every page (it was only compact on the calendar).
+#header {
     .nav-link {
         padding-top: 6px !important;
         padding-bottom: 6px !important;
@@ -1854,6 +1855,115 @@ body:has(#calendar-toolbar.ea-unified-toolbar) #header {
     }
 }
 
+// Phones: the popover of an event opens as a sheet from the bottom of the screen, as wide as the screen and over a
+// dark backdrop that closes it (fitToPhone() in calendar_event_popover.js), with the title in large type and buttons
+// of 44px for the fingers. Its position wins over the one that Bootstrap writes on the element.
+@keyframes ea-sheet-up {
+    from {
+        translate: 0 100%;
+    }
+
+    to {
+        translate: 0 0;
+    }
+}
+
+body.ea-popover-sheet-open {
+    overflow: hidden;
+}
+
+#calendar .ea-popover-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1045;
+    background: rgba(6, 30, 60, 0.45);
+    animation: ea-fade-in 0.15s linear;
+}
+
+#calendar .popover.ea-popover-sheet {
+    position: fixed !important;
+    inset: auto 0 0 0 !important;
+    z-index: 1046;
+    width: 100%;
+    max-width: none;
+    max-height: 85vh;
+    max-height: 85dvh;
+    margin: 0 !important;
+    overflow-y: auto;
+    transform: none !important;
+    border: 0;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -6px 24px rgba(6, 30, 60, 0.25);
+    font-size: 1rem;
+    animation: ea-sheet-up 0.2s ease-out;
+    overscroll-behavior: contain;
+
+    > .popover-arrow {
+        display: none;
+    }
+
+    // The handle at the top, as in the sheets of the phone.
+    &::before {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 4px;
+        margin: 8px auto 0;
+        border-radius: 2px;
+        background: #ced4da;
+    }
+
+    .popover-header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        min-height: 52px;
+        padding: 6px 12px 10px 16px;
+        border-bottom: 1px solid #e9ecef;
+        background: var(--bs-popover-bg, #ffffff);
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .ea-popover-delete,
+    .ea-popover-close {
+        width: 44px;
+        height: 44px;
+        padding: 0;
+    }
+
+    .ea-popover-delete {
+        margin-left: -10px;
+        font-size: 1.1rem;
+    }
+
+    .ea-popover-close {
+        background-size: 14px;
+        font-size: 1rem;
+    }
+
+    .popover-body {
+        padding: 14px 16px calc(16px + env(safe-area-inset-bottom));
+        line-height: 1.9;
+    }
+
+    // Long names (cancel, no-show) may take two lines inside their button.
+    .popover-body .btn {
+        min-height: 44px;
+        padding: 6px 8px;
+        font-size: 0.95rem;
+        line-height: 1.25;
+    }
+
+    .popover-body .ea-popover-tall {
+        height: 50px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        animation: none;
+    }
+}
+
 // Amounts of money, and the fields that hold one: not shown while they are hidden from the user menu
 // (backend_layout.js).
 .ea-money-hidden .ea-money {
@@ -2176,7 +2286,8 @@ $ea-day-separator: 3px solid #6c757d;
         background: rgba(var(--bs-primary-rgb), 0.1);
     }
 
-    // The time is only shown, big and centred, without sliders: it is typed in the field.
+    // The time, big and centred, without sliders: the hours and the minutes are small fields where it is typed
+    // (addEditableTime() in ui.js), as it can be in the input too.
     .air-datepicker--time,
     .air-datepicker-time {
         display: flex;
@@ -2185,11 +2296,42 @@ $ea-day-separator: 3px solid #6c757d;
         box-sizing: border-box;
     }
 
-    .air-datepicker-time--sliders {
+    .air-datepicker-time--sliders,
+    .air-datepicker-time--current-hours,
+    .air-datepicker-time--current-minutes {
         display: none;
     }
 
+    .ea-picker-time-field {
+        width: 2.1em;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 0.4rem;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        font-size: 1.35rem;
+        line-height: 1.3;
+        text-align: center;
+        cursor: text;
+        transition:
+            background-color 0.15s ease,
+            border-color 0.15s ease;
+
+        &:hover {
+            background: rgba(var(--bs-primary-rgb), 0.06);
+        }
+
+        &:focus {
+            border-color: var(--bs-primary);
+            background: var(--bs-white);
+            outline: 0;
+            box-shadow: 0 0 0 0.15rem rgba(var(--bs-primary-rgb), 0.15);
+        }
+    }
+
     .air-datepicker-time--current {
+        align-items: center;
         justify-content: center;
         color: var(--bs-primary);
         font-weight: 700;
@@ -2694,6 +2836,29 @@ $ea-day-separator: 3px solid #6c757d;
             > i {
                 display: none;
             }
+        }
+    }
+}
+
+// Phones: the foot of an appointment puts the WhatsApp reminder on its own line and "Close" and "Save" side by side
+// under it, each half of the width.
+@media (max-width: 767.98px) {
+    #appointments-modal .modal-footer {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+
+        > * {
+            margin: 0;
+        }
+
+        .ea-whatsapp-reminder {
+            flex: 1 1 100%;
+        }
+
+        > .btn {
+            flex: 1 1 0;
+            min-height: 44px;
         }
     }
 }

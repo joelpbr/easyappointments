@@ -56,6 +56,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- On phones, the details of an appointment opened from the full calendar slide up from the bottom of the screen with the patient's name, the delete and close buttons and every action in view and easy to touch (touching outside closes them), and the foot of the appointment form shows the WhatsApp reminder on its own line with "Close" and "Save" side by side
 - Hiding the amounts of money is "Hide balances" in the user menu, above "Booking", instead of an eye in the header, and the X-ray switch of the foot diagrams shows two swapping arrows that turn at each switch
 - Editing an appointment greys out "Save" while there is nothing to save, and closing the appointment form with unsaved changes asks whether to save them, close without saving or keep editing
 - The calendar toolbar, the dropdown menus and the treatment, provider, status and document type lists follow the look of the appointment form (thin borders, rounded corners, the clinic dark blue), the list and calendar switch matches the existing or new patient switch, the midday button just says "Midday" and sits by the refresh button, and the hour under the mouse lights up across the whole row of the provider
@@ -107,6 +108,7 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Fixed
 
+- The time of a new or edited appointment can be changed again: the hours and the minutes shown in the date picker can be typed over (or moved with the arrow keys), and a time typed in the field is kept instead of going back to the previous one
 - Moving the start of a blocked period moves its end by the same amount, keeping its length, instead of pushing the end further each time
 - All the pathologies on the foot diagrams are shown at the same size, centred where they were placed; the ones added by hand to imported visits were one and a half times bigger
 - After an update the browsers load the new styles and scripts right away instead of keeping the previous ones from their cache

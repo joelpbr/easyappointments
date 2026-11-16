@@ -105,6 +105,8 @@ App.Utils.CalendarDefaultView = (function () {
      * Close the current popover if open.
      */
     function closePopover() {
+        App.Utils.CalendarEventPopover.removePhoneSheet();
+
         if ($popoverTarget) {
             $popoverTarget.popover('dispose');
             $popoverTarget = null;
@@ -432,6 +434,9 @@ App.Utils.CalendarDefaultView = (function () {
         if ($popover.length && $popover.position().top < 200) {
             $popover.css('top', '200px');
         }
+
+        // On phones it opens from the bottom of the screen instead.
+        App.Utils.CalendarEventPopover.fitToPhone($popover);
     }
 
     /**

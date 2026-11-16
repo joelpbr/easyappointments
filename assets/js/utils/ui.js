@@ -270,6 +270,161 @@ window.App.Utils.UI = (function () {
     }
 
     /**
+     * Make the hours and the minutes shown in an Air Datepicker time picker editable: each number becomes a small field
+     * where the time can be typed (Enter, Tab or leaving the field takes it) or moved with the arrow keys (an hour, or
+     * five minutes). The fields follow the time that the picker shows.
+     *
+     * @param {HTMLInputElement} input The input of the picker.
+     * @param {AirDatepicker} datepicker
+     */
+    function addEditableTime(input, datepicker) {
+        const $picker = datepicker.$datepicker;
+        const $current = $picker.querySelector('.air-datepicker-time--current');
+        const $hoursText = $picker.querySelector('.air-datepicker-time--current-hours');
+        const $minutesText = $picker.querySelector('.air-datepicker-time--current-minutes');
+
+        // Opened again before it finished closing: its parts, and the fields, are still there.
+        if (!$current || !$hoursText || !$minutesText || $current.querySelector('.ea-picker-time-field')) {
+            return;
+        }
+
+        const regular = vars('time_format') === 'regular';
+        const pad = (value) => String(value).padStart(2, '0');
+
+        const createField = (part, label) => {
+            const field = document.createElement('input');
+            field.type = 'text';
+            field.inputMode = 'numeric';
+            field.maxLength = 2;
+            field.autocomplete = 'off';
+            field.className = 'ea-picker-time-field ea-picker-time-' + part;
+            field.setAttribute('aria-label', label);
+            return field;
+        };
+
+        const $hours = createField('hours', lang('hour'));
+        const $minutes = createField('minutes', lang('minute'));
+
+        $hoursText.before($hours);
+        $minutesText.before($minutes);
+
+        // The time the picker shows (the chosen one, or the one it would give to a chosen day).
+        const shownTime = () => {
+            const selected = datepicker.selectedDates[0];
+
+            return selected
+                ? {hours: selected.getHours(), minutes: selected.getMinutes()}
+                : {hours: datepicker.timepicker?.hours ?? 0, minutes: datepicker.timepicker?.minutes ?? 0};
+        };
+
+        const showTime = () => {
+            const {hours, minutes} = shownTime();
+
+            $hours.value = pad(regular ? hours % 12 || 12 : hours);
+            $minutes.value = pad(minutes);
+        };
+
+        const selectTime = (hours, minutes) => {
+            const selected = datepicker.selectedDates[0];
+            const date = new Date(selected || new Date());
+
+            date.setHours(hours, minutes, 0, 0);
+
+            if (selected && date.getTime() === selected.getTime()) {
+                showTime();
+                return;
+            }
+
+            datepicker.selectDate(date, {updateTime: true});
+            $hours.value = pad(regular ? hours % 12 || 12 : hours);
+            $minutes.value = pad(minutes);
+        };
+
+        // Take what was typed, or show the time again when it is not a valid one.
+        const readTime = () => {
+            const hours = Number($hours.value);
+            const minutes = Number($minutes.value);
+            const hoursValid = regular ? hours >= 1 && hours <= 12 : hours >= 0 && hours <= 23;
+
+            if (!/^\d{1,2}$/.test($hours.value) || !/^\d{1,2}$/.test($minutes.value) || !hoursValid || minutes > 59) {
+                showTime();
+                return;
+            }
+
+            // On 12-hour times the half of the day (AM or PM) stays the shown one.
+            const afternoon = shownTime().hours >= 12;
+
+            selectTime(regular ? (hours % 12) + (afternoon ? 12 : 0) : hours, minutes);
+        };
+
+        // The picker writes the numbers again on every change of the time; the fields follow them, except the one
+        // being typed in.
+        new MutationObserver(() => {
+            if (document.activeElement !== $hours && document.activeElement !== $minutes) {
+                showTime();
+            }
+        }).observe($current, {childList: true, subtree: true, characterData: true});
+
+        showTime();
+
+        [$hours, $minutes].forEach((field) => {
+            // The picker puts the focus back on its input when the mouse is released inside it.
+            field.addEventListener('mouseup', (event) => event.stopPropagation());
+
+            field.addEventListener('focus', () => field.select());
+
+            // Two digits in the hours go on to the minutes.
+            field.addEventListener('input', () => {
+                field.value = field.value.replace(/\D/g, '');
+
+                if (field === $hours && field.value.length === 2) {
+                    $minutes.focus();
+                }
+            });
+
+            field.addEventListener('keydown', (event) => {
+                // The focus goes back to the input before the picker closes (closing removes the field).
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    readTime();
+                    input.focus();
+                    datepicker.hide();
+                } else if (event.key === 'Escape') {
+                    showTime();
+                    input.focus();
+                    datepicker.hide();
+                } else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                    event.preventDefault();
+
+                    const step = event.key === 'ArrowUp' ? 1 : -1;
+                    const {hours, minutes} = shownTime();
+                    const total = (hours * 60 + minutes + step * (field === $hours ? 60 : 5) + 1440) % 1440;
+
+                    selectTime(Math.floor(total / 60), total % 60);
+                    field.select();
+                }
+            });
+
+            // Leaving the fields takes the time; leaving the picker as well closes it, as leaving its input does.
+            field.addEventListener('blur', (event) => {
+                readTime();
+
+                const next = event.relatedTarget;
+
+                if (next === $hours || next === $minutes) {
+                    return;
+                }
+
+                datepicker.inFocus = false;
+
+                if (next !== input && !$picker.contains(next)) {
+                    datepicker.hide();
+                }
+            });
+        });
+    }
+
+    /**
      * Turn inputs into Air Datepicker pickers.
      *
      * The picker shows the text in the format of the settings, so the code that reads the text of the input keeps
@@ -310,7 +465,7 @@ window.App.Utils.UI = (function () {
                         date.setSeconds(0, 0);
                     }
 
-                    datepicker.selectDate(date);
+                    datepicker.selectDate(date, {updateTime: true});
                     datepicker.setViewDate(date);
 
                     if (mode === 'date') {
@@ -339,6 +494,12 @@ window.App.Utils.UI = (function () {
                 onSelect: () => {
                     onChange?.(picker.selectedDates, input.value, picker);
                     notifyChange();
+                },
+                // The picker builds its parts every time it opens, so the editable time is added then.
+                onShow: (isFinished) => {
+                    if (!isFinished && mode !== 'date') {
+                        addEditableTime(input, datepicker);
+                    }
                 },
                 // Called as the picker starts to close (the end of the animation is not always reported).
                 onHide: (isFinished) => {
@@ -377,7 +538,8 @@ window.App.Utils.UI = (function () {
                     return;
                 }
 
-                datepicker.selectDate(date.toDate());
+                // Without updateTime the picker keeps the time it shows and drops the typed one.
+                datepicker.selectDate(date.toDate(), {updateTime: true});
                 datepicker.setViewDate(date.toDate());
             };
 
@@ -412,7 +574,7 @@ window.App.Utils.UI = (function () {
                         return;
                     }
 
-                    datepicker.selectDate(date, {silent: !triggerChange});
+                    datepicker.selectDate(date, {silent: !triggerChange, updateTime: true});
                     datepicker.setViewDate(date);
                     // The picker writes the text a moment later; the code that reads it right away gets it now.
                     input.value = format(date);

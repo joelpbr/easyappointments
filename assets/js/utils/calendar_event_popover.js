@@ -447,6 +447,36 @@ App.Utils.CalendarEventPopover = (function () {
     }
 
     /**
+     * On phones (below md, where the header folds) a popover next to its event does not fit and its top ends under the
+     * header: it opens instead as a sheet from the bottom of the screen, as wide as the screen, over a dark backdrop
+     * that closes it when touched. Call removePhoneSheet() when the popover closes.
+     *
+     * @param {jQuery} $popover The shown popover.
+     */
+    function fitToPhone($popover) {
+        removePhoneSheet();
+
+        if (!$popover.length || !window.matchMedia('(max-width: 767.98px)').matches) {
+            return;
+        }
+
+        $popover.addClass('ea-popover-sheet');
+
+        // The backdrop is a ".close-popover", so that the calendar views close the popover when it is touched.
+        $('<div/>', {'class': 'ea-popover-backdrop close-popover', 'aria-hidden': 'true'}).insertBefore($popover);
+
+        $('body').addClass('ea-popover-sheet-open');
+    }
+
+    /**
+     * Remove the backdrop of a popover shown as a sheet (see fitToPhone()).
+     */
+    function removePhoneSheet() {
+        $('.ea-popover-backdrop').remove();
+        $('body').removeClass('ea-popover-sheet-open');
+    }
+
+    /**
      * Build popover content for blocked period events.
      *
      * @param {Object} info - FullCalendar event info.
@@ -489,5 +519,7 @@ App.Utils.CalendarEventPopover = (function () {
         buildAppointmentPopover,
         buildBlockedPeriodPopover,
         moveHeaderActions,
+        fitToPhone,
+        removePhoneSheet,
     };
 })();
