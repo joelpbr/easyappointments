@@ -467,7 +467,8 @@ body .modal.full-screen .modal-push {
 }
 
 // Free time is white; the yellow that FullCalendar gives to the whole of today is used for the time that has already
-// passed instead (see calendar_past_time.js), on top of the out of hours tone.
+// passed instead (see calendar_past_time.js), under the out of hours tone, the breaks and the blocked periods, so that
+// they are still seen once their time has passed.
 #calendar {
     --fc-today-bg-color: transparent;
 }
@@ -482,9 +483,9 @@ body .modal.full-screen .modal-push {
     border: 0;
 }
 
-// Above the other background events, which get z-index 2 from the event rules, and the blocked periods (3).
+// Below the other background events, which get z-index 2 from the event rules, and the blocked periods (3).
 #calendar .fc-timegrid-bg-harness:has(> .fc-past-time) {
-    z-index: 4;
+    z-index: 1;
 }
 
 // Every time out of the working hours looks the same as the midday break: early morning, night, days off, holidays,
