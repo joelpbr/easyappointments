@@ -1,5 +1,23 @@
 # Modificaciones sobre Easy!Appointments
 
+Al menú de la visita del mode simple, «Contacta» no té vora i «Fitxa» fa servir el botó primari ple, amb els mateixos colors i ajustos de marca que al calendari complet.
+
+Al menú d'una visita del mode simple, «Trucar» i «WhatsApp» queden dins del desplegable «Contacta». Les dues accions mantenen la confirmació prèvia; «Fitxa» continua com a botó directe separat. El desplegable només apareix si el pacient té telèfon i funciona també per als usuaris sense accés clínic.
+
+Verificats 9 tests JavaScript i la renderització per administrador/professional. Comprovat en navegador real a 390 i 1280 px: menú Contacta, confirmacions cancel·lades sense contactar, fitxa oberta a la visita correcta i retorn a l'agenda sense canvis pendents.
+
+El menú d'una visita del mode simple inclou «Fitxa» per obrir directament la fitxa clínica a aquella visita, sense sortir del mode simple. Es reutilitzen el formulari i els avisos de canvis pendents existents; després de guardar es refresca l'agenda i en tancar es manté el dia i el filtre seleccionats. Disponible per a administradors i professionals amb accés clínic, també en pacients sense telèfon; els permisos del servidor continuen aplicant-se.
+
+Idiomes limitats a català i castellà: retirats els recursos dels altres 40 idiomes i restringits els codis i selectors. Català predeterminat a configuració, instal·lació, Docker, notificacions, formularis i nous registres. La migració 098 passa tots els idiomes guardats al català i fixa el valor predeterminat de la columna users.language; el castellà continua disponible quan es tria expressament. Els valors antics o no admesos es resolen a català perquè una còpia antiga no intenti carregar fitxers retirats. Còpia prèvia: easyappointments-backup-2026-11-16-024113-before-language-restriction.sql.gz.
+
+Verificat després de la migració: els 12.426 registres d'usuari tenen idioma català; tots els altres camps dels usuaris, els accessos/configuració del personal i tots els camps dels 363.686 marcadors coincideixen amb els hashes esperats. Idioma predeterminat de configuració i columna: català. La pantalla d'accés respon amb `lang="ca"` per defecte i quan es demana un idioma retirat, i amb `lang="es"` en seleccionar castellà. Proves: 6 PHP i 13 JavaScript correctes.
+
+Eliminada completament la pàgina «About»: controlador, vista, consulta RSS i textos exclusius de la pàgina. `/about` i `/about/index` deixen d'estar disponibles. Els botons de tornar de la pantalla d'actualització apunten al calendari i Integracions conserva la seva pròpia URL de retorn després d'iniciar sessió.
+
+La versió simple substitueix el nom «versió mòbil» a l'URL (`/simple`), controlador (`Simple`), pàgina, JS/CSS, selectors i claus de traducció (`simple_*`). Els dos accessos conserven `fa-solid fa-puzzle-piece`. `/mobile` i `/mobile/index` redirigeixen permanentment a `/simple`; es conserva la preferència de calendari complet i es recupera el filtre de professional ja guardat amb la clau antiga. La detecció de telèfons, els permisos, el calendari i les accions de contacte mantenen el seu funcionament. Les metadades estàndard del navegador que inclouen «mobile» mantenen el nom tècnic correcte.
+
+Verificació de la versió simple: 6 proves JavaScript de preferències, selectors i traduccions; 3 proves de detecció de dispositius. Renderització real comprovada per administrador i professional, amb el filtre de professionals restringit correctament. Les dues URL antigues responen amb 301 a `/simple`, la ruta nova requereix iniciar sessió i els fitxers JS/CSS nous responen amb 200. Compilació i sintaxi PHP de totes les traduccions verificades.
+
 Totes les llistes de patologies comparteixen ordre de més a menys usos: cada marcador guardat en un dibuix de visita compta com un ús, inclosos els importats. En cas d'empat s'ordenen per nom; les no utilitzades queden al final. El catàleg i la fitxa clínica consulten el mateix mètode, sense modificar marcadors, coordenades ni dades clíniques.
 
 Selector de tractaments de la cita: cada opció mostra el color del tractament barrejat amb un 80% de blanc, amb text negre per mantenir un contrast alt. Colors absents o invàlids fan servir fons blanc. Es mantenen les categories, els serveis inactius i el selector natiu.

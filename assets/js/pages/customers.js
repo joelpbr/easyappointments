@@ -170,7 +170,7 @@ App.Pages.Customers = (function () {
                 zip_code: $zipCode.val(),
                 // The page no longer shows the notes, which are kept as they are.
                 notes: currentCustomer?.notes ?? '',
-                language: $language.val() || 'english',
+                language: $language.val() || vars('default_language') || 'catalan',
                 id_users_preferred_provider: $preferredProvider.val(),
             };
 
@@ -449,7 +449,7 @@ App.Pages.Customers = (function () {
         $address.val(customer.address);
         $city.val(customer.city);
         $zipCode.val(customer.zip_code);
-        $language.val(customer.language || 'english');
+        $language.val(customer.language || vars('default_language') || 'catalan');
         $preferredProvider.val(customer.id_users_preferred_provider || '');
 
         // Only shown for patients who missed some appointment.

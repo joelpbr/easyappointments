@@ -48,7 +48,7 @@ class Integrations extends EA_Controller
     {
         method('get');
 
-        session(['dest_url' => site_url('about')]);
+        session(['dest_url' => site_url('integrations')]);
 
         $user_id = session('user_id');
 

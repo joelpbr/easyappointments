@@ -59,6 +59,10 @@ class Secretaries_model extends EA_Model
      */
     public function save(array $secretary): int
     {
+        if (array_key_exists('language', $secretary)) {
+            $secretary['language'] = normalize_language($secretary['language']);
+        }
+
         $this->validate($secretary);
 
         if (empty($secretary['id'])) {

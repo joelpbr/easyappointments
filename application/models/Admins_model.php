@@ -59,6 +59,10 @@ class Admins_model extends EA_Model
      */
     public function save(array $admin): int
     {
+        if (array_key_exists('language', $admin)) {
+            $admin['language'] = normalize_language($admin['language']);
+        }
+
         $this->validate($admin);
 
         if (empty($admin['id'])) {

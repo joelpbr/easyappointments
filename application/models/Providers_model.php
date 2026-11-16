@@ -76,6 +76,10 @@ class Providers_model extends EA_Model
      */
     public function save(array $provider): int
     {
+        if (array_key_exists('language', $provider)) {
+            $provider['language'] = normalize_language($provider['language']);
+        }
+
         // The last name is optional; store an empty string so the names never render as "Sara null".
         if (array_key_exists('last_name', $provider) || empty($provider['id'])) {
             $provider['last_name'] = trim((string) ($provider['last_name'] ?? ''));

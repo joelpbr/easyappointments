@@ -281,9 +281,13 @@
     </div>
 </div>
 
-<?php section('scripts'); ?>
+<?php if (empty($standalone)):
+    section('scripts');
+endif; ?>
 
 <script src="<?= asset_url('assets/js/http/clinical_records_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/components/clinical_record_modal.js') ?>"></script>
 
-<?php end_section('scripts'); ?>
+<?php if (empty($standalone)):
+    end_section('scripts');
+endif; ?>

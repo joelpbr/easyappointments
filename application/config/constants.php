@@ -191,9 +191,9 @@ if (!function_exists('cookie_options')) {
 }
 
 /*
-| Cookie that keeps a phone on the full calendar after choosing "Full version" in the mobile version (see Mobile).
+| Cookie that keeps a phone on the full calendar after choosing "Full version" in the simple version (see Simple).
 */
-const MOBILE_FULL_VERSION_COOKIE = 'ea_full_version';
+const FULL_CALENDAR_COOKIE = 'ea_full_version';
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

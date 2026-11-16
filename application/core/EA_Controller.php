@@ -116,8 +116,8 @@ class EA_Controller extends CI_Controller
         $query_language = request('language');
         $available_languages = config('available_languages');
 
-        // Priority: session > query param > default (english)
-        $language = null;
+        // Priority: supported session preference > supported query parameter > configured default (Catalan).
+        $language = normalize_language(config('language'));
 
         if ($session_language && in_array($session_language, $available_languages)) {
             $language = $session_language;
@@ -130,7 +130,7 @@ class EA_Controller extends CI_Controller
 
             config([
                 'language' => $language,
-                'language_code' => array_search($language, $language_codes) ?: 'en',
+                'language_code' => array_search($language, $language_codes, true) ?: 'ca',
             ]);
         }
 

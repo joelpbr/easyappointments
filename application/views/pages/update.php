@@ -22,7 +22,7 @@
                 <?= lang('update') ?>
             </button>
 
-            <a href="<?= site_url('about') ?>" class="btn btn-outline-secondary btn-large mb-3">
+            <a href="<?= site_url('calendar') ?>" class="btn btn-outline-secondary btn-large mb-3">
                 <?= lang('cancel') ?>
             </a>
         </form>
@@ -37,7 +37,7 @@
             You can now use the latest Easy!Appointments version.
         </p>
         
-        <a href="<?= site_url('about') ?>" class="btn btn-primary btn-large mb-3">
+        <a href="<?= site_url('calendar') ?>" class="btn btn-primary btn-large mb-3">
             <i class="fas fa-wrench me-2"></i>
             <?= lang('backend_section') ?>
         </a>

@@ -59,6 +59,10 @@ class Users_model extends EA_Model
      */
     public function save(array $user): int
     {
+        if (array_key_exists('language', $user)) {
+            $user['language'] = normalize_language($user['language']);
+        }
+
         $this->validate($user);
 
         if (empty($user['id'])) {

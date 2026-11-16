@@ -59,6 +59,10 @@ class Customers_model extends EA_Model
      */
     public function save(array $customer): int
     {
+        if (array_key_exists('language', $customer)) {
+            $customer['language'] = normalize_language($customer['language']);
+        }
+
         // Resolve the record ID before validating, otherwise the email uniqueness check will reject
         // returning customers whose ID was not provided by the caller (e.g. the booking page).
         if (empty($customer['id']) && $this->exists($customer)) {

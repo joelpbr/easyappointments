@@ -80,55 +80,14 @@ $config['url_suffix'] = '';
 | Default Language
 |--------------------------------------------------------------------------
 |
-| This determines which set of language files should be used. Make sure
-| there is an available translation if you intend to use something other
-| than english.
+| This determines which set of language files should be used. Only Catalan and Spanish are supported;
+| Catalan is the default.
 |
 */
 
 $languages = [
-    'sq' => 'albanian',
-    'ar' => 'arabic',
-    'bs' => 'bosnian',
-    'bg' => 'bulgarian',
     'ca' => 'catalan',
-    'cs' => 'czech',
-    'da' => 'danish',
-    'de' => 'german',
-    'el' => 'greek',
-    'en' => 'english',
     'es' => 'spanish',
-    'et' => 'estonian',
-    'fa' => 'persian',
-    'fi' => 'finnish',
-    'fr' => 'french',
-    'he' => 'hebrew',
-    'hi' => 'hindi',
-    'hr' => 'croatian',
-    'hu' => 'hungarian',
-    'it' => 'italian',
-    'ja' => 'japanese',
-    'lb' => 'luxembourgish',
-    'lt' => 'lithuanian',
-    'lv' => 'latvian',
-    'mr' => 'marathi',
-    'nl' => 'dutch',
-    'nb' => 'norwegian',
-    'pl' => 'polish',
-    'pt' => 'portuguese',
-    'pt-br' => 'portuguese-br',
-    'ro' => 'romanian',
-    'sr' => 'serbian',
-    'ru' => 'russian',
-    'sk' => 'slovak',
-    'sl' => 'slovenian',
-    'sv' => 'swedish',
-    'th' => 'thai',
-    'tr' => 'turkish',
-    'zh-cn' => 'chinese',
-    'zh-tw' => 'traditional-chinese',
-    'uk' => 'ukrainian',
-    'uz' => 'uzbek',
 ];
 
 $config['language_codes'] = $languages;
@@ -141,9 +100,10 @@ if ($requested_language !== null && !in_array($requested_language, $languages, t
 }
 
 // The clinic works in Catalan by default, whatever the language of the browser; Spanish is chosen in the user menu.
-$config['language'] = $requested_language ?? Config::LANGUAGE;
+$default_language = in_array(Config::LANGUAGE, $languages, true) ? Config::LANGUAGE : 'catalan';
+$config['language'] = $requested_language ?? $default_language;
 
-$config['language_code'] = array_search($config['language'], $languages) ?: 'en';
+$config['language_code'] = array_search($config['language'], $languages, true) ?: 'ca';
 
 /*
 |--------------------------------------------------------------------------

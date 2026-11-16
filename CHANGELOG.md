@@ -7,7 +7,9 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
-- A simple agenda for phones at /mobile: the appointments of a day one below the other, with day navigation (arrows, swipe or the phone date picker), a provider filter and each appointment's details with buttons to call or WhatsApp the patient; phones opening the calendar go there automatically, and "Full version" (remembered by the browser) or "Mobile version" in the user menu switch between both
+- Only Catalan and Spanish application translations are shipped. Catalan is the default throughout the app; existing saved user languages are reset to Catalan, while Spanish remains an explicit choice and old unsupported preferences safely fall back to Catalan.
+- The simple agenda lives at /simple, with matching controller, view, JS/CSS names and translation keys. The former /mobile URL redirects permanently to /simple, saved provider/full-calendar preferences are retained, and both navigation links keep the puzzle-piece icon.
+- A simple agenda at /simple: the appointments of a day one below the other, with day navigation (arrows, swipe or the phone date picker), a provider filter and each appointment's details with buttons to call or WhatsApp the patient; phones opening the calendar go there automatically, and "Full version" (remembered by the browser) or "Simple version" in the user menu switch between both
 - The booking form again includes both original comment fields: the appointment's comment and the patient's administrative notes, loaded and saved independently under their original labels.
 - Clicking a patient opens their clinical record directly; a small SVG button beside its close button opens that patient's original details page and administrative history, with the existing choices for unsaved changes.
 - Imported text recovers accents, Ñ/ñ, ordinals and punctuation damaged by incorrect character encoding, including repeated conversions; existing records can be repaired with a safety backup and verification that all other fields and drawing coordinates are unchanged.
