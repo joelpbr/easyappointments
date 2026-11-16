@@ -21,6 +21,13 @@
 class Customers_model extends EA_Model
 {
     /**
+     * Fields of a patient left out of the audit log, and those whose content is not stored in it (free text).
+     */
+    private const AUDIT_IGNORED = ['id_roles', 'no_show_count', 'phone_normalized'];
+
+    private const AUDIT_REDACTED = ['notes'];
+
+    /**
      * @var array
      */
     protected array $casts = [
@@ -310,7 +317,11 @@ class Customers_model extends EA_Model
             throw new RuntimeException('Could not insert customer.');
         }
 
-        return $this->db->insert_id();
+        $customer_id = (int) $this->db->insert_id();
+
+        audit_record('customer', $customer_id, [], $customer, self::AUDIT_IGNORED, self::AUDIT_REDACTED);
+
+        return $customer_id;
     }
 
     /**
@@ -330,9 +341,13 @@ class Customers_model extends EA_Model
         // non-customer row (defense in depth alongside validate()).
         $where = ['id' => $customer['id'], 'id_roles' => $this->get_customer_role_id()];
 
+        $before = $this->db->get_where('users', $where)->row_array() ?: [];
+
         if (!$this->db->update('users', $customer, $where)) {
             throw new RuntimeException('Could not update customer.');
         }
+
+        audit_record('customer', (int) $customer['id'], $before, $customer, self::AUDIT_IGNORED, self::AUDIT_REDACTED);
 
         return $customer['id'];
     }
@@ -377,6 +392,12 @@ class Customers_model extends EA_Model
         }
 
         $this->db->delete('users', ['id' => $customer_id, 'id_roles' => $this->get_customer_role_id()]);
+
+        // Only who it was: the rest of the data of a removed patient is not kept.
+        audit_log('deleted', 'customer', $customer_id, [
+            'first_name' => [$customer['first_name'], null],
+            'last_name' => [$customer['last_name'], null],
+        ]);
     }
 
     /**

@@ -39,5 +39,11 @@
                 <?= lang('backups') ?>
             </a>
         </li>
+
+        <li class="nav-item mb-3">
+            <a class="nav-link px-0 py-2" href="<?= site_url('activity_log') ?>">
+                <?= lang('activity_log') ?>
+            </a>
+        </li>
     <?php endif; ?>
 </ul>

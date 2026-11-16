@@ -102,7 +102,31 @@ class Settings_model extends EA_Model
             throw new RuntimeException('Could not insert setting.');
         }
 
-        return $this->db->insert_id();
+        $setting_id = (int) $this->db->insert_id();
+
+        $this->audit($setting_id, $setting['name'], null, $setting['value'] ?? null);
+
+        return $setting_id;
+    }
+
+    /**
+     * Record the change of a setting in the audit log: one row per setting, named by the setting. The value of a
+     * secret (tokens, passwords, keys) is not stored, only that it changed.
+     *
+     * @param int $setting_id
+     * @param string $name
+     * @param mixed $previous
+     * @param mixed $current
+     */
+    private function audit(int $setting_id, string $name, mixed $previous, mixed $current): void
+    {
+        $redacted = preg_match('/token|secret|password|api_key|private_key/i', $name) ? [$name] : [];
+
+        $changes = audit_changes([$name => $previous], [$name => $current], [$name], $redacted);
+
+        if ($changes) {
+            audit_log('updated', 'setting', $setting_id, $changes);
+        }
     }
 
     /**
@@ -118,8 +142,19 @@ class Settings_model extends EA_Model
     {
         $setting['update_datetime'] = date('Y-m-d H:i:s');
 
+        $before = $this->db->get_where('settings', ['id' => $setting['id']])->row_array() ?: [];
+
         if (!$this->db->update('settings', $setting, ['id' => $setting['id']])) {
             throw new RuntimeException('Could not update setting.');
+        }
+
+        if (array_key_exists('value', $setting)) {
+            $this->audit(
+                (int) $setting['id'],
+                $setting['name'] ?? ($before['name'] ?? ''),
+                $before['value'] ?? null,
+                $setting['value'],
+            );
         }
 
         return $setting['id'];
@@ -134,7 +169,13 @@ class Settings_model extends EA_Model
      */
     public function delete(int $setting_id): void
     {
+        $before = $this->db->get_where('settings', ['id' => $setting_id])->row_array();
+
         $this->db->delete('settings', ['id' => $setting_id]);
+
+        if ($before) {
+            $this->audit($setting_id, $before['name'], $before['value'], null);
+        }
     }
 
     /**

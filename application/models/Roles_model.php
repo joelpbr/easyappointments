@@ -98,7 +98,11 @@ class Roles_model extends EA_Model
             throw new RuntimeException('Could not insert role.');
         }
 
-        return $this->db->insert_id();
+        $role_id = (int) $this->db->insert_id();
+
+        audit_record('role', $role_id, [], $role);
+
+        return $role_id;
     }
 
     /**
@@ -114,9 +118,13 @@ class Roles_model extends EA_Model
     {
         $role['update_datetime'] = date('Y-m-d H:i:s');
 
+        $before = $this->db->get_where('roles', ['id' => $role['id']])->row_array() ?: [];
+
         if (!$this->db->update('roles', $role, ['id' => $role['id']])) {
             throw new RuntimeException('Could not update role.');
         }
+
+        audit_record('role', (int) $role['id'], $before, $role);
 
         return $role['id'];
     }
@@ -130,7 +138,13 @@ class Roles_model extends EA_Model
      */
     public function delete(int $role_id): void
     {
+        $before = $this->db->get_where('roles', ['id' => $role_id])->row_array();
+
         $this->db->delete('roles', ['id' => $role_id]);
+
+        if ($before) {
+            audit_record('role', $role_id, $before, []);
+        }
     }
 
     /**

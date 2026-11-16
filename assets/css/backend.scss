@@ -2892,3 +2892,26 @@ $ea-day-separator: 3px solid #6c757d;
     border-color: var(--bs-gray-400);
     opacity: 1;
 }
+
+// Activity log (activity_log.php): one row per change, the fields that changed one per line, the former value struck
+// through.
+#activity-log-page {
+    .ea-activity-table {
+        font-size: 0.875rem;
+
+        td {
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+    }
+
+    .ea-activity-change {
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+    .ea-activity-before {
+        color: var(--bs-secondary-color);
+        text-decoration: line-through;
+    }
+}

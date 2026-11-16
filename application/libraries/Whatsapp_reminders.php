@@ -726,7 +726,34 @@ class Whatsapp_reminders
             'is_test' => 1,
         ]);
 
-        return $this->send_test_message((int) $this->CI->db->insert_id());
+        $reminder_id = (int) $this->CI->db->insert_id();
+
+        $result = $this->send_test_message($reminder_id);
+
+        audit_log('test_sent', 'whatsapp_message', $reminder_id, [
+            'phone' => [null, $recipient ?: trim($phone)],
+            'status' => [null, $result['ok'] ? 'accepted' : 'failed'],
+        ]);
+
+        return $result;
+    }
+
+    /**
+     * Record in the audit log what someone did with a message of the list.
+     *
+     * @param string $action E.g. "resent", "marked_sent", "cancelled", "deleted", "patient_told".
+     * @param array $reminder The message as it was.
+     */
+    private function audit_action(string $action, array $reminder): void
+    {
+        $after = $this->CI->db->get_where('whatsapp_reminders', ['id' => $reminder['id']])->row_array() ?: [];
+
+        $changes = audit_changes($reminder, $after, ['status', 'change_handled_datetime']);
+
+        // Which appointment, so that the log says it even when nothing else changed.
+        $changes['appointment_datetime'] = [$reminder['appointment_datetime'], $reminder['appointment_datetime']];
+
+        audit_log($action, 'whatsapp_message', (int) $reminder['id'], $changes);
     }
 
     /**
@@ -840,6 +867,8 @@ class Whatsapp_reminders
         // Sent by hand: whoever sends it decides, whatever the time left before the appointment.
         $result = $this->process($reminder, $now, $rules, true);
 
+        $this->audit_action('resent', $reminder);
+
         if ($result === 'sent') {
             return ['ok' => true, 'error' => null];
         }
@@ -858,9 +887,11 @@ class Whatsapp_reminders
      */
     public function mark_sent(int $reminder_id): void
     {
-        $this->find($reminder_id);
+        $reminder = $this->find($reminder_id);
 
         $this->update($reminder_id, ['status' => 'manual', 'status_datetime' => date('Y-m-d H:i:s')]);
+
+        $this->audit_action('marked_sent', $reminder);
     }
 
     /**
@@ -871,9 +902,11 @@ class Whatsapp_reminders
      */
     public function mark_change_handled(int $reminder_id): void
     {
-        $this->find($reminder_id);
+        $reminder = $this->find($reminder_id);
 
         $this->update($reminder_id, ['change_handled_datetime' => date('Y-m-d H:i:s')]);
+
+        $this->audit_action('patient_told', $reminder);
     }
 
     /**
@@ -1074,9 +1107,11 @@ class Whatsapp_reminders
      */
     public function cancel(int $reminder_id): void
     {
-        $this->find($reminder_id);
+        $reminder = $this->find($reminder_id);
 
         $this->update($reminder_id, ['status' => 'cancelled', 'status_datetime' => date('Y-m-d H:i:s')]);
+
+        $this->audit_action('cancelled', $reminder);
     }
 
     /**
@@ -1092,6 +1127,8 @@ class Whatsapp_reminders
             'is_deleted' => 1,
             'status' => in_array($reminder['status'], ['pending', 'failed'], true) ? 'cancelled' : $reminder['status'],
         ]);
+
+        $this->audit_action('deleted', $reminder);
     }
 
     /**

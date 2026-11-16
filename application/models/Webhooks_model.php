@@ -106,7 +106,11 @@ class Webhooks_model extends EA_Model
             throw new RuntimeException('Could not insert webhook.');
         }
 
-        return $this->db->insert_id();
+        $webhook_id = (int) $this->db->insert_id();
+
+        audit_record('webhook', $webhook_id, [], $webhook, [], ['secret_token']);
+
+        return $webhook_id;
     }
 
     /**
@@ -122,9 +126,13 @@ class Webhooks_model extends EA_Model
     {
         $webhook['update_datetime'] = date('Y-m-d H:i:s');
 
+        $before = $this->db->get_where('webhooks', ['id' => $webhook['id']])->row_array() ?: [];
+
         if (!$this->db->update('webhooks', $webhook, ['id' => $webhook['id']])) {
             throw new RuntimeException('Could not update webhook.');
         }
+
+        audit_record('webhook', (int) $webhook['id'], $before, $webhook, [], ['secret_token']);
 
         return $webhook['id'];
     }
@@ -138,7 +146,13 @@ class Webhooks_model extends EA_Model
      */
     public function delete(int $webhook_id): void
     {
+        $before = $this->db->get_where('webhooks', ['id' => $webhook_id])->row_array();
+
         $this->db->delete('webhooks', ['id' => $webhook_id]);
+
+        if ($before) {
+            audit_record('webhook', $webhook_id, $before, [], [], ['secret_token']);
+        }
     }
 
     /**

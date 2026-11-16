@@ -284,6 +284,8 @@ class Admins_model extends EA_Model
 
         $this->set_settings($admin['id'], $settings);
 
+        audit_user('admin', (int) $admin['id'], [], audit_user_snapshot((int) $admin['id']));
+
         return $admin['id'];
     }
 
@@ -341,6 +343,8 @@ class Admins_model extends EA_Model
     {
         $admin['id_roles'] = $this->get_admin_role_id();
 
+        $before = audit_user_snapshot((int) $admin['id']);
+
         $settings = $admin['settings'];
 
         $settings['id_users'] = $admin['id'];
@@ -369,6 +373,8 @@ class Admins_model extends EA_Model
 
         $this->set_settings($admin['id'], $settings);
 
+        audit_user('admin', (int) $admin['id'], $before, audit_user_snapshot((int) $admin['id']));
+
         return $admin['id'];
     }
 
@@ -389,7 +395,13 @@ class Admins_model extends EA_Model
             throw new RuntimeException('Record could not be deleted as the app requires at least one admin user.');
         }
 
+        $before = audit_user_snapshot($admin_id);
+
         $this->db->delete('users', ['id' => $admin_id, 'id_roles' => $role_id]);
+
+        if ($before && $this->db->affected_rows()) {
+            audit_user('admin', $admin_id, $before, []);
+        }
     }
 
     /**

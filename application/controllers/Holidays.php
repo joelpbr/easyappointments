@@ -156,11 +156,15 @@ class Holidays extends EA_Controller
                 throw new InvalidArgumentException(lang('holiday_name_missing'));
             }
 
-            $this->db->insert('holidays', [
+            $holiday = [
                 'date' => date('Y-m-d', strtotime(request('date'))),
                 'name' => $name,
                 'level' => 'local',
-            ]);
+            ];
+
+            $this->db->insert('holidays', $holiday);
+
+            audit_record('holiday', (int) $this->db->insert_id(), [], $holiday);
 
             json_response(['success' => true]);
         } catch (Throwable $e) {
@@ -182,7 +186,15 @@ class Holidays extends EA_Controller
 
             check('holiday_id', 'numeric');
 
-            $this->db->delete('holidays', ['id' => (int) request('holiday_id')]);
+            $holiday_id = (int) request('holiday_id');
+
+            $before = $this->db->get_where('holidays', ['id' => $holiday_id])->row_array();
+
+            $this->db->delete('holidays', ['id' => $holiday_id]);
+
+            if ($before) {
+                audit_record('holiday', $holiday_id, $before, []);
+            }
 
             json_response(['success' => true]);
         } catch (Throwable $e) {

@@ -156,6 +156,8 @@ class Accounts
 
         $this->CI->users_model->set_setting($user['id'], 'password', $hash_password);
 
+        audit_log('password_reset', 'user', (int) $user['id']);
+
         return $new_password;
     }
 
@@ -304,6 +306,9 @@ class Accounts
             ],
             ['id_users' => $user['id']],
         );
+
+        audit_log('password_reset', 'user', (int) $user['id']);
+
         return true;
     }
 }

@@ -334,6 +334,8 @@ class Secretaries_model extends EA_Model
         $this->set_settings($secretary['id'], $settings);
         $this->set_provider_ids($secretary['id'], $provider_ids);
 
+        audit_user('secretary', (int) $secretary['id'], [], audit_user_snapshot((int) $secretary['id']));
+
         return $secretary['id'];
     }
 
@@ -392,6 +394,8 @@ class Secretaries_model extends EA_Model
 
         $secretary['update_datetime'] = date('Y-m-d H:i:s');
 
+        $before = audit_user_snapshot((int) $secretary['id']);
+
         $provider_ids = $secretary['providers'] ?? [];
 
         $settings = $secretary['settings'];
@@ -418,6 +422,8 @@ class Secretaries_model extends EA_Model
 
         $this->set_settings($secretary['id'], $settings);
         $this->set_provider_ids($secretary['id'], $provider_ids);
+
+        audit_user('secretary', (int) $secretary['id'], $before, audit_user_snapshot((int) $secretary['id']));
 
         return (int) $secretary['id'];
     }
@@ -452,7 +458,13 @@ class Secretaries_model extends EA_Model
      */
     public function delete(int $secretary_id): void
     {
+        $before = audit_user_snapshot($secretary_id);
+
         $this->db->delete('users', ['id' => $secretary_id, 'id_roles' => $this->get_secretary_role_id()]);
+
+        if ($before && $this->db->affected_rows()) {
+            audit_user('secretary', $secretary_id, $before, []);
+        }
     }
 
     /**

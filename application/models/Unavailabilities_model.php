@@ -19,6 +19,22 @@
 class Unavailabilities_model extends EA_Model
 {
     /**
+     * Fields of an unavailability (a row of appointments) that mean nothing for it, left out of the audit log.
+     */
+    private const AUDIT_IGNORED = [
+        'is_unavailability',
+        'id_users_customer',
+        'id_services',
+        'service_name',
+        'price',
+        'status',
+        'is_first_visit',
+        'send_whatsapp_reminder',
+        'id_google_calendar',
+        'id_caldav_calendar',
+    ];
+
+    /**
      * @var array
      */
     protected array $casts = [
@@ -197,7 +213,11 @@ class Unavailabilities_model extends EA_Model
             throw new RuntimeException('Could not insert unavailability.');
         }
 
-        return $this->db->insert_id();
+        $unavailability_id = (int) $this->db->insert_id();
+
+        audit_record('unavailability', $unavailability_id, [], $unavailability, self::AUDIT_IGNORED);
+
+        return $unavailability_id;
     }
 
     /**
@@ -213,9 +233,13 @@ class Unavailabilities_model extends EA_Model
     {
         $unavailability['update_datetime'] = date('Y-m-d H:i:s');
 
+        $before = $this->db->get_where('appointments', ['id' => $unavailability['id']])->row_array() ?: [];
+
         if (!$this->db->update('appointments', $unavailability, ['id' => $unavailability['id']])) {
             throw new RuntimeException('Could not update unavailability record.');
         }
+
+        audit_record('unavailability', (int) $unavailability['id'], $before, $unavailability, self::AUDIT_IGNORED);
 
         return $unavailability['id'];
     }
@@ -229,7 +253,15 @@ class Unavailabilities_model extends EA_Model
      */
     public function delete(int $unavailability_id): void
     {
-        $this->db->delete('appointments', ['id' => $unavailability_id, 'is_unavailability' => true]);
+        $where = ['id' => $unavailability_id, 'is_unavailability' => true];
+
+        $before = $this->db->get_where('appointments', $where)->row_array();
+
+        $this->db->delete('appointments', $where);
+
+        if ($before) {
+            audit_record('unavailability', $unavailability_id, $before, [], self::AUDIT_IGNORED);
+        }
     }
 
     /**

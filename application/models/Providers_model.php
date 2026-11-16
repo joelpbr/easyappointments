@@ -21,19 +21,6 @@
 class Providers_model extends EA_Model
 {
     /**
-     * Fields whose changes are recorded in the audit log (working_plan comes from the provider settings).
-     */
-    private const AUDITED_FIELDS = [
-        'first_name',
-        'last_name',
-        'email',
-        'phone_number',
-        'is_private',
-        'is_active',
-        'working_plan',
-    ];
-
-    /**
      * @var array
      */
     protected array $casts = [
@@ -356,12 +343,7 @@ class Providers_model extends EA_Model
         $this->set_settings($provider['id'], $settings);
         $this->set_service_ids($provider['id'], $service_ids);
 
-        audit_log(
-            'created',
-            'provider',
-            (int) $provider['id'],
-            audit_changes([], $provider + ['working_plan' => $settings['working_plan'] ?? null], self::AUDITED_FIELDS),
-        );
+        audit_user('provider', (int) $provider['id'], [], audit_user_snapshot((int) $provider['id']));
 
         return $provider['id'];
     }
@@ -418,7 +400,16 @@ class Providers_model extends EA_Model
                 // Delete exceptions that were not in the new list
                 $ids_to_delete = array_diff($existing_ids, $new_ids);
                 if (!empty($ids_to_delete)) {
+                    $removed = $this->db
+                        ->where_in('id', $ids_to_delete)
+                        ->get('working_plan_exceptions')
+                        ->result_array();
+
                     $this->db->where_in('id', $ids_to_delete)->delete('working_plan_exceptions');
+
+                    foreach ($removed as $exception) {
+                        audit_record('working_plan_exception', (int) $exception['id'], $exception, []);
+                    }
                 }
 
                 continue;
@@ -477,13 +468,8 @@ class Providers_model extends EA_Model
             $settings['password'] = hash_password($existing_settings['salt'], $settings['password']);
         }
 
-        $before = $this->db->get_where('users', ['id' => $provider['id']])->row_array() ?: [];
-
-        $before['working_plan'] =
-            $this->db
-                ->select('working_plan')
-                ->get_where('user_settings', ['id_users' => $provider['id']])
-                ->row_array()['working_plan'] ?? null;
+        // The whole provider is compared, its working plan and treatments too (specification 19.2).
+        $before = audit_user_snapshot((int) $provider['id']);
 
         if (!$this->db->update('users', $provider, ['id' => $provider['id']])) {
             throw new RuntimeException('Could not update provider.');
@@ -492,18 +478,7 @@ class Providers_model extends EA_Model
         $this->set_settings($provider['id'], $settings);
         $this->set_service_ids($provider['id'], $service_ids);
 
-        // Working plan changes are audited too (specification 19.2), only the fields that were sent are compared.
-        $after = $provider;
-
-        if (array_key_exists('working_plan', $settings)) {
-            $after['working_plan'] = $settings['working_plan'];
-        }
-
-        $changes = audit_changes($before, $after, self::AUDITED_FIELDS);
-
-        if ($changes) {
-            audit_log('updated', 'provider', (int) $provider['id'], $changes);
-        }
+        audit_user('provider', (int) $provider['id'], $before, audit_user_snapshot((int) $provider['id']));
 
         return $provider['id'];
     }
@@ -548,21 +523,12 @@ class Providers_model extends EA_Model
             throw new RuntimeException(lang('provider_has_appointments'));
         }
 
-        $before =
-            $this->db
-                ->get_where('users', ['id' => $provider_id, 'id_roles' => $this->get_provider_role_id()])
-                ->row_array() ?:
-            [];
+        $before = audit_user_snapshot($provider_id);
 
         $this->db->delete('users', ['id' => $provider_id, 'id_roles' => $this->get_provider_role_id()]);
 
-        if ($before) {
-            audit_log(
-                'deleted',
-                'provider',
-                $provider_id,
-                audit_changes($before, array_fill_keys(self::AUDITED_FIELDS, null), self::AUDITED_FIELDS),
-            );
+        if ($before && $this->db->affected_rows()) {
+            audit_user('provider', $provider_id, $before, []);
         }
     }
 

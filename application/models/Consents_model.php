@@ -79,7 +79,11 @@ class Consents_model extends EA_Model
             throw new RuntimeException('Could not insert consent.');
         }
 
-        return $this->db->insert_id();
+        $consent_id = (int) $this->db->insert_id();
+
+        audit_record('consent', $consent_id, [], $consent);
+
+        return $consent_id;
     }
 
     /**
@@ -95,9 +99,13 @@ class Consents_model extends EA_Model
     {
         $consent['update_datetime'] = date('Y-m-d H:i:s');
 
+        $before = $this->db->get_where('consents', ['id' => $consent['id']])->row_array() ?: [];
+
         if (!$this->db->update('consents', $consent, ['id' => $consent['id']])) {
             throw new RuntimeException('Could not update consent.');
         }
+
+        audit_record('consent', (int) $consent['id'], $before, $consent);
 
         return $consent['id'];
     }
@@ -111,7 +119,13 @@ class Consents_model extends EA_Model
      */
     public function delete(int $consent_id): void
     {
+        $before = $this->db->get_where('consents', ['id' => $consent_id])->row_array();
+
         $this->db->delete('consents', ['id' => $consent_id]);
+
+        if ($before) {
+            audit_record('consent', $consent_id, $before, []);
+        }
     }
 
     /**

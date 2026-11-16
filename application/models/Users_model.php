@@ -125,6 +125,8 @@ class Users_model extends EA_Model
 
         $this->set_settings($user['id'], $settings);
 
+        audit_user('user', (int) $user['id'], [], audit_user_snapshot((int) $user['id']));
+
         return $user['id'];
     }
 
@@ -181,6 +183,8 @@ class Users_model extends EA_Model
     {
         $user['update_datetime'] = date('Y-m-d H:i:s');
 
+        $before = audit_user_snapshot((int) $user['id']);
+
         $settings = $user['settings'];
         unset($user['settings']);
 
@@ -200,6 +204,8 @@ class Users_model extends EA_Model
 
         $this->set_settings($user['id'], $settings);
 
+        audit_user('user', (int) $user['id'], $before, audit_user_snapshot((int) $user['id']));
+
         return $user['id'];
     }
 
@@ -212,7 +218,13 @@ class Users_model extends EA_Model
      */
     public function delete(int $user_id): void
     {
+        $before = audit_user_snapshot($user_id);
+
         $this->db->delete('users', ['id' => $user_id]);
+
+        if ($before && $this->db->affected_rows()) {
+            audit_user('user', $user_id, $before, []);
+        }
     }
 
     /**

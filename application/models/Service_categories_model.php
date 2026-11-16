@@ -102,7 +102,11 @@ class Service_categories_model extends EA_Model
             throw new RuntimeException('Could not insert service-category.');
         }
 
-        return $this->db->insert_id();
+        $service_category_id = (int) $this->db->insert_id();
+
+        audit_record('service_category', $service_category_id, [], $service_category);
+
+        return $service_category_id;
     }
 
     /**
@@ -118,9 +122,13 @@ class Service_categories_model extends EA_Model
     {
         $service_category['update_datetime'] = date('Y-m-d H:i:s');
 
+        $before = $this->db->get_where('service_categories', ['id' => $service_category['id']])->row_array() ?: [];
+
         if (!$this->db->update('service_categories', $service_category, ['id' => $service_category['id']])) {
             throw new RuntimeException('Could not update service categories.');
         }
+
+        audit_record('service_category', (int) $service_category['id'], $before, $service_category);
 
         return $service_category['id'];
     }
@@ -134,7 +142,13 @@ class Service_categories_model extends EA_Model
      */
     public function delete(int $service_category_id): void
     {
+        $before = $this->db->get_where('service_categories', ['id' => $service_category_id])->row_array();
+
         $this->db->delete('service_categories', ['id' => $service_category_id]);
+
+        if ($before) {
+            audit_record('service_category', $service_category_id, $before, []);
+        }
     }
 
     /**

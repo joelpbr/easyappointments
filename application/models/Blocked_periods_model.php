@@ -92,6 +92,8 @@ class Blocked_periods_model extends EA_Model
             $blocked_period['recurrence_until'] = $blocked_period['recurrence_until'] ?: null;
         }
 
+        $before = empty($blocked_period['id']) ? [] : $this->audit_snapshot((int) $blocked_period['id']);
+
         $blocked_period_id = empty($blocked_period['id'])
             ? $this->insert($blocked_period)
             : $this->update($blocked_period);
@@ -107,7 +109,39 @@ class Blocked_periods_model extends EA_Model
             }
         }
 
+        audit_record('blocked_period', (int) $blocked_period_id, $before, $this->audit_snapshot((int) $blocked_period_id));
+
         return $blocked_period_id;
+    }
+
+    /**
+     * Get what the audit log compares of a blocked period: its row and its providers.
+     *
+     * @param int $blocked_period_id
+     *
+     * @return array Empty when it does not exist.
+     */
+    private function audit_snapshot(int $blocked_period_id): array
+    {
+        $blocked_period = $this->db->get_where('blocked_periods', ['id' => $blocked_period_id])->row_array();
+
+        if (!$blocked_period) {
+            return [];
+        }
+
+        $blocked_period['providers'] = array_map(
+            'intval',
+            array_column(
+                $this->db
+                    ->select('id_users_provider')
+                    ->order_by('id_users_provider')
+                    ->get_where('blocked_periods_providers', ['id_blocked_periods' => $blocked_period_id])
+                    ->result_array(),
+                'id_users_provider',
+            ),
+        );
+
+        return $blocked_period;
     }
 
     /**
@@ -250,7 +284,13 @@ class Blocked_periods_model extends EA_Model
      */
     public function delete(int $blocked_period_id): void
     {
+        $before = $this->audit_snapshot($blocked_period_id);
+
         $this->db->delete('blocked_periods', ['id' => $blocked_period_id]);
+
+        if ($before) {
+            audit_record('blocked_period', $blocked_period_id, $before, []);
+        }
     }
 
     /**

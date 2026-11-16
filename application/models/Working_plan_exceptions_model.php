@@ -142,7 +142,11 @@ class Working_plan_exceptions_model extends EA_Model
             throw new RuntimeException('Could not insert working plan exception.');
         }
 
-        return $this->db->insert_id();
+        $working_plan_exception_id = (int) $this->db->insert_id();
+
+        audit_record('working_plan_exception', $working_plan_exception_id, [], $working_plan_exception);
+
+        return $working_plan_exception_id;
     }
 
     /**
@@ -158,6 +162,10 @@ class Working_plan_exceptions_model extends EA_Model
     {
         $working_plan_exception['update_datetime'] = date('Y-m-d H:i:s');
 
+        $before =
+            $this->db->get_where('working_plan_exceptions', ['id' => $working_plan_exception['id']])->row_array() ?:
+            [];
+
         if (
             !$this->db->update('working_plan_exceptions', $working_plan_exception, [
                 'id' => $working_plan_exception['id'],
@@ -165,6 +173,8 @@ class Working_plan_exceptions_model extends EA_Model
         ) {
             throw new RuntimeException('Could not update working plan exception.');
         }
+
+        audit_record('working_plan_exception', (int) $working_plan_exception['id'], $before, $working_plan_exception);
 
         return $working_plan_exception['id'];
     }
@@ -178,7 +188,13 @@ class Working_plan_exceptions_model extends EA_Model
      */
     public function delete(int $working_plan_exception_id): void
     {
+        $before = $this->db->get_where('working_plan_exceptions', ['id' => $working_plan_exception_id])->row_array();
+
         $this->db->delete('working_plan_exceptions', ['id' => $working_plan_exception_id]);
+
+        if ($before) {
+            audit_record('working_plan_exception', $working_plan_exception_id, $before, []);
+        }
     }
 
     /**
@@ -561,10 +577,21 @@ class Working_plan_exceptions_model extends EA_Model
     public function delete_by_provider_and_date(int $provider_id, string $date): void
     {
         // Delete any exception where the date falls within the range
+        $removed = $this->db
+            ->where('id_users_provider', $provider_id)
+            ->where('start_date <=', $date)
+            ->where('end_date >=', $date)
+            ->get('working_plan_exceptions')
+            ->result_array();
+
         $this->db
             ->where('id_users_provider', $provider_id)
             ->where('start_date <=', $date)
             ->where('end_date >=', $date)
             ->delete('working_plan_exceptions');
+
+        foreach ($removed as $exception) {
+            audit_record('working_plan_exception', (int) $exception['id'], $exception, []);
+        }
     }
 }
