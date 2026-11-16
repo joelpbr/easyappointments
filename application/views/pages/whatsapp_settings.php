@@ -16,8 +16,9 @@ $to_review = $counts['failed'] + $counts['review'];
 
 <?php section('content'); ?>
 
-<!-- Settings and panel of the WhatsApp reminders (whatsapp_settings.js, Whatsapp_reminders library). What is only
-     set once (template, webhook) stays folded under "Advanced". -->
+<!-- Settings and panel of the WhatsApp reminders (whatsapp_settings.js, Whatsapp_reminders library). In sight, only
+     when they go out and how they are going; what is set once (the switch, Meta, template, webhook) stays folded under
+     "Advanced". -->
 <div id="whatsapp-settings-page" class="container backend-page py-3">
     <div class="row">
         <div class="col-sm-3">
@@ -40,34 +41,8 @@ $to_review = $counts['failed'] + $counts['review'];
                     </div>
                 </div>
 
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input" type="checkbox" id="whatsapp-enabled" data-field="whatsapp_enabled">
-                    <label class="form-check-label" for="whatsapp-enabled"><?= lang('whatsapp_enabled') ?></label>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label" for="whatsapp-phone-number-id">
-                            <?= lang('whatsapp_phone_number_id') ?>
-                        </label>
-                        <input id="whatsapp-phone-number-id" class="form-control" data-field="whatsapp_phone_number_id"
-                               inputmode="numeric" autocomplete="off">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label" for="whatsapp-access-token"><?= lang('whatsapp_access_token') ?></label>
-                        <input id="whatsapp-access-token" type="password" class="form-control"
-                               data-field="whatsapp_access_token" autocomplete="new-password"
-                               placeholder="<?= $has_access_token ? e(lang('whatsapp_secret_saved')) : '' ?>">
-                    </div>
-                </div>
-
-                <div class="input-group mb-4">
-                    <input id="whatsapp-test-phone" class="form-control" type="tel" placeholder="+34 600 000 000"
-                           aria-label="<?= e(lang('phone_number')) ?>">
-                    <button type="button" id="whatsapp-send-test" class="btn btn-outline-primary">
-                        <i class="fas fa-paper-plane me-2"></i><?= lang('whatsapp_send_test') ?>
-                    </button>
-                </div>
+                <!-- Whether the reminders go out; the switch is under "Advanced" (whatsapp_settings.js). -->
+                <div id="whatsapp-state" class="alert py-2 mb-4" role="status"></div>
 
                 <!-- When the reminders go out (Whatsapp_reminders::rules()). -->
                 <h5 class="fw-light mb-2"><?= lang('whatsapp_schedule') ?></h5>
@@ -99,9 +74,50 @@ $to_review = $counts['failed'] + $counts['review'];
                 </div>
                 <p id="whatsapp-schedule-summary" class="small text-muted mb-4"></p>
 
-                <!-- Set once: the template approved in Meta and the webhook of the delivery statuses. -->
+                <!-- Set once, when the reminders are set up: the connection with Meta, the approved template and the
+                     webhook of the delivery statuses. Folded, so that nobody changes it by mistake. -->
                 <details class="mb-4 ea-whatsapp-advanced">
                     <summary class="mb-3"><?= lang('whatsapp_advanced') ?></summary>
+
+                    <div class="alert alert-warning py-2 small">
+                        <i class="fas fa-exclamation-triangle me-2"></i><?= lang('whatsapp_advanced_hint') ?>
+                    </div>
+
+                    <h6 class="fw-semibold mt-3 mb-3"><?= lang('whatsapp_meta_connection') ?></h6>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="whatsapp-enabled"
+                               data-field="whatsapp_enabled">
+                        <label class="form-check-label" for="whatsapp-enabled"><?= lang('whatsapp_enabled') ?></label>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="whatsapp-phone-number-id">
+                                <?= lang('whatsapp_phone_number_id') ?>
+                            </label>
+                            <input id="whatsapp-phone-number-id" class="form-control"
+                                   data-field="whatsapp_phone_number_id" inputmode="numeric" autocomplete="off">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label" for="whatsapp-access-token">
+                                <?= lang('whatsapp_access_token') ?>
+                            </label>
+                            <input id="whatsapp-access-token" type="password" class="form-control"
+                                   data-field="whatsapp_access_token" autocomplete="new-password"
+                                   placeholder="<?= $has_access_token ? e(lang('whatsapp_secret_saved')) : '' ?>">
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-4">
+                        <input id="whatsapp-test-phone" class="form-control" type="tel" placeholder="+34 600 000 000"
+                               aria-label="<?= e(lang('phone_number')) ?>">
+                        <button type="button" id="whatsapp-send-test" class="btn btn-outline-primary">
+                            <i class="fas fa-paper-plane me-2"></i><?= lang('whatsapp_send_test') ?>
+                        </button>
+                    </div>
+
+                    <h6 class="fw-semibold mb-3"><?= lang('whatsapp_template') ?></h6>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -130,6 +146,8 @@ $to_review = $counts['failed'] + $counts['review'];
                         </label>
                     </div>
                     <p class="form-text mb-4"><?= lang('whatsapp_template_says_tomorrow_hint') ?></p>
+
+                    <h6 class="fw-semibold mb-3"><?= lang('whatsapp_delivery_statuses') ?></h6>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">

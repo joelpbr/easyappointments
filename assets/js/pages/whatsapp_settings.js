@@ -12,11 +12,15 @@
  * WhatsApp settings page.
  *
  * Saves the settings of the WhatsApp reminders, also the rules of when they go out (said in words under them), and
- * sends a test message with the saved ones. The access token and the app secret are never shown: an empty field keeps
+ * sends a test message with the saved ones. Whether they go out is said at the top, as its switch is folded under
+ * "Advanced" with the rest of what is set once. The access token and the app secret are never shown: an empty field keeps
  * the saved value.
  */
 App.Pages.WhatsappSettings = (function () {
     const $page = $('#whatsapp-settings');
+
+    // Whether the reminders go out, as saved (the switch may have been changed without saving).
+    let savedEnabled = false;
 
     /**
      * Show the saved settings on the form.
@@ -44,6 +48,25 @@ App.Pages.WhatsappSettings = (function () {
                 name: field.dataset.field,
                 value: field.type === 'checkbox' ? Number(field.checked) : field.value.trim(),
             }));
+    }
+
+    /**
+     * Say at the top whether the reminders go out, as saved: their switch is folded under "Advanced". A switch
+     * changed and not saved yet is said too, as nothing changes until it is saved.
+     */
+    function showState() {
+        const unsaved = $('#whatsapp-enabled').prop('checked') !== savedEnabled;
+
+        $('#whatsapp-state')
+            .toggleClass('alert-success', savedEnabled && !unsaved)
+            .toggleClass('alert-secondary', !savedEnabled && !unsaved)
+            .toggleClass('alert-warning', unsaved)
+            .empty()
+            .append(
+                $('<i/>', {class: 'fas me-2 ' + (savedEnabled ? 'fa-check-circle' : 'fa-pause-circle')}),
+                $('<span/>', {text: lang(savedEnabled ? 'whatsapp_reminders_on' : 'whatsapp_reminders_off')}),
+                unsaved ? $('<strong/>', {class: 'ms-1', text: lang('whatsapp_state_unsaved')}) : null,
+            );
     }
 
     /**
@@ -159,6 +182,9 @@ App.Pages.WhatsappSettings = (function () {
         }).done(() => {
             App.Layouts.Backend.displayNotification(lang('settings_saved'));
 
+            savedEnabled = $('#whatsapp-enabled').prop('checked');
+            showState();
+
             // The secrets typed are saved: they are no longer shown.
             $('#whatsapp-access-token, #whatsapp-app-secret').each((index, field) => {
                 if (field.value) {
@@ -194,7 +220,11 @@ App.Pages.WhatsappSettings = (function () {
      */
     function initialize() {
         deserialize(vars('whatsapp_settings'));
+        savedEnabled = $('#whatsapp-enabled').prop('checked');
         showScheduleSummary();
+        showState();
+
+        $('#whatsapp-enabled').on('change', showState);
 
         $page.on(
             'input change',
