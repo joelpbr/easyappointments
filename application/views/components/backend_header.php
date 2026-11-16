@@ -14,9 +14,29 @@
         <h6 class="mb-1 mt-1 fw-bold text-white" style="font-size: 15px;">Clínica Podològica</h6>
     </div>
 
-    <button type="button" class="navbar-toggler me-1" data-bs-toggle="collapse" data-bs-target="#header-menu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <!-- On phones: the simple version, the main menu and, on the calendar, the folded toolbar of the calendar
+         (backend_layout.js). -->
+    <div class="ea-header-mobile-actions">
+        <?php if (can('view', PRIV_APPOINTMENTS)): ?>
+            <a href="<?= site_url('mobile') ?>" class="ea-header-mobile-button"
+               title="<?= e(lang('mobile_version')) ?>" aria-label="<?= e(lang('mobile_version')) ?>">
+                <i class="fas fa-mobile-alt"></i>
+            </a>
+        <?php endif; ?>
+
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#header-menu"
+                aria-controls="header-menu" aria-expanded="false" aria-label="Menu">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <?php if (vars('calendar_toolbar')): ?>
+            <button type="button" class="navbar-toggler" id="toggle-calendar-toolbar"
+                    aria-controls="calendar-toolbar" aria-expanded="false"
+                    title="<?= e(lang('calendar')) ?>" aria-label="<?= e(lang('calendar')) ?>">
+                <i class="fas fa-bars-staggered"></i>
+            </button>
+        <?php endif; ?>
+    </div>
 
     <div id="header-menu" class="collapse navbar-collapse flex-row-reverse px-2">
         <ul class="navbar-nav">
@@ -157,6 +177,13 @@
                         <i class="fas fa-external-link me-2"></i>
                         <?= lang('booking') ?>
                     </a>
+                    <?php if (can('view', PRIV_APPOINTMENTS)): ?>
+                        <!-- The simple agenda for phones (Mobile controller). -->
+                        <a class="dropdown-item" href="<?= site_url('mobile') ?>">
+                            <i class="fas fa-mobile-alt me-2"></i>
+                            <?= lang('mobile_version') ?>
+                        </a>
+                    <?php endif; ?>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="<?= site_url('logout') ?>">
                         <i class="fas fa-sign-out me-2"></i>

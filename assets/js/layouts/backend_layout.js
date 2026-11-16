@@ -146,6 +146,43 @@ window.App.Layouts.Backend = (function () {
 
         tippy('[data-tippy-content]');
 
+        // On phones the toolbar of the calendar is folded behind its own button in the header. It slides open and
+        // closed like the main menu (Bootstrap's collapse: height in 0.35s, ease), at once with reduced motion.
+        $('#toggle-calendar-toolbar').on('click', (event) => {
+            const toolbar = document.getElementById('calendar-toolbar');
+            const open = !toolbar.classList.contains('ea-toolbar-open');
+            const animate = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            $(event.currentTarget).attr('aria-expanded', String(open)).toggleClass('active', open);
+
+            toolbar.getAnimations?.().forEach((animation) => animation.cancel());
+
+            if (open) {
+                toolbar.classList.add('ea-toolbar-open');
+            }
+
+            if (!animate) {
+                toolbar.classList.toggle('ea-toolbar-open', open);
+                return;
+            }
+
+            const height = toolbar.scrollHeight + 'px';
+            const slide = toolbar.animate(
+                open
+                    ? [
+                          {height: '0px', overflow: 'hidden'},
+                          {height, overflow: 'hidden'},
+                      ]
+                    : [
+                          {height, overflow: 'hidden'},
+                          {height: '0px', overflow: 'hidden'},
+                      ],
+                {duration: 350, easing: 'ease'},
+            );
+
+            slide.onfinish = () => toolbar.classList.toggle('ea-toolbar-open', open);
+        });
+
         // Language switch of the user menu (Catalan or Spanish).
         $(document).on('click', '.ea-change-language', (event) => {
             event.preventDefault();
