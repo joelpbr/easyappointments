@@ -197,7 +197,7 @@
                                         aria-pressed="false" aria-controls="clinical-feet-board"
                                         aria-label="<?= e(lang('clinical_feet_xray')) ?>"
                                         title="<?= e(lang('clinical_feet_xray')) ?>">
-                                    <i class="fas fa-x-ray" aria-hidden="true"></i>
+                                    <i class="fas fa-arrow-right-arrow-left" aria-hidden="true"></i>
                                 </button>
                             </div>
                             <div id="clinical-feet-views" class="ea-feet-views" role="group"></div>
