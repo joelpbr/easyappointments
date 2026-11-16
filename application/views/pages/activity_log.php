@@ -41,6 +41,16 @@ $page_url = static fn(int $number): string => site_url('activity_log') .
             <p class="form-text mt-0"><?= lang('activity_log_hint') ?></p>
 
             <form method="get" action="<?= site_url('activity_log') ?>" class="row g-2 align-items-end mb-3 ea-activity-filters">
+                <div class="col-12">
+                    <label class="visually-hidden" for="activity-search"><?= lang('activity_log_search') ?></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input id="activity-search" name="q" type="search" class="form-control"
+                               value="<?= e($filters['q']) ?>" autocomplete="off"
+                               placeholder="<?= e(lang('activity_log_search_placeholder')) ?>">
+                        <button type="submit" class="btn btn-primary"><?= lang('activity_log_search') ?></button>
+                    </div>
+                </div>
                 <div class="col-6 col-md-2">
                     <label class="form-label small mb-1" for="activity-from"><?= lang('from') ?></label>
                     <input id="activity-from" name="from" type="date" class="form-control form-control-sm"

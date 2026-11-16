@@ -1010,4 +1010,6 @@ $lang['audit_field_type'] = 'Tipo';
 $lang['audit_field_is_healed'] = 'Curado';
 $lang['audit_field_file'] = 'Archivo';
 $lang['audit_field_level'] = 'Ámbito';
+$lang['activity_log_search'] = 'Buscar';
+$lang['activity_log_search_placeholder'] = 'Paciente, profesional, teléfono, tratamiento, ajuste, fecha (16/11/2026)...';
 $lang['audit_field_previous'] = 'Copia de seguridad previa';

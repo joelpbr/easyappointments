@@ -1010,4 +1010,6 @@ $lang['audit_field_type'] = 'Tipus';
 $lang['audit_field_is_healed'] = 'Curat';
 $lang['audit_field_file'] = 'Fitxer';
 $lang['audit_field_level'] = 'Àmbit';
+$lang['activity_log_search'] = 'Cerca';
+$lang['activity_log_search_placeholder'] = 'Pacient, professional, telèfon, tractament, ajust, data (16/11/2026)...';
 $lang['audit_field_previous'] = 'Còpia de seguretat prèvia';

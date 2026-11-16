@@ -105,6 +105,11 @@ class Audit_trail
     private ?array $statuses = null;
 
     /**
+     * People found by each search, as the page runs the query twice (count and rows).
+     */
+    private array $people = [];
+
+    /**
      * Audit_trail constructor.
      */
     public function __construct()
@@ -115,7 +120,7 @@ class Audit_trail
     /**
      * Get a page of the log, the latest first.
      *
-     * @param array $filters from and to (Y-m-d), user (ID), entity and action, all optional.
+     * @param array $filters from and to (Y-m-d), user (ID), entity, action and q (the search box), all optional.
      * @param int $page From 1.
      *
      * @return array ['entries' => [...], 'total' => n]: every entry with datetime, user, source, action, entity,
@@ -187,6 +192,10 @@ class Audit_trail
      */
     private function query(array $filters): CI_DB_query_builder
     {
+        // Worked out first: it runs its own queries, and the query builder is shared.
+        $search = trim((string) ($filters['q'] ?? ''));
+        $search_conditions = mb_strlen($search) >= 2 ? $this->search_conditions($search) : [];
+
         $query = $this->CI->db->from('audit_log')->where_not_in('audit_log.action', self::HIDDEN_ACTIONS);
 
         if (!empty($filters['from'])) {
@@ -209,7 +218,241 @@ class Audit_trail
             $query->where('audit_log.action', $filters['action']);
         }
 
+        if ($search_conditions) {
+            $query->where('(' . implode(' OR ', $search_conditions) . ')', null, false);
+        }
+
         return $query;
+    }
+
+    /**
+     * Conditions of the search box (any of them): the text in the values of the changes, a date typed as d/m/Y,
+     * and the people and treatments whose name matches, with their records: a patient finds the changes of the
+     * patient, of their appointments, clinical records, fiscal data and WhatsApp messages, also the removed ones; a
+     * person of the staff finds also what they did.
+     *
+     * @param string $search
+     *
+     * @return array SQL conditions.
+     */
+    private function search_conditions(string $search): array
+    {
+        $db = $this->CI->db;
+        $t = fn(string $table): string => $db->protect_identifiers($table, true);
+        // escape_like_str() already escapes the text for SQL (quotes too), it is not escaped again.
+        $like = fn(string $text): string => "'%" . $db->escape_like_str($text) . "%' ESCAPE '!'";
+
+        $log = $t('audit_log');
+        $conditions = ["$log.changes LIKE " . $like($search)];
+
+        // A date typed as the clinic writes it (16/11/2026) is looked for as it is stored.
+        if (preg_match('#^(\d{1,2})/(\d{1,2})/(\d{4})$#', $search, $date)) {
+            $iso = sprintf('%04d-%02d-%02d', $date[3], $date[2], $date[1]);
+            $conditions[] = "$log.changes LIKE " . $like($iso);
+            $conditions[] = "$log.create_datetime LIKE " . $db->escape($iso . '%');
+        }
+
+        $people = $this->matching_people($search);
+
+        if ($people) {
+            $ids = implode(',', $people);
+            $in = fn(string $entity, string $select): string => "($log.entity = " .
+                $db->escape($entity) .
+                " AND $log.entity_id IN ($select))";
+
+            $conditions[] = "$log.id_users IN ($ids)";
+            $conditions[] =
+                "($log.entity IN ('customer', 'provider', 'secretary', 'admin', 'user') AND $log.entity_id IN ($ids))";
+
+            $appointments =
+                'SELECT id FROM ' .
+                $t('appointments') .
+                " WHERE id_users_customer IN ($ids) OR id_users_provider IN ($ids)";
+
+            $conditions[] = $in('appointment', $appointments);
+            $conditions[] = $in('unavailability', $appointments);
+            $conditions[] = $in(
+                'whatsapp_message',
+                'SELECT id FROM ' . $t('whatsapp_reminders') . " WHERE id_users_customer IN ($ids)",
+            );
+            $conditions[] = $in(
+                'patient_record',
+                'SELECT id FROM ' . $t('patient_records') . " WHERE id_users_customer IN ($ids)",
+            );
+            $conditions[] = $in(
+                'fiscal_party',
+                'SELECT id FROM ' . $t('fiscal_parties') . " WHERE id_users_customer IN ($ids)",
+            );
+
+            foreach (['appointment_record' => 'appointment_records', 'appointment_foot_marker' => 'appointment_foot_markers'] as $entity => $table) {
+                $conditions[] = $in(
+                    $entity,
+                    'SELECT r.id FROM ' . $t($table) . ' r JOIN ' . $t('appointments') . ' a ON a.id = r.id_appointments ' .
+                        "WHERE a.id_users_customer IN ($ids) OR a.id_users_provider IN ($ids)",
+                );
+            }
+
+            // Removed records only keep the ID of the person in their changes: every entry of an appointment that had
+            // the person at some point (its other entries only hold what changed).
+            $person_in_changes =
+                'changes REGEXP ' .
+                $db->escape('"id_users_(customer|provider)":\[([^\]]*,)?"?(' . implode('|', $people) . ')"?[,\]]');
+
+            $conditions[] = "$log.$person_in_changes";
+            $conditions[] =
+                "($log.entity IN ('appointment', 'unavailability') AND $log.entity_id IN (SELECT entity_id FROM " .
+                "(SELECT entity_id FROM $log WHERE entity IN ('appointment', 'unavailability') AND $person_in_changes) " .
+                'AS person_appointments))';
+        }
+
+        // The settings and the kinds of records by the name the page shows ("antelació", "festiu").
+        $folded = self::fold($search);
+
+        foreach (array_column($db->select('name')->get('settings')->result_array(), 'name') as $setting) {
+            if (str_contains(self::fold(self::label($setting, $setting)), $folded)) {
+                $conditions[] = "($log.entity = 'setting' AND $log.changes LIKE " . $like('"' . $setting . '"') . ')';
+            }
+        }
+
+        $entities = array_filter(
+            $this->filter_options()['entities'],
+            fn(string $entity) => str_contains(self::fold(self::label('audit_entity_' . $entity, $entity)), $folded),
+        );
+
+        if ($entities) {
+            $conditions[] = "$log.entity IN (" . implode(',', array_map([$db, 'escape'], $entities)) . ')';
+        }
+
+        $services = array_map(
+            'intval',
+            array_column(
+                $db->select('id')->like('name', $search)->limit(50)->get('services')->result_array(),
+                'id',
+            ),
+        );
+
+        if ($services) {
+            $ids = implode(',', $services);
+            $conditions[] = "($log.entity = 'service' AND $log.entity_id IN ($ids))";
+            $conditions[] =
+                "$log.changes REGEXP " .
+                $db->escape('"id_services":\[([^\]]*,)?"?(' . implode('|', $services) . ')"?[,\]]');
+        }
+
+        return $conditions;
+    }
+
+    /**
+     * Get the last known value of every field of a record from all its entries of the log, as changes ([before,
+     * after]), for a record that no longer exists.
+     *
+     * @param string $entity
+     * @param int $id
+     *
+     * @return array
+     */
+    private function history(string $entity, int $id): array
+    {
+        $known = [];
+
+        $entries = $this->CI->db
+            ->select('changes')
+            ->where('entity', $entity)
+            ->where('entity_id', $id)
+            ->order_by('id')
+            ->get('audit_log')
+            ->result_array();
+
+        foreach ($entries as $entry) {
+            foreach (json_decode((string) $entry['changes'], true) ?: [] as $field => $values) {
+                if (is_array($values) && count($values) === 2) {
+                    $value = $values[1] ?? $values[0];
+
+                    if ($value !== null && $value !== '***') {
+                        $known[$field] = [null, $value];
+                    }
+                }
+            }
+        }
+
+        return $known;
+    }
+
+    /**
+     * Get a text in lower case and without accents, to compare it as the database does.
+     *
+     * @param string $text
+     *
+     * @return string
+     */
+    public static function fold(string $text): string
+    {
+        return strtr(mb_strtolower($text), [
+            'à' => 'a',
+            'á' => 'a',
+            'è' => 'e',
+            'é' => 'e',
+            'í' => 'i',
+            'ï' => 'i',
+            'ò' => 'o',
+            'ó' => 'o',
+            'ú' => 'u',
+            'ü' => 'u',
+            'ç' => 'c',
+            'ñ' => 'n',
+            'l·l' => 'll',
+        ]);
+    }
+
+    /**
+     * Get the people (patients and staff) that a search matches: every word in their first or last names (accents do
+     * not matter), or the text in their email, or its digits in their phone number. At most 300, the search is meant
+     * to find someone.
+     *
+     * @param string $search
+     *
+     * @return int[]
+     */
+    private function matching_people(string $search): array
+    {
+        if (array_key_exists($search, $this->people)) {
+            return $this->people[$search];
+        }
+
+        $words = preg_split('/\s+/u', $search, -1, PREG_SPLIT_NO_EMPTY);
+        $digits = preg_replace('/\D/', '', $search);
+
+        $query = $this->CI->db->select('id')->from('users')->group_start()->group_start();
+
+        foreach ($words as $word) {
+            $query->group_start()->like('first_name', $word)->or_like('last_name', $word)->group_end();
+        }
+
+        $query->group_end()->or_like('email', $search);
+
+        if (strlen($digits) >= 6) {
+            $query->or_like('phone_normalized', $digits);
+        }
+
+        $query->group_end();
+
+        $people = array_column($query->limit(300)->get()->result_array(), 'id');
+
+        // Removed people are found by the name the log kept of them.
+        $removed = $this->CI->db
+            ->distinct()
+            ->select('entity_id')
+            ->from('audit_log')
+            ->where_in('entity', ['customer', 'provider', 'secretary', 'admin'])
+            ->where('action', 'deleted');
+
+        foreach ($words as $word) {
+            $removed->like('changes', $word);
+        }
+
+        $people = array_merge($people, array_column($removed->limit(300)->get()->result_array(), 'entity_id'));
+
+        return $this->people[$search] = array_values(array_unique(array_map('intval', array_filter($people))));
     }
 
     /**
@@ -401,7 +644,26 @@ class Audit_trail
                 default => $this->CI->db->select('name')->get_where('service_categories', ['id' => $id])->row_array(),
             };
 
-            $this->names[$kind][$id] = trim((string) ($row['name'] ?? '')) ?: '#' . $id;
+            $name = trim((string) ($row['name'] ?? ''));
+
+            // A removed person: the name the log kept of them.
+            if ($name === '' && $kind === 'user') {
+                $removed = json_decode(
+                    (string) $this->CI->db
+                        ->select('changes')
+                        ->where_in('entity', ['customer', 'provider', 'secretary', 'admin'])
+                        ->where('entity_id', $id)
+                        ->where('action', 'deleted')
+                        ->order_by('id', 'DESC')
+                        ->get('audit_log', 1)
+                        ->row('changes'),
+                    true,
+                );
+
+                $name = trim(($removed['first_name'][0] ?? '') . ' ' . ($removed['last_name'][0] ?? ''));
+            }
+
+            $this->names[$kind][$id] = $name ?: '#' . $id;
         }
 
         return $this->names[$kind][$id];
@@ -420,7 +682,7 @@ class Audit_trail
     private function subject(string $entity, ?int $id, array $changes): ?string
     {
         // The value of a field, as it is now or as the entry recorded it.
-        $recorded = static function (string $field) use ($changes): ?string {
+        $recorded = static function (string $field) use (&$changes): ?string {
             $values = $changes[$field] ?? null;
 
             if (!is_array($values) || count($values) !== 2) {
@@ -441,6 +703,11 @@ class Audit_trail
                     ? $this->CI->db->get_where('appointments', ['id' => $id])->row_array()
                     : null;
 
+                // Removed: what the other entries of the log kept of it fills what this one does not say.
+                if (!$appointment && $id) {
+                    $changes += $this->history($entity, $id);
+                }
+
                 $start = $appointment['start_datetime'] ?? $recorded('start_datetime');
                 $customer = $appointment['id_users_customer'] ?? $recorded('id_users_customer');
                 $provider = $appointment['id_users_provider'] ?? $recorded('id_users_provider');
@@ -455,8 +722,9 @@ class Audit_trail
             case 'secretary':
             case 'admin':
             case 'user':
-                if ($id && ($name = $this->CI->db->select("CONCAT_WS(' ', first_name, last_name) AS name", false)->get_where('users', ['id' => $id])->row('name'))) {
-                    return trim($name);
+                // Also a removed person, by the name the log kept (see name()).
+                if ($id) {
+                    return $this->name('user', $id);
                 }
 
                 return trim(($recorded('first_name') ?? '') . ' ' . ($recorded('last_name') ?? '')) ?: null;

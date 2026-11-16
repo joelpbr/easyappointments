@@ -15,8 +15,8 @@
  *
  * The "Activity log" page, for the administrators: every change made in the application (appointments, patients,
  * staff, treatments, settings, WhatsApp messages, backups...), the latest first, with who made it, when, on what and
- * every field that changed (see the Audit_trail library). It can be filtered by dates, user, kind of record and
- * action.
+ * every field that changed (see the Audit_trail library). It can be searched (a patient, a phone, a setting, a date...)
+ * and filtered by dates, user, kind of record and action.
  *
  * @package Controllers
  */
@@ -57,6 +57,7 @@ class Activity_log extends EA_Controller
         $date = static fn($value): string => is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value) ? $value : '';
 
         $filters = [
+            'q' => mb_substr(trim((string) request('q')), 0, 100),
             'from' => $date(request('from')),
             'to' => $date(request('to')),
             'user' => (int) request('user') ?: '',
