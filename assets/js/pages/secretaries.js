@@ -544,7 +544,9 @@ App.Pages.Secretaries = (function () {
                             }),
                             $('<label/>', {
                                 'class': 'form-check-label',
-                                'text': provider.first_name + ' ' + provider.last_name,
+                                'text':
+                                    provider.short_name?.trim() ||
+                                    [provider.first_name, provider.last_name].filter(Boolean).join(' '),
                                 'for': checkboxId,
                             }),
                         ],

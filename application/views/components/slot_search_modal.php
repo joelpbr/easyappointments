@@ -47,7 +47,7 @@ $available_providers = array_filter(
                                 aria-describedby="slot-search-providers-hint">
                             <?php foreach ($available_providers as $provider): ?>
                                 <option value="<?= (int) $provider['id'] ?>">
-                                    <?= e(trim($provider['first_name'] . ' ' . $provider['last_name'])) ?>
+                                    <?= e(provider_display_name($provider)) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -134,7 +134,7 @@ $available_providers = array_filter(
                             <option value=""><?= lang('none') ?></option>
                             <?php foreach ($available_providers as $provider): ?>
                                 <option value="<?= (int) $provider['id'] ?>">
-                                    <?= e(trim($provider['first_name'] . ' ' . $provider['last_name'])) ?>
+                                    <?= e(provider_display_name($provider)) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>

@@ -20,7 +20,7 @@
  */
 class Secretaries extends EA_Controller
 {
-    public array $allowed_provider_fields = ['id', 'first_name', 'last_name'];
+    public array $allowed_provider_fields = ['id', 'first_name', 'last_name', 'short_name'];
     public array $allowed_secretary_fields = [
         'id',
         'first_name',

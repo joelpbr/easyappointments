@@ -101,6 +101,14 @@
                             </div>
 
                             <div class="mb-3">
+                                <label class="form-label" for="short-name"><?= lang('provider_short_name') ?></label>
+                                <input id="short-name" class="form-control" maxlength="64" aria-describedby="short-name-hint" disabled>
+                                <div id="short-name-hint" class="form-text"><?= lang(
+                                    'provider_short_name_hint',
+                                ) ?></div>
+                            </div>
+
+                            <div class="mb-3">
                                 <label class="form-label" for="email">
                                     <?= lang('email') ?>
                                     <span class="text-danger" hidden>*</span>
@@ -151,6 +159,36 @@
                                 </label>
                                 <textarea id="notes" class="form-control" rows="3" disabled></textarea>
                             </div>
+
+                            <fieldset class="mb-3">
+                                <legend class="fs-6 fw-semibold mb-1">
+                                    <?= lang('provider_document_identity') ?>
+                                </legend>
+                                <p class="form-text text-muted mt-0">
+                                    <?= lang('provider_document_identity_hint') ?>
+                                </p>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="college-number">
+                                        <?= lang('provider_college_number') ?>
+                                    </label>
+                                    <input id="college-number" class="form-control" maxlength="32" disabled>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="legal-name">
+                                        <?= lang('provider_legal_name') ?>
+                                    </label>
+                                    <input id="legal-name" class="form-control" maxlength="256" disabled>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="tax-id">
+                                        <?= lang('provider_tax_id') ?>
+                                    </label>
+                                    <input id="tax-id" class="form-control" maxlength="32" disabled>
+                                </div>
+                            </fieldset>
 
                         </div>
                         <div class="settings col-12 col-lg-6">

@@ -68,6 +68,30 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label class="form-label" for="company-address">
+                                        <?= lang('company_address') ?>
+                                    </label>
+                                    <input id="company-address" data-field="company_address" class="form-control" maxlength="256">
+                                    <div class="form-text text-muted">
+                                        <small>
+                                            <?= lang('company_address_hint') ?>
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="company-phone">
+                                        <?= lang('company_phone') ?>
+                                    </label>
+                                    <input id="company-phone" data-field="company_phone" class="form-control" maxlength="32">
+                                    <div class="form-text text-muted">
+                                        <small>
+                                            <?= lang('company_phone_hint') ?>
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
                                     <label class="form-label" for="company-logo">
                                         <?= lang('company_logo') ?>
                                     </label>

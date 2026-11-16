@@ -422,7 +422,7 @@ App.Components.AppointmentsModal = (function () {
 
                     // If the current provider is able to provide the selected service, add him to the list box.
                     if (Number(providerServiceId) === Number(serviceId)) {
-                        $selectProvider.append(new Option(provider.first_name + ' ' + provider.last_name, provider.id));
+                        $selectProvider.append(new Option(App.Utils.UI.getProviderDisplayName(provider), provider.id));
                     }
                 });
 
@@ -525,7 +525,7 @@ App.Components.AppointmentsModal = (function () {
 
             if (canProvideService) {
                 // Add the provider to the list box.
-                $selectProvider.append(new Option(provider.first_name + ' ' + provider.last_name, provider.id));
+                $selectProvider.append(new Option(App.Utils.UI.getProviderDisplayName(provider), provider.id));
             }
         });
 
@@ -827,7 +827,10 @@ App.Components.AppointmentsModal = (function () {
                 field.type === 'checkbox' || field.type === 'radio' ? field.checked : field.value,
             ]);
 
-        return JSON.stringify([fields, App.Components.ColorSelection.getColor($appointmentsModal.find('#appointment-color'))]);
+        return JSON.stringify([
+            fields,
+            App.Components.ColorSelection.getColor($appointmentsModal.find('#appointment-color')),
+        ]);
     }
 
     /**
@@ -857,30 +860,34 @@ App.Components.AppointmentsModal = (function () {
 
             event.preventDefault();
 
-            App.Utils.Message.show($appointmentsModal.find('.modal-header h3').text(), lang('clinical_unsaved_changes'), [
-                {
-                    text: lang('cancel'),
-                    className: 'btn btn-secondary',
-                    click: (clickEvent, messageModal) => messageModal.hide(),
-                },
-                {
-                    text: lang('clinical_dont_save'),
-                    className: 'btn btn-outline-danger',
-                    click: (clickEvent, messageModal) => {
-                        messageModal.hide();
-                        closeWithoutAsking = true;
-                        $appointmentsModal.modal('hide');
+            App.Utils.Message.show(
+                $appointmentsModal.find('.modal-header h3').text(),
+                lang('clinical_unsaved_changes'),
+                [
+                    {
+                        text: lang('cancel'),
+                        className: 'btn btn-secondary',
+                        click: (clickEvent, messageModal) => messageModal.hide(),
                     },
-                },
-                {
-                    text: lang('save'),
-                    className: 'btn btn-primary',
-                    click: (clickEvent, messageModal) => {
-                        messageModal.hide();
-                        $saveAppointment.trigger('click');
+                    {
+                        text: lang('clinical_dont_save'),
+                        className: 'btn btn-outline-danger',
+                        click: (clickEvent, messageModal) => {
+                            messageModal.hide();
+                            closeWithoutAsking = true;
+                            $appointmentsModal.modal('hide');
+                        },
                     },
-                },
-            ]);
+                    {
+                        text: lang('save'),
+                        className: 'btn btn-primary',
+                        click: (clickEvent, messageModal) => {
+                            messageModal.hide();
+                            $saveAppointment.trigger('click');
+                        },
+                    },
+                ],
+            );
         });
 
         $appointmentsModal.on('shown.bs.modal', () => {

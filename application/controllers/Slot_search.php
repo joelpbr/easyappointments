@@ -116,7 +116,7 @@ class Slot_search extends EA_Controller
                 array_map(
                     fn(array $provider): array => [
                         'id' => $provider['id'],
-                        'name' => trim($provider['first_name'] . ' ' . $provider['last_name']),
+                        'name' => provider_display_name($provider),
                     ],
                     $providers,
                 ),

@@ -90,7 +90,7 @@ class Simple extends EA_Controller
         $providers = array_map(
             fn(array $provider): array => [
                 'id' => (int) $provider['id'],
-                'name' => trim($provider['first_name'] . ' ' . $provider['last_name']),
+                'name' => provider_display_name($provider),
             ],
             array_values($providers),
         );

@@ -888,7 +888,7 @@ App.Utils.CalendarDefaultView = (function () {
             const type =
                 getSelectedFilterType() !== FILTER_TYPE_SERVICE
                     ? appointment.service.name
-                    : [appointment.provider.first_name, appointment.provider.last_name].filter(Boolean).join(' ');
+                    : App.Utils.UI.getProviderDisplayName(appointment.provider);
 
             const title = customerName ? customerName + ' - ' + type : appointment.service.name;
 
@@ -1266,7 +1266,7 @@ App.Utils.CalendarDefaultView = (function () {
                         type: FILTER_TYPE_PROVIDER,
                         'google-sync': provider.settings.google_sync,
                         'caldav-sync': provider.settings.caldav_sync,
-                        text: provider.first_name + ' ' + provider.last_name,
+                        text: App.Utils.UI.getProviderDisplayName(provider),
                     }),
                 ),
             }).appendTo($selectFilterItem);

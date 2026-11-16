@@ -56,6 +56,11 @@ function archive(done) {
     fs.ensureDirSync('build/storage/uploads');
     fs.copySync('storage/uploads/index.html', 'build/storage/uploads/index.html');
 
+    // Empty: a clinic places its own document pack here (see docs/clinica/documentos-visitas.md).
+    fs.ensureDirSync('build/storage/visit_documents');
+    fs.copySync('storage/visit_documents/.htaccess', 'build/storage/visit_documents/.htaccess');
+    fs.copySync('storage/visit_documents/index.html', 'build/storage/visit_documents/index.html');
+
     fs.copySync('index.php', 'build/index.php');
     fs.copySync('composer.json', 'build/composer.json');
     fs.copySync('composer.lock', 'build/composer.lock');

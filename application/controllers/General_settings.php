@@ -87,6 +87,8 @@ class General_settings extends EA_Controller
         'company_name',
         'company_email',
         'company_link',
+        'company_address',
+        'company_phone',
         'company_logo',
         'company_color',
         'company_working_plan',

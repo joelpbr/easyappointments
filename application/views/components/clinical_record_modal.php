@@ -20,6 +20,11 @@
                     <span class="ea-clinical-allergies-text"></span>
                 </div>
                 <div class="ea-clinical-header-actions">
+                    <button type="button" id="clinical-document-history" class="btn btn-outline-light btn-sm" hidden>
+                        <i class="fas fa-clock-rotate-left me-1" aria-hidden="true"></i><?= lang(
+                            'visit_document_history',
+                        ) ?>
+                    </button>
                     <button type="button" id="clinical-customer-details" class="btn btn-link text-white p-1 lh-1"
                             title="<?= e(lang('customer_details_title')) ?>"
                             aria-label="<?= e(lang('customer_details_title')) ?>" hidden>
@@ -179,7 +184,15 @@
                     <div class="ea-clinical-visit-heading">
                         <h4 id="clinical-visit-title"></h4>
                         <span class="text-muted small" id="clinical-visit-subtitle"></span>
-                        <button type="button" id="clinical-visit-save" class="btn btn-primary btn-sm ms-auto">
+                        <div id="clinical-documents-dropdown" class="dropdown ms-auto">
+                            <button type="button" id="clinical-visit-documents" class="btn btn-outline-primary btn-sm dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-expanded="false" aria-controls="clinical-documents-menu">
+                                <i class="fas fa-file-pdf me-2" aria-hidden="true"></i><?= lang('visit_documents') ?>
+                            </button>
+                            <ul id="clinical-documents-menu" class="dropdown-menu dropdown-menu-end ea-visit-documents-menu"
+                                aria-labelledby="clinical-visit-documents"></ul>
+                        </div>
+                        <button type="button" id="clinical-visit-save" class="btn btn-primary btn-sm">
                             <i class="fas fa-check-square me-2"></i>
                             <?= lang('clinical_save_visit') ?>
                         </button>
@@ -281,12 +294,95 @@
     </div>
 </div>
 
+<!-- Document cards: native dialogs above the visit, filled in by visit_documents.js and visit_document_history.js. -->
+<dialog id="clinical-document-panel" class="ea-document-dialog" aria-labelledby="clinical-document-heading">
+    <div class="ea-document-dialog-header">
+        <h5 id="clinical-document-heading" class="m-0"><?= lang('visit_document_generate') ?></h5>
+        <button type="button" id="clinical-document-close" class="btn-close"
+                aria-label="<?= e(lang('close')) ?>"></button>
+    </div>
+    <div class="ea-document-dialog-body">
+        <div id="clinical-document-status" role="status" aria-live="polite"></div>
+        <form id="clinical-document-form" hidden>
+            <!-- A group the menu shows as a single entry (the prescriptions): its document types are chosen here. -->
+            <div id="clinical-document-variant-wrap" class="mb-3" hidden>
+                <label class="form-label" for="clinical-document-variant"></label>
+                <select id="clinical-document-variant" class="form-select"></select>
+            </div>
+            <div id="clinical-document-professional-wrap" class="mb-3" hidden>
+                <label class="form-label" for="clinical-document-professional"><?= lang('provider') ?></label>
+                <select id="clinical-document-professional" class="form-select"></select>
+            </div>
+            <p id="clinical-document-signer" class="small" hidden></p>
+            <div id="clinical-document-fields" class="row g-3"></div>
+            <details id="clinical-document-known" class="mt-3" hidden>
+                <summary class="text-primary"><?= lang('visit_document_known_data') ?></summary>
+                <div id="clinical-document-known-fields" class="row g-3 mt-0"></div>
+            </details>
+            <div id="clinical-document-review-wrap" class="mt-3" hidden>
+                <div id="clinical-document-allergies" class="alert alert-warning py-2" hidden></div>
+                <div class="form-check">
+                    <input id="clinical-document-reviewed" type="checkbox" class="form-check-input">
+                    <label for="clinical-document-reviewed" class="form-check-label">
+                        <?= lang('visit_document_review') ?>
+                    </label>
+                </div>
+            </div>
+            <button id="clinical-document-download" type="submit" class="btn btn-primary mt-3" disabled>
+                <i class="fas fa-file-pdf me-2" aria-hidden="true"></i><?= lang('visit_document_download') ?>
+            </button>
+        </form>
+    </div>
+</dialog>
+
+<dialog id="clinical-document-history-dialog" class="ea-document-dialog"
+        aria-labelledby="clinical-document-history-title">
+    <div class="ea-document-dialog-header">
+        <h5 id="clinical-document-history-title" class="m-0"><?= lang('visit_document_history') ?></h5>
+        <button type="button" id="clinical-document-history-close" class="btn-close"
+                aria-label="<?= e(lang('close')) ?>"></button>
+    </div>
+    <div class="ea-document-dialog-body">
+        <p id="clinical-document-history-patient" class="fw-semibold"></p>
+        <div id="clinical-document-history-status" role="status" aria-live="polite"></div>
+        <div id="clinical-document-history-list" class="list-group list-group-flush"></div>
+        <button type="button" id="clinical-document-history-more" class="btn btn-outline-primary btn-sm mt-3" hidden>
+            <?= lang('visit_document_history_more') ?>
+        </button>
+    </div>
+</dialog>
+
+<dialog id="clinical-document-delete-dialog" class="ea-document-dialog"
+        aria-labelledby="clinical-document-delete-title">
+    <div class="ea-document-dialog-header">
+        <h5 id="clinical-document-delete-title" class="m-0"><?= lang('delete') ?></h5>
+        <button type="button" id="clinical-document-delete-close" class="btn-close"
+                aria-label="<?= e(lang('close')) ?>"></button>
+    </div>
+    <div class="ea-document-dialog-body">
+        <p><?= lang('visit_document_delete_confirm') ?></p>
+        <p id="clinical-document-delete-name" class="fw-semibold"></p>
+        <div id="clinical-document-delete-error" role="alert" class="text-danger mb-3"></div>
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button" id="clinical-document-delete-cancel" class="btn btn-outline-secondary">
+                <?= lang('cancel') ?>
+            </button>
+            <button type="button" id="clinical-document-delete-confirm" class="btn btn-danger">
+                <?= lang('delete') ?>
+            </button>
+        </div>
+    </div>
+</dialog>
+
 <?php if (empty($standalone)):
     section('scripts');
 endif; ?>
 
 <script src="<?= asset_url('assets/js/http/clinical_records_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/components/clinical_record_modal.js') ?>"></script>
+<script src="<?= asset_url('assets/js/components/document_dialog.js') ?>"></script>
+<script src="<?= asset_url('assets/js/components/visit_documents.js') ?>"></script>
+<script src="<?= asset_url('assets/js/components/visit_document_history.js') ?>"></script>
 
 <?php if (empty($standalone)):
     end_section('scripts');

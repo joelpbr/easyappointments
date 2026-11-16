@@ -119,6 +119,7 @@ App.Utils.CalendarTableView = (function () {
         }).appendTo($group);
 
         const $menu = $('<div/>', {class: 'dropdown-menu ea-provider-filter-menu'}).appendTo($group);
+        App.Utils.UI.initializeDropdownWidth($filterProvider[0], $button[0], $group[0], [lang('filter_all_providers')]);
 
         const updateLabel = () => {
             const $options = $filterProvider.find('option');
@@ -145,7 +146,7 @@ App.Utils.CalendarTableView = (function () {
                         value: option.value,
                         checked: option.selected,
                     }),
-                    $('<span/>', {text: option.text}),
+                    $('<span/>', {text: option.text, title: option.text}),
                 ],
             }).appendTo($menu);
         });
@@ -249,7 +250,7 @@ App.Utils.CalendarTableView = (function () {
      * @return {String}
      */
     function getProviderName(provider) {
-        return [provider.first_name, provider.last_name].filter(Boolean).join(' ');
+        return App.Utils.UI.getProviderDisplayName(provider);
     }
 
     // Helper Functions

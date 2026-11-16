@@ -210,7 +210,7 @@
                                id="provider-<?= $provider['id'] ?>"
                                data-id="<?= $provider['id'] ?>" disabled>
                         <label class="form-check-label" for="provider-<?= $provider['id'] ?>">
-                            <?= e($provider['first_name'] . ' ' . $provider['last_name']) ?>
+                            <?= e(provider_display_name($provider)) ?>
                         </label>
                     </div>
                 <?php endforeach; ?>

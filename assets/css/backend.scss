@@ -928,8 +928,8 @@ body .modal.full-screen .modal-push {
     }
 
     .filter-group {
-        flex: 0 1 150px;
-        width: 150px;
+        flex: 0 1 var(--ea-dropdown-width, 150px);
+        width: var(--ea-dropdown-width, 150px);
         min-width: 125px;
     }
 
@@ -1014,6 +1014,7 @@ body .modal.full-screen .modal-push {
 
     // The selects (and the buttons drawn like one) keep their text on the left and room for the arrow on the right.
     .form-select {
+        display: block;
         justify-content: flex-start;
         padding-right: 28px;
         background-position: right 9px center;
@@ -1258,9 +1259,16 @@ body .modal.full-screen .modal-push {
 }
 
 // Dropdowns made from a select (see initializeSelectDropdown() in ui.js) fill their place, like the select did.
-.ea-select-dropdown,
+.ea-select-dropdown {
+    width: var(--ea-dropdown-width, 100%);
+    min-width: 0;
+    max-width: 100%;
+}
+
 .ea-select-dropdown > .form-select {
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
 }
 
 // Patient search results under the name and phone fields of the appointment form (see patient_search.js).
@@ -1544,6 +1552,7 @@ body .modal.full-screen .modal-push {
     // One line: the treatment, the date and price, and the save button of the visit.
     .ea-clinical-visit-heading {
         display: flex;
+        flex-wrap: wrap;
         align-items: baseline;
         gap: 10px;
         margin-bottom: 10px;
@@ -1557,6 +1566,27 @@ body .modal.full-screen .modal-push {
 
         .btn {
             align-self: center;
+        }
+    }
+
+    .ea-visit-documents-menu {
+        width: min(22rem, calc(100vw - 32px));
+        max-height: min(60vh, 32rem);
+        overflow-y: auto;
+        padding-block: 8px;
+
+        .dropdown-item {
+            padding: 9px 16px;
+            white-space: normal;
+            line-height: 1.4;
+        }
+
+        .dropdown-header {
+            padding: 6px 16px;
+        }
+
+        .dropdown-divider {
+            margin-block: 8px;
         }
     }
 
@@ -2450,6 +2480,13 @@ $ea-day-separator: 3px solid #6c757d;
         font-weight: 500;
     }
 
+    .select2-results__option--selectable,
+    .select2-results__group {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .select2-results__option--highlighted[aria-selected],
     .select2-results__option--highlighted.select2-results__option--selectable {
         color: var(--bs-body-color);
@@ -2463,7 +2500,32 @@ $ea-day-separator: 3px solid #6c757d;
     }
 }
 
-// The lists of the dropdowns made from a select: at least as wide as the field, scrolling when they are long. Options
+// Keep dropdown options within the field width; only their labels shrink, never their selection controls.
+.ea-select-dropdown-menu,
+.ea-provider-filter-menu {
+    width: max(100%, var(--ea-dropdown-width, 100%));
+    min-width: 100%;
+    max-width: calc(100vw - 24px);
+    max-height: min(320px, 60vh);
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    .dropdown-item > span {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .dropdown-header {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+// The lists of the dropdowns made from a select scroll when they are long. Options
 // with their own colour (the treatments) keep it and darken a little under the mouse; the chosen one is bold.
 .ea-select-dropdown-menu {
     min-width: 100%;
@@ -2494,11 +2556,11 @@ $ea-day-separator: 3px solid #6c757d;
 // joins the field next to it, like the select did.
 .input-group > .ea-select-dropdown {
     flex: 0 0 auto;
-    width: auto;
+    width: var(--ea-dropdown-width, auto);
     max-width: 45%;
 
     > .form-select {
-        width: auto;
+        width: 100%;
         max-width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -2787,8 +2849,8 @@ $ea-day-separator: 3px solid #6c757d;
         }
 
         .filter-group {
-            flex: 0 1 140px;
-            width: 140px;
+            flex: 0 1 var(--ea-dropdown-width, 140px);
+            width: var(--ea-dropdown-width, 140px);
             min-width: 92px;
         }
 
@@ -2915,4 +2977,108 @@ $ea-day-separator: 3px solid #6c757d;
         color: var(--bs-secondary-color);
         text-decoration: line-through;
     }
+}
+
+// Independent document card above the visit, with its own scrolling and native keyboard focus.
+.ea-document-dialog {
+    width: min(48rem, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    margin: auto;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    color: var(--bs-body-color);
+    background: var(--bs-body-bg);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+
+    &[open] {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &::backdrop {
+        background: rgba(10, 30, 50, 0.5);
+        animation: ea-fade-in 0.22s ease-out;
+    }
+
+    .ea-document-dialog-header {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 16px 20px;
+        background: #063f7e;
+        color: #ffffff;
+
+        h5 {
+            color: inherit;
+        }
+        .btn-close {
+            flex-shrink: 0;
+            filter: brightness(0) invert(1);
+        }
+    }
+
+    .ea-document-dialog-body {
+        padding: 20px;
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .form-check-input:not(:checked):not(:disabled) {
+        border-color: #637d94;
+    }
+
+    .btn,
+    .btn-close {
+        transition:
+            color 0.15s ease,
+            background-color 0.15s ease,
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            opacity 0.15s ease;
+    }
+
+    .form-control,
+    .form-select,
+    .form-check-input {
+        transition:
+            border-color 0.15s ease,
+            background-color 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    #clinical-document-fields > *,
+    #clinical-document-known[open] #clinical-document-known-fields,
+    #clinical-document-professional-wrap:not([hidden]),
+    #clinical-document-review-wrap:not([hidden]),
+    #clinical-document-history-list > *,
+    #clinical-document-status:not(:empty) {
+        animation: ea-fade-in 0.15s ease-out;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ea-document-dialog,
+    .ea-document-dialog::backdrop,
+    .ea-document-dialog *,
+    .ea-document-dialog[open],
+    .ea-document-dialog[open]::backdrop {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+.ea-document-print-frame {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    border: 0;
 }

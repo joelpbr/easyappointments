@@ -383,7 +383,7 @@ App.Pages.Booking = (function () {
                         .length > 0;
 
                 if (canServeService) {
-                    $selectProvider.append(new Option(provider.first_name + ' ' + provider.last_name, provider.id));
+                    $selectProvider.append(new Option(App.Utils.UI.getProviderDisplayName(provider), provider.id));
 
                     if (String(provider.id) === String(previousProviderId)) {
                         previousProviderCanServe = true;
@@ -950,7 +950,6 @@ App.Pages.Booking = (function () {
             const appointmentNotes = appointment.notes !== null ? appointment.notes : '';
             $notes.val(appointmentNotes);
 
-
             App.Pages.Booking.updateConfirmFrame();
 
             return true;
@@ -990,7 +989,9 @@ App.Pages.Booking = (function () {
         }
 
         if (Number(service.price) > 0) {
-            additionalInfoParts.push(`${lang('price')}: ${Number(service.price).toFixed(2)} ${App.Utils.String.escapeHtml(service.currency)}`);
+            additionalInfoParts.push(
+                `${lang('price')}: ${Number(service.price).toFixed(2)} ${App.Utils.String.escapeHtml(service.currency)}`,
+            );
         }
 
         if (service.location) {

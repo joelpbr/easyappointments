@@ -76,6 +76,14 @@ class Audit_trail
         'phone_normalized' => 'phone_number',
         'file' => 'audit_field_file',
         'previous' => 'audit_field_previous',
+        'document_title' => 'visit_documents',
+        'patient_name' => 'customer',
+        'professional_name' => 'provider',
+        'generated_at' => 'visit_document_generated_at',
+        'visit_datetime' => 'appointment',
+        'legal_name' => 'provider_legal_name',
+        'college_number' => 'provider_college_number',
+        'tax_id' => 'provider_tax_id',
     ];
 
     /**
@@ -105,9 +113,10 @@ class Audit_trail
     private ?array $statuses = null;
 
     /**
-     * People found by each search, as the page runs the query twice (count and rows).
+     * SQL conditions of each search, as the page runs the query twice (count and rows) and working them out takes
+     * several queries.
      */
-    private array $people = [];
+    private array $searches = [];
 
     /**
      * Audit_trail constructor.
@@ -194,7 +203,8 @@ class Audit_trail
     {
         // Worked out first: it runs its own queries, and the query builder is shared.
         $search = trim((string) ($filters['q'] ?? ''));
-        $search_conditions = mb_strlen($search) >= 2 ? $this->search_conditions($search) : [];
+        $search_conditions =
+            mb_strlen($search) >= 2 ? ($this->searches[$search] ??= $this->search_conditions($search)) : [];
 
         $query = $this->CI->db->from('audit_log')->where_not_in('audit_log.action', self::HIDDEN_ACTIONS);
 
@@ -417,10 +427,6 @@ class Audit_trail
      */
     private function matching_people(string $search): array
     {
-        if (array_key_exists($search, $this->people)) {
-            return $this->people[$search];
-        }
-
         $words = preg_split('/\s+/u', $search, -1, PREG_SPLIT_NO_EMPTY);
         $digits = preg_replace('/\D/', '', $search);
 
@@ -454,7 +460,7 @@ class Audit_trail
 
         $people = array_merge($people, array_column($removed->limit(300)->get()->result_array(), 'entity_id'));
 
-        return $this->people[$search] = array_values(array_unique(array_map('intval', array_filter($people))));
+        return array_values(array_unique(array_map('intval', array_filter($people))));
     }
 
     /**
@@ -801,6 +807,10 @@ class Audit_trail
                         : '') . $when($reminder['appointment_datetime']),
                     ', ',
                 );
+
+            case 'patient_document':
+                return trim(($recorded('patient_name') ?? '') . ' · ' . ($recorded('document_title') ?? ''), ' ·') ?:
+                    null;
 
             case 'patient_record':
                 // Logged with the ID of the patient, not with the one of the record (see Patient_records_model).

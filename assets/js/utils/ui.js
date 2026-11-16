@@ -235,7 +235,8 @@ window.App.Utils.UI = (function () {
             return new Date();
         }
 
-        const date = value instanceof Date ? moment(value) : moment(value, format === 'Y-m-d' ? 'YYYY-MM-DD' : undefined);
+        const date =
+            value instanceof Date ? moment(value) : moment(value, format === 'Y-m-d' ? 'YYYY-MM-DD' : undefined);
 
         return date.isValid() ? date.toDate() : null;
     }
@@ -750,6 +751,7 @@ window.App.Utils.UI = (function () {
      * @param {String} text
      */
     function setDropdownLabel(element, text) {
+        element.title = text;
         const index = text.indexOf(': ');
 
         if (index < 0) {
@@ -764,8 +766,51 @@ window.App.Utils.UI = (function () {
         element.replaceChildren(prefix, document.createTextNode(text.slice(index + 2)));
     }
 
+    function getProviderDisplayName(provider) {
+        return provider.short_name?.trim() || [provider.first_name, provider.last_name].filter(Boolean).join(' ');
+    }
+
     // The dropdowns made from a select, kept in step with their select (see syncSelectDropdowns()).
     const selectDropdowns = [];
+
+    /** Size from the whole list, never from the current selection. Recheck dynamic lists and responsive fonts. */
+    function initializeDropdownWidth(select, button, container, extraLabels = []) {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        let previousKey;
+
+        const sync = () => {
+            if (!button.isConnected || !button.offsetParent || !context) return;
+
+            const style = getComputedStyle(button);
+            const labels = [...select.options].filter((option) => !option.hidden).map((option) => option.text);
+            labels.push(...extraLabels);
+            const key = JSON.stringify([style.fontFamily, style.fontSize, style.letterSpacing, labels]);
+
+            if (key === previousKey) return;
+            previousKey = key;
+
+            // Bold selected menu rows must fit too. Reserve space for padding, arrow/check and a scrollbar.
+            context.font = `700 ${Math.max(parseFloat(style.fontSize), 13)}px ${style.fontFamily}`;
+            const spacing = parseFloat(style.letterSpacing) || 0;
+            const width = Math.ceil(
+                Math.max(
+                    0,
+                    ...labels.map(
+                        (label) => context.measureText(label).width + Math.max(0, label.length - 1) * spacing,
+                    ),
+                ) + 60,
+            );
+            container.style.setProperty('--ea-dropdown-width', `${width}px`);
+        };
+
+        document.fonts?.ready.then(() => {
+            previousKey = undefined;
+            sync();
+        });
+        selectDropdowns.push({button, sync});
+        sync();
+    }
 
     /**
      * Keep every dropdown made from a select in step with it while it is on screen: the code often sets a select with
@@ -803,10 +848,16 @@ window.App.Utils.UI = (function () {
             class: classes.join(' '),
             'data-bs-toggle': 'dropdown',
             'aria-expanded': 'false',
-            'aria-label': $select.attr('aria-label') || $('label[for="' + select.id + '"]').text().trim() || '',
+            'aria-label':
+                $select.attr('aria-label') ||
+                $('label[for="' + select.id + '"]')
+                    .text()
+                    .trim() ||
+                '',
         }).appendTo($group);
 
         const $menu = $('<div/>', {class: 'dropdown-menu ea-select-dropdown-menu'}).appendTo($group);
+        initializeDropdownWidth(select, $button[0], select.closest('.filter-group') || $group[0]);
 
         const option = (element) =>
             $('<label/>', {
@@ -825,7 +876,7 @@ window.App.Utils.UI = (function () {
                         checked: element.selected,
                         disabled: element.disabled,
                     }),
-                    $('<span/>', {text: element.text}),
+                    $('<span/>', {text: element.text, title: element.text}),
                 ],
             });
 
@@ -884,8 +935,10 @@ window.App.Utils.UI = (function () {
         initializeTimePicker,
         initializeDropdown,
         initializeSelectDropdown,
+        initializeDropdownWidth,
         initializeTextEditor,
         setDropdownLabel,
+        getProviderDisplayName,
         getDateTimePickerValue,
         setDateTimePickerValue,
     };

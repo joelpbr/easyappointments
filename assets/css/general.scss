@@ -29,6 +29,14 @@ select {
     -webkit-appearance: none;
 }
 
+// Keep compact select labels within the field, leaving the full option text intact.
+.form-select:not([multiple]):not([size]) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* UTILITIES
    ------------------------------------------------------------------------- */
 

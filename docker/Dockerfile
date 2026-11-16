@@ -24,6 +24,7 @@ RUN install-php-extensions gd mysqli opcache \
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY docker/php.ini $PHP_INI_DIR/conf.d/app.ini
 RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-venv curl ca-certificates \
+    libreoffice-writer fonts-crosextra-carlito fonts-crosextra-caladea fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 COPY docker/install-podologo-reader.sh /usr/local/bin/install-podologo-reader
 RUN sh /usr/local/bin/install-podologo-reader

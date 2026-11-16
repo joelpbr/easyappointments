@@ -207,6 +207,11 @@ App.Components.ClinicalRecordModal = (function () {
      */
     function fillPatient(response) {
         const customer = response.customer;
+        $('#clinical-document-history')
+            .prop('hidden', !customer.id)
+            .attr('data-customer-id', customer.id || '')
+            .attr('data-patient-name', [customer.first_name, customer.last_name].filter(Boolean).join(' '))
+            .trigger('clinical:patient-changed');
 
         $modal.find('[data-customer]').each((index, element) => {
             $(element).val(customer[element.dataset.customer] ?? '');
@@ -526,6 +531,10 @@ App.Components.ClinicalRecordModal = (function () {
     function fillVisit(response) {
         const appointment = response.appointment;
         const fields = response.fields;
+
+        $('#clinical-visit-documents')
+            .attr({'data-appointment-id': appointment.id, 'aria-expanded': 'false'})
+            .trigger('clinical:visit-changed');
 
         visitAppointmentId = appointment.id;
         visitHasFeet = Boolean(response.has_feet);

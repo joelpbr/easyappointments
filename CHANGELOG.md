@@ -7,6 +7,22 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- A clinic can use its own visit documents by placing its document pack (a catalog and its Word templates, in any language) in storage/visit_documents: the menu, the forms, the limits of each field and which documents must be reviewed follow the catalog, with no change in the application.
+
+- The general settings have the address and the phone of the clinic, which the visit documents that carry them (such as the prescriptions) print instead of a fixed address; such a document asks to complete them while they are empty.
+
+- Asking again for a visit document that would print exactly the same opens the saved one instead of adding a copy to the history, and a generated document opens even when its card is closed while it is being prepared.
+
+- Patient document history allows deleting a saved PDF after confirmation and records the document, patient, professional, date and deleting user in the activity log.
+
+- The provider record has a "Document signing" section with the membership number, the name printed on the documents and the NIF: the providers with a membership number sign invoices and prescriptions, so a new professional no longer needs a change in the application.
+
+- Generating a document is recorded in the activity log, like deleting it, with the patient, the document, the professional and the dates.
+
+- Generated PDFs are saved in each patient's document history with their visit, date, professional and creator, and can be viewed or reprinted without regenerating them; document cards keep their title and close button visible while only their content scrolls.
+
+- Every clinical visit has a Documents dropdown grouped from simple certificates to detailed reports, with a single prescription entry and a subsequent medication choice, which opens an independent document card, asks for missing fields, prints finished PDFs from patient and visit data, and restricts invoice and prescription identities to the professionals with a membership number on their record while allowing other authorized users to choose either professional.
+
 - The pathology catalog includes its SVG icon assets, with a distinct green and white nail icon for Onicolisis among the first 15 pathologies.
 
 - An "Activity log" page in the settings, for administrators, lists every change made in the application, the latest first: who made it, when, on what (appointments, patients, staff, treatments, blocked periods, holidays, every setting, WhatsApp messages, backups...) and each field with its former and new value, searched by patient, staff member, phone, treatment, setting, date or any changed value (also of removed patients) and filtered by dates, user, kind of record and action; views are not listed, and clinical texts and passwords only show that they changed

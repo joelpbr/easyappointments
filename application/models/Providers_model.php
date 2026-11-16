@@ -72,6 +72,10 @@ class Providers_model extends EA_Model
             $provider['last_name'] = trim((string) ($provider['last_name'] ?? ''));
         }
 
+        if (array_key_exists('short_name', $provider)) {
+            $provider['short_name'] = trim((string) $provider['short_name']);
+        }
+
         $this->validate($provider);
 
         if (empty($provider['id'])) {
@@ -90,6 +94,10 @@ class Providers_model extends EA_Model
      */
     public function validate(array $provider): void
     {
+        if (mb_strlen((string) ($provider['short_name'] ?? '')) > 64) {
+            throw new InvalidArgumentException('The short name must not exceed 64 characters.');
+        }
+
         // If a provider ID is provided then check whether the record really exists in the database and that it is
         // bound to the provider role, so that the ID cannot target another kind of user (e.g. an administrator).
         if (!empty($provider['id'])) {
@@ -252,6 +260,23 @@ class Providers_model extends EA_Model
         }
 
         return $providers;
+    }
+
+    /**
+     * What the active providers sign documents with (see Visit_documents::professionals()).
+     *
+     * @return array Rows with id, first_name, last_name, legal_name, college_number and tax_id.
+     */
+    public function get_document_identities(): array
+    {
+        // Worked out first: it runs its own query, and the query builder is shared.
+        $role_id = $this->get_provider_role_id();
+
+        return $this->db
+            ->select('id, first_name, last_name, legal_name, college_number, tax_id')
+            ->order_by('first_name')
+            ->get_where('users', ['id_roles' => $role_id, 'is_active' => true])
+            ->result_array();
     }
 
     /**
@@ -770,6 +795,7 @@ class Providers_model extends EA_Model
             ->group_start()
             ->like('first_name', $keyword)
             ->or_like('last_name', $keyword)
+            ->or_like('short_name', $keyword)
             ->or_like('CONCAT_WS(" ", first_name, last_name)', $keyword)
             ->or_like('email', $keyword)
             ->or_like('phone_number', $keyword)
@@ -810,7 +836,7 @@ class Providers_model extends EA_Model
         }
 
         $providers = $this->db
-            ->select('id, first_name, last_name')
+            ->select('id, first_name, last_name, short_name')
             ->from('users')
             ->where('id_roles', $role_id)
             ->order_by('first_name, last_name')
@@ -822,7 +848,7 @@ class Providers_model extends EA_Model
         foreach ($providers as $provider) {
             $options[] = [
                 'value' => (int) $provider['id'],
-                'label' => trim($provider['first_name'] . ' ' . $provider['last_name']),
+                'label' => provider_display_name($provider),
             ];
         }
 

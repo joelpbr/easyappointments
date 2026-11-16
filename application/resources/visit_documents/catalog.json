@@ -1,0 +1,5204 @@
+{
+  "groups": [
+    {
+      "id": "certificates",
+      "label": {
+        "catalan": "Justificants i certificats",
+        "spanish": "Justificantes y certificados"
+      }
+    },
+    {
+      "id": "invoices",
+      "label": {
+        "catalan": "Factures i rebuts",
+        "spanish": "Facturas y recibos"
+      }
+    },
+    {
+      "id": "prescriptions",
+      "label": {
+        "catalan": "Receptes",
+        "spanish": "Recetas"
+      },
+      "requires_review": true,
+      "single_entry": {
+        "label": {
+          "catalan": "Recepta",
+          "spanish": "Receta"
+        },
+        "choice_label": {
+          "catalan": "Medicament",
+          "spanish": "Medicamento"
+        }
+      }
+    },
+    {
+      "id": "instructions",
+      "label": {
+        "catalan": "Pautes i tractaments",
+        "spanish": "Pautas y tratamientos"
+      },
+      "requires_review": true
+    },
+    {
+      "id": "reports",
+      "label": {
+        "catalan": "Informes",
+        "spanish": "Informes"
+      }
+    }
+  ],
+  "templates": [
+    {
+      "id": "prescription",
+      "label": {
+        "catalan": "Recepta personalitzada",
+        "spanish": "Receta personalizada"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "RECEPTA.dotx"
+      ],
+      "restricted": true,
+      "defaults": {}
+    },
+    {
+      "id": "rx_amoxicillin",
+      "label": {
+        "catalan": "Amoxicilina 500 mg · 30 comprimits EFG",
+        "spanish": "Amoxicilina 500 mg · 30 comprimits EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "AMOXICILINA 500.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Amoxicilina 500 mg · 30 comprimits EFG"
+      }
+    },
+    {
+      "id": "rx_amoxiclav_250",
+      "label": {
+        "catalan": "Amoxicilina / clavulánico 250 / 62,5 mg · sobres EFG",
+        "spanish": "Amoxicilina / clavulánico 250 / 62,5 mg · sobres EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "AMOXICILINACAVULÁNICO 250-62.5.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Amoxicilina / clavulánico 250 / 62,5 mg · sobres EFG"
+      }
+    },
+    {
+      "id": "rx_amoxiclav_500",
+      "label": {
+        "catalan": "Amoxicilina / clavulánico 500 / 125 mg · comprimidos EFG",
+        "spanish": "Amoxicilina / clavulánico 500 / 125 mg · comprimidos EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "AMOXICILINACAVULÁNICO500125.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Amoxicilina / clavulánico 500 / 125 mg · comprimidos EFG"
+      }
+    },
+    {
+      "id": "rx_arcoxia",
+      "label": {
+        "catalan": "Arcoxia 60 mg · 28 comprimidos",
+        "spanish": "Arcoxia 60 mg · 28 comprimidos"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "ARCOXIA 60MG.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Arcoxia 60 mg · 28 comprimidos"
+      }
+    },
+    {
+      "id": "rx_celestone",
+      "label": {
+        "catalan": "Celestone Cronodose · inyectable",
+        "spanish": "Celestone Cronodose · inyectable"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "CELESTONE CRONODOSE INJ.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Celestone Cronodose · inyectable"
+      }
+    },
+    {
+      "id": "rx_ciprofloxacin",
+      "label": {
+        "catalan": "Ciprofloxacino 500 mg EFG",
+        "spanish": "Ciprofloxacino 500 mg EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "CIPROFLOXACINO500.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Ciprofloxacino 500 mg EFG"
+      }
+    },
+    {
+      "id": "rx_diazepam",
+      "label": {
+        "catalan": "Diazepam 5 mg",
+        "spanish": "Diazepam 5 mg"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "DIAZEPAM 5 MG.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Diazepam 5 mg"
+      }
+    },
+    {
+      "id": "rx_enantyum",
+      "label": {
+        "catalan": "Enantyum 25 mg · solución oral",
+        "spanish": "Enantyum 25 mg · solución oral"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "ENANTYUAM 25MG.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Enantyum 25 mg · solución oral"
+      }
+    },
+    {
+      "id": "rx_espidifen",
+      "label": {
+        "catalan": "Espidifen 600 mg · 40 sobres EFG",
+        "spanish": "Espidifen 600 mg · 40 sobres EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "ESPIDIFEN 600 MG. 40 SOBRES.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Espidifen 600 mg · 40 sobres EFG"
+      }
+    },
+    {
+      "id": "rx_fosfomycin",
+      "label": {
+        "catalan": "Fosfomicina EFG · 2 sobres",
+        "spanish": "Fosfomicina EFG · 2 sobres"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "FOSFOMICINA EFG GRANULADO.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Fosfomicina EFG · 2 sobres"
+      }
+    },
+    {
+      "id": "rx_ibuprofen_400",
+      "label": {
+        "catalan": "Ibuprofeno 400 mg EFG",
+        "spanish": "Ibuprofeno 400 mg EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "IBUPROFENO 400.docx",
+        "IBUPROFENO400.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Ibuprofeno 400 mg EFG"
+      }
+    },
+    {
+      "id": "rx_ibuprofen_600",
+      "label": {
+        "catalan": "Ibuprofeno 600 mg EFG",
+        "spanish": "Ibuprofeno 600 mg EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "IBUPROFENO600.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Ibuprofeno 600 mg EFG"
+      }
+    },
+    {
+      "id": "rx_ibuprofen_sachets",
+      "label": {
+        "catalan": "Ibuprofeno + arginina 600 mg · sobres EFG",
+        "spanish": "Ibuprofeno + arginina 600 mg · sobres EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "IBUPROFENO600 SOBRES.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Ibuprofeno + arginina 600 mg · sobres EFG"
+      }
+    },
+    {
+      "id": "rx_itragerm",
+      "label": {
+        "catalan": "Itragerm 50 mg · cápsulas duras, 14 unidades",
+        "spanish": "Itragerm 50 mg · cápsulas duras, 14 unidades"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "ITRAGERM 50MG.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Itragerm 50 mg · cápsulas duras, 14 unidades"
+      }
+    },
+    {
+      "id": "rx_mepivacaine",
+      "label": {
+        "catalan": "Mepivacaína Normon 2% · solución inyectable · 100 unidades · CN 602914.5",
+        "spanish": "Mepivacaína Normon 2% · solución inyectable · 100 unidades · CN 602914.5"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "MEPIVACAINA.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Mepivacaína Normon 2% · solución inyectable · 100 unidades · CN 602914.5"
+      }
+    },
+    {
+      "id": "rx_metamizole",
+      "label": {
+        "catalan": "Metamizol 575 mg EFG",
+        "spanish": "Metamizol 575 mg EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "METAMIZOL575.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Metamizol 575 mg EFG"
+      }
+    },
+    {
+      "id": "rx_nolotil",
+      "label": {
+        "catalan": "Nolotil 575 mg EFG",
+        "spanish": "Nolotil 575 mg EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "NOLOTIL 575.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Nolotil 575 mg EFG"
+      }
+    },
+    {
+      "id": "rx_nolotil_injection",
+      "label": {
+        "catalan": "Nolotil 0,4 g/ml · solución inyectable y para perfusión",
+        "spanish": "Nolotil 0,4 g/ml · solución inyectable y para perfusión"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "NOLOTIL INYECTABLE.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Nolotil 0,4 g/ml · solución inyectable y para perfusión"
+      }
+    },
+    {
+      "id": "rx_paracetamol_1g",
+      "label": {
+        "catalan": "Paracetamol 1 g EFG",
+        "spanish": "Paracetamol 1 g EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "PARACETAMOL 1G.docx",
+        "PARACETAMOL 650.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Paracetamol 1 g EFG"
+      }
+    },
+    {
+      "id": "rx_paracetamol_650",
+      "label": {
+        "catalan": "Paracetamol 650 mg EFG",
+        "spanish": "Paracetamol 650 mg EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "PARACETAMOL 650 MG.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Paracetamol 650 mg EFG"
+      }
+    },
+    {
+      "id": "rx_voltaren_100",
+      "label": {
+        "catalan": "Voltaren Retard 100 mg · comprimidos",
+        "spanish": "Voltaren Retard 100 mg · comprimidos"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "VOLTAREN RETARD 100.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Voltaren Retard 100 mg · comprimidos"
+      }
+    },
+    {
+      "id": "rx_voltaren_50",
+      "label": {
+        "catalan": "Voltaren Retard 50 mg · comprimidos",
+        "spanish": "Voltaren Retard 50 mg · comprimidos"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "VOLTAREN RETARD 50.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Voltaren Retard 50 mg · comprimidos"
+      }
+    },
+    {
+      "id": "rx_voltaren_75",
+      "label": {
+        "catalan": "Voltaren Retard 75 mg · comprimidos",
+        "spanish": "Voltaren Retard 75 mg · comprimidos"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "VOLTAREN RETARD 75.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Voltaren Retard 75 mg · comprimidos"
+      }
+    },
+    {
+      "id": "rx_zaldiar",
+      "label": {
+        "catalan": "Zaldiar 37,5 mg / 325 mg · comprimidos",
+        "spanish": "Zaldiar 37,5 mg / 325 mg · comprimidos"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "ZALDIAR 37,5 MG-325MG.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Zaldiar 37,5 mg / 325 mg · comprimidos"
+      }
+    },
+    {
+      "id": "rx_zinnat",
+      "label": {
+        "catalan": "Zinnat 250 mg EFG",
+        "spanish": "Zinnat 250 mg EFG"
+      },
+      "group": "prescriptions",
+      "template": "prescription.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "medication",
+          "label": {
+            "catalan": "Medicament i presentació",
+            "spanish": "Medicamento y presentación"
+          },
+          "type": "textarea",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "packages",
+          "label": {
+            "catalan": "Nombre d’envasos",
+            "spanish": "Número de envases"
+          },
+          "type": "integer",
+          "required": true,
+          "max_length": 500,
+          "min": 1
+        },
+        {
+          "key": "duration",
+          "label": {
+            "catalan": "Durada del tractament",
+            "spanish": "Duración del tratamiento"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "dosage",
+          "label": {
+            "catalan": "Posologia",
+            "spanish": "Posología"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 35
+        },
+        {
+          "key": "units",
+          "label": {
+            "catalan": "Unitats per presa",
+            "spanish": "Unidades por toma"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "interval",
+          "label": {
+            "catalan": "Pauta / interval",
+            "spanish": "Pauta / intervalo"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 12
+        },
+        {
+          "key": "dispensing_date",
+          "label": {
+            "catalan": "Data prevista de dispensació",
+            "spanish": "Fecha prevista de dispensación"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Instruccions",
+            "spanish": "Instrucciones"
+          },
+          "type": "textarea",
+          "required": false,
+          "max_length": 200
+        }
+      ],
+      "sources": [
+        "ZINNAT250.docx"
+      ],
+      "restricted": true,
+      "defaults": {
+        "medication": "Zinnat 250 mg EFG"
+      }
+    },
+    {
+      "id": "invoice",
+      "label": {
+        "catalan": "Factura / rebut",
+        "spanish": "Factura / recibo"
+      },
+      "group": "invoices",
+      "template": "invoice.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "invoice_number",
+          "label": {
+            "catalan": "Número de factura / rebut",
+            "spanish": "Número de factura / recibo"
+          },
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "description",
+          "label": {
+            "catalan": "Concepte",
+            "spanish": "Concepto"
+          },
+          "type": "text",
+          "required": true,
+          "options": [
+            "QUIROPÒDIA",
+            "EXPLORACIÓ BIOMECÀNICA",
+            "PLANTILLES",
+            "VISITA PODOLÒGICA",
+            "CIRUGIA UNGUEAL"
+          ]
+        },
+        {
+          "key": "amount",
+          "label": {
+            "catalan": "Import total (€)",
+            "spanish": "Importe total (€)"
+          },
+          "type": "money",
+          "required": true,
+          "options": [
+            "22.00",
+            "29.00",
+            "30.00",
+            "60.00",
+            "150.00",
+            "360.00",
+            "450.00",
+            "500.00",
+            "700.00"
+          ]
+        },
+        {
+          "key": "paid",
+          "label": {
+            "catalan": "Estat del cobrament",
+            "spanish": "Estado del cobro"
+          },
+          "type": "text",
+          "required": true,
+          "options": [
+            "COBRAT",
+            "PENDENT"
+          ]
+        }
+      ],
+      "sources": [
+        "FACTURAS SARA NUEVO.dotx",
+        "FACTURAS SEBAS NUEVO .dotx"
+      ],
+      "restricted": true,
+      "defaults": {}
+    },
+    {
+      "id": "attendance",
+      "label": {
+        "catalan": "Justificant de visita",
+        "spanish": "Justificante de visita"
+      },
+      "group": "certificates",
+      "template": "attendance.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "visit_date",
+          "label": {
+            "catalan": "Data de la visita / intervenció",
+            "spanish": "Fecha de la visita / intervención"
+          },
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "visit_time",
+          "label": {
+            "catalan": "Hora de la visita",
+            "spanish": "Hora de la visita"
+          },
+          "type": "time",
+          "required": true
+        }
+      ],
+      "sources": [
+        "JUSTIFICANTES.dotx"
+      ],
+      "restricted": false,
+      "defaults": {}
+    },
+    {
+      "id": "surgery",
+      "label": {
+        "catalan": "Justificant quirúrgic",
+        "spanish": "Justificante quirúrgico"
+      },
+      "group": "certificates",
+      "template": "surgery.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "visit_date",
+          "label": {
+            "catalan": "Data de la visita / intervenció",
+            "spanish": "Fecha de la visita / intervención"
+          },
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "surgical_site",
+          "label": {
+            "catalan": "Zona intervinguda",
+            "spanish": "Zona intervenida"
+          },
+          "type": "text",
+          "required": true
+        },
+        {
+          "key": "rest_days",
+          "label": {
+            "catalan": "Dies de repòs",
+            "spanish": "Días de reposo"
+          },
+          "type": "integer",
+          "required": true
+        },
+        {
+          "key": "sport_days",
+          "label": {
+            "catalan": "Dies sense esport",
+            "spanish": "Días sin deporte"
+          },
+          "type": "integer",
+          "required": true
+        }
+      ],
+      "sources": [
+        "JUSTIFICANTE IQ.dotx",
+        "JUSTIFICANTE IQ1.docx"
+      ],
+      "restricted": false,
+      "defaults": {}
+    },
+    {
+      "id": "footwear",
+      "label": {
+        "catalan": "Certificat de calçat laboral",
+        "spanish": "Certificado de calzado laboral"
+      },
+      "group": "certificates",
+      "template": "footwear.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "document_number",
+          "label": {
+            "catalan": "DNI / NIE / passaport",
+            "spanish": "DNI / NIE / pasaporte"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "footwear_recommendation",
+          "label": {
+            "catalan": "Recomanació de calçat",
+            "spanish": "Recomendación de calzado"
+          },
+          "type": "textarea",
+          "required": true
+        }
+      ],
+      "sources": [
+        "CALZADO LABORAL.dotx"
+      ],
+      "restricted": false,
+      "defaults": {
+        "footwear_recommendation": "calzado laboral suficientemente ancho y con buena amortiguación, tipo deportivo"
+      }
+    },
+    {
+      "id": "biomechanical",
+      "label": {
+        "catalan": "Informe biomecànic",
+        "spanish": "Informe biomecánico"
+      },
+      "group": "reports",
+      "template": "biomechanical.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "birth_date",
+          "label": {
+            "catalan": "Data de naixement",
+            "spanish": "Fecha de nacimiento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500,
+          "not_future": true
+        },
+        {
+          "key": "reason",
+          "label": {
+            "catalan": "Motiu de consulta",
+            "spanish": "Motivo de consulta"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "PODÀLGIES",
+            "METATARSÀLGIA",
+            "TALÀLGIA",
+            "QUERATOPATIES",
+            "REVISIÓ",
+            "GONÀLGIA",
+            "FASCITIS PLANTAR"
+          ]
+        },
+        {
+          "key": "hip",
+          "label": {
+            "catalan": "Maluc · exploració física",
+            "spanish": "Cadera · exploración física"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "ROTACIÓ INTERNA AUMENTADA",
+            "ROTACIÓ INTERNA REDUÏDA",
+            "ROTACIÓ EXTERNA AUMENTADA",
+            "ROTACIÓ EXTERNA REDUÏDA"
+          ]
+        },
+        {
+          "key": "knee",
+          "label": {
+            "catalan": "Genoll",
+            "spanish": "Rodilla"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "GENU VALGUM",
+            "GENU VARUS",
+            "GENU FLEXUS",
+            "GENUS RECURVATUM"
+          ]
+        },
+        {
+          "key": "metatarsal",
+          "label": {
+            "catalan": "Fórmula metatarsal",
+            "spanish": "Fórmula metatarsal"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "INDEX MINUS",
+            "INDEX PLUS",
+            "INDEX PLUS MINUS"
+          ]
+        },
+        {
+          "key": "digital",
+          "label": {
+            "catalan": "Fórmula digital",
+            "spanish": "Fórmula digital"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "PEU QUADRAT",
+            "PEU GREC",
+            "PEU EGIPCI",
+            "AVANTPEU TRIANGULAR"
+          ]
+        },
+        {
+          "key": "joints",
+          "label": {
+            "catalan": "Moviments articulars",
+            "spanish": "Movimientos articulares"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "NORMAL",
+            "REDUÏT",
+            "HIPERMOVILITAT"
+          ]
+        },
+        {
+          "key": "muscle",
+          "label": {
+            "catalan": "Balanç muscular",
+            "spanish": "Balance muscular"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "HIPOTONIA",
+            "HIPERTONIA",
+            "NORMAL"
+          ]
+        },
+        {
+          "key": "patella",
+          "label": {
+            "catalan": "Ròtules",
+            "spanish": "Rótulas"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "NORMAL",
+            "CONVERGENTS",
+            "DIVERGENTS"
+          ]
+        },
+        {
+          "key": "tibia",
+          "label": {
+            "catalan": "Tíbia",
+            "spanish": "Tibia"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "NORMAL",
+            "VARA"
+          ]
+        },
+        {
+          "key": "medial",
+          "label": {
+            "catalan": "Columna lateral interna",
+            "spanish": "Columna lateral interna"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "ALÇADA NORMAL",
+            "ALÇADA REDUÏDA",
+            "NORMAL",
+            "VALGUITZADA",
+            "VARITZADA"
+          ]
+        },
+        {
+          "key": "lateral",
+          "label": {
+            "catalan": "Columna lateral externa",
+            "spanish": "Columna lateral externa"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "RECOLZAMENT AUMENTAT",
+            "RECOLZAMENT REDUÏT",
+            "NORMAL"
+          ]
+        },
+        {
+          "key": "forefoot",
+          "label": {
+            "catalan": "Avantpeu",
+            "spanish": "Antepié"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "VALGO",
+            "VARO",
+            "CAIGUDA RADIS CENTRALS",
+            "ADDUCCIÓ",
+            "INSUFICIÈNCIA PRIMER RADI",
+            "INSUFICIÈNCIA 5É RADI"
+          ]
+        },
+        {
+          "key": "toes",
+          "label": {
+            "catalan": "Dits",
+            "spanish": "Dedos"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "HIPEREXTENSIÓ 1ER DIT",
+            "DITS URPA",
+            "DIT RÀFAGA",
+            "ABDUCCIÓ 1ER DIT"
+          ]
+        },
+        {
+          "key": "limbs",
+          "label": {
+            "catalan": "EEII",
+            "spanish": "EEII"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "ABDUCCIÓ",
+            "ADDUCCIÓ",
+            "GENU VALGUM",
+            "GENU VARUM",
+            "NORMAL"
+          ]
+        },
+        {
+          "key": "heel",
+          "label": {
+            "catalan": "Xoc taló",
+            "spanish": "Choque del talón"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "NEUTRE",
+            "VALGO",
+            "VARO"
+          ]
+        },
+        {
+          "key": "midfoot",
+          "label": {
+            "catalan": "Recolzament migpeu",
+            "spanish": "Apoyo del mediopié"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "NEUTRE",
+            "VALGO",
+            "VARO"
+          ]
+        },
+        {
+          "key": "forefoot_support",
+          "label": {
+            "catalan": "Recolzament avantpeu",
+            "spanish": "Apoyo del antepié"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "RADIS EXTERNS",
+            "NORMAL",
+            "RADIS CENTRALS"
+          ]
+        },
+        {
+          "key": "toe_off",
+          "label": {
+            "catalan": "Enlairament dits",
+            "spanish": "Despegue de los dedos"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "NORMAL",
+            "HIERRECOLZAMENT 1ER DIT"
+          ]
+        },
+        {
+          "key": "fick",
+          "label": {
+            "catalan": "Angle Fick",
+            "spanish": "Ángulo Fick"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "NORMAL",
+            "AUMENTAT",
+            "REDUÏT"
+          ]
+        },
+        {
+          "key": "diagnosis",
+          "label": {
+            "catalan": "Diagnòstic",
+            "spanish": "Diagnóstico"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "PEUS VALGOS PRIMARIS",
+            "PEUS VALGOS SECUNDARIS",
+            "PEUS PLANS",
+            "PEUS CAVOS",
+            "PEUS VALGOS INSUFICIÈNCIA 1º RADI",
+            "ESPERÓ CALCANI",
+            "FASCITIS PLANTAR",
+            "PEUS CAVOS VALGOS",
+            "PEUS CAVOS VAROS",
+            "NEUROMA MORTON"
+          ]
+        },
+        {
+          "key": "treatment",
+          "label": {
+            "catalan": "Tractament",
+            "spanish": "Tratamiento"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "SOPORTS PLANTARS PERSONALIZATS",
+            "REVISIÓ 6 MESOS",
+            "REVISIÓ 1 ANY"
+          ]
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data",
+            "spanish": "Fecha"
+          },
+          "type": "date",
+          "required": true,
+          "source": "visit_date"
+        },
+        {
+          "key": "physical_observations",
+          "label": {
+            "catalan": "Observacions · exploració física",
+            "spanish": "Observacions · exploració física"
+          },
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "key": "asymmetries",
+          "label": {
+            "catalan": "Asimetries",
+            "spanish": "Asimetries"
+          },
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "key": "standing_hip",
+          "label": {
+            "catalan": "Maluc · bipedestació",
+            "spanish": "Maluc · bipedestació"
+          },
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "key": "helbing",
+          "label": {
+            "catalan": "Talons · línia Helbing",
+            "spanish": "Talons · línia Helbing"
+          },
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "key": "standing_observations",
+          "label": {
+            "catalan": "Observacions · bipedestació",
+            "spanish": "Observacions · bipedestació"
+          },
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "key": "dynamic_observations",
+          "label": {
+            "catalan": "Observacions · dinàmica",
+            "spanish": "Observacions · dinàmica"
+          },
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "sources": [
+        "INFORME BIOMECÀNIC.dotx"
+      ],
+      "restricted": false,
+      "defaults": {}
+    },
+    {
+      "id": "diabetic_foot",
+      "label": {
+        "catalan": "Informe de peu diabètic",
+        "spanish": "Informe de pie diabético"
+      },
+      "group": "reports",
+      "template": "diabetic_foot.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "diabetes_type",
+          "label": {
+            "catalan": "Tipus de diabetis",
+            "spanish": "Tipo de diabetes"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "1",
+            "2",
+            "HIPERGLUCEMIA TRACTADA AMB DIETA"
+          ]
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data de visita",
+            "spanish": "Fecha de visita"
+          },
+          "type": "date",
+          "required": true,
+          "source": "visit_date"
+        },
+        {
+          "key": "reason",
+          "label": {
+            "catalan": "Motiu de consulta",
+            "spanish": "Motivo de consulta"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "CONTROL",
+            "PEU RISC NEUROLÒGIC",
+            "PEU RISC VASCULAR",
+            "QUERATOPATIES",
+            "ONICOPATIES"
+          ]
+        },
+        {
+          "key": "thermal",
+          "label": {
+            "catalan": "Sensibilitat tèrmica",
+            "spanish": "Sensibilidad térmica"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU",
+            "FEBLE PEU ESQUERRE",
+            "FEBLE PEU DRET",
+            "NEGATIU PEU ESQUERRE",
+            "NEGATIU PEU DRET",
+            "FEBLE"
+          ]
+        },
+        {
+          "key": "tactile",
+          "label": {
+            "catalan": "Sensibilitat tàctil",
+            "spanish": "Sensibilidad táctil"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU",
+            "FEBLE PEU ESQUERRE",
+            "FEBLE PEU DRET",
+            "NEGATIU PEU ESQUERRE",
+            "NEGATIU PEU DRET",
+            "FEBLE"
+          ]
+        },
+        {
+          "key": "pain",
+          "label": {
+            "catalan": "Sensibilitat àlgica",
+            "spanish": "Sensibilidad álgica"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU",
+            "FLEBLE PEU ESQUERRE",
+            "FEBLE PEU DRET",
+            "NEGATIU PEU ESQUERRE",
+            "NEGATIU PEU DRET",
+            "FEBLE"
+          ]
+        },
+        {
+          "key": "monofilament",
+          "label": {
+            "catalan": "Monofilament",
+            "spanish": "Monofilament"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU",
+            "FLEBLE PEU ESQUERRE",
+            "FEBLE PEU DRET",
+            "NEGATIU PEU ESQUERRE",
+            "NEGATIU PEU DRET",
+            "FEBLE"
+          ]
+        },
+        {
+          "key": "vibration",
+          "label": {
+            "catalan": "Diapasó",
+            "spanish": "Diapasón"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU",
+            "FEBLE PEU DRET",
+            "FEBLE PEU ESQUERRE",
+            "NEGATIU PEU DRET",
+            "NEGATIU PEU ESQUERRE",
+            "FEBLE"
+          ]
+        },
+        {
+          "key": "pedal_pulse",
+          "label": {
+            "catalan": "Pols artèria pèdia",
+            "spanish": "Pulso arteria pedia"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU",
+            "FEBLE",
+            "NEGATIU PEU DRET",
+            "NEGATIU PEU ESQUERRE",
+            "FLEBLE PEU DRET",
+            "FEBLE PEU ESQUERRE",
+            "NOMÉS AUDIBLE AMB DOPPLER",
+            "NOMÉS AUDIBLE AMB DOPPLER PEU DRET",
+            "NOMÉS AUDIBLE AMB DOPPLER PEU ESQUERRE"
+          ]
+        },
+        {
+          "key": "tibial_pulse",
+          "label": {
+            "catalan": "Pols tibial posterior",
+            "spanish": "Pulso tibial posterior"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU",
+            "FEBLE",
+            "NEGATIU PEU DRET",
+            "NEGATIU PEU ESQUERRE",
+            "FEBLE PEU DRET",
+            "FEBLE PEU ESQUERRE",
+            "NOMÉS AUDIBLE AMB DOPPLER",
+            "NOMÉS AUDIBLE AMB DOPPLER PEU DRET",
+            "NOMÉS AUDIBLE AMB DOPPLER PEU ESQUERRE"
+          ]
+        },
+        {
+          "key": "cold_feet",
+          "label": {
+            "catalan": "Peus freds / pal·lidesa / pilositat",
+            "spanish": "Pies fríos / palidez / pilosidad"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU"
+          ]
+        },
+        {
+          "key": "claudication",
+          "label": {
+            "catalan": "Claudicació intermitent",
+            "spanish": "Claudicación intermitente"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU"
+          ]
+        },
+        {
+          "key": "rest_pain",
+          "label": {
+            "catalan": "Dolor en repòs",
+            "spanish": "Dolor en reposo"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "POSITIU",
+            "NEGATIU"
+          ]
+        },
+        {
+          "key": "hyperkeratosis",
+          "label": {
+            "catalan": "Hiperqueratosi",
+            "spanish": "Hiperqueratosis"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "ZONA METATARSAL",
+            "DORS DITS",
+            "PULPELL DITS",
+            "TALONS",
+            "NO PRESENTA",
+            "HELOMES INTERDIGITALS"
+          ]
+        },
+        {
+          "key": "dry_skin",
+          "label": {
+            "catalan": "Pell seca / clivelles",
+            "spanish": "Piel seca / grietas"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "PRESENT",
+            "NO PRESENT"
+          ]
+        },
+        {
+          "key": "nails",
+          "label": {
+            "catalan": "Onicopaties",
+            "spanish": "Onicopatías"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "ONICOGRIFOSI",
+            "ONICOCRIPTOSI",
+            "HELOMES PERIUNGUEALS",
+            "ONICOMICOSI",
+            "ONICOLISI",
+            "NO PRESENTA"
+          ]
+        },
+        {
+          "key": "osteoarticular",
+          "label": {
+            "catalan": "Alteracions osteoarticulars",
+            "spanish": "Alteraciones osteoarticulares"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "HALLUX VALGUS",
+            "DITS URPA",
+            "CLINODACTÍLIES",
+            "PEUS CAVUS",
+            "PEUS PLANS",
+            "NO PRESENTA"
+          ]
+        },
+        {
+          "key": "footwear",
+          "label": {
+            "catalan": "Calçat adequat",
+            "spanish": "Calzado adecuado"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "NO. ESTRET",
+            "NO. EXCÉS TALÓ",
+            "SÍ",
+            "NO.MANCA D´AMORTIGUACIÓ",
+            "NO. MANCA DE SUBJECCIÓ AL PEU"
+          ]
+        },
+        {
+          "key": "hygiene",
+          "label": {
+            "catalan": "Higiene",
+            "spanish": "Higiene"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "CORRECTA",
+            "DEFICIENT"
+          ]
+        },
+        {
+          "key": "treatment",
+          "label": {
+            "catalan": "Tractament",
+            "spanish": "Tratamiento"
+          },
+          "type": "textarea",
+          "required": true,
+          "options": [
+            "Quiropòdia",
+            "Recomanem realitzar les tres consultes anuals per presència peu de risc.",
+            "Tall i fresat ungueal.",
+            "QUIROPÒDIA.NO PRESENTA CAP PATOLOGIA VASCULAR NI NEUROPÀTICA CRÒNICA."
+          ]
+        }
+      ],
+      "sources": [
+        "INFORME PEU DIABÈTIC NOU.dotx"
+      ],
+      "restricted": false,
+      "defaults": {}
+    },
+    {
+      "id": "amoxicillin_instructions",
+      "label": {
+        "catalan": "Pauta amb amoxicil·lina i urgències",
+        "spanish": "Pauta con amoxicilina y urgencias"
+      },
+      "group": "instructions",
+      "template": "amoxicillin_instructions.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Pauta / instruccions",
+            "spanish": "Pauta / instrucciones"
+          },
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "key": "emergency_phone",
+          "label": {
+            "catalan": "Telèfon d’urgències",
+            "spanish": "Teléfono de urgencias"
+          },
+          "type": "text",
+          "required": true
+        }
+      ],
+      "sources": [
+        "PAUTA AMOX. Y TELF. URGENCIAS.docx"
+      ],
+      "restricted": false,
+      "defaults": {
+        "instructions": "DOS DÍAS ANTES INTERVENCIÓN EMPEZAR CON AMOXICILINA  CLAVULANICO 250/62.5 MG. SOBRES (ANTIBIÓTICO), 2 VECES AL DÍA DURANTE 10 DÍAS.\n2 HORAS ANTES DE LA INTERVENCIÓN, TOMAR 1 IBUPROFENO 400MG. A LAS 4 HORAS TOMAR 1 PARACETAMOL 650 MG., Y ASÍ DURANTE LAS PRIMERAS 72 H.",
+        "emergency_phone": "681344344"
+      }
+    },
+    {
+      "id": "cipro_instructions",
+      "label": {
+        "catalan": "Pauta amb ciprofloxacina i urgències",
+        "spanish": "Pauta con ciprofloxacino y urgencias"
+      },
+      "group": "instructions",
+      "template": "cipro_instructions.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Pauta / instruccions",
+            "spanish": "Pauta / instrucciones"
+          },
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "key": "emergency_phone",
+          "label": {
+            "catalan": "Telèfon d’urgències",
+            "spanish": "Teléfono de urgencias"
+          },
+          "type": "text",
+          "required": true
+        }
+      ],
+      "sources": [
+        "PAUTA CIPRO Y TELF. URGENCIAS.docx"
+      ],
+      "restricted": false,
+      "defaults": {
+        "instructions": "DOS DÍAS ANTES INTERVENCIÓN EMPEZAR CON CIPROFLOXACINO 500 MG. (ANTIBIÓTICO), 2 VECES AL DÍA DURANTE 10 DÍAS.\n2 HORAS ANTES INTERVENCIÓN TOMAR 1 IBUPROFENO 600MG. A LAS 4 HORAS TOMAR 1 PARACETAMOL 1 G., Y ASÍ DURANTE LAS PRIMERAS 72 H.",
+        "emergency_phone": "681344344"
+      }
+    },
+    {
+      "id": "homeopathy",
+      "label": {
+        "catalan": "Tractament homeopàtic",
+        "spanish": "Tratamiento homeopático"
+      },
+      "group": "instructions",
+      "template": "homeopathy.docx",
+      "fields": [
+        {
+          "key": "patient_name",
+          "label": {
+            "catalan": "Nom del pacient",
+            "spanish": "Nombre del paciente"
+          },
+          "type": "text",
+          "required": true,
+          "max_length": 160
+        },
+        {
+          "key": "date",
+          "label": {
+            "catalan": "Data del document",
+            "spanish": "Fecha del documento"
+          },
+          "type": "date",
+          "required": true,
+          "max_length": 500
+        },
+        {
+          "key": "instructions",
+          "label": {
+            "catalan": "Pauta / instruccions",
+            "spanish": "Pauta / instrucciones"
+          },
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "key": "emergency_phone",
+          "label": {
+            "catalan": "Telèfon d’urgències",
+            "spanish": "Teléfono de urgencias"
+          },
+          "type": "text",
+          "required": false
+        }
+      ],
+      "sources": [
+        "HOMEOPATIA TTO..docx"
+      ],
+      "restricted": false,
+      "defaults": {
+        "instructions": "*ANTIMONIUM CRUDUM 7CH\n-3 GRÀNULS ABANS DE DINAR\n-3 GRÀNULS ABANS DE SOPAR\n*THUYA OCCIDENTALIS\n-10 GRÀNULS UN COP CADA SETMANA",
+        "emergency_phone": ""
+      }
+    }
+  ]
+}

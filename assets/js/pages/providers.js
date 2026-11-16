@@ -19,6 +19,7 @@ App.Pages.Providers = (function () {
     const $id = $('#id');
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
+    const $shortName = $('#short-name');
     const $email = $('#email');
     const $phoneNumber = $('#phone-number');
     const $address = $('#address');
@@ -28,6 +29,9 @@ App.Pages.Providers = (function () {
     const $isPrivate = $('#is-private');
     const $isActive = $('#is-active');
     const $notes = $('#notes');
+    const $collegeNumber = $('#college-number');
+    const $legalName = $('#legal-name');
+    const $taxId = $('#tax-id');
     const $language = $('#language');
     const $timezone = $('#timezone');
     const $username = $('#username');
@@ -188,6 +192,7 @@ App.Pages.Providers = (function () {
             const provider = {
                 first_name: $firstName.val(),
                 last_name: $lastName.val(),
+                short_name: $shortName.val().trim(),
                 email: $email.val(),
                 phone_number: $phoneNumber.val(),
                 address: $address.val(),
@@ -197,6 +202,9 @@ App.Pages.Providers = (function () {
                 is_private: Number($isPrivate.prop('checked')),
                 is_active: Number($isActive.prop('checked')),
                 notes: $notes.val(),
+                college_number: $collegeNumber.val().trim() || null,
+                legal_name: $legalName.val().trim() || null,
+                tax_id: $taxId.val().trim() || null,
                 language: $language.val(),
                 timezone: $timezone.val(),
                 settings: {
@@ -415,6 +423,7 @@ App.Pages.Providers = (function () {
         $id.val(provider.id);
         $firstName.val(provider.first_name);
         $lastName.val(provider.last_name);
+        $shortName.val(provider.short_name || '');
         $email.val(provider.email);
         $phoneNumber.val(provider.phone_number);
         $address.val(provider.address);
@@ -424,6 +433,9 @@ App.Pages.Providers = (function () {
         $isPrivate.prop('checked', provider.is_private);
         $isActive.prop('checked', provider.is_active);
         $notes.val(provider.notes);
+        $collegeNumber.val(provider.college_number);
+        $legalName.val(provider.legal_name);
+        $taxId.val(provider.tax_id);
         $language.val(provider.language);
         $timezone.val(provider.timezone);
 

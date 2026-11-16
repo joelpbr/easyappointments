@@ -76,6 +76,7 @@ $autoload['helper'] = [
     'env',
     'file',
     'fiscal_id',
+    'provider',
     'html',
     'http',
     'installation',

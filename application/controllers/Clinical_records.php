@@ -38,6 +38,7 @@ class Clinical_records extends EA_Controller
         $this->load->model('fiscal_parties_model');
         $this->load->model('foot_diagrams_model');
         $this->load->model('patient_records_model');
+        $this->load->model('providers_model');
 
         $this->load->library('clinical_record_templates');
         $this->load->library('permissions');
@@ -238,6 +239,174 @@ class Clinical_records extends EA_Controller
         } catch (Throwable $e) {
             json_exception($e);
         }
+    }
+
+    /** Document choices and known data are available only through the visit's clinical authorization. */
+    public function document_options(): void
+    {
+        try {
+            method('get');
+            $appointment = $this->authorize_appointment((int) request('appointment_id'));
+            $this->load->library('visit_documents');
+            $context = $this->document_context($appointment);
+            json_response(
+                $this->visit_documents->client_catalog() + [
+                    'defaults' => $context['defaults'],
+                    'current_professional' => $context['current_professional'],
+                    // An object for the page, also when empty: the IDs are its keys.
+                    'professionals' => (object) array_map(fn(array $signer) => $signer['name'], $context['signers']),
+                    'provider_name' => $context['provider_name'],
+                    'allergies' => $context['allergies'],
+                ],
+                200,
+                ['Cache-Control: no-store, private'],
+            );
+        } catch (Throwable $e) {
+            json_exception($e);
+        }
+    }
+
+    /**
+     * Generate a finished PDF and keep it in the history of the patient (logged by the model); neither the patient
+     * nor the visit is changed. The page opens it with saved_document(). Asking again for a document that would
+     * print exactly the same answers with the saved one.
+     */
+    public function generate_document(): void
+    {
+        try {
+            method('post');
+            $appointment = $this->authorize_appointment((int) request('appointment_id'));
+            $this->load->library('visit_documents');
+            $this->load->model('patient_documents_model');
+            $template = $this->visit_documents->template((string) request('document_type'));
+            $context = $this->document_context($appointment);
+            $signer = $this->visit_documents->signer(
+                $template,
+                $context['signers'],
+                (int) session('user_id'),
+                (int) request('professional'),
+                $context['provider_name'],
+            );
+            $submitted = request('fields', []);
+            if (!is_array($submitted)) {
+                throw new InvalidArgumentException(lang('visit_document_invalid_field'));
+            }
+            $values = $this->visit_documents->values(
+                $template,
+                $context['defaults'],
+                $submitted,
+                request('reviewed') === '1',
+                config('language'),
+            );
+            $clinic = $this->clinic_fields();
+            $fingerprint = $this->visit_documents->fingerprint($template, $values, $signer, $clinic);
+            $document_id =
+                $this->patient_documents_model->identical((int) $appointment['id'], $fingerprint) ??
+                $this->patient_documents_model->store(
+                    $appointment,
+                    $template,
+                    $signer,
+                    trim($this->accounts->get_user_display_name((int) session('user_id'))),
+                    $this->visit_documents->generate_pdf($template, $values, $signer, $clinic),
+                    $fingerprint,
+                );
+            json_response(['document_id' => $document_id], 200, ['Cache-Control: no-store, private']);
+        } catch (Throwable $e) {
+            json_exception($e);
+        }
+    }
+
+    public function document_history(): void
+    {
+        try {
+            method('get');
+            $customer_id = $this->authorize_customer((int) request('customer_id'));
+            $this->load->model('patient_documents_model');
+            json_response(
+                $this->patient_documents_model->history($customer_id, max(0, (int) request('before_id'))),
+                200,
+                ['Cache-Control: no-store, private'],
+            );
+        } catch (Throwable $e) {
+            json_exception($e);
+        }
+    }
+
+    public function saved_document(): void
+    {
+        try {
+            method('get');
+            if (!Clinical_record_templates::can_access(session('role_slug'))) {
+                abort(403, 'Forbidden');
+            }
+            $this->load->model('patient_documents_model');
+            $document = $this->patient_documents_model->metadata((int) request('document_id'));
+            $this->authorize_customer((int) $document['id_users_customer']);
+            $pdf = $this->patient_documents_model->pdf((int) $document['id']);
+            audit_log('download', 'patient_record', (int) $document['id_users_customer'], [
+                'saved_document' => [null, (int) $document['id']],
+            ]);
+            $this->output->set_content_type('application/pdf');
+            response($pdf, 200, [
+                'Content-Disposition: inline; filename="document-' . (int) $document['id'] . '.pdf"',
+                'Cache-Control: no-store, private',
+                'X-Content-Type-Options: nosniff',
+            ]);
+        } catch (Throwable $e) {
+            json_exception($e);
+        }
+    }
+
+    public function delete_document(): void
+    {
+        try {
+            method('post');
+            $customer_id = $this->authorize_customer((int) request('customer_id'));
+            $this->load->model('patient_documents_model');
+            $this->patient_documents_model->delete_document(
+                (int) request('document_id'),
+                $customer_id,
+                (int) session('user_id'),
+            );
+            json_response(['success' => true]);
+        } catch (Throwable $e) {
+            json_exception($e);
+        }
+    }
+
+    /** What the documents of a visit start from: who can sign them and what the records already say. */
+    private function document_context(array $appointment): array
+    {
+        $customer_id = (int) $appointment['id_users_customer'];
+        $patient = $this->patient_records_model->find_by_customer($customer_id);
+        $signers = Visit_documents::professionals($this->providers_model->get_document_identities());
+        $user_id = (int) session('user_id');
+
+        return [
+            'signers' => $signers,
+            'defaults' => $this->visit_documents->defaults(
+                $this->customers_model->find($customer_id),
+                $this->fiscal_parties_model->get_patient_data($customer_id),
+                $patient,
+                $appointment,
+                $this->appointment_records_model->find_by_appointment((int) $appointment['id']),
+                $this->get_service_name($appointment),
+            ),
+            'current_professional' => isset($signers[$user_id]) ? $user_id : null,
+            'provider_name' => trim($this->accounts->get_user_display_name((int) $appointment['id_users_provider'])),
+            'allergies' => (string) ($patient['allergies'] ?? ''),
+        ];
+    }
+
+    /** The clinic_* fields of the document templates, from the general settings. */
+    private function clinic_fields(): array
+    {
+        $fields = [];
+        foreach (['name', 'address', 'phone', 'email', 'link'] as $name) {
+            $fields['clinic_' . $name] = trim((string) setting('company_' . $name));
+        }
+
+        return $fields;
     }
 
     /**
