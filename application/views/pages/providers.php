@@ -109,6 +109,12 @@
                             </div>
 
                             <div class="mb-3">
+                                <label class="form-label" for="calendar-order"><?= lang('provider_calendar_order') ?></label>
+                                <input id="calendar-order" type="number" min="1" max="9999" step="1" class="form-control required" aria-describedby="calendar-order-hint" disabled>
+                                <div id="calendar-order-hint" class="form-text"><?= lang('provider_calendar_order_hint') ?></div>
+                            </div>
+
+                            <div class="mb-3">
                                 <label class="form-label" for="email">
                                     <?= lang('email') ?>
                                     <span class="text-danger" hidden>*</span>

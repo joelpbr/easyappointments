@@ -25,6 +25,7 @@ class Providers_model extends EA_Model
      */
     protected array $casts = [
         'id' => 'integer',
+        'calendar_order' => 'integer',
         'is_private' => 'boolean',
         'is_active' => 'boolean',
         'id_roles' => 'integer',
@@ -94,6 +95,12 @@ class Providers_model extends EA_Model
      */
     public function validate(array $provider): void
     {
+        if (array_key_exists('calendar_order', $provider) &&
+            filter_var($provider['calendar_order'], FILTER_VALIDATE_INT, [
+                'options' => ['min_range' => 1, 'max_range' => 9999],
+            ]) === false) {
+            throw new InvalidArgumentException(lang('provider_calendar_order_invalid'));
+        }
         if (mb_strlen((string) ($provider['short_name'] ?? '')) > 64) {
             throw new InvalidArgumentException('The short name must not exceed 64 characters.');
         }
@@ -748,7 +755,7 @@ class Providers_model extends EA_Model
             ->join('roles', 'roles.id = users.id_roles', 'inner')
             ->join('services_providers', 'services_providers.id_users = users.id', 'inner')
             ->where('roles.slug', DB_SLUG_PROVIDER)
-            ->order_by('first_name ASC, last_name ASC, email ASC')
+            ->order_by('calendar_order ASC, first_name ASC, last_name ASC, email ASC, users.id ASC')
             ->group_by('users.id')
             ->get()
             ->result_array();
