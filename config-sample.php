@@ -1,17 +1,13 @@
 <?php
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
- * @package     EasyAppointments
+/* ---------------------------------------------------------------------------- *
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * @since       v1.0.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.0.0
  * ---------------------------------------------------------------------------- */
 
 /**
- * Easy!Appointments Configuration File
+ * ProgramaConsulta Configuration File
  *
  * Set your installation BASE_URL * without the trailing slash * and the database
  * credentials in order to connect to the database. You can enable the DEBUG_MODE
@@ -39,7 +35,7 @@ class Config
     // ------------------------------------------------------------------------
 
     const DB_HOST = 'mysql';
-    const DB_NAME = 'easyappointments';
+    const DB_NAME = 'programaconsulta';
     const DB_USERNAME = 'user';
     const DB_PASSWORD = 'password';
 

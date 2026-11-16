@@ -1,14 +1,10 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
- * @package     EasyAppointments
+/* ---------------------------------------------------------------------------- *
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * @since       v1.3.2
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.3.2
  * ---------------------------------------------------------------------------- */
 
 use Jsvrcek\ICS\Exception\CalendarEventException;
@@ -49,7 +45,7 @@ class Console extends EA_Controller
     /**
      * Perform a console installation.
      *
-     * Use this method to install Easy!Appointments directly from the terminal.
+     * Use this method to install ProgramaConsulta directly from the terminal.
      *
      * Usage:
      *
@@ -71,7 +67,7 @@ class Console extends EA_Controller
     /**
      * Migrate the database to the latest state.
      *
-     * Use this method to upgrade an Easy!Appointments instance to the latest database state.
+     * Use this method to upgrade an ProgramaConsulta instance to the latest database state.
      *
      * Notice:
      *
@@ -119,7 +115,7 @@ class Console extends EA_Controller
     /**
      * Create a database backup file.
      *
-     * Use this method to back up your Easy!Appointments data.
+     * Use this method to back up your ProgramaConsulta data.
      *
      * Usage:
      *
@@ -142,9 +138,9 @@ class Console extends EA_Controller
      *
      * Usage:
      *
-     * php index.php console restore /path/to/easyappointments-backup-2026-11-15-100000.sql.gz
+     * php index.php console restore /path/to/programaconsulta-backup-2026-11-15-100000.sql.gz
      *
-     * php index.php console restore easyappointments-backup-2026-11-15-100000.sql.gz
+     * php index.php console restore programaconsulta-backup-2026-11-15-100000.sql.gz
      */
     public function restore(): void
     {
@@ -180,7 +176,7 @@ class Console extends EA_Controller
     /**
      * Trigger the synchronization of all provider calendars with Google Calendar.
      *
-     * Use this method in a cronjob to automatically sync events between Easy!Appointments and Google Calendar.
+     * Use this method in a cronjob to automatically sync events between ProgramaConsulta and Google Calendar.
      *
      * Notice:
      *
@@ -277,7 +273,7 @@ class Console extends EA_Controller
     {
         $help = [
             '',
-            'Easy!Appointments ' . config('version'),
+            'ProgramaConsulta ' . config('version'),
             '',
             'Usage:',
             '',

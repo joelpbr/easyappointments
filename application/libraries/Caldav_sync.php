@@ -1,14 +1,10 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
- * @package     EasyAppointments
+/* ---------------------------------------------------------------------------- *
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 use GuzzleHttp\Client;
@@ -816,7 +812,7 @@ class Caldav_sync
     /**
      * Get the URI of an event that is already stored on the CalDAV server.
      *
-     * Falls back to the generated "<uid>.ics" URI, which is the one Easy!Appointments uses for the events it creates
+     * Falls back to the generated "<uid>.ics" URI, which is the one ProgramaConsulta uses for the events it creates
      * itself, when the server does not report a URI for the UID.
      *
      * @param Client $client CalDAV HTTP client.
@@ -829,7 +825,7 @@ class Caldav_sync
     {
         $uri = $this->get_caldav_event_uri($caldav_calendar, $caldav_event_id);
 
-        // The events that Easy!Appointments creates itself are stored under that generated URI (see
+        // The events that ProgramaConsulta creates itself are stored under that generated URI (see
         // Ics_file::generate_uid()), so only the imported ones have to be looked up.
         if (str_starts_with($caldav_event_id, 'ea-')) {
             return $uri;

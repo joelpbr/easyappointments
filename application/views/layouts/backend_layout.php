@@ -9,7 +9,7 @@
 
     <?php slot('meta'); ?>
 
-    <title><?= vars('page_title') ?? lang('backend_section') ?> | Easy!Appointments</title>
+    <title><?= vars('page_title') ?? lang('backend_section') ?> | ProgramaConsulta</title>
 
     <!-- The amounts are hidden from the first paint, unless someone chose to show them on this browser
          (backend_layout.js). -->

@@ -67,7 +67,7 @@ class DatabaseBackupTest extends TestCase
     public function testLineCommentsAreLeftOut(): void
     {
         $sql =
-            "-- Easy!Appointments database backup; with a semicolon\n# TABLE STRUCTURE FOR: ea_users\nSELECT 1;\n--\nSELECT 2; -- the end";
+            "-- ProgramaConsulta database backup; with a semicolon\n# TABLE STRUCTURE FOR: ea_users\nSELECT 1;\n--\nSELECT 2; -- the end";
 
         $this->assertSame(['SELECT 1', 'SELECT 2'], self::split($sql));
     }
@@ -160,14 +160,19 @@ class DatabaseBackupTest extends TestCase
     {
         $this->assertMatchesRegularExpression(
             Database_backup::FILE_PATTERN,
-            'easyappointments-backup-2026-11-15-100000-before-restore.sql.gz',
+            'easyappointments-backup-2026-11-15-100000.sql.gz',
+        );
+        $this->assertDoesNotMatchRegularExpression(Database_backup::FILE_PATTERN, 'easyappointments-backup-../../x.gz');
+        $this->assertMatchesRegularExpression(
+            Database_backup::FILE_PATTERN,
+            'programaconsulta-backup-2026-11-15-100000-before-restore.sql.gz',
         );
         $this->assertMatchesRegularExpression(
             Database_backup::FILE_PATTERN,
-            'easyappointments-backup-2026-11-15-100000.gz',
+            'programaconsulta-backup-2026-11-15-100000.gz',
         );
         $this->assertDoesNotMatchRegularExpression(Database_backup::FILE_PATTERN, '../config.php');
-        $this->assertDoesNotMatchRegularExpression(Database_backup::FILE_PATTERN, 'easyappointments-backup-../../x.gz');
-        $this->assertDoesNotMatchRegularExpression(Database_backup::FILE_PATTERN, 'easyappointments-backup-x.php');
+        $this->assertDoesNotMatchRegularExpression(Database_backup::FILE_PATTERN, 'programaconsulta-backup-../../x.gz');
+        $this->assertDoesNotMatchRegularExpression(Database_backup::FILE_PATTERN, 'programaconsulta-backup-x.php');
     }
 }

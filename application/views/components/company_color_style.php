@@ -83,16 +83,16 @@ if (!empty($company_color) && $company_color !== DEFAULT_COMPANY_COLOR):
         --bs-primary-bg-subtle-rgb: <?= hexToRgb($subtle) ?>;
         --bs-primary-border-subtle: <?= $border_subtle ?>;
         --bs-primary-text-emphasis: <?= $darker ?>;
-        
+
         /* Link colors */
         --bs-link-color: <?= $company_color ?>;
         --bs-link-color-rgb: <?= $rgb ?>;
         --bs-link-hover-color: <?= $hover ?>;
         --bs-link-hover-color-rgb: <?= hexToRgb($hover) ?>;
-        
+
         /* Focus ring */
         --bs-focus-ring-color: rgba(<?= $rgb ?>, 0.25);
-        
+
         /* Custom app color shades */
         --ea-primary-hover: <?= $hover ?>;
         --ea-primary-active: <?= $active ?>;

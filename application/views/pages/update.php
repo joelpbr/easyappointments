@@ -2,7 +2,7 @@
 
 <?php section('content'); ?>
 
-<h3 class="mb-3">Easy!Appointments Update</h3>
+<h3 class="mb-3">ProgramaConsulta Update</h3>
 
 <?php if (vars('confirmation')): ?>
     <div>
@@ -34,7 +34,7 @@
         </div>
         
         <p>
-            You can now use the latest Easy!Appointments version.
+            You can now use the latest ProgramaConsulta version.
         </p>
         
         <a href="<?= site_url('calendar') ?>" class="btn btn-primary btn-large mb-3">

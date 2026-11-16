@@ -1,6 +1,6 @@
 # Console
 
-Easy!Appointments includes a set of command-line tools you can run from a terminal. These are useful for automating tasks like backups and database updates.
+ProgramaConsulta includes a set of command-line tools you can run from a terminal. These are useful for automating tasks like backups and database updates.
 
 ## Before You Start
 
@@ -14,7 +14,7 @@ This should print the PHP version number. If it doesn't, you need to install PHP
 
 ## Available Commands
 
-All commands start with `php index.php console` and are run from the Easy!Appointments root folder.
+All commands start with `php index.php console` and are run from the ProgramaConsulta root folder.
 
 ### Migrate
 
@@ -94,6 +94,6 @@ Shows a summary of all available commands:
 php index.php console help
 ```
 
-*This document applies to Easy!Appointments v1.6.1.*
+*This document applies to ProgramaConsulta v1.6.1.*
 
 [Back](readme.md)

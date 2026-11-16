@@ -1,4 +1,4 @@
-# Easy!Appointments - Changelog
+# ProgramaConsulta - Changelog
 
 This file contains the code changes that were introduced into each release (starting from v1.1.0) so that is easy for
 developers to maintain and readjust their custom modifications on the main project codebase.
@@ -96,12 +96,12 @@ developers to maintain and readjust their custom modifications on the main proje
 - The patient search of the patients page looks in the first name, last names, phone and NIF/NIE at once, every typed word matching one of them, ignoring accents, case and the phone or document format; it lists the matching patients by name with their document and shows how many match out of all the patients
 - The provider filter of the split view is a list with a check box per provider, so that several can be shown at once; it reads "Provider: all" when every provider is chosen and at least one always stays chosen
 - The split view names the days in full and in relation to today ("Today, Friday 13/11", "Tomorrow", "Day after tomorrow", "Next Thursday 19/11"), under the provider name; the date picker has a "Today" button; a column in list mode scrolls by itself while the calendar columns keep scrolling together
-- The clinic logo replaces the Easy!Appointments one in the header, the booking page, the emails and the browser icon (favicon)
+- The clinic logo replaces the ProgramaConsulta one in the header, the booking page, the emails and the browser icon (favicon)
 - The patient section of the appointment form says whether the patient is existing or new: an existing patient has to be chosen from the search and their data is protected until "Edit data" is clicked, while a new patient is typed freely and saving warns when the phone or the name match an existing patient
 - The appointment form has no "New" patient button nor "Create a new patient" search option: when the patient is not found you keep typing, and changing the name of a chosen patient takes the data as a new patient
 - New appointments always start as scheduled, without a status field, and whether they are the first visit is worked out when saving: it is when the patient has no earlier appointment, so a patient chosen from the list or matching an existing one is not new
 - The application works in Catalan by default, with the clinic terminology, and Spanish can be chosen in the user menu, which keeps the choice; other languages are no longer offered and the browser language no longer decides
-- The management pages no longer show the footer (Easy!Appointments credits, language selector and greeting), so the calendar uses that height; the license and credits remain under About
+- The management pages no longer show the footer (ProgramaConsulta credits, language selector and greeting), so the calendar uses that height; the license and credits remain under About
 - Midday breaks are labeled "Mediodía" and out-of-hours periods use red stripes with bold white text outlined in black
 - Treatment dropdowns follow the clinic frequency order, with distinct light backgrounds for readable black text; appointments using the previous treatment colors follow the new palette while custom colors stay unchanged
 - The reception calendar combines date navigation, filters and appointment actions in one toolbar row on desktop, adapting to smaller screens
@@ -259,7 +259,7 @@ developers to maintain and readjust their custom modifications on the main proje
 - When someone clicks on password reset, implement a link delivery and not just change the password directly
 - Login / Backend button on the disabled booking page message screen (#1777)
 - Allow customers to save their information in local storage (#1696)
-- Implementation of additional GDPR features in Easy!Appointments (#535)
+- Implementation of additional GDPR features in ProgramaConsulta (#535)
 - Allow users to define working plan exceptions for multiple dates (#1706)
 - Add CAPTCHA support for all the public forms in order to block abusive requests (#1754)
 - Add validation when saving the working plan (#1758)
@@ -567,7 +567,7 @@ developers to maintain and readjust their custom modifications on the main proje
 - #563: Description field overflows with long text.
 - #600: Unable to select Language on mobile phones.
 - #611: Double replacement when using translation to other languages.
-- #664: Easy!Appointments v1.3.2 allows sensitive information disclosure (username and password hash).
+- #664: ProgramaConsulta v1.3.2 allows sensitive information disclosure (username and password hash).
 - #687: Errors when the provider modifies an appointment.
 - #705: The alert notification of the installation is not being displayed on error.
 - #757: Corrected display of datetimepickers when editing events.
@@ -624,7 +624,7 @@ developers to maintain and readjust their custom modifications on the main proje
 - #65: Insert new appointment by clicking directly on the calendar.
 - #122: Add customer email and phone number in the event popover of the backend/calendar page.
 - #152: Add support for American Time Format (AM/PM).
-- #176: Add Docker container for Easy!Appointments development.
+- #176: Add Docker container for ProgramaConsulta development.
 - #362: Add Arabic language translation.
 - #395: Add aggregates GET parameter in the appointments REST API resource.
 - #397: Allow PHP v7.1 compatibility.
@@ -733,9 +733,9 @@ developers to maintain and readjust their custom modifications on the main proje
 - #6: Business Logic created is not getting assigned to service provider.
 - #10: Unable to use address tags in email address.
 - #18: Duration is not changing when adding a new appointment.
-- #21: Fix Easy!Appointments installation problems with AJAX requests.
+- #21: Fix ProgramaConsulta installation problems with AJAX requests.
 - #66: Trouble with breaks for providers.
 
 ## [1.0.0] - 2014-01-19
 
-First Easy!Appointments release ever! ☺
+First ProgramaConsulta release ever! ☺

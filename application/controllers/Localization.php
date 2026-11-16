@@ -1,14 +1,10 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Open Source Web Scheduler
- *
- * @package     EasyAppointments
+/* ---------------------------------------------------------------------------- *
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) 2013 - 2020, Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * @since       v1.4.3
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.4.3
  * ---------------------------------------------------------------------------- */
 
 /**

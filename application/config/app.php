@@ -5,7 +5,7 @@
 | App Configuration
 |--------------------------------------------------------------------------
 |
-| Declare some of the global config values of Easy!Appointments.
+| Declare some of the global config values of ProgramaConsulta.
 |
 */
 

@@ -1,11 +1,7 @@
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
+/* ---------------------------------------------------------------------------- *
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 /**
@@ -30,7 +26,7 @@ window.App = (function () {
         }
 
         if (App.Utils.Message) {
-            App.Utils.Message.show('Easy!Appointments', lang('unexpected_issues_message'));
+            App.Utils.Message.show('ProgramaConsulta', lang('unexpected_issues_message'));
 
             $('<div/>', {
                 'class': 'card',

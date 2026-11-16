@@ -1,12 +1,8 @@
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
- * @package     EasyAppointments
+/* ---------------------------------------------------------------------------- *
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * @since       v1.4.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.4.0
  * ---------------------------------------------------------------------------- */
 
 const babel = require('gulp-babel');
@@ -27,7 +23,7 @@ function archive(done) {
     const version = /\$config\['version'\] = '([^']+)'/.exec(
         fs.readFileSync('application/config/app.php', 'utf8'),
     )[1];
-    const filename = `easyappointments-${version}.zip`;
+    const filename = `programaconsulta-${version}.zip`;
 
     fs.removeSync('build');
     fs.removeSync(filename);
@@ -68,7 +64,7 @@ function archive(done) {
     fs.copySync('CHANGELOG.md', 'build/CHANGELOG.md');
     fs.copySync('README.md', 'build/README.md');
     fs.copySync('LICENSE', 'build/LICENSE');
-
+    fs.copySync('NOTICE.md', 'build/NOTICE.md');
     // Composer runs on the host when it is installed, otherwise inside the development app container, mapped to the
     // host user so the build output stays writable.
     let composer = 'composer --working-dir=build';

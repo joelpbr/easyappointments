@@ -1,8 +1,7 @@
 {
-    "name": "alextselegidis/easyappointments",
-    "description": "Open Source Web Scheduler",
+    "name": "programaconsulta/programaconsulta",
+    "description": "Gestió de consulta, agenda i historial clínic",
     "version": "1.6.1",
-    "homepage": "https://easyappointments.org",
     "type": "project",
     "license": "GPL-3.0",
     "authors": [
@@ -11,12 +10,6 @@
             "email": "alextselegidis@gmail.com"
         }
     ],
-    "support": {
-        "issues": "https://github.com/alextselegidis/easyappointments/issues",
-        "forum": "https://groups.google.com/forum/#!forum/easy-appointments",
-        "wiki": "https://easyappointments.org/docs",
-        "source": "https://github.com/alextselegidis/easyappointments"
-    },
     "keywords": [
         "calendar",
         "scheduler",

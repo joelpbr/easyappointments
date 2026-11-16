@@ -4,7 +4,7 @@ Guidance for AI coding agents working in this repository.
 
 ## Project
 
-Easy!Appointments is an open source web scheduler (PHP 8.2+, GPL-3.0). It runs on a vendored, patched
+ProgramaConsulta is an clinic management application (PHP 8.2+, GPL-3.0). It runs on a vendored, patched
 CodeIgniter 3 in `system/`, which is framework code and should not be edited.
 
 ## Layout

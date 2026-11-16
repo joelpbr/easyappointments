@@ -1,6 +1,6 @@
 # Fase 1 — Auditoría y propuesta técnica
 
-Proyecto: agenda para una clínica de podología basada en Easy!Appointments.
+Proyecto: agenda para una clínica de podología basada en ProgramaConsulta.
 Fecha de la auditoría: 12 de noviembre de 2026. Rama de trabajo: `develop`.
 
 Este documento responde a la «primera entrega» de la especificación (apartados A a G). Todo lo que se afirma sobre el
@@ -15,7 +15,7 @@ se marca como **por verificar**.
 
 | Elemento | Decisión |
 | --- | --- |
-| Base | Easy!Appointments **1.6.1** (última versión estable publicada, 12/10/2026) |
+| Base | ProgramaConsulta **1.6.1** (última versión estable publicada, 12/10/2026) |
 | Parches adicionales | 4 correcciones de seguridad de `upstream/develop` posteriores a 1.6.1, integradas en `develop` (POST en ajustes, contraseña para cambiar email/usuario, servicios privados en la reserva pública, perfil de clientes en reservas anónimas) |
 | Descartado | `upstream/master` (rama antigua, ya contenida en 1.6.1) y commits duplicados o de prueba de `upstream/develop` |
 | PHP / BD | PHP 8.3 (imagen `php:8.3-apache-trixie`), MySQL 8.4 LTS |
@@ -41,7 +41,7 @@ Se mantiene `upstream` como remoto para poder incorporar futuras versiones (ver 
 
 ### A.3 Funcionalidades nativas relevantes (comprobadas en el código)
 
-| Área | Qué hace hoy Easy!Appointments | Limitaciones para la clínica |
+| Área | Qué hace hoy ProgramaConsulta | Limitaciones para la clínica |
 | --- | --- | --- |
 | Profesionales | Alta, edición, servicios habilitados, horario semanal con descansos, `is_private` | No hay estado activo/inactivo ni color propio. Borrar un profesional borra sus citas |
 | Secretaría | Rol `secretary` con lista de profesionales asignados; ve y gestiona sus agendas | Encaja con «Recepción». Permisos fijos por rol, sin interfaz para ajustarlos |
@@ -254,7 +254,7 @@ Se limitará a: `Calendar.php` y `Appointments_model.php` (guardado transacciona
 | Sin internet | Hay que gestionar la remisión diferida según la norma | Depende del proveedor |
 | Decisión | **Elegida** (ver `decisiones.md`) | Descartada |
 
-### D.6 Actualizaciones de Easy!Appointments
+### D.6 Actualizaciones de ProgramaConsulta
 
 `upstream` queda como remoto. Cada nueva versión se fusiona en una rama `chore/upstream-x.y.z`, se ejecutan las
 pruebas y se integra en `develop`. Aislar el código nuevo reduce los conflictos.

@@ -338,7 +338,7 @@ class CaldavSyncTest extends TestCase
         );
     }
 
-    public function testExistingEventUriOfAnEasyAppointmentsEventNeedsNoLookup()
+    public function testExistingEventUriOfAnProgramaConsultaEventNeedsNoLookup()
     {
         $handler = new MockHandler(); // Any request would fail, as no response is queued.
 

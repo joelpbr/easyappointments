@@ -66,7 +66,7 @@ Seguridad y despliegue.
 
 Antes de implementar cualquier modificación, examina el repositorio.
 
-La versión pública estable de referencia al redactar esta especificación es Easy!Appointments 1.6.1, publicada en octubre de 2026.
+La versión pública estable de referencia al redactar esta especificación es ProgramaConsulta 1.6.1, publicada en octubre de 2026.
 
 No obstante, debes comprobar la versión que realmente esté disponible y seleccionar una versión estable compatible.
 
@@ -659,7 +659,7 @@ Asegurar contraste adecuado entre texto y fondo.
 
 8. BUSCADOR INTELIGENTE DE DISPONIBILIDAD
 
-Esta funcionalidad es prioritaria y debe desarrollarse aunque sea necesario ampliar el buscador nativo de Easy!Appointments.
+Esta funcionalidad es prioritaria y debe desarrollarse aunque sea necesario ampliar el buscador nativo de ProgramaConsulta.
 
 La agenda tendrá dos formas de trabajo:
 
@@ -1745,7 +1745,7 @@ La facturación no debe interferir con el funcionamiento de la agenda.
 
 Crear un módulo de facturación separado lógicamente de las citas.
 
-Se recomienda conectar Easy!Appointments con un motor de facturación ya adaptado a la normativa española cuando exista una opción mantenida y verificable.
+Se recomienda conectar ProgramaConsulta con un motor de facturación ya adaptado a la normativa española cuando exista una opción mantenida y verificable.
 
 Evitar desarrollar desde cero el motor fiscal completo sin necesidad.
 
@@ -2397,7 +2397,7 @@ Valorar la necesidad de una evaluación de impacto de protección de datos.
 
 20. MODELO DE BASE DE DATOS
 
-Analizar primero el esquema de Easy!Appointments.
+Analizar primero el esquema de ProgramaConsulta.
 
 No duplicar entidades existentes si pueden ampliarse correctamente.
 
@@ -2639,7 +2639,7 @@ Documentar extensiones, migraciones y configuraciones.
 
 22.4. Actualizaciones
 
-Preparar procedimientos para actualizar Easy!Appointments sin perder personalizaciones o datos.
+Preparar procedimientos para actualizar ProgramaConsulta sin perder personalizaciones o datos.
 
 Evitar modificar archivos principales si puede resolverse mediante una extensión o módulo independiente.
 
@@ -3197,7 +3197,7 @@ El proyecto deberá proporcionar:
 
 Repositorio Git completo.
 
-Código Easy!Appointments adaptado.
+Código ProgramaConsulta adaptado.
 
 Documentación de modificaciones.
 
@@ -3413,7 +3413,7 @@ Descripción de la arquitectura y funcionalidades existentes.
 
 B. Tabla de cobertura
 
-Qué requisitos ya cumple Easy!Appointments y cuáles deben programarse.
+Qué requisitos ya cumple ProgramaConsulta y cuáles deben programarse.
 
 C. Arquitectura propuesta
 

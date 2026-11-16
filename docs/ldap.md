@@ -1,6 +1,6 @@
 # LDAP Integration
 
-LDAP lets you import users from a central directory (like your company's employee directory) into Easy!Appointments. It also enables single sign-on (SSO), so users can log in with their existing company credentials.
+LDAP lets you import users from a central directory (like your company's employee directory) into ProgramaConsulta. It also enables single sign-on (SSO), so users can log in with their existing company credentials.
 
 > **Note:** This guide uses the Docker development setup. For production, replace the example values with your own LDAP server details.
 
@@ -45,7 +45,7 @@ Before you can log in via LDAP, the directory needs at least one user entry. Wit
 
 > **Tip:** If you don't need POSIX attributes, you can skip the group and create the user with only the `inetOrgPerson` + `top` object classes. The GID dropdown then disappears entirely.
 
-### 3. Link the LDAP entry to an Easy!Appointments user
+### 3. Link the LDAP entry to an ProgramaConsulta user
 
 1. Log in to the EA backend as admin.
 2. Open **Users → Providers** (or Admins / Secretaries depending on the role) and edit **Jane Doe**.
@@ -54,7 +54,7 @@ Before you can log in via LDAP, the directory needs at least one user entry. Wit
 5. Save the user.
 6. You can now log in at the EA login screen with `janedoe` / `password`.
 
-## Enabling LDAP in Easy!Appointments
+## Enabling LDAP in ProgramaConsulta
 
 1. Log in to the backend.
 2. Go to **Settings** → **Integrations** → **LDAP**.
@@ -71,7 +71,7 @@ Before you can log in via LDAP, the directory needs at least one user entry. Wit
 
 ### Field Mapping
 
-You can map LDAP fields to Easy!Appointments fields so that user information is automatically filled in when importing. This is a JSON object, for example:
+You can map LDAP fields to ProgramaConsulta fields so that user information is automatically filled in when importing. This is a JSON object, for example:
 
 ```json
 {"first_name": "givenName", "last_name": "sn", "email": "mail"}
@@ -91,16 +91,16 @@ Make sure the **LDAP DN** field points to the correct LDAP entry, and the **user
 
 Once LDAP is enabled, users can log in with their LDAP credentials:
 
-1. Easy!Appointments first tries the **local password**.
+1. ProgramaConsulta first tries the **local password**.
 2. If that doesn't work, it checks the password against **LDAP**.
 3. If the LDAP password matches, the user is logged in.
 
 For this to work:
 
-- The user must already be imported into Easy!Appointments.
+- The user must already be imported into ProgramaConsulta.
 - The **username** must match between both systems.
 - The **LDAP DN** field must point to the correct LDAP entry.
 
-*This document applies to Easy!Appointments v1.6.1.*
+*This document applies to ProgramaConsulta v1.6.1.*
 
 [Back](readme.md)

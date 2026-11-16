@@ -1,5 +1,4 @@
 /* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
  *
  * Podologia Sabadell theme
  * Inspired by the identity of https://www.podologiasabadell.com/
@@ -7,7 +6,7 @@
  * License: GPL-3.0-or-later
  *
  * Place in: assets/css/themes/podologia-sabadell.scss
- * Compile with the Easy!Appointments Gulp styles task.
+ * Compile with the ProgramaConsulta Gulp styles task.
  * ---------------------------------------------------------------------------- */
 
 $theme: 'podologia-sabadell' !default;
@@ -113,7 +112,7 @@ $alert-border-width: 0 !default;
 $progress-height: 0.5rem !default;
 $progress-border-radius: 1rem !default;
 
-// Preserve the exact Bootstrap import structure used by Easy!Appointments.
+// Preserve the exact Bootstrap import structure used by ProgramaConsulta.
 @import '../../../node_modules/bootstrap/scss/bootstrap';
 
 // -----------------------------------------------------------------------------
@@ -222,7 +221,7 @@ body {
         }
     }
 
-    // Easy!Appointments uses `.btn-dark` for the wizard Next buttons.
+    // ProgramaConsulta uses `.btn-dark` for the wizard Next buttons.
     .command-buttons .button-next.btn-dark {
         background-color: $brand-navy !important;
         border-color: $brand-navy !important;
@@ -252,7 +251,7 @@ body {
         line-height: 1.6;
     }
 
-    // Time slots inherit their clickable state from Easy!Appointments.
+    // Time slots inherit their clickable state from ProgramaConsulta.
     #available-hours .available-hour {
         border-radius: 0.55rem;
         border-color: $gray-300;
