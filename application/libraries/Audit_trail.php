@@ -261,8 +261,7 @@ class Audit_trail
                 " AND $log.entity_id IN ($select))";
 
             $conditions[] = "$log.id_users IN ($ids)";
-            $conditions[] =
-                "($log.entity IN ('customer', 'provider', 'secretary', 'admin', 'user') AND $log.entity_id IN ($ids))";
+            $conditions[] = "($log.entity IN ('customer', 'provider', 'secretary', 'admin', 'user') AND $log.entity_id IN ($ids))";
 
             $appointments =
                 'SELECT id FROM ' .
@@ -284,10 +283,17 @@ class Audit_trail
                 'SELECT id FROM ' . $t('fiscal_parties') . " WHERE id_users_customer IN ($ids)",
             );
 
-            foreach (['appointment_record' => 'appointment_records', 'appointment_foot_marker' => 'appointment_foot_markers'] as $entity => $table) {
+            foreach (
+                ['appointment_record' => 'appointment_records', 'appointment_foot_marker' => 'appointment_foot_markers']
+                as $entity => $table
+            ) {
                 $conditions[] = $in(
                     $entity,
-                    'SELECT r.id FROM ' . $t($table) . ' r JOIN ' . $t('appointments') . ' a ON a.id = r.id_appointments ' .
+                    'SELECT r.id FROM ' .
+                        $t($table) .
+                        ' r JOIN ' .
+                        $t('appointments') .
+                        ' a ON a.id = r.id_appointments ' .
                         "WHERE a.id_users_customer IN ($ids) OR a.id_users_provider IN ($ids)",
                 );
             }
@@ -325,10 +331,7 @@ class Audit_trail
 
         $services = array_map(
             'intval',
-            array_column(
-                $db->select('id')->like('name', $search)->limit(50)->get('services')->result_array(),
-                'id',
-            ),
+            array_column($db->select('id')->like('name', $search)->limit(50)->get('services')->result_array(), 'id'),
         );
 
         if ($services) {
@@ -471,9 +474,8 @@ class Audit_trail
         $lines = [];
 
         foreach ($changes as $field => $values) {
-            [$before, $after] = is_array($values) && array_is_list($values) && count($values) === 2
-                ? $values
-                : [null, $values];
+            [$before, $after] =
+                is_array($values) && array_is_list($values) && count($values) === 2 ? $values : [null, $values];
 
             $lines[] = [
                 'label' => $row['entity'] === 'setting' ? self::label($field, $field) : $this->field_label($field),
@@ -489,7 +491,11 @@ class Audit_trail
             'action' => $row['action'],
             'entity' => $row['entity'],
             'entity_id' => $row['entity_id'] !== null ? (int) $row['entity_id'] : null,
-            'subject' => $this->subject($row['entity'], $row['entity_id'] !== null ? (int) $row['entity_id'] : null, $changes),
+            'subject' => $this->subject(
+                $row['entity'],
+                $row['entity_id'] !== null ? (int) $row['entity_id'] : null,
+                $changes,
+            ),
             'changes' => $lines,
         ];
     }
@@ -579,7 +585,10 @@ class Audit_trail
                 : $this->status_name($value);
         }
 
-        if (preg_match('/^(is_|send_|notifications$|google_sync$|caldav_sync$)/', $field) && in_array($value, ['0', '1'], true)) {
+        if (
+            preg_match('/^(is_|send_|notifications$|google_sync$|caldav_sync$)/', $field) &&
+            in_array($value, ['0', '1'], true)
+        ) {
             return lang($value === '1' ? 'yes' : 'no');
         }
 
@@ -636,12 +645,18 @@ class Audit_trail
                     ->select("CONCAT_WS(' ', first_name, last_name) AS name", false)
                     ->get_where('users', ['id' => $id])
                     ->row_array(),
-                'service' => $this->CI->db->select('name')->get_where('services', ['id' => $id])->row_array(),
+                'service' => $this->CI->db
+                    ->select('name')
+                    ->get_where('services', ['id' => $id])
+                    ->row_array(),
                 'pathology' => $this->CI->db
                     ->select('name')
                     ->get_where('podology_pathologies', ['id' => $id])
                     ->row_array(),
-                default => $this->CI->db->select('name')->get_where('service_categories', ['id' => $id])->row_array(),
+                default => $this->CI->db
+                    ->select('name')
+                    ->get_where('service_categories', ['id' => $id])
+                    ->row_array(),
             };
 
             $name = trim((string) ($row['name'] ?? ''));
@@ -699,9 +714,7 @@ class Audit_trail
         switch ($entity) {
             case 'appointment':
             case 'unavailability':
-                $appointment = $id
-                    ? $this->CI->db->get_where('appointments', ['id' => $id])->row_array()
-                    : null;
+                $appointment = $id ? $this->CI->db->get_where('appointments', ['id' => $id])->row_array() : null;
 
                 // Removed: what the other entries of the log kept of it fills what this one does not say.
                 if (!$appointment && $id) {
@@ -764,7 +777,8 @@ class Audit_trail
                     ($provider ? $this->name('user', (int) $provider) . ', ' : '') .
                         ($date ? date('d/m/Y', strtotime($date)) : ''),
                     ', ',
-                ) ?: null;
+                ) ?:
+                    null;
 
             case 'setting':
                 $name = array_key_first($changes);
@@ -772,9 +786,7 @@ class Audit_trail
                 return $name ? self::label($name, $name) : null;
 
             case 'whatsapp_message':
-                $reminder = $id
-                    ? $this->CI->db->get_where('whatsapp_reminders', ['id' => $id])->row_array()
-                    : null;
+                $reminder = $id ? $this->CI->db->get_where('whatsapp_reminders', ['id' => $id])->row_array() : null;
 
                 if (!$reminder) {
                     return null;
@@ -785,13 +797,16 @@ class Audit_trail
                 }
 
                 return trim(
-                    ($reminder['id_users_customer'] ? $this->name('user', (int) $reminder['id_users_customer']) . ', ' : '') .
-                        $when($reminder['appointment_datetime']),
+                    ($reminder['id_users_customer']
+                        ? $this->name('user', (int) $reminder['id_users_customer']) . ', '
+                        : '') . $when($reminder['appointment_datetime']),
                     ', ',
                 );
 
             case 'patient_record':
-                $customer = $id ? $this->CI->db->get_where('patient_records', ['id' => $id])->row('id_users_customer') : null;
+                $customer = $id
+                    ? $this->CI->db->get_where('patient_records', ['id' => $id])->row('id_users_customer')
+                    : null;
 
                 return $customer ? $this->name('user', (int) $customer) : null;
 
@@ -803,7 +818,8 @@ class Audit_trail
                 return $appointment_id ? $this->subject('appointment', (int) $appointment_id, []) : null;
 
             case 'database':
-                return $recorded('file') ?? (isset($changes['file']) && is_string($changes['file']) ? $changes['file'] : null);
+                return $recorded('file') ??
+                    (isset($changes['file']) && is_string($changes['file']) ? $changes['file'] : null);
         }
 
         return null;
