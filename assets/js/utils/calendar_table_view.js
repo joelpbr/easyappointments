@@ -319,7 +319,7 @@ App.Utils.CalendarTableView = (function () {
         const userId = vars('user_id');
 
         return vars('available_providers').filter((provider) => {
-            if (roleSlug === App.Layouts.Backend.DB_SLUG_ADMIN) {
+            if (vars('shared_clinic_access') || roleSlug === App.Layouts.Backend.DB_SLUG_ADMIN) {
                 return true;
             }
 
@@ -1438,7 +1438,7 @@ App.Utils.CalendarTableView = (function () {
             },
         }).appendTo($providerFilterGroup);
 
-        if (vars('role_slug') !== App.Layouts.Backend.DB_SLUG_PROVIDER) {
+        if (vars('shared_clinic_access') || vars('role_slug') !== App.Layouts.Backend.DB_SLUG_PROVIDER) {
             providers.forEach((provider) => {
                 $filterProvider.append(new Option(getProviderName(provider), provider.id));
             });

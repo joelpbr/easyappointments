@@ -71,14 +71,14 @@ class Simple extends EA_Controller
 
         $providers = $this->providers_model->get_available_providers();
 
-        if ($role_slug === DB_SLUG_PROVIDER) {
+        if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
             $providers = array_filter(
                 $providers,
                 fn(array $provider): bool => (int) $provider['id'] === (int) $user_id,
             );
         }
 
-        if ($role_slug === DB_SLUG_SECRETARY) {
+        if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
             $secretary_providers = $this->secretaries_model->find($user_id)['providers'];
 
             $providers = array_filter(

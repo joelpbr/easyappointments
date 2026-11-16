@@ -143,6 +143,7 @@ class EA_Controller extends CI_Controller
     private function load_common_html_vars()
     {
         html_vars([
+            'shared_clinic_access' => has_shared_clinic_access(),
             'base_url' => config('base_url'),
             'index_page' => config('index_page'),
             'available_languages' => config('available_languages'),
@@ -157,6 +158,7 @@ class EA_Controller extends CI_Controller
     private function load_common_script_vars()
     {
         script_vars([
+            'shared_clinic_access' => has_shared_clinic_access(),
             'base_url' => config('base_url'),
             'index_page' => config('index_page'),
             'available_languages' => config('available_languages'),

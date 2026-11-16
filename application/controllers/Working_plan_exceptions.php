@@ -57,7 +57,7 @@ class Working_plan_exceptions extends EA_Controller
         try {
             method('post');
 
-            if (cannot('view', PRIV_USERS)) {
+            if (cannot('view', PRIV_APPOINTMENTS)) {
                 abort(403, 'Forbidden');
             }
 
@@ -111,7 +111,7 @@ class Working_plan_exceptions extends EA_Controller
         try {
             method('post');
 
-            if (cannot('add', PRIV_USERS)) {
+            if (cannot('add', PRIV_APPOINTMENTS)) {
                 abort(403, 'Forbidden');
             }
 
@@ -157,7 +157,7 @@ class Working_plan_exceptions extends EA_Controller
         try {
             method('get');
 
-            if (cannot('view', PRIV_USERS)) {
+            if (cannot('view', PRIV_APPOINTMENTS)) {
                 abort(403, 'Forbidden');
             }
 
@@ -197,7 +197,7 @@ class Working_plan_exceptions extends EA_Controller
         try {
             method('post');
 
-            if (cannot('edit', PRIV_USERS)) {
+            if (cannot('edit', PRIV_APPOINTMENTS)) {
                 abort(403, 'Forbidden');
             }
 
@@ -248,7 +248,7 @@ class Working_plan_exceptions extends EA_Controller
         try {
             method('post');
 
-            if (cannot('delete', PRIV_USERS)) {
+            if (cannot('delete', PRIV_APPOINTMENTS)) {
                 abort(403, 'Forbidden');
             }
 
@@ -285,7 +285,7 @@ class Working_plan_exceptions extends EA_Controller
         try {
             method('get');
 
-            if (cannot('view', PRIV_USERS)) {
+            if (cannot('view', PRIV_APPOINTMENTS)) {
                 abort(403, 'Forbidden');
             }
 
@@ -313,6 +313,9 @@ class Working_plan_exceptions extends EA_Controller
      */
     private function can_access_provider(int $provider_id): bool
     {
+        if (has_shared_clinic_access()) {
+            return true;
+        }
         $user_id = (int) session('user_id');
 
         return match (session('role_slug')) {

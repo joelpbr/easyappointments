@@ -100,7 +100,7 @@ class Customers extends EA_Controller
 
         $secretary_providers = [];
 
-        if ($role_slug === DB_SLUG_SECRETARY) {
+        if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
             $secretary = $this->secretaries_model->find($user_id);
 
             $secretary_providers = $secretary['providers'];
@@ -256,7 +256,7 @@ class Customers extends EA_Controller
 
         $secretary_provider_ids = [];
 
-        if ($role_slug === DB_SLUG_SECRETARY) {
+        if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
             $secretary_provider_ids = $this->secretaries_model->find($user_id)['providers'];
         }
 
@@ -270,7 +270,7 @@ class Customers extends EA_Controller
             $appointments = $this->appointments_model->get(['id_users_customer' => $customer['id']]);
 
             // If the current user is a provider, only include their own appointments.
-            if ($role_slug === DB_SLUG_PROVIDER) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
                 $appointments = array_filter($appointments, function ($appointment) use ($user_id) {
                     return (int) $appointment['id_users_provider'] === (int) $user_id;
                 });
@@ -279,7 +279,7 @@ class Customers extends EA_Controller
             }
 
             // If the current user is a secretary, only include appointments of their providers.
-            if ($role_slug === DB_SLUG_SECRETARY) {
+            if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
                 $appointments = array_filter($appointments, function ($appointment) use ($secretary_provider_ids) {
                     return in_array((int) $appointment['id_users_provider'], $secretary_provider_ids);
                 });
@@ -379,15 +379,15 @@ class Customers extends EA_Controller
     {
         $role_slug = session('role_slug');
 
-        if ($role_slug === DB_SLUG_ADMIN || !setting('limit_customer_access')) {
+        if (has_shared_clinic_access() || $role_slug === DB_SLUG_ADMIN || !setting('limit_customer_access')) {
             return null;
         }
 
-        if ($role_slug === DB_SLUG_PROVIDER) {
+        if (!has_shared_clinic_access() && $role_slug === DB_SLUG_PROVIDER) {
             return [(int) session('user_id')];
         }
 
-        if ($role_slug === DB_SLUG_SECRETARY) {
+        if (!has_shared_clinic_access() && $role_slug === DB_SLUG_SECRETARY) {
             return $this->secretaries_model->find(session('user_id'))['providers'];
         }
 
@@ -406,7 +406,11 @@ class Customers extends EA_Controller
                 abort(403, 'Forbidden');
             }
 
-            if (session('role_slug') !== DB_SLUG_ADMIN && setting('limit_customer_access')) {
+            if (
+                !has_shared_clinic_access() &&
+                session('role_slug') !== DB_SLUG_ADMIN &&
+                setting('limit_customer_access')
+            ) {
                 abort(403);
             }
 

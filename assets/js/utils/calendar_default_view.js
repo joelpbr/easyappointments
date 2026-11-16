@@ -1358,7 +1358,7 @@ App.Utils.CalendarDefaultView = (function () {
         $('#insert-unavailability').closest('li').hide();
 
         // Select provider if user is a provider
-        if (vars('role_slug') === App.Layouts.Backend.DB_SLUG_PROVIDER) {
+        if (!vars('shared_clinic_access') && vars('role_slug') === App.Layouts.Backend.DB_SLUG_PROVIDER) {
             $selectFilterItem.find('optgroup:eq(0) option[value="' + vars('user_id') + '"]').prop('selected', true);
         }
 

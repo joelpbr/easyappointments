@@ -22,11 +22,21 @@ class ClinicalRecordTemplatesTest extends TestCase
 
     public function testOnlyAdminsAndProvidersCanAccess(): void
     {
+        $GLOBALS['ea_test_settings']['shared_clinic_access'] = '0';
         $this->assertTrue(Clinical_record_templates::can_access(DB_SLUG_ADMIN));
         $this->assertTrue(Clinical_record_templates::can_access(DB_SLUG_PROVIDER));
         $this->assertFalse(Clinical_record_templates::can_access(DB_SLUG_SECRETARY));
         $this->assertFalse(Clinical_record_templates::can_access(DB_SLUG_CUSTOMER));
         $this->assertFalse(Clinical_record_templates::can_access(null));
+    }
+
+    public function testSharedReceptionCanAccessClinicalRecordsButCustomersCannot(): void
+    {
+        $GLOBALS['ea_test_settings']['shared_clinic_access'] = '1';
+        $this->assertTrue(Clinical_record_templates::can_access(DB_SLUG_SECRETARY));
+        $this->assertFalse(Clinical_record_templates::can_access(DB_SLUG_CUSTOMER));
+        $this->assertFalse(Clinical_record_templates::can_access(null));
+        $GLOBALS['ea_test_settings']['shared_clinic_access'] = '0';
     }
 
     public function testAppointmentRecordKeepsOnlyTheFieldsOfItsTemplate(): void

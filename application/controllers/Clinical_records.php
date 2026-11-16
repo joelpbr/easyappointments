@@ -442,7 +442,7 @@ class Clinical_records extends EA_Controller
             abort(403, 'Forbidden');
         }
 
-        if (session('role_slug') !== DB_SLUG_ADMIN && setting('limit_customer_access')) {
+        if (!has_shared_clinic_access() && session('role_slug') !== DB_SLUG_ADMIN && setting('limit_customer_access')) {
             abort(403, 'Forbidden');
         }
     }

@@ -99,7 +99,8 @@ class Clinical_record_templates
      */
     public static function can_access(?string $role_slug): bool
     {
-        return in_array($role_slug, [DB_SLUG_ADMIN, DB_SLUG_PROVIDER], true);
+        return ($role_slug !== null && has_shared_clinic_access($role_slug)) ||
+            in_array($role_slug, [DB_SLUG_ADMIN, DB_SLUG_PROVIDER], true);
     }
 
     /**
