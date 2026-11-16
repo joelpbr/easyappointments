@@ -1611,7 +1611,7 @@ App.Utils.CalendarTableView = (function () {
 
         const filterServiceIds = [$filterService.val()].filter(Boolean).map(Number);
 
-        let providers = vars('available_providers').filter((provider) => {
+        const providers = getAvailableProviders().filter((provider) => {
             const servedServiceIds = provider.services.filter((serviceId) => {
                 return filterServiceIds.some((filterId) => Number(serviceId) === Number(filterId));
             });
@@ -1625,16 +1625,6 @@ App.Utils.CalendarTableView = (function () {
                     filterProviderIds.includes(provider.id))
             );
         });
-        // Role-based filtering
-
-        if (vars('role_slug') === 'provider') {
-            providers = vars('available_providers').filter((p) => Number(p.id) === Number(vars('user_id')));
-        }
-
-        if (vars('role_slug') === 'secretary') {
-            providers = vars('available_providers').filter((p) => vars('secretary_providers').indexOf(p.id) > -1);
-        }
-
         providers.forEach((provider) => {
             createProviderColumn($dateColumn, date, provider, events);
         });
