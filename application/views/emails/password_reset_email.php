@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>
-        <?= $subject ?> | ProgramaConsulta
+        <?= $subject ?> | <?= e($settings['company_name']) ?>
     </title>
     <style>
         /* -------------------------------------
@@ -145,7 +145,7 @@
         }
 
         a {
-            color: #429A82;
+            color: <?= e(branding_color()) ?>;
             text-decoration: underline;
         }
 
@@ -174,10 +174,10 @@
 
         .btn a {
             background-color: #ffffff;
-            border: solid 1px #429A82;
+            border: solid 1px <?= e(branding_color()) ?>;
             border-radius: 5px;
             box-sizing: border-box;
-            color: #429A82;
+            color: <?= e(branding_color()) ?>;
             cursor: pointer;
             display: inline-block;
             font-size: 14px;
@@ -188,12 +188,12 @@
         }
 
         .btn-primary table td {
-            background-color: #429A82;
+            background-color: <?= e(branding_color()) ?>;
         }
 
         .btn-primary a {
-            background-color: #429A82;
-            border-color: #429A82;
+            background-color: <?= e(branding_color()) ?>;
+            border-color: <?= e(branding_color()) ?>;
             color: #ffffff;
         }
 
@@ -351,12 +351,12 @@
             }
 
             .btn-primary table td:hover {
-                background-color: #34495e !important;
+                background-color: <?= e(branding_color()) ?> !important;
             }
 
             .btn-primary a:hover {
-                background-color: #34495e !important;
-                border-color: #34495e !important;
+                background-color: <?= e(branding_color()) ?> !important;
+                border-color: <?= e(branding_color()) ?> !important;
             }
         }
     </style>

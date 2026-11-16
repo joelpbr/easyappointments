@@ -25,7 +25,7 @@ App.Utils.CalendarDefaultView = (function () {
     const EVENT_COLORS = {
         unavailability: '#7F7F7F',
         notWorking: '#7F7F7F',
-        default: '#7cbae8',
+        default: getComputedStyle(document.documentElement).getPropertyValue('--ea-accent').trim() || '#029ecb',
     };
 
     // DOM Elements Cache

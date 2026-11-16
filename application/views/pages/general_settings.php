@@ -96,10 +96,10 @@
                                         <?= lang('company_logo') ?>
                                     </label>
                                     <input type="file" id="company-logo" data-field="company_logo" class="form-control"
-                                           accept="image/*">
+                                           accept="image/png,image/jpeg,image/webp,image/gif">
                                     <div class="form-text text-muted">
                                         <small>
-                                            <?= lang('company_logo_hint') ?>
+                                            <?= lang('branding_logo_hint') ?>
                                         </small>
                                     </div>
 
@@ -122,7 +122,9 @@
                                         <?= lang('company_color') ?>
                                     </label>
 
-                                    <input type="color" id="company-color" data-field="company_color"
+                                    <input type="color" id="company-color" data-field="company_color" value="<?= e(
+                                        branding_color(),
+                                    ) ?>"
                                            class="form-control">
 
                                     <div class="form-text text-muted">
@@ -138,6 +140,17 @@
                                             <?= lang('reset') ?>
                                         </button>
                                     </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="company-accent-color"><?= lang(
+                                        'company_accent_color',
+                                    ) ?></label>
+                                    <input type="color" id="company-accent-color" data-field="company_accent_color"
+                                           class="form-control form-control-color" value="<?= e(
+                                               branding_color('company_accent_color'),
+                                           ) ?>">
+                                    <div class="form-text"><?= lang('branding_colors_hint') ?></div>
                                 </div>
 
                                 <div class="mb-3">

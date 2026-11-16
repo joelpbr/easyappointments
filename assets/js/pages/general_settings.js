@@ -64,12 +64,24 @@ App.Pages.GeneralSettings = (function () {
                 return;
             }
 
-            if (generalSetting.name === 'company_color' && generalSetting.value !== '#ffffff') {
+            if (
+                generalSetting.name === 'company_color' &&
+                generalSetting.value === '#ffffff' &&
+                !generalSettings.some((setting) => setting.name === 'company_accent_color')
+            ) {
+                $companyColor.val('#063f7e');
+                return;
+            }
+
+            if (generalSetting.name === 'company_color' && generalSetting.value !== '#063f7e') {
                 $resetCompanyColor.prop('hidden', false);
             }
 
             const $field = $('[data-field="' + generalSetting.name + '"]');
-
+            if ($field.is('[type="color"]') && /^#[0-9a-f]{3}$/i.test(generalSetting.value)) {
+                $field.val('#' + [...generalSetting.value.slice(1)].map((digit) => digit + digit).join(''));
+                return;
+            }
             $field.is(':checkbox')
                 ? $field.prop('checked', Boolean(Number(generalSetting.value)))
                 : $field.val(generalSetting.value);
@@ -79,14 +91,16 @@ App.Pages.GeneralSettings = (function () {
     function serialize() {
         const generalSettings = [];
 
-        $('[data-field]').each((index, field) => {
-            const $field = $(field);
+        $('[data-field]')
+            .not(':file')
+            .each((index, field) => {
+                const $field = $(field);
 
-            generalSettings.push({
-                name: $field.data('field'),
-                value: $field.is(':checkbox') ? Number($field.prop('checked')) : $field.val(),
+                generalSettings.push({
+                    name: $field.data('field'),
+                    value: $field.is(':checkbox') ? Number($field.prop('checked')) : $field.val(),
+                });
             });
-        });
 
         generalSettings.push({
             name: 'company_logo',
@@ -128,6 +142,14 @@ App.Pages.GeneralSettings = (function () {
             return;
         }
 
+        if (
+            !['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.type) ||
+            file.size > 2 * 1024 * 1024
+        ) {
+            $companyLogo.val('');
+            App.Layouts.Backend.displayNotification(lang('branding_logo_hint'));
+            return;
+        }
         App.Utils.File.toBase64(file).then((base64) => {
             companyLogoBase64 = base64;
             $companyLogoPreview.attr('src', base64);
@@ -151,14 +173,14 @@ App.Pages.GeneralSettings = (function () {
      * Toggle the reset company color button.
      */
     function onCompanyColorChange() {
-        $resetCompanyColor.prop('hidden', $companyColor.val() === '#ffffff');
+        $resetCompanyColor.prop('hidden', $companyColor.val() === '#063f7e');
     }
 
     /**
-     * Set the company color value to "#ffffff" which is the default one.
+     * Restore the default main color.
      */
     function onResetCompanyColorClick() {
-        $companyColor.val('#ffffff');
+        $companyColor.val('#063f7e').trigger('change');
     }
 
     /**

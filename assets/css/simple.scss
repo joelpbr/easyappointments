@@ -1,15 +1,12 @@
-/* ----------------------------------------------------------------------------
- *
+/* ---------------------------------------------------------------------------- *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * ---------------------------------------------------------------------------- */
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * ---------------------------------------------------------------------------- */
 
 // Simple agenda (pages/simple.php, simple.js): made for phones, with large touch targets, the clinic colours from the
 // theme (Bootstrap variables) and the safe areas of phones with a notch.
 
-$navy: #063f7e;
 
 .ea-simple {
     min-height: 100vh;
@@ -26,9 +23,9 @@ $navy: #063f7e;
     top: 0;
     z-index: 10;
     padding: calc(env(safe-area-inset-top) + 10px) 14px 10px;
-    background: $navy;
+    background: var(--bs-primary);
     color: #ffffff;
-    box-shadow: 0 2px 12px rgba(6, 63, 126, 0.25);
+    box-shadow: 0 2px 12px rgba(var(--bs-primary-rgb), 0.25);
 }
 
 .ea-simple-icon-button {
@@ -124,7 +121,7 @@ $navy: #063f7e;
     &.active {
         border-color: #ffffff;
         background: #ffffff;
-        color: $navy;
+        color: var(--bs-primary);
     }
 }
 
@@ -166,10 +163,10 @@ $navy: #063f7e;
     background: #ffffff;
     color: inherit;
     text-align: left;
-    box-shadow: 0 1px 2px rgba(6, 63, 126, 0.06);
+    box-shadow: 0 1px 2px rgba(var(--bs-primary-rgb), 0.06);
 
     &:active {
-        background: rgba(6, 63, 126, 0.04);
+        background: rgba(var(--bs-primary-rgb), 0.04);
     }
 }
 
@@ -182,7 +179,7 @@ $navy: #063f7e;
     line-height: 1.2;
 
     strong {
-        color: $navy;
+        color: var(--bs-primary);
         font-size: 17px;
     }
 
@@ -219,8 +216,8 @@ $navy: #063f7e;
     margin-top: 4px;
     padding: 2px 8px;
     border-radius: 999px;
-    background: rgba(6, 63, 126, 0.08);
-    color: $navy;
+    background: rgba(var(--bs-primary-rgb), 0.08);
+    color: var(--bs-primary);
     font-size: 12px;
     font-weight: 600;
 }
@@ -306,14 +303,14 @@ $navy: #063f7e;
     border-radius: 20px 20px 0 0;
     background: #ffffff;
     color: var(--bs-body-color);
-    box-shadow: 0 -8px 32px rgba(6, 63, 126, 0.2);
+    box-shadow: 0 -8px 32px rgba(var(--bs-primary-rgb), 0.2);
 
     &[open] {
         animation: ea-simple-sheet-up 0.22s ease-out;
     }
 
     &::backdrop {
-        background: rgba(9, 31, 49, 0.45);
+        background: rgba(var(--bs-primary-rgb), 0.45);
     }
 
     h2 {
@@ -418,10 +415,10 @@ $navy: #063f7e;
     border-radius: 12px;
     background: #ffffff;
     color: var(--bs-body-color);
-    box-shadow: 0 12px 40px rgba(9, 31, 49, 0.3);
+    box-shadow: 0 12px 40px rgba(var(--bs-primary-rgb), 0.3);
 
     &::backdrop {
-        background: rgba(9, 31, 49, 0.5);
+        background: rgba(var(--bs-primary-rgb), 0.5);
     }
 
     p {
@@ -446,7 +443,7 @@ $navy: #063f7e;
     }
 
     .btn-primary {
-        border-color: $navy;
-        background: $navy;
+        border-color: var(--bs-primary);
+        background: var(--bs-primary);
     }
 }

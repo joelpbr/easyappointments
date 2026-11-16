@@ -12,7 +12,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#063f7e">
+    <meta name="theme-color" content="<?= e(branding_color()) ?>">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -20,9 +20,9 @@
 
     <title><?= lang('simple_version') ?> | <?= e(setting('company_name')) ?></title>
 
-    <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
-    <link rel="icon" sizes="192x192" href="<?= asset_url('assets/img/logo-192.png') ?>">
-    <link rel="apple-touch-icon" href="<?= asset_url('assets/img/logo-192.png') ?>">
+    <link rel="icon" href="<?= e(branding_logo()) ?>">
+    <link rel="icon" sizes="192x192" href="<?= e(branding_logo()) ?>">
+    <link rel="apple-touch-icon" href="<?= e(branding_logo()) ?>">
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/bootstrap/bootstrap.min.css') ?>">
     <link rel="stylesheet" type="text/css"

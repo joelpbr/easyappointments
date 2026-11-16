@@ -4,21 +4,23 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <meta name="theme-color" content="#35A768">
+    <meta name="theme-color" content="<?= e(branding_color()) ?>">
     <meta name="google" content="notranslate">
 
     <?php slot('meta'); ?>
 
-    <title><?= vars('page_title') ?? lang('account') ?> | ProgramaConsulta</title>
+    <title><?= vars('page_title') ?? lang('account') ?> | <?= e(branding_name()) ?></title>
 
-    <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
-    <link rel="icon" sizes="192x192" href="<?= asset_url('assets/img/logo-192.png') ?>">
-    <link rel="apple-touch-icon" href="<?= asset_url('assets/img/logo-192.png') ?>">
+    <link rel="icon" href="<?= e(branding_logo()) ?>">
+    <link rel="icon" sizes="192x192" href="<?= e(branding_logo()) ?>">
+    <link rel="apple-touch-icon" href="<?= e(branding_logo()) ?>">
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url(
         'assets/css/themes/' . html_escape(setting('theme', 'default')) . '.css',
     ) ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/general.css') ?>">
+
+    <?php component('company_color_style'); ?>
 
     <?php slot('styles'); ?>
 </head>
@@ -33,7 +35,7 @@
 
         <div class="card-footer text-center py-3">
             <small>
-                ProgramaConsulta
+                <?= e(branding_name()) ?>
             </small>
         </div>
     </div>

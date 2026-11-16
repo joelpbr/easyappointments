@@ -1,4 +1,8 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
+$lang['company_accent_color'] = 'Color de acento';
+$lang['branding_colors_hint'] = 'El color principal se aplica a las cabeceras y la navegación; el de acento, a los botones y resaltados. Los tonos se calculan automáticamente.';
+$lang['branding_logo_hint'] = 'Logotipo de la clínica para la cabecera, el acceso y los iconos del navegador. PNG, JPG, WebP o GIF, máximo 2 MB.';
+$lang['branding_invalid_color'] = 'El color seleccionado no es válido.';
 // Spanish
 $lang['provider_short_name'] = 'Nombre corto';
 $lang['provider_short_name_hint'] = 'Opcional. Se usa en los desplegables y la agenda. Si se deja vacío, se muestra el nombre completo.';

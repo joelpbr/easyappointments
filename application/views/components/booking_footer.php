@@ -11,7 +11,7 @@
 <div id="frame-footer" class="p-3 text-center border-top">
     <small class="d-block d-md-flex">
         <span class="footer-powered-by small d-block w-100 w-md-50 text-center text-md-start p-1 pe-md-0">
-            ProgramaConsulta
+            <?= e(branding_name()) ?>
 
             <?php if (!empty($legal_notice_url)): ?>
                 <span>|</span>

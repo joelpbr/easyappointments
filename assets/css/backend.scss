@@ -1,10 +1,8 @@
-/* ----------------------------------------------------------------------------
- *
+/* ---------------------------------------------------------------------------- *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 /* Navigation hover and active states */
@@ -174,8 +172,7 @@ body .modal.full-screen .modal-push {
 
     // Every other row in light grey, to tell the rows apart.
     &:nth-child(odd) {
-        background-color: #d1e7ff;
-    }
+        background-color: var(--ea-primary-subtle);    }
 
     // The row under the mouse stands out from both tones.
     &:hover {
@@ -1059,8 +1056,8 @@ body .modal.full-screen .modal-push {
     // "New appointment" is the main action, filled cyan like "Save" in the form.
     #calendar-actions > .dropdown > .btn {
         color: var(--bs-white);
-        background-color: #029ecb;
-        border-color: #029ecb;
+        background-color: var(--ea-accent);
+        border-color: var(--ea-accent);
         font-weight: 600;
 
         &:hover,
@@ -1068,8 +1065,8 @@ body .modal.full-screen .modal-push {
         &:focus-visible,
         &.show {
             color: var(--bs-white);
-            background-color: #03508d;
-            border-color: #03508d;
+            background-color: var(--ea-primary-hover);
+            border-color: var(--ea-primary-hover);
         }
     }
 
@@ -1206,8 +1203,7 @@ body .modal.full-screen .modal-push {
 
     .provider-column .fc-list-event > td,
     .provider-column .fc-list-event:hover > td {
-        background-color: var(--ea-list-event-color, #7cbae8);
-    }
+        background-color: var(--ea-list-event-color, var(--ea-accent));    }
 
     .provider-column .fc-list-event.ea-list-event-ended > td {
         background-image: url('../img/unavailability.jpg');
@@ -1487,10 +1483,9 @@ body .modal.full-screen .modal-push {
         border-left: 3px solid transparent;
 
         &.active {
-            background: #d0e7ff;
-            color: inherit;
+            background: var(--ea-primary-subtle);            color: inherit;
             border-color: transparent;
-            border-left-color: #029ecb;
+            border-left-color: var(--ea-accent);
         }
 
         .ea-clinical-visit-date {
@@ -1509,21 +1504,20 @@ body .modal.full-screen .modal-push {
 
         // Comment of the appointment, by the date of the visit (clinical_record_modal.js).
         .ea-clinical-visit-comment {
-            color: #029ecb;
+            color: var(--ea-accent);
             cursor: pointer;
 
             &:hover,
             &:focus-visible {
-                color: #016d8c;
-            }
+                color: var(--ea-primary-hover);            }
         }
 
         .ea-clinical-visit-notes {
-            color: #029ecb;
+            color: var(--ea-accent);
         }
 
         .ea-clinical-visit-current {
-            background: #029ecb;
+            background: var(--ea-accent);
             color: #ffffff;
             font-weight: 500;
         }
@@ -1651,7 +1645,7 @@ body .modal.full-screen .modal-push {
         padding: 0;
         border: 0;
         border-radius: 50%;
-        background: #063f7e;
+        background: var(--bs-primary);
         color: #ffffff;
         font-size: 1.15rem;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
@@ -1660,7 +1654,7 @@ body .modal.full-screen .modal-push {
         &:focus-visible,
         &:active,
         &.active {
-            background: #063f7e;
+            background: var(--bs-primary);
             color: #ffffff;
         }
 
@@ -1754,7 +1748,7 @@ body .modal.full-screen .modal-push {
         }
 
         &.active {
-            border-color: #029ecb;
+            border-color: var(--ea-accent);
         }
     }
 
@@ -1766,7 +1760,7 @@ body .modal.full-screen .modal-push {
         min-width: 18px;
         padding: 0 5px;
         border-radius: 9px;
-        background: #029ecb;
+        background: var(--ea-accent);
         color: #ffffff;
         font-size: 11px;
         font-weight: 600;
@@ -1819,9 +1813,9 @@ body .modal.full-screen .modal-push {
         }
 
         &.active {
-            background: #e6f6fb;
+            background: var(--ea-accent-subtle);
             color: inherit;
-            border-color: #029ecb;
+            border-color: var(--ea-accent);
         }
     }
 
@@ -1922,7 +1916,7 @@ body.ea-popover-sheet-open {
     position: fixed;
     inset: 0;
     z-index: 1045;
-    background: rgba(6, 30, 60, 0.45);
+    background: rgba(var(--bs-primary-rgb), 0.45);
     animation: ea-fade-in 0.15s linear;
 }
 
@@ -1939,7 +1933,7 @@ body.ea-popover-sheet-open {
     transform: none !important;
     border: 0;
     border-radius: 18px 18px 0 0;
-    box-shadow: 0 -6px 24px rgba(6, 30, 60, 0.25);
+    box-shadow: 0 -6px 24px rgba(var(--bs-primary-rgb), 0.25);
     font-size: 1rem;
     animation: ea-sheet-up 0.2s ease-out;
     overscroll-behavior: contain;
@@ -2188,7 +2182,7 @@ $ea-day-separator: 3px solid #6c757d;
     z-index: 1050;
     border: 2px solid var(--bs-primary);
     border-radius: 4px;
-    background: rgba(13, 110, 253, 0.15);
+    background: rgba(var(--bs-primary-rgb), 0.15);
     pointer-events: none;
 }
 
@@ -2594,7 +2588,7 @@ $ea-day-separator: 3px solid #6c757d;
         flex-wrap: wrap;
         min-height: 54px;
         padding: 0 8px !important;
-        box-shadow: 0 2px 10px rgba(6, 63, 126, 0.25);
+        box-shadow: 0 2px 10px rgba(var(--bs-primary-rgb), 0.25);
 
         #header-logo {
             display: flex;
@@ -2996,7 +2990,7 @@ $ea-day-separator: 3px solid #6c757d;
     }
 
     &::backdrop {
-        background: rgba(10, 30, 50, 0.5);
+        background: rgba(var(--bs-primary-rgb), 0.5);
         animation: ea-fade-in 0.22s ease-out;
     }
 
@@ -3007,7 +3001,7 @@ $ea-day-separator: 3px solid #6c757d;
         justify-content: space-between;
         gap: 16px;
         padding: 16px 20px;
-        background: #063f7e;
+        background: var(--bs-primary);
         color: #ffffff;
 
         h5 {

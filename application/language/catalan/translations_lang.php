@@ -1,4 +1,8 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
+$lang['company_accent_color'] = 'Color d’accent';
+$lang['branding_colors_hint'] = 'El color principal s’aplica a les capçaleres i la navegació; el d’accent, als botons i ressaltats. Els tons es calculen automàticament.';
+$lang['branding_logo_hint'] = 'Logotip de la clínica per a la capçalera, l’accés i les icones del navegador. PNG, JPG, WebP o GIF, màxim 2 MB.';
+$lang['branding_invalid_color'] = 'El color seleccionat no és vàlid.';
 $lang['provider_short_name'] = 'Nom curt';
 $lang['provider_short_name_hint'] = 'Opcional. Es fa servir als desplegables i a l’agenda. Si es deixa buit, es mostra el nom complet.';
 // Catalan

@@ -25,7 +25,7 @@ $customer_address = trim((string) ($customer['address'] ?? ''));
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>
-        <?= lang('appointment_cancelled_title') ?> | ProgramaConsulta
+        <?= lang('appointment_cancelled_title') ?> | <?= e($settings['company_name']) ?>
     </title>
     <style>
         /* -------------------------------------
@@ -375,12 +375,12 @@ $customer_address = trim((string) ($customer['address'] ?? ''));
             }
 
             .btn-primary table td:hover {
-                background-color: #34495e !important;
+                background-color: <?= e(branding_color()) ?> !important;
             }
 
             .btn-primary a:hover {
-                background-color: #34495e !important;
-                border-color: #34495e !important;
+                background-color: <?= e(branding_color()) ?> !important;
+                border-color: <?= e(branding_color()) ?> !important;
             }
         }
 
