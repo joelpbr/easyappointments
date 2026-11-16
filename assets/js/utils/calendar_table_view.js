@@ -124,7 +124,8 @@ App.Utils.CalendarTableView = (function () {
             const $options = $filterProvider.find('option');
             const $chosen = $options.filter(':selected');
 
-            $button.text(
+            App.Utils.UI.setDropdownLabel(
+                $button[0],
                 $chosen.length === $options.length
                     ? lang('filter_all_providers')
                     : $chosen

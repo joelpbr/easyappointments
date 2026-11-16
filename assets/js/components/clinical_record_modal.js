@@ -1012,6 +1012,9 @@ App.Components.ClinicalRecordModal = (function () {
             return;
         }
 
+        // The document type looks like the other dropdowns; the select stays underneath.
+        App.Utils.UI.initializeSelectDropdown($documentType);
+
         // The age next to the date of birth follows it while it is typed or picked.
         App.Utils.UI.initializeDatePicker($birthDate, {
             maxDate: 'today',

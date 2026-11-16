@@ -49,11 +49,6 @@
             <?php endif; ?>
 
             <?php if (can('add', PRIV_APPOINTMENTS)): ?>
-                <button id="open-slot-search" class="btn btn-light" type="button">
-                    <?= lang('find_slot') ?>
-                    <i class="fas fa-search me-2"></i>
-                </button>
-
                 <div class="dropdown d-inline-block">
                     <button class="btn btn-light" type="button" data-bs-toggle="dropdown">
                         <?= lang('new_appointment_title') ?>
@@ -80,6 +75,11 @@
                         </li>
                     </ul>
                 </div>
+
+                <button id="open-slot-search" class="btn btn-light" type="button">
+                    <?= lang('find_slot') ?>
+                    <i class="fas fa-search me-2"></i>
+                </button>
             <?php endif; ?>
 
             <?php if (can('view', PRIV_BLOCKED_PERIODS)): ?>

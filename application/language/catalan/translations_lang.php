@@ -610,6 +610,7 @@ $lang['slot_search_no_results'] = 'No hi ha forats lliures amb aquests criteris.
 $lang['slot_search_invalid_range'] = 'L\'interval de dates ha de començar abans d\'acabar i abastar com a màxim 92 dies.';
 $lang['until'] = 'Fins a';
 $lang['midday'] = '12:30 - 15:00 - Migdia';
+$lang['midday_button'] = 'Migdia';
 $lang['open_midday'] = 'Obrir el migdia';
 $lang['fold_midday'] = 'Plegar el migdia';
 $lang['midday_has_appointments'] = 'No es pot plegar mentre hi hagi cites o reserves.';
