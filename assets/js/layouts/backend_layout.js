@@ -91,17 +91,20 @@ window.App.Layouts.Backend = (function () {
     /**
      * Hide or show every amount of money of the pages. The elements marked with "ea-money" are hidden by the styles;
      * the options of a list cannot be hidden in part, so those with "data-money-label" show that label, without the amount,
-     * instead. The choice is remembered on this browser.
+     * instead. They are hidden by default: a choice made in the user menu is remembered on this browser.
      *
      * @param {Boolean} hidden
+     * @param {Boolean} [remember] Remember it on this browser (only when someone chose it).
      */
-    function setMoneyHidden(hidden) {
+    function setMoneyHidden(hidden, remember = false) {
         document.documentElement.classList.toggle('ea-money-hidden', hidden);
 
-        try {
-            localStorage.setItem('ea-money-hidden', hidden ? '1' : '0');
-        } catch (error) {
-            // Without storage the choice only lasts for this page.
+        if (remember) {
+            try {
+                localStorage.setItem('ea-money-shown', hidden ? '0' : '1');
+            } catch (error) {
+                // Without storage the choice only lasts for this page.
+            }
         }
 
         updateMoneyLabels();
@@ -134,7 +137,7 @@ window.App.Layouts.Backend = (function () {
     function initialize() {
         setMoneyHidden(isMoneyHidden());
 
-        $('#toggle-money').on('click', () => setMoneyHidden(!isMoneyHidden()));
+        $('#toggle-money').on('click', () => setMoneyHidden(!isMoneyHidden(), true));
 
         $(document).ajaxStart(() => {
             $loading.show();

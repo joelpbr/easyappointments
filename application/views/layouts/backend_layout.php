@@ -11,14 +11,16 @@
 
     <title><?= vars('page_title') ?? lang('backend_section') ?> | Easy!Appointments</title>
 
-    <!-- The amounts stay hidden from the first paint when they were hidden on this browser (backend_layout.js). -->
+    <!-- The amounts are hidden from the first paint, unless someone chose to show them on this browser
+         (backend_layout.js). -->
     <script>
         try {
-            if (localStorage.getItem('ea-money-hidden') === '1') {
+            if (localStorage.getItem('ea-money-shown') !== '1') {
                 document.documentElement.classList.add('ea-money-hidden');
             }
         } catch (error) {
-            // Without storage the amounts are shown.
+            // Without storage the amounts stay hidden.
+            document.documentElement.classList.add('ea-money-hidden');
         }
     </script>
 
