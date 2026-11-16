@@ -1,14 +1,10 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
- * @package     EasyAppointments
+/* ---------------------------------------------------------------------------- *
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * @since       v1.3.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.3.0
  * ---------------------------------------------------------------------------- */
 
 use Jsvrcek\ICS\CalendarExport;
@@ -170,7 +166,7 @@ class Ics_file
         $calendar = new Calendar();
 
         $calendar
-            ->setProdId('-//EasyAppointments//Open Source Web Scheduler//EN')
+            ->setProdId('-//ProgramaConsulta//Clinic Management//EN')
             ->setMethod('REQUEST')
             ->setTimezone(new DateTimeZone($provider['timezone']))
             ->addEvent($event);
@@ -220,7 +216,7 @@ class Ics_file
         $calendar = new Calendar();
 
         $calendar
-            ->setProdId('-//EasyAppointments//Open Source Web Scheduler//EN')
+            ->setProdId('-//ProgramaConsulta//Clinic Management//EN')
             ->setMethod('REQUEST')
             ->setTimezone(new DateTimeZone($provider['timezone']))
             ->addEvent($event);

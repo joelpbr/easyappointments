@@ -1,14 +1,10 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
- * @package     EasyAppointments
+/* ---------------------------------------------------------------------------- *
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * @since       v1.2.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.2.0
  * ---------------------------------------------------------------------------- */
 
 class Migration_Add_calendar_view_setting extends EA_Migration

@@ -1,4 +1,4 @@
-# Easy!Appointments image.
+# ProgramaConsulta image.
 #
 #   production  (default)  the application with its dependencies and compiled assets baked in
 #   development            the PHP runtime plus Composer and Xdebug, the code is mounted from the host

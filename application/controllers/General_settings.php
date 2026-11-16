@@ -1,13 +1,11 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
 /* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
  *
- * @package     EasyAppointments
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
  * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
  * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
@@ -91,6 +89,7 @@ class General_settings extends EA_Controller
         'company_phone',
         'company_logo',
         'company_color',
+        'company_accent_color',
         'company_working_plan',
         'book_advance_timeout',
         'default_timezone',
@@ -130,6 +129,28 @@ class General_settings extends EA_Controller
             }
 
             foreach ($settings as $setting) {
+                if (
+                    !is_array($setting) ||
+                    !is_string($setting['name'] ?? null) ||
+                    !is_scalar($setting['value'] ?? null)
+                ) {
+                    throw new InvalidArgumentException('Invalid settings data format.');
+                }
+                if (
+                    in_array($setting['name'] ?? '', ['company_color', 'company_accent_color'], true) &&
+                    !preg_match('/^#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/', $setting['value'] ?? '')
+                ) {
+                    throw new InvalidArgumentException(lang('branding_invalid_color'));
+                }
+                if (
+                    ($setting['name'] ?? '') === 'company_logo' &&
+                    !branding_valid_logo((string) ($setting['value'] ?? ''))
+                ) {
+                    throw new InvalidArgumentException(lang('branding_logo_hint'));
+                }
+            }
+
+            foreach ($settings as $setting) {
                 // Validate each setting has required fields
                 if (!isset($setting['name']) || !is_string($setting['name'])) {
                     continue;
@@ -138,15 +159,6 @@ class General_settings extends EA_Controller
                 // Only allow whitelisted settings to be modified
                 if (!in_array($setting['name'], $this->allowed_settings, true)) {
                     log_message('error', 'Attempt to modify unauthorized setting: ' . $setting['name']);
-                    continue;
-                }
-
-                // Reject company_color values that are not valid hex colors (prevents CSS/HTML injection).
-                if (
-                    $setting['name'] === 'company_color' &&
-                    !preg_match('/^#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/', $setting['value'] ?? '')
-                ) {
-                    log_message('error', 'Rejected invalid company_color value: ' . ($setting['value'] ?? ''));
                     continue;
                 }
 

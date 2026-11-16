@@ -1,11 +1,9 @@
 /* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
  *
- * @package     EasyAppointments
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
  * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
  * ---------------------------------------------------------------------------- */
 
 /**
@@ -268,6 +266,10 @@
         return person ? [person.first_name, person.last_name].filter(Boolean).join(' ') : '';
     }
 
+    function providerName(provider) {
+        return provider ? App.Utils.UI.getProviderDisplayName(provider) : '';
+    }
+
     /**
      * The appointments of the chosen day and provider, by time.
      *
@@ -373,7 +375,7 @@
 
             const meta = document.createElement('span');
             meta.className = 'ea-simple-meta';
-            meta.textContent = [appointment.service?.name, showProvider ? fullName(appointment.provider) : null]
+            meta.textContent = [appointment.service?.name, showProvider ? providerName(appointment.provider) : null]
                 .filter(Boolean)
                 .join(' · ');
 
@@ -542,7 +544,7 @@
 
         add(lang('phone_number'), phone);
         add(lang('service'), appointment.service?.name);
-        add(lang('provider'), fullName(appointment.provider));
+        add(lang('provider'), providerName(appointment.provider));
         add(lang('status'), status?.name);
         add(lang('appointment_comment'), appointment.notes);
         add(lang('administrative_notes'), customer.notes);

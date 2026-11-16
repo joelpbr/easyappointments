@@ -68,6 +68,7 @@ $autoload['helper'] = [
     'array',
     'asset',
     'audit',
+    'branding',
     'calendar',
     'config',
     'date',

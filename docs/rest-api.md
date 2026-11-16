@@ -1,10 +1,10 @@
 # REST API
 
-Easy!Appointments has a REST API that lets you read and manage all your data (appointments, customers, services, etc.) through HTTP requests. This is useful if you want to connect Easy!Appointments to other software.
+ProgramaConsulta has a REST API that lets you read and manage all your data (appointments, customers, services, etc.) through HTTP requests. This is useful if you want to connect ProgramaConsulta to other software.
 
 ## OpenAPI Specification
 
-The project includes a ready-made [OpenAPI file](https://raw.githubusercontent.com/alextselegidis/easyappointments/master/openapi.yml) that describes every endpoint. You can import it into tools like [Postman](https://www.postman.com/) to start making requests right away.
+The project includes an [OpenAPI file](../openapi.yml) that describes every endpoint. You can import it into an API client to make requests to your installation.
 
 Learn more about OpenAPI at [swagger.io](https://swagger.io).
 
@@ -422,6 +422,6 @@ fastcgi_param PHP_AUTH_USER $remote_user;
 fastcgi_param PHP_AUTH_PW $http_authorization;
 ```
 
-*This document applies to Easy!Appointments v1.6.1.*
+*This document applies to ProgramaConsulta v1.6.1.*
 
 [Back](readme.md)

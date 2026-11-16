@@ -1,11 +1,9 @@
 /* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
  *
- * @package     EasyAppointments
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
  * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
  * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
@@ -38,7 +36,7 @@ App.Pages.Booking = (function () {
     const tippy = window.tippy;
     const moment = window.moment;
 
-    const STORAGE_KEY = 'EasyAppointments.CustomerInfo';
+    const STORAGE_KEY = 'ProgramaConsulta.CustomerInfo';
 
     /**
      * Determines the functionality of the page.
@@ -1049,7 +1047,12 @@ App.Pages.Booking = (function () {
      */
     function loadCustomerInfo() {
         try {
-            const stored = localStorage.getItem(STORAGE_KEY);
+            const stored = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem('EasyAppointments.CustomerInfo');
+
+            if (stored) {
+                localStorage.setItem(STORAGE_KEY, stored);
+                localStorage.removeItem('EasyAppointments.CustomerInfo');
+            }
 
             if (!stored) {
                 return;
@@ -1098,6 +1101,7 @@ App.Pages.Booking = (function () {
     function clearCustomerInfo() {
         try {
             localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem('EasyAppointments.CustomerInfo');
         } catch (e) {
             console.warn('Could not clear customer info from localStorage:', e);
         }

@@ -11,8 +11,7 @@
 <div id="frame-footer" class="p-3 text-center border-top">
     <small class="d-block d-md-flex">
         <span class="footer-powered-by small d-block w-100 w-md-50 text-center text-md-start p-1 pe-md-0">
-            Powered By
-            <a href="https://easyappointments.org" target="_blank">Easy!Appointments</a>
+            <?= e(branding_name()) ?>
 
             <?php if (!empty($legal_notice_url)): ?>
                 <span>|</span>
@@ -30,7 +29,7 @@
                 <i class="fas fa-language me-2"></i>
                 <?= ucfirst(config('language')) ?>
             </span>
-    
+
             <?php if ($display_login_button): ?>
                 <a class="backend-link badge bg-primary text-decoration-none px-2 d-inline-block my-1 my-md-0 p-1"
                    href="<?= session('user_id') ? site_url('calendar') : site_url('login') ?>"

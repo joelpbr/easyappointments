@@ -1,22 +1,13 @@
 openapi: 3.0.3
 info:
-    title: Easy!Appointments API
+    title: ProgramaConsulta API
     version: 1.0.0
-    description: These are the OpenAPI specs that describe the REST API of Easy!Appointments.
-    termsOfService: https://easyappointments.org/terms-and-conditions
-    contact:
-        name: Easy!Appointments
-        url: https://easyappointments.org
-        email: info@easyappointments.org
+    description: These are the OpenAPI specs that describe the REST API of ProgramaConsulta.
     license:
         name: GPL-3.0
         url: https://www.gnu.org/licenses/gpl-3.0.en.html
-externalDocs:
-    description: Find out more about Easy!Appointments
-    url: https://easyappointments.org/docs.html
 servers:
-    - url: https://demo.easyappointments.org/index.php/api/v1/
-    - url: http://localhost/index.php/api/v1/
+    - url: /index.php/api/v1/
 tags:
     - name: admins
     - name: appointments
@@ -3110,7 +3101,22 @@ components:
                     type: string
                 type:
                     type: string
-                    enum: [holiday_national, holiday_regional, holiday_local, clinic_closure, bridge, vacation, day_off, personal_absence, meeting, training, break, extraordinary, other]
+                    enum:
+                        [
+                            holiday_national,
+                            holiday_regional,
+                            holiday_local,
+                            clinic_closure,
+                            bridge,
+                            vacation,
+                            day_off,
+                            personal_absence,
+                            meeting,
+                            training,
+                            break,
+                            extraordinary,
+                            other,
+                        ]
                 providerIds:
                     type: array
                     items:
@@ -3146,7 +3152,22 @@ components:
                     type: string
                 type:
                     type: string
-                    enum: [holiday_national, holiday_regional, holiday_local, clinic_closure, bridge, vacation, day_off, personal_absence, meeting, training, break, extraordinary, other]
+                    enum:
+                        [
+                            holiday_national,
+                            holiday_regional,
+                            holiday_local,
+                            clinic_closure,
+                            bridge,
+                            vacation,
+                            day_off,
+                            personal_absence,
+                            meeting,
+                            training,
+                            break,
+                            extraordinary,
+                            other,
+                        ]
                 providerIds:
                     type: array
                     items:

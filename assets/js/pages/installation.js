@@ -1,12 +1,8 @@
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
- * @package     EasyAppointments
+/* ---------------------------------------------------------------------------- *
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 /**
@@ -41,7 +37,7 @@ App.Pages.Installation = (function () {
     });
 
     /**
-     * Event: Install Easy!Appointments Button "Click"
+     * Event: Install ProgramaConsulta Button "Click"
      */
     $install.on('click', () => {
         if (!validate()) {
@@ -63,7 +59,7 @@ App.Pages.Installation = (function () {
             dataType: 'json',
         }).done(() => {
             $alert
-                .text('Easy!Appointments has been successfully installed!')
+                .text('ProgramaConsulta has been successfully installed!')
                 .addClass('alert-success')
                 .prop('hidden', false);
 

@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <meta name="theme-color" content="#35A768">
+    <meta name="theme-color" content="<?= e(branding_color()) ?>">
     <meta name="google" content="notranslate">
 
     <?php slot('meta'); ?>
 
-    <title><?= vars('page_title') ?? lang('backend_section') ?> | Easy!Appointments</title>
+    <title><?= vars('page_title') ?? lang('backend_section') ?> | <?= e(branding_name()) ?></title>
 
     <!-- The amounts are hidden from the first paint, unless someone chose to show them on this browser
          (backend_layout.js). -->
@@ -24,9 +24,9 @@
         }
     </script>
 
-    <link rel="icon" type="image/x-icon" href="<?= asset_url('assets/img/favicon.ico') ?>">
-    <link rel="icon" sizes="192x192" href="<?= asset_url('assets/img/logo-192.png') ?>">
-    <link rel="apple-touch-icon" href="<?= asset_url('assets/img/logo-192.png') ?>">
+    <link rel="icon" href="<?= e(branding_logo()) ?>">
+    <link rel="icon" sizes="192x192" href="<?= e(branding_logo()) ?>">
+    <link rel="apple-touch-icon" href="<?= e(branding_logo()) ?>">
 
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/trumbowyg/trumbowyg.min.css') ?>">
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/vendor/select2/select2.min.css') ?>">

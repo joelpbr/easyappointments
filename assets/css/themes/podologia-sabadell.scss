@@ -1,13 +1,11 @@
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
+/* ---------------------------------------------------------------------------- *
  * Podologia Sabadell theme
  * Inspired by the identity of https://www.podologiasabadell.com/
  * Copyright (c) 2026 - Custom theme
  * License: GPL-3.0-or-later
  *
  * Place in: assets/css/themes/podologia-sabadell.scss
- * Compile with the Easy!Appointments Gulp styles task.
+ * Compile with the ProgramaConsulta Gulp styles task.
  * ---------------------------------------------------------------------------- */
 
 $theme: 'podologia-sabadell' !default;
@@ -113,7 +111,7 @@ $alert-border-width: 0 !default;
 $progress-height: 0.5rem !default;
 $progress-border-radius: 1rem !default;
 
-// Preserve the exact Bootstrap import structure used by Easy!Appointments.
+// Preserve the exact Bootstrap import structure used by ProgramaConsulta.
 @import '../../../node_modules/bootstrap/scss/bootstrap';
 
 // -----------------------------------------------------------------------------
@@ -130,12 +128,12 @@ body {
 }
 
 ::selection {
-    background: rgba($brand-cyan, 0.25);
-    color: $brand-navy;
+    background: rgba(var(--ea-accent-rgb), 0.25);
+    color: var(--bs-primary);
 }
 
 :focus-visible {
-    outline: 3px solid $brand-cyan;
+    outline: 3px solid var(--ea-accent);
     outline-offset: 2px;
 }
 
@@ -149,13 +147,13 @@ body {
 }
 
 .btn-primary {
-    --bs-btn-bg: #029ecb;
-    --bs-btn-border-color: #029ecb;
+    --bs-btn-bg: var(--ea-accent);
+    --bs-btn-border-color: var(--ea-accent);
 
     &:hover,
     &:focus-visible {
-        background-color: #03508d;
-        border-color: #03508d;
+        background-color: var(--ea-primary-hover);
+        border-color: var(--ea-primary-hover);
     }
 }
 
@@ -182,11 +180,11 @@ body {
 #book-appointment-wizard {
     background-color: $white !important; // Overrides the stock `.bg-body` utility.
     border-radius: 1rem;
-    box-shadow: 0 16px 48px rgba($brand-navy, 0.1);
+    box-shadow: 0 16px 48px rgba(var(--bs-primary-rgb), 0.1);
 
     #header {
         // `bg-primary` is !important in Bootstrap, so this is intentional.
-        background: linear-gradient(115deg, $brand-navy 0%, #07599b 100%) !important;
+        background: linear-gradient(115deg, var(--bs-primary) 0%, var(--ea-primary-hover) 100%) !important;
         color: $white;
 
         #company-name {
@@ -201,7 +199,7 @@ body {
 
     // The stock wizard gives these headings `text-muted` and `fw-light`.
     .frame-title {
-        color: $brand-navy !important;
+        color: var(--bs-primary) !important;
         font-weight: 650 !important;
         letter-spacing: -0.025em;
     }
@@ -217,33 +215,33 @@ body {
         background-color: $white;
 
         &:focus {
-            border-color: $brand-cyan-deep;
-            box-shadow: 0 0 0 0.2rem rgba($brand-cyan, 0.16);
+            border-color: var(--ea-primary-hover);
+            box-shadow: 0 0 0 0.2rem rgba(var(--ea-accent-rgb), 0.16);
         }
     }
 
-    // Easy!Appointments uses `.btn-dark` for the wizard Next buttons.
+    // ProgramaConsulta uses `.btn-dark` for the wizard Next buttons.
     .command-buttons .button-next.btn-dark {
-        background-color: $brand-navy !important;
-        border-color: $brand-navy !important;
+        background-color: var(--bs-primary) !important;
+        border-color: var(--bs-primary) !important;
         color: $white !important;
 
         &:hover,
         &:focus-visible {
-            background-color: #03508d !important;
-            border-color: #03508d !important;
+            background-color: var(--ea-primary-hover) !important;
+            border-color: var(--ea-primary-hover) !important;
         }
     }
 
     .command-buttons .button-back {
-        color: $brand-navy;
+        color: var(--bs-primary);
         border-color: $gray-400;
 
         &:hover,
         &:focus-visible {
-            background-color: $brand-cyan-soft;
-            border-color: $brand-cyan-deep;
-            color: $brand-navy;
+            background-color: var(--ea-accent-subtle);
+            border-color: var(--ea-primary-hover);
+            color: var(--bs-primary);
         }
     }
 
@@ -252,23 +250,23 @@ body {
         line-height: 1.6;
     }
 
-    // Time slots inherit their clickable state from Easy!Appointments.
+    // Time slots inherit their clickable state from ProgramaConsulta.
     #available-hours .available-hour {
         border-radius: 0.55rem;
         border-color: $gray-300;
-        color: $brand-navy;
+        color: var(--bs-primary);
         background-color: $white;
 
         &:hover:not(:disabled) {
-            background-color: $brand-cyan-soft;
-            border-color: $brand-cyan-deep;
-            color: $brand-navy;
+            background-color: var(--ea-accent-subtle);
+            border-color: var(--ea-primary-hover);
+            color: var(--bs-primary);
         }
     }
 
     #available-hours .selected-hour {
-        background-color: $brand-navy !important;
-        border-color: $brand-navy !important;
+        background-color: var(--bs-primary) !important;
+        border-color: var(--bs-primary) !important;
         color: $white !important;
     }
 
@@ -278,7 +276,7 @@ body {
         color: $gray-700;
 
         a {
-            color: $brand-navy;
+            color: var(--bs-primary);
         }
     }
 
@@ -295,14 +293,14 @@ body {
 #book-appointment-wizard {
     .flatpickr-calendar {
         border-radius: 0.8rem;
-        box-shadow: 0 5px 22px rgba($brand-navy, 0.07);
+        box-shadow: 0 5px 22px rgba(var(--bs-primary-rgb), 0.07);
     }
 
     .flatpickr-months,
     .flatpickr-month,
     .flatpickr-weekdays,
     span.flatpickr-weekday {
-        background-color: $brand-navy;
+        background-color: var(--bs-primary);
         color: $white;
         fill: $white;
     }
@@ -317,26 +315,26 @@ body {
     }
 
     .flatpickr-day.today {
-        border-color: $brand-cyan-deep;
+        border-color: var(--ea-primary-hover);
     }
 
     .flatpickr-day.today:not(.selected):hover {
-        background: $brand-cyan-soft;
-        color: $brand-navy;
+        background: var(--ea-accent-subtle);
+        color: var(--bs-primary);
     }
 
     .flatpickr-day.selected,
     .flatpickr-day.startRange,
     .flatpickr-day.endRange,
     .flatpickr-day.selected:hover {
-        background-color: $brand-navy;
-        border-color: $brand-navy;
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
         color: $white;
     }
 
     .flatpickr-day:not(.flatpickr-disabled):not(.selected):hover {
-        background-color: $brand-cyan-soft;
-        border-color: $brand-cyan-soft;
+        background-color: var(--ea-accent-subtle);
+        border-color: var(--ea-accent-subtle);
     }
 }
 

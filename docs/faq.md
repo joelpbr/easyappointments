@@ -2,7 +2,7 @@
 
 ## How do I check that my server has Apache, PHP, and MySQL installed?
 
-Easy!Appointments needs three things on your server: **Apache** (the web server), **PHP** (the programming language), and **MySQL** (the database). You also need the PHP **curl** extension and the Apache **mod_rewrite** module enabled.
+ProgramaConsulta needs three things on your server: **Apache** (the web server), **PHP** (the programming language), and **MySQL** (the database). You also need the PHP **curl** extension and the Apache **mod_rewrite** module enabled.
 
 **Two ways to check:**
 
@@ -25,7 +25,7 @@ This usually happens for one of two reasons:
 
 Open `config.php` and double-check:
 
-- `BASE_URL` is set to your exact installation URL (e.g. `http://your-domain.com/easyappointments`)
+- `BASE_URL` is set to your exact installation URL (e.g. `http://your-domain.com/programaconsulta`)
 - Your database name, username, and password are correct
 
 **2. Server is blocking requests**
@@ -55,7 +55,7 @@ This often happens because the **default working plan includes breaks** that don
 
 ## Installing on a Subdomain Doesn't Show Available Hours
 
-If Easy!Appointments is on a subdomain like `http://book.mysite.com`, make sure `BASE_URL` in `config.php` uses the **subdomain URL** — not the folder path.
+If ProgramaConsulta is on a subdomain like `http://book.mysite.com`, make sure `BASE_URL` in `config.php` uses the **subdomain URL** — not the folder path.
 
 **Correct:** `BASE_URL = 'http://book.mysite.com'`
 
@@ -91,12 +91,12 @@ If you prefer [Caddy](https://caddyserver.com/) as your web server:
 
 1. Install Caddy
 2. Install PHP-FPM: `sudo apt install php-fpm`
-3. Set up Easy!Appointments in a folder (e.g. `/var/www/html/easyappointments`)
+3. Set up ProgramaConsulta in a folder (e.g. `/var/www/html/programaconsulta`)
 4. Add this to `/etc/caddy/Caddyfile`:
 
 ```Caddyfile
-easyappointments.example.com {
-        root * /var/www/html/easyappointments
+programaconsulta.example.com {
+        root * /var/www/html/programaconsulta
         encode gzip zstd
         php_fastcgi unix//run/php/php-fpm.sock
         file_server
@@ -105,6 +105,6 @@ easyappointments.example.com {
 
 5. Restart Caddy: `sudo systemctl restart caddy.service`
 
-*This document applies to Easy!Appointments v1.6.1.*
+*This document applies to ProgramaConsulta v1.6.1.*
 
 [Back](readme.md)

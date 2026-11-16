@@ -1,11 +1,9 @@
 /* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
  *
- * @package     EasyAppointments
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
  * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
  * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 /**
@@ -27,7 +25,7 @@ App.Utils.CalendarDefaultView = (function () {
     const EVENT_COLORS = {
         unavailability: '#7F7F7F',
         notWorking: '#7F7F7F',
-        default: '#7cbae8',
+        default: getComputedStyle(document.documentElement).getPropertyValue('--ea-accent').trim() || '#029ecb',
     };
 
     // DOM Elements Cache
@@ -1209,7 +1207,7 @@ App.Utils.CalendarDefaultView = (function () {
 
             $('#insert-working-plan-exception').toggle(isProviderFilter());
             $reloadAppointments.trigger('click');
-            window.localStorage.setItem('EasyAppointments.SelectFilterItem', providerId);
+            window.localStorage.setItem('ProgramaConsulta.SelectFilterItem', providerId);
         });
     }
 
@@ -1367,7 +1365,14 @@ App.Utils.CalendarDefaultView = (function () {
         addEventListeners();
 
         // Restore saved filter selection
-        const savedFilter = window.localStorage.getItem('EasyAppointments.SelectFilterItem');
+        const savedFilter =
+            window.localStorage.getItem('ProgramaConsulta.SelectFilterItem') ??
+            window.localStorage.getItem('EasyAppointments.SelectFilterItem');
+
+        if (savedFilter) {
+            window.localStorage.setItem('ProgramaConsulta.SelectFilterItem', savedFilter);
+            window.localStorage.removeItem('EasyAppointments.SelectFilterItem');
+        }
 
         if (savedFilter && $selectFilterItem.find('option[value="' + savedFilter + '"]').length) {
             $selectFilterItem.val(savedFilter).trigger('change');

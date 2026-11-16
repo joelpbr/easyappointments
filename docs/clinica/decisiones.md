@@ -3,7 +3,7 @@
 Cada decisión indica la fecha, el contexto, lo decidido y sus consecuencias. Las decisiones no se borran: si cambian,
 se añade una nueva que sustituye a la anterior.
 
-## D-001 · Base: Easy!Appointments 1.6.1 con las correcciones de `upstream/develop`
+## D-001 · Base: ProgramaConsulta 1.6.1 con las correcciones de `upstream/develop`
 
 - **Fecha**: 12/11/2026
 - **Decisión**: partir de 1.6.1 e integrar las 4 correcciones de seguridad, las traducciones y el arreglo del
@@ -42,7 +42,7 @@ se añade una nueva que sustituye a la anterior.
 ## D-005 · Recepción gestiona varios profesionales con calendarios partidos
 
 - **Fecha**: 12/11/2026
-- **Decisión**: la cuenta de recepción usa el rol `secretary` de Easy!Appointments, mostrado como «Recepción», con
+- **Decisión**: la cuenta de recepción usa el rol `secretary` de ProgramaConsulta, mostrado como «Recepción», con
   los profesionales que gestiona asignados. Su pantalla principal es la vista en tabla, con una columna por
   profesional.
 - **Consecuencias**: los profesionales pueden seguir teniendo su propia cuenta con el rol `provider`.
@@ -50,7 +50,7 @@ se añade una nueva que sustituye a la anterior.
 ## D-006 · El apellido del profesional es opcional, sin campo «nombre visible en agenda»
 
 - **Fecha**: 12/11/2026
-- **Contexto**: la especificación (4.1) pide nombre, apellidos y un nombre visible en agenda. Easy!Appointments muestra
+- **Contexto**: la especificación (4.1) pide nombre, apellidos y un nombre visible en agenda. ProgramaConsulta muestra
   el nombre y los apellidos del profesional en más de 20 lugares.
 - **Decisión**: hacer opcionales los apellidos. El nombre que se quiera ver en la agenda («Sara», «Dra. Sara») se
   escribe en el campo nombre.

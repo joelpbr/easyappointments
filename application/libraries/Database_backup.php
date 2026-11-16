@@ -1,14 +1,10 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-/* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
- *
- * @package     EasyAppointments
+/* ---------------------------------------------------------------------------- *
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
- * ---------------------------------------------------------------------------- */
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * ---------------------------------------------------------------------------- */
 
 /**
  * Database backup library.
@@ -29,12 +25,13 @@ class Database_backup
     /**
      * Start of the name of every copy.
      */
-    public const FILE_PREFIX = 'easyappointments-backup-';
+    public const FILE_PREFIX = 'programaconsulta-backup-';
 
     /**
      * Name of a copy that can be downloaded or restored from the backups folder (no paths).
      */
-    public const FILE_PATTERN = '/^easyappointments-backup-[A-Za-z0-9_-]+\.(sql\.gz|gz|sql)$/';
+    // Accept existing backup filenames as well as the new brand; never allow paths or arbitrary extensions.
+    public const FILE_PATTERN = '/^(?:programaconsulta|easyappointments)-backup-[A-Za-z0-9_-]+\.(sql\.gz|gz|sql)$/';
 
     /**
      * Rows of a table written by one INSERT, at most (about).
@@ -123,7 +120,7 @@ class Database_backup
     {
         $copies = [];
 
-        foreach (glob($this->folder() . '/' . self::FILE_PREFIX . '*') ?: [] as $path) {
+        foreach (glob($this->folder() . '/*-backup-*') ?: [] as $path) {
             $name = basename($path);
 
             if (!is_file($path) || !preg_match(self::FILE_PATTERN, $name)) {
@@ -190,7 +187,7 @@ class Database_backup
             $this->write(
                 $file,
                 implode("\n", [
-                    '-- Easy!Appointments database backup',
+                    '-- ProgramaConsulta database backup',
                     '-- Database: ' . $this->CI->db->database,
                     '-- Date: ' . date('Y-m-d H:i:s T'),
                     '',

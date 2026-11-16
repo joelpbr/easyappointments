@@ -3,8 +3,8 @@
 <?php section('content'); ?>
 
 <div class="text-center mb-4">
-    <img src="<?= asset_url('assets/img/logo.png') ?>" 
-        alt="Easy!Appointments" class="shadow mb-3" width="72" height="72">
+    <img src="<?= e(branding_logo()) ?>"
+        alt="<?= e(branding_name()) ?>" class="shadow mb-3" width="72" height="72">
     <h4 class="text-primary fw-semibold mb-1"><?= lang('log_out') ?></h4>
     <p class=" small mb-0"><?= lang('logout_success') ?></p>
 </div>

@@ -3,11 +3,11 @@
 <?php section('content'); ?>
 
 <div class="text-center mb-4">
-    <img src="<?= asset_url('assets/img/logo.png') ?>" alt="Easy!Appointments" 
+    <img src="<?= e(branding_logo()) ?>" alt="<?= e(branding_name()) ?>"
          class="shadow mb-3" width="72" height="72">
-    
+
     <h4 class="text-primary fw-semibold mb-1"><?= lang('reset_password') ?></h4>
-    
+
     <?php if (!empty(vars('token_valid')) && vars('token_valid')): ?>
         <p class="small mb-0">
             <?= lang('enter_new_password') ?>
@@ -23,7 +23,7 @@
 
     <form id="password-reset-form">
         <input type="hidden" id="token" value="<?= vars('token') ?>">
-        
+
         <div class="mb-3">
             <label for="password" class="form-label fw-medium">
                 <?= lang('new_password') ?>
@@ -39,7 +39,7 @@
                 <?= str_replace('$number', MIN_PASSWORD_LENGTH, lang('password_length_notice')) ?>
             </small>
         </div>
-        
+
         <div class="mb-4">
             <label for="password-confirm" class="form-label fw-medium">
                 <?= lang('retype_password') ?>
@@ -76,14 +76,14 @@
                 </div>
             <?php endif; ?>
         <?php endif; ?>
-        
+
         <div class="d-grid gap-2 mb-3">
             <button type="submit" id="reset-password" class="btn btn-primary">
                 <i class="fas fa-key me-2"></i>
                 <?= lang('reset_password') ?>
             </button>
         </div>
-        
+
     </form>
 
 <?php else: ?>

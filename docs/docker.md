@@ -1,6 +1,6 @@
 # Docker
 
-Docker runs Easy!Appointments, its database and its scheduled tasks without installing Apache, PHP or MySQL on the
+Docker runs ProgramaConsulta, its database and its scheduled tasks without installing Apache, PHP or MySQL on the
 server. The repository ships two stacks:
 
 | File                     | Purpose     | Services                                                                               |
@@ -11,8 +11,8 @@ server. The repository ships two stacks:
 ## Production
 
 ```bash
-git clone <repository-url> easyappointments
-cd easyappointments
+git clone <repository-url> programaconsulta
+cd programaconsulta
 cp .env.example .env    # set BASE_URL and DB_PASSWORD at least
 docker compose up -d
 ```
@@ -63,7 +63,7 @@ docker compose exec -u www-data app php index.php console backup
 ```bash
 docker compose cp app:/var/www/html/storage/backups/<file>.gz .
 { echo 'SET FOREIGN_KEY_CHECKS=0;'; gunzip -c <file>.gz; } \
-    | docker compose exec -T db sh -c 'mysql -ueasyappointments -p"$MYSQL_PASSWORD" easyappointments'
+    | docker compose exec -T db sh -c 'mysql -uprogramaconsulta -p"$MYSQL_PASSWORD" programaconsulta'
 ```
 
 ### Operations
@@ -83,8 +83,8 @@ docker compose -f docker-compose.dev.yml up
 
 | Service               | URL                   | Credentials             |
 |-----------------------|-----------------------|-------------------------|
-| **Easy!Appointments** | http://localhost      | (your admin account)    |
-| **MySQL**             | localhost:3306        | `easyappointments` / `secret` (root: `secret`) |
+| **ProgramaConsulta** | http://localhost      | (your admin account)    |
+| **MySQL**             | localhost:3306        | `programaconsulta` / `secret` (root: `secret`) |
 | **Mailpit**           | http://localhost:8025 | (no login needed)       |
 
 The code is mounted from the host, Composer dependencies are installed on start and the `node` service rebuilds the
@@ -96,6 +96,6 @@ Run commands inside the application container with:
 docker compose -f docker-compose.dev.yml exec app bash
 ```
 
-*This document applies to Easy!Appointments v1.6.1.*
+*This document applies to ProgramaConsulta v1.6.1.*
 
 [Back](readme.md)

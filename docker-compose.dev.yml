@@ -4,7 +4,7 @@
 #
 # The code is mounted from the host, so changes are live. Assets are rebuilt on save by the node service.
 
-name: easyappointments-dev
+name: ${DEV_COMPOSE_PROJECT_NAME:-programaconsulta-dev}
 
 services:
     # Web server (Apache + PHP) with Composer and Xdebug.
@@ -22,8 +22,8 @@ services:
             TZ: Europe/Madrid
             DEBUG_MODE: 'true'
             DB_HOST: db
-            DB_NAME: easyappointments
-            DB_USERNAME: easyappointments
+            DB_NAME: ${DB_NAME:-programaconsulta}
+            DB_USERNAME: ${DB_USERNAME:-programaconsulta}
             DB_PASSWORD: secret
             SMTP_HOST: mailpit
             SMTP_PORT: 1025
@@ -51,8 +51,8 @@ services:
     db:
         image: mysql:8.4
         environment:
-            MYSQL_DATABASE: easyappointments
-            MYSQL_USER: easyappointments
+            MYSQL_DATABASE: ${DB_NAME:-programaconsulta}
+            MYSQL_USER: ${DB_USERNAME:-programaconsulta}
             MYSQL_PASSWORD: secret
             MYSQL_ROOT_PASSWORD: secret
             TZ: Europe/Madrid

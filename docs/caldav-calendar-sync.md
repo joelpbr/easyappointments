@@ -1,6 +1,6 @@
 # CalDAV Calendar Sync
 
-This guide explains how to set up a local CalDAV server (Baikal) for testing calendar sync with Easy!Appointments.
+This guide explains how to set up a local CalDAV server (Baikal) for testing calendar sync with ProgramaConsulta.
 
 > **Note:** This guide runs Baikal next to the Docker development setup from `docker-compose.dev.yml`.
 
@@ -9,7 +9,7 @@ This guide explains how to set up a local CalDAV server (Baikal) for testing cal
 Baikal is a free, self-hosted calendar server. Start it on the development network with:
 
 ```bash
-docker run -d --name baikal --network easyappointments-dev_default -p 8100:80 ckulka/baikal:0.10.1-apache
+docker run -d --name baikal --network programaconsulta-dev_default -p 8100:80 ckulka/baikal:0.10.1-apache
 ```
 
 It then runs at http://localhost:8100.
@@ -18,7 +18,7 @@ It then runs at http://localhost:8100.
 
 1. Open http://localhost:8100 in your browser.
 2. You'll see a setup form. Fill it in:
-   - **Time zone:** Choose your local time zone (must match Easy!Appointments).
+   - **Time zone:** Choose your local time zone (must match ProgramaConsulta).
    - **WebDAV authentication type:** Select **Basic**.
    - **Admin password:** Set something simple like `admin` for local testing.
 3. On the next page, keep the default settings and submit.
@@ -28,9 +28,9 @@ It then runs at http://localhost:8100.
 1. After setup, go to **Users and resources** in Baikal.
 2. Create a new user (e.g. username: `testuser`, password: `testpass`).
 
-## Connecting Easy!Appointments to Baikal
+## Connecting ProgramaConsulta to Baikal
 
-1. In Easy!Appointments, go to the **Calendar** page.
+1. In ProgramaConsulta, go to the **Calendar** page.
 2. Click **Enable Sync** → **CalDAV**.
 3. Enter the following:
    - **URL:** `http://baikal/dav.php/calendars/testuser/default/` (replace `testuser` with your Baikal username)
@@ -43,7 +43,7 @@ That's it — your appointments will now sync with the Baikal CalDAV server.
 ## Servers on a Private Network
 
 CalDAV URLs that resolve to a private or reserved network address are rejected by default. Without that check, a
-URL entered in the backend could make Easy!Appointments send requests into its own internal network, and report
+URL entered in the backend could make ProgramaConsulta send requests into its own internal network, and report
 back what it found there.
 
 A server you run yourself on a local network is a perfectly normal setup, so you can allow it. There are two ways:
@@ -69,6 +69,6 @@ If a sync fails, the calendar page shows an alert explaining what went wrong and
 
 The alert has a **Configure** button that takes you straight to the CalDAV settings page.
 
-*This document applies to Easy!Appointments v1.6.1.*
+*This document applies to ProgramaConsulta v1.6.1.*
 
 [Back](readme.md)

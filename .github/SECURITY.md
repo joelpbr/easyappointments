@@ -1,4 +1,4 @@
 # Security Vulnerabilities
 
-If you discover a security vulnerability within Easy!Appointments, please send an email to info@easyappointments.org. 
+Report security issues privately to the maintainer of this installation. Do not include patient data or credentials in public reports.
 All security vulnerabilities will be promptly addressed.

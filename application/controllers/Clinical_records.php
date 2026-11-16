@@ -1,13 +1,11 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
 /* ----------------------------------------------------------------------------
- * Easy!Appointments - Online Appointment Scheduler
  *
- * @package     EasyAppointments
+ * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
  * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
- * @link        https://easyappointments.org
  * ---------------------------------------------------------------------------- */
 
 /**
@@ -525,7 +523,7 @@ class Clinical_records extends EA_Controller
                 'appointments.id, appointments.start_datetime, appointments.status, appointments.price, appointments.notes, ' .
                     'appointments.service_name, services.name AS current_service_name, ' .
                     'services.record_template, providers.first_name AS provider_first_name, ' .
-                    'providers.last_name AS provider_last_name',
+                    'providers.last_name AS provider_last_name, providers.short_name AS provider_short_name',
             )
             ->from('appointments')
             ->join('services', 'services.id = appointments.id_services', 'left')
@@ -547,7 +545,11 @@ class Clinical_records extends EA_Controller
                 // The name at the time of the visit, or the current one for visits saved before it was kept.
                 'service_name' => (string) ($appointment['service_name'] ?: $appointment['current_service_name']),
                 'template' => Clinical_record_templates::template($appointment['record_template']),
-                'provider_name' => trim($appointment['provider_first_name'] . ' ' . $appointment['provider_last_name']),
+                'provider_name' => provider_display_name([
+                    'first_name' => $appointment['provider_first_name'],
+                    'last_name' => $appointment['provider_last_name'],
+                    'short_name' => $appointment['provider_short_name'],
+                ]),
                 'has_record' => in_array((int) $appointment['id'], $recorded_ids, true),
                 // The comment of the appointment (its details in the calendar), shown from an icon by its date.
                 'notes' => trim((string) $appointment['notes']),

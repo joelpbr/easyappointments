@@ -1,4 +1,8 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
+$lang['company_accent_color'] = 'Color de acento';
+$lang['branding_colors_hint'] = 'El color principal se aplica a las cabeceras y la navegación; el de acento, a los botones y resaltados. Los tonos se calculan automáticamente.';
+$lang['branding_logo_hint'] = 'Logotipo de la clínica para la cabecera, el acceso y los iconos del navegador. PNG, JPG, WebP o GIF, máximo 2 MB.';
+$lang['branding_invalid_color'] = 'El color seleccionado no es válido.';
 // Spanish
 $lang['provider_short_name'] = 'Nombre corto';
 $lang['provider_short_name_hint'] = 'Opcional. Se usa en los desplegables y la agenda. Si se deja vacío, se muestra el nombre completo.';
@@ -305,7 +309,7 @@ $lang['select_sync_calendar'] = 'Seleccionar un calendario de Google Calendar';
 $lang['select_sync_calendar_prompt'] = 'Seleccione el calendario con el que desea sincronizar sus citas. Si no desea seleccionar un calendario en particular, se utilizará el calendario por defecto.';
 $lang['sync_calendar_selected'] = 'Se ha seleccionado el calendario de Google Calendar exitosamente';
 $lang['oops_something_went_wrong'] = '¡Ups! ¡Algo ha salido mal.';
-$lang['ea_update_success'] = 'Easy!Appointments ha sido actualizado exitosamente';
+$lang['ea_update_success'] = 'ProgramaConsulta ha sido actualizado exitosamente';
 $lang['require_captcha'] = 'Requiere CAPTCHA';
 $lang['require_captcha_hint'] = 'Cuando se habilita, el paciente tendrá que escribir el código CAPTCHA antes de reservar/actualizar una cita.';
 $lang['captcha_is_wrong'] = 'Verificación de CAPTCHA fallida, por favor intentelo nuevamente.';
@@ -353,7 +357,7 @@ $lang['add_working_plan_exception'] = 'Agregar excepción al plan de trabajo';
 $lang['require_phone_number'] = 'Requerir número de teléfono';
 $lang['require_phone_number_hint'] = 'Cuando está habilitado, pacientes y usuarios deberán ingresar el número de teléfono del paciente al registrar una cita.';
 $lang['check_spam_folder'] = 'Por favor, verifique su carpeta de correo no deseado si el correo no llega dentro de unos minutos.';
-$lang['api_token_hint'] = 'Defina un token secreto para habilitar la autentificación por token mediante la API de Easy!Appointments.';
+$lang['api_token_hint'] = 'Defina un token secreto para habilitar la autentificación por token mediante la API de ProgramaConsulta.';
 $lang['timezone'] = 'Zona horaria';
 $lang['overwrite_existing_working_plans'] = 'Esto sobreescribirá los planes de trabajo existentes del profesional. ¿Seguro que desea continuar?';
 $lang['working_plans_got_updated'] = 'Todos los planes de trabajo fueron actualizados.';
@@ -423,7 +427,7 @@ $lang['webhooks_info'] = 'Webhooks permiten enviar notificaciones HTTP a aplicac
 $lang['integrations_info'] = 'Las integraciones permiten conectar con aplicaciones externas y APIs de terceros.';
 $lang['configure'] = 'Configurar';
 $lang['api'] = 'API';
-$lang['api_info'] = 'La API permite interactuar con todos los datos de Easy!Appointments mediante el protocolo HTTP, así como con los API Endpoints y crear tus propias integraciones.';
+$lang['api_info'] = 'La API permite interactuar con todos los datos de ProgramaConsulta mediante el protocolo HTTP, así como con los API Endpoints y crear tus propias integraciones.';
 $lang['future_booking_limit'] = 'Límite de reservas futuras';
 $lang['limit_days'] = 'Límite (días)';
 $lang['future_booking_limit_hint'] = 'Establece el límite de días en los que los pacientes pueden hacer reservas mediante la página pública de reservas.';

@@ -56,22 +56,23 @@ if (!function_exists('adjustBrightness')) {
     }
 }
 
-if (!empty($company_color) && $company_color !== DEFAULT_COMPANY_COLOR):
-    // Generate color variations
+// Apply the same palette on every screen, including accounts and the simplified agenda.
+$company_color = branding_color();
+$accent = branding_color('company_accent_color');
+// Generate color variations
 
-    // Strip to hex charset so a malformed stored value cannot break out of the <style> block.
+// Strip to hex charset so a malformed stored value cannot break out of the <style> block.
 
+$company_color = '#' . preg_replace('/[^0-9A-Fa-f]/', '', $company_color);
 
-    $company_color = '#' . preg_replace('/[^0-9A-Fa-f]/', '', $company_color);
-
-    $rgb = hexToRgb($company_color);
-    $hover = adjustBrightness($company_color, 15);
-    $active = adjustBrightness($company_color, -10);
-    $dark = adjustBrightness($company_color, -25);
-    $darker = adjustBrightness($company_color, -40);
-    $subtle = adjustBrightness($company_color, 80);
-    $border_subtle = adjustBrightness($company_color, 40);
-    ?>
+$rgb = hexToRgb($company_color);
+$hover = adjustBrightness($company_color, 15);
+$active = adjustBrightness($company_color, -10);
+$dark = adjustBrightness($company_color, -25);
+$darker = adjustBrightness($company_color, -40);
+$subtle = 'color-mix(in srgb, ' . $company_color . ' 10%, white)';
+$border_subtle = adjustBrightness($company_color, 40);
+?>
 <style>
     :root,
     [data-bs-theme="light"],
@@ -80,25 +81,31 @@ if (!empty($company_color) && $company_color !== DEFAULT_COMPANY_COLOR):
         --bs-primary: <?= $company_color ?>;
         --bs-primary-rgb: <?= $rgb ?>;
         --bs-primary-bg-subtle: <?= $subtle ?>;
-        --bs-primary-bg-subtle-rgb: <?= hexToRgb($subtle) ?>;
         --bs-primary-border-subtle: <?= $border_subtle ?>;
         --bs-primary-text-emphasis: <?= $darker ?>;
-        
+
         /* Link colors */
         --bs-link-color: <?= $company_color ?>;
         --bs-link-color-rgb: <?= $rgb ?>;
         --bs-link-hover-color: <?= $hover ?>;
         --bs-link-hover-color-rgb: <?= hexToRgb($hover) ?>;
-        
+
         /* Focus ring */
         --bs-focus-ring-color: rgba(<?= $rgb ?>, 0.25);
-        
+
         /* Custom app color shades */
         --ea-primary-hover: <?= $hover ?>;
         --ea-primary-active: <?= $active ?>;
         --ea-primary-dark: <?= $dark ?>;
         --ea-primary-darker: <?= $darker ?>;
         --ea-primary-subtle: <?= $subtle ?>;
+        --ea-primary-contrast: <?= branding_contrast($company_color) ?>;
+        --ea-primary-hover-contrast: <?= branding_contrast($hover) ?>;
+        --ea-accent: <?= $accent ?>;
+        --ea-accent-rgb: <?= hexToRgb($accent) ?>;
+        --ea-accent-contrast: <?= branding_contrast($accent) ?>;
+        --ea-accent-subtle: color-mix(in srgb, <?= $accent ?> 10%, white);
+        --bs-heading-color: <?= $company_color ?>;
     }
 
     /*
@@ -109,8 +116,11 @@ if (!empty($company_color) && $company_color !== DEFAULT_COMPANY_COLOR):
      * keep working without being overridden by the company color style.
      */
     .btn-primary {
-        --bs-btn-bg: var(--bs-primary);
-        --bs-btn-border-color: var(--bs-primary);
+        --bs-btn-color: var(--ea-accent-contrast);
+        --bs-btn-bg: var(--ea-accent);
+        --bs-btn-border-color: var(--ea-accent);
+        --bs-btn-hover-color: var(--ea-primary-contrast);
+        --bs-btn-active-color: var(--ea-primary-contrast);
         --bs-btn-hover-bg: var(--ea-primary-hover);
         --bs-btn-hover-border-color: var(--ea-primary-hover);
         --bs-btn-active-bg: var(--ea-primary-active);
@@ -291,6 +301,49 @@ if (!empty($company_color) && $company_color !== DEFAULT_COMPANY_COLOR):
     #existing-customers-list div:hover {
         background: var(--bs-primary) !important;
     }
+    /* Text follows the selected background, including pale clinic palettes. */
+    #header .text-white,
+    #header #header-menu .nav-link,
+    #header #header-menu .nav-link:hover,
+    #header #header-menu .nav-link:focus,
+    #header .ea-header-simple-button,
+    #book-appointment-wizard #header #company-name,
+    .ea-simple-header,
+    .ea-simple-header .ea-simple-icon-button,
+    .ea-simple-header .ea-simple-chip:not(.active),
+    body .modal-header,
+    body .modal-header .modal-title,
+    body .modal-header h3,
+    .ea-document-dialog .ea-document-dialog-header,
+    #clinical-record-modal .ea-feet-xray-toggle {
+        color: var(--ea-primary-contrast) !important;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+        color: var(--ea-primary-hover-contrast);
+    }
+
+    .ea-clinical-visit-current {
+        color: var(--ea-accent-contrast) !important;
+    }
+
+    #header-logo {
+        min-width: 0;
+        max-width: 35%;
+    }
+
+    #header-logo img {
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .ea-simple-sheet .btn-primary {
+        color: var(--ea-primary-contrast);
+    }
+
+    body .modal-header .btn-close,
+    .ea-document-dialog .ea-document-dialog-header .btn-close {
+        filter: <?= branding_contrast($company_color) === '#ffffff' ? 'brightness(0) invert(1)' : 'none' ?>;
+    }
 </style>
-<?php
-endif; ?>

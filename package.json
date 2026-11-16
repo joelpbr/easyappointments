@@ -1,7 +1,6 @@
 {
-    "name": "easyappointments",
-    "description": "Open Source Web Scheduler",
-    "homepage": "https://easyappointments.org",
+    "name": "programaconsulta",
+    "description": "Gestió de consulta, agenda i historial clínic",
     "author": "A.Tselegidis <alextselegidis@gmail.com>",
     "license": "GPL-3.0",
     "keywords": [
@@ -13,13 +12,6 @@
         "google",
         "services"
     ],
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/alextselegidis/easyappointments.git"
-    },
-    "bugs": {
-        "url": "https://github.com/alextselegidis/easyappointments/issues"
-    },
     "engines": {
         "node": ">=14"
     },

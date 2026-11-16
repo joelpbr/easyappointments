@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>
-        <?= $subject ?> | Easy!Appointments
+        <?= $subject ?> | <?= e($settings['company_name']) ?>
     </title>
     <style>
         /* -------------------------------------
@@ -95,7 +95,7 @@
             text-align: center;
             width: 100%;
         }
-        
+
         .footer td,
         .footer p,
         .footer span,
@@ -104,11 +104,11 @@
             font-size: 12px;
             text-align: center;
         }
-        
+
         /* -------------------------------------
             TYPOGRAPHY
         ------------------------------------- */
-        
+
         h1,
         h2,
         h3,
@@ -120,13 +120,13 @@
             margin: 0;
             margin-bottom: 30px;
         }
-        
+
         h1 {
             font-size: 35px;
             font-weight: 300;
             text-align: center;
         }
-        
+
         p,
         ul,
         ol {
@@ -136,48 +136,48 @@
             margin: 0;
             margin-bottom: 15px;
         }
-        
+
         p li,
         ul li,
         ol li {
             list-style-position: inside;
             margin-left: 5px;
         }
-        
+
         a {
-            color: #429A82;
+            color: <?= e(branding_color()) ?>;
             text-decoration: underline;
         }
-        
+
         /* -------------------------------------
             BUTTONS
         ------------------------------------- */
-        
+
         .btn {
             box-sizing: border-box;
             width: 100%;
         }
-        
+
         .btn > tbody > tr > td {
             padding-bottom: 15px;
         }
-        
+
         .btn table {
             width: auto;
         }
-        
+
         .btn table td {
             background-color: #ffffff;
             border-radius: 5px;
             text-align: center;
         }
-        
+
         .btn a {
             background-color: #ffffff;
-            border: solid 1px #429A82;
+            border: solid 1px <?= e(branding_color()) ?>;
             border-radius: 5px;
             box-sizing: border-box;
-            color: #429A82;
+            color: <?= e(branding_color()) ?>;
             cursor: pointer;
             display: inline-block;
             font-size: 14px;
@@ -186,52 +186,52 @@
             padding: 12px 25px;
             text-decoration: none;
         }
-        
+
         .btn-primary table td {
-            background-color: #429A82;
+            background-color: <?= e(branding_color()) ?>;
         }
-        
+
         .btn-primary a {
-            background-color: #429A82;
-            border-color: #429A82;
+            background-color: <?= e(branding_color()) ?>;
+            border-color: <?= e(branding_color()) ?>;
             color: #ffffff;
         }
-        
+
         /* -------------------------------------
             OTHER STYLES THAT MIGHT BE USEFUL
         ------------------------------------- */
-        
+
         .last {
             margin-bottom: 0;
         }
-        
+
         .first {
             margin-top: 0;
         }
-        
+
         .align-center {
             text-align: center;
         }
-        
+
         .align-right {
             text-align: right;
         }
-        
+
         .align-left {
             text-align: left;
         }
         .clear {
             clear: both;
         }
-        
+
         .mt0 {
             margin-top: 0;
         }
-        
+
         .mb0 {
             margin-bottom: 0;
         }
-        
+
         .preheader {
             color: transparent;
             display: none;
@@ -244,23 +244,23 @@
             visibility: hidden;
             width: 0;
         }
-        
+
         .powered-by a {
             text-decoration: none;
         }
-        
+
         hr {
             border: 0;
             border-bottom: 1px solid #f6f6f6;
             margin: 20px 0;
         }
-        
+
         .warning-text {
             color: #666666;
             font-size: 12px;
             font-style: italic;
         }
-        
+
         /* -------------------------------------
             RESPONSIVE AND MOBILE FRIENDLY STYLES
         ------------------------------------- */
@@ -269,7 +269,7 @@
                 font-size: 28px !important;
                 margin-bottom: 10px !important;
             }
-            
+
             table.body p,
             table.body ul,
             table.body ol,
@@ -278,51 +278,51 @@
             table.body a {
                 font-size: 16px !important;
             }
-            
+
             table.body .wrapper,
             table.body .article {
                 padding: 10px !important;
             }
-            
+
             table.body .content {
                 padding: 0 !important;
             }
-            
+
             table.body .container {
                 padding: 0 !important;
                 width: 100% !important;
             }
-            
+
             table.body .main {
                 border-left-width: 0 !important;
                 border-radius: 0 !important;
                 border-right-width: 0 !important;
             }
-            
+
             table.body .btn table {
                 width: 100% !important;
             }
-            
+
             table.body .btn a {
                 width: 100% !important;
             }
-            
+
             table.body .img-responsive {
                 height: auto !important;
                 max-width: 100% !important;
                 width: auto !important;
             }
         }
-        
+
         /* -------------------------------------
             PRESERVE THESE STYLES IN THE HEAD
         ------------------------------------- */
-        
+
         @media all {
             .ExternalClass {
                 width: 100%;
             }
-            
+
             .ExternalClass,
             .ExternalClass p,
             .ExternalClass span,
@@ -331,7 +331,7 @@
             .ExternalClass div {
                 line-height: 100%;
             }
-            
+
             .apple-link a {
                 color: inherit !important;
                 font-family: inherit !important;
@@ -340,7 +340,7 @@
                 line-height: inherit !important;
                 text-decoration: none !important;
             }
-            
+
             #MessageViewBody a {
                 color: inherit;
                 text-decoration: none;
@@ -349,14 +349,14 @@
                 font-weight: inherit;
                 line-height: inherit;
             }
-            
+
             .btn-primary table td:hover {
-                background-color: #34495e !important;
+                background-color: <?= e(branding_color()) ?> !important;
             }
-            
+
             .btn-primary a:hover {
-                background-color: #34495e !important;
-                border-color: #34495e !important;
+                background-color: <?= e(branding_color()) ?> !important;
+                border-color: <?= e(branding_color()) ?> !important;
             }
         }
     </style>
@@ -367,13 +367,13 @@
 <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
     <tr>
         <td>&nbsp;</td>
-        
+
         <td class="container">
             <div class="content">
-                
+
                 <!-- START CENTERED WHITE CONTAINER -->
                 <table role="presentation" class="main">
-                    
+
                     <!-- START MAIN CONTENT AREA -->
                     <tr>
                         <td class="wrapper">
@@ -419,22 +419,18 @@
                             </table>
                         </td>
                     </tr>
-                    
+
                     <!-- END MAIN CONTENT AREA -->
                 </table>
-                
+
                 <!-- END CENTERED WHITE CONTAINER -->
-                
+
                 <!-- START FOOTER -->
                 <div class="footer">
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                         <tr>
                             <td class="content-block powered-by">
-                                Powered by
-                                <a href="https://easyappointments.org" style="text-decoration: none;">
-                                    Easy!Appointments
-                                </a>
-                                |
+
                                 <a href="<?= e($settings['company_link']) ?>" style="text-decoration: none;">
                                     <?= e($settings['company_name']) ?>
                                 </a>

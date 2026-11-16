@@ -1,10 +1,10 @@
 # Installation Guide
 
-This guide walks you through installing and setting up Easy!Appointments on your server.
+This guide walks you through installing and setting up ProgramaConsulta on your server.
 
 ## What You Need
 
-Easy!Appointments runs on a web server, just like a regular website. Before you begin, make sure you have:
+ProgramaConsulta runs on a web server, just like a regular website. Before you begin, make sure you have:
 
 - **Apache** (v2.4 or newer) — the web server software
 - **PHP** (v8.2 or newer) — the programming language that runs the app
@@ -22,9 +22,9 @@ You need a MySQL database to store appointment data. If your hosting plan includ
 
 ### 2. Upload the Files
 
-Upload the Easy!Appointments files to your server using FTP or your hosting's file manager. Place them in a folder like `easyappointments`, `appointments`, or `book`.
+Upload the ProgramaConsulta files to your server using FTP or your hosting's file manager. Place them in a folder like `programaconsulta`, `appointments`, or `book`.
 
-Take note of the URL. For example, if you uploaded to a folder called `easyappointments`, the URL will look like: `http://your-domain.com/easyappointments`
+Take note of the URL. For example, if you uploaded to a folder called `programaconsulta`, the URL will look like: `http://your-domain.com/programaconsulta`
 
 ### 3. Make the Storage Folder Writable
 
@@ -50,13 +50,13 @@ You can also add Google Calendar API keys here if you want to use that feature l
 
 ### 5. Run the Installer
 
-Open your browser and go to your Easy!Appointments URL (e.g. `http://your-domain.com/easyappointments`). You'll see a setup wizard. Fill in your admin account details and company info, then click **Install**.
+Open your browser and go to your ProgramaConsulta URL (e.g. `http://your-domain.com/programaconsulta`). You'll see a setup wizard. Fill in your admin account details and company info, then click **Install**.
 
-That's it — Easy!Appointments is now installed!
+That's it — ProgramaConsulta is now installed!
 
 ## Behind a Reverse Proxy
 
-If Easy!Appointments sits behind a reverse proxy (nginx, Caddy, Traefik, Nginx Proxy Manager, Cloudflare), you must tell it which proxy addresses to trust, otherwise every visitor looks like the proxy and the rate limiters treat all of them as a single client.
+If ProgramaConsulta sits behind a reverse proxy (nginx, Caddy, Traefik, Nginx Proxy Manager, Cloudflare), you must tell it which proxy addresses to trust, otherwise every visitor looks like the proxy and the rate limiters treat all of them as a single client.
 
 Set the `PROXY_IPS` environment variable to the proxy address, a comma-separated list of addresses, or a CIDR range:
 
@@ -92,10 +92,10 @@ If someone manages bookings for your team, click the **Secretaries** tab and add
 
 Click **Go To Booking Page** at the bottom of the page to see your public booking page. Try creating a test appointment — it will show up in your **Calendar**.
 
-Finally, add a link to your website (e.g. "Book an Appointment") that points to your Easy!Appointments URL so customers can find it.
+Finally, add a link to your website (e.g. "Book an Appointment") that points to your ProgramaConsulta URL so customers can find it.
 
 Happy Bookin'!
 
-*This document applies to Easy!Appointments v1.6.1.*
+*This document applies to ProgramaConsulta v1.6.1.*
 
 [Back](readme.md)
