@@ -837,10 +837,10 @@ App.Utils.CalendarDefaultView = (function () {
         const formattedStartDate = moment(startDate).format('YYYY-MM-DD');
         const formattedEndDate = moment(endDate).format('YYYY-MM-DD');
 
-        App.Http.Calendar.getCalendarAppointments(recordId, formattedStartDate, formattedEndDate, filterType, silent)
+        return App.Http.Calendar.getCalendarAppointments(recordId, formattedStartDate, formattedEndDate, filterType, silent)
             .done((response) => {
                 if (currentRequest !== refreshRequest) return;
-                if (silent && $('.modal.show, .popover, .fc-event-dragging, .fc-event-resizing, .fc-highlight').length) return;
+                if (silent && $('.modal.show, dialog[open], .popover, .fc-event-dragging, .fc-event-resizing, .fc-highlight').length) return;
 
                 const events = [];
 
@@ -866,10 +866,12 @@ App.Utils.CalendarDefaultView = (function () {
                 const signature = JSON.stringify([recordId, filterType, formattedStartDate, formattedEndDate, fullCalendar.view.type, events]);
                 if (silent && signature === lastEventsSignature) return;
 
+                const scroll = [...document.querySelectorAll('#calendar .fc-scroller')].map((el) => ({el, top: el.scrollTop, left: el.scrollLeft}));
                 fullCalendar.batchRendering(() => {
                     fullCalendar.getEventSources().forEach((source) => source.remove());
                     fullCalendar.addEventSource(events);
                 });
+                if (silent) scroll.forEach(({el, top, left}) => { el.scrollTop = top; el.scrollLeft = left; });
                 lastEventsSignature = signature;
 
                 App.Utils.CalendarPastTime.update(fullCalendar);
@@ -1413,7 +1415,7 @@ App.Utils.CalendarDefaultView = (function () {
             return;
         }
 
-        refreshCalendarAppointments(
+        return refreshCalendarAppointments(
             $calendar,
             $selectFilterItem.val(),
             getSelectedFilterType(),

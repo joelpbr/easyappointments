@@ -52,6 +52,17 @@ App.Components.ClinicalRecordModal = (function () {
     let savedPatient = '';
     let savedVisit = '';
     let closingConfirmed = false;
+    let patientSaveRequest = null;
+    let visitSaveRequest = null;
+
+    function saveError() {
+        $('#clinical-save-error').text(lang('work_save_failed')).prop('hidden', false);
+        App.Utils.WorkRecovery?.check();
+    }
+
+    function hasPendingSave() {
+        return patientSaveRequest || visitSaveRequest;
+    }
 
     // Foot diagrams of the visit shown: {diagrams, pathologies, markers} and the diagram on screen.
     let feet = null;
@@ -156,6 +167,7 @@ App.Components.ClinicalRecordModal = (function () {
      */
     function show(response) {
         closingConfirmed = false;
+        $('#clinical-save-error').prop('hidden', true);
         visitAppointmentId = null;
         savedVisit = '';
         $visitDetail.prop('hidden', true);
@@ -434,6 +446,7 @@ App.Components.ClinicalRecordModal = (function () {
      * Save the patient part of the record.
      */
     function savePatient() {
+        if (patientSaveRequest) return patientSaveRequest;
         const data = getPatientData();
 
         if (customerId === 0) {
@@ -442,13 +455,17 @@ App.Components.ClinicalRecordModal = (function () {
             return;
         }
 
-        return App.Http.ClinicalRecords.savePatient(customerId, data).done(() => {
+        $('#clinical-save-error').prop('hidden', true);
+        patientSaveRequest = App.Http.ClinicalRecords.savePatient(customerId, data).done(() => {
             savedPatient = JSON.stringify(data);
             updateSaveButtons();
             updateHeader();
             App.Layouts.Backend.displayNotification(lang('clinical_record_saved'));
             onChange(customerId);
-        });
+        }).fail(saveError);
+        const request = patientSaveRequest;
+        request.always(() => { patientSaveRequest = null; });
+        return request;
     }
 
     /**
@@ -457,8 +474,9 @@ App.Components.ClinicalRecordModal = (function () {
      * @param {Object} data
      */
     function createPatient(data) {
-        const create = () =>
-            App.Http.ClinicalRecords.savePatient(0, data).done((response) => {
+        const create = () => {
+            if (patientSaveRequest) return patientSaveRequest;
+            patientSaveRequest = App.Http.ClinicalRecords.savePatient(0, data).done((response) => {
                 customerId = Number(response.id);
                 App.Components.PatientConsent?.setCustomer(customerId);
                 savedPatient = JSON.stringify(data);
@@ -467,7 +485,11 @@ App.Components.ClinicalRecordModal = (function () {
                 $modal.find('[data-tab="visits"]').prop('disabled', false);
                 App.Layouts.Backend.displayNotification(lang('clinical_record_saved'));
                 onChange(customerId);
-            });
+            }).fail(saveError);
+        const request = patientSaveRequest;
+        request.always(() => { patientSaveRequest = null; });
+            return request;
+        };
 
         if (!App.Components.PatientDuplicates) {
             create();
@@ -492,13 +514,13 @@ App.Components.ClinicalRecordModal = (function () {
      * @param {Number} appointmentId
      */
     function chooseVisit(appointmentId) {
-        if (appointmentId === visitAppointmentId) {
+        if (hasPendingSave() || appointmentId === visitAppointmentId) {
             return;
         }
 
         if (isVisitDirty()) {
             confirmUnsaved(
-                () => saveVisit().done(() => loadVisit(appointmentId)),
+                () => saveVisit().done(() => { if (!isVisitDirty()) loadVisit(appointmentId); }),
                 () => loadVisit(appointmentId),
             );
 
@@ -913,21 +935,25 @@ App.Components.ClinicalRecordModal = (function () {
      * Save the visit record of the detail.
      */
     function saveVisit() {
+        if (visitSaveRequest) return visitSaveRequest;
         const data = getVisitData();
 
-        return App.Http.ClinicalRecords.saveAppointment(
+        $('#clinical-save-error').prop('hidden', true);
+        const submitted = JSON.stringify(data);
+        visitSaveRequest = App.Http.ClinicalRecords.saveAppointment(
             visitAppointmentId,
             data.record,
             data.surgeryPrice,
             data.markers,
         ).done((response) => {
             // The new markers come back with their id.
-            if (response.markers && feet) {
+            const unchanged = JSON.stringify(getVisitData()) === submitted;
+            if (unchanged && response.markers && feet) {
                 feet.markers = response.markers.map((marker) => ({...marker, key: ++markerKey}));
                 renderMarkers();
             }
 
-            savedVisit = JSON.stringify(getVisitData());
+            savedVisit = unchanged ? JSON.stringify(getVisitData()) : submitted;
             updateSaveButtons();
             visitPrice = response.price !== null ? Number(response.price) : null;
             updateVisitSubtitle($visitDetail.data('start'));
@@ -937,7 +963,10 @@ App.Components.ClinicalRecordModal = (function () {
             App.Http.ClinicalRecords.findPatient(customerId).done((patient) => renderVisits(patient.appointments));
 
             onChange(customerId);
-        });
+        }).fail(saveError);
+        const request = visitSaveRequest;
+        request.always(() => { visitSaveRequest = null; });
+        return request;
     }
 
     /**
@@ -1002,7 +1031,7 @@ App.Components.ClinicalRecordModal = (function () {
 
         if (isPatientDirty() || isVisitDirty()) {
             confirmUnsaved(() => {
-                $.when(isPatientDirty() ? savePatient() : null, isVisitDirty() ? saveVisit() : null).done(navigate);
+                $.when(isPatientDirty() ? savePatient() : null, isVisitDirty() ? saveVisit() : null).done(() => { if (!isPatientDirty() && !isVisitDirty()) navigate(); });
             }, navigate);
 
             return;
@@ -1104,7 +1133,9 @@ App.Components.ClinicalRecordModal = (function () {
 
         $orthosis.on('change', () => updateVisitSubtitle($visitDetail.data('start')));
 
+        App.Utils.WorkRecovery?.register(() => $modal.hasClass('show') && (hasPendingSave() || isPatientDirty() || isVisitDirty()));
         $modal.on('hide.bs.modal', (event) => {
+            if (hasPendingSave()) { event.preventDefault(); return; }
             if (event.target !== $modal[0] || closingConfirmed) {
                 return;
             }
@@ -1125,7 +1156,7 @@ App.Components.ClinicalRecordModal = (function () {
                         return;
                     }
 
-                    $.when(isPatientDirty() ? savePatient() : null, isVisitDirty() ? saveVisit() : null).done(close);
+                    $.when(isPatientDirty() ? savePatient() : null, isVisitDirty() ? saveVisit() : null).done(() => { if (!isPatientDirty() && !isVisitDirty()) close(); });
                 }, close);
             }
         });

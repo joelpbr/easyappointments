@@ -1521,19 +1521,13 @@ App.Utils.CalendarTableView = (function () {
                 if (
                     $('#calendar .calendar-view')[0] !== $calendarView[0] ||
                     document.visibilityState !== 'visible' ||
-                    $('.modal.show, .popover, .fc-event-dragging, .fc-event-resizing, .fc-highlight').length ||
+                    $('.modal.show, dialog[open], .popover, .fc-event-dragging, .fc-event-resizing, .fc-highlight').length ||
                     JSON.stringify(response) === lastResponseSignature
                 ) {
                     return;
                 }
 
-                const {scrollTop, scrollLeft} = $calendarView[0];
-
-                return createView(startDate, endDate, () => {
-                    const calendarView = document.querySelector('#calendar .calendar-view');
-                    calendarView.scrollTop = scrollTop;
-                    calendarView.scrollLeft = scrollLeft;
-                });
+                replaceDisplayedEvents(response, startDate, endDate);
             })
             .always(() => {
                 refreshPending = false;

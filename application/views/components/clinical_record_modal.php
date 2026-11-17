@@ -68,6 +68,7 @@
                 </li>
             </ul>
 
+            <div id="clinical-save-error" class="alert alert-danger m-2" role="alert" hidden></div>
             <div class="modal-body tab-content ea-clinical-body">
                 <div class="tab-pane fade show active" id="clinical-tab-details" role="tabpanel">
                     <div class="row g-2 ea-clinical-details">

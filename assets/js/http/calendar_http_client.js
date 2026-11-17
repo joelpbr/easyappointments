@@ -321,7 +321,7 @@ App.Http.Calendar = (function () {
             filter_type: filterType,
         };
 
-        return $.ajax({url, method: 'POST', data, global: !silent});
+        return $.ajax({url, method: 'POST', data, global: !silent, timeout: 20000});
     }
 
     /**
@@ -342,7 +342,7 @@ App.Http.Calendar = (function () {
             end_date: moment(endDate).format('YYYY-MM-DD'),
         };
 
-        return $.ajax({url, method: 'POST', data, global: !silent});
+        return $.ajax({url, method: 'POST', data, global: !silent, timeout: 20000});
     }
 
     /**

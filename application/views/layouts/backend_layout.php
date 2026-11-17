@@ -48,6 +48,9 @@
 
     <?php component('backend_header', ['active_menu' => vars('active_menu')]); ?>
 
+    <div id="connection-status" class="alert alert-warning m-2" role="status" aria-live="polite"
+         data-user-id="<?= (int) session('user_id') ?>" hidden></div>
+
     <?php slot('content'); ?>
 
 </main>
@@ -79,6 +82,8 @@
 
 <?php component('js_vars_script'); ?>
 <?php component('js_lang_script'); ?>
+
+<script src="<?= asset_url('assets/js/utils/work_recovery.js') ?>"></script>
 
 <?php slot('scripts'); ?>
 

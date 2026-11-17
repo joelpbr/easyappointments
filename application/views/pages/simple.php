@@ -61,6 +61,8 @@
          aria-label="<?= e(lang('provider')) ?>"></div>
 </header>
 
+<div id="connection-status" class="alert alert-warning m-2" role="status" aria-live="polite"
+     data-user-id="<?= (int) session('user_id') ?>" hidden></div>
 <main class="ea-simple-main">
     <div class="ea-simple-summary" id="simple-summary"></div>
     <ol class="ea-simple-list" id="simple-list" aria-live="polite"></ol>
@@ -116,6 +118,7 @@
 <?php endif; ?>
 
 <script src="<?= asset_url('assets/js/utils/loading.js') ?>"></script>
+<script src="<?= asset_url('assets/js/utils/work_recovery.js') ?>"></script>
 <script src="<?= asset_url('assets/js/pages/simple.js') ?>"></script>
 
 </body>

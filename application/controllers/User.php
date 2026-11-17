@@ -30,6 +30,19 @@ class User extends EA_Controller
     /**
      * Redirect to the login page.
      */
+    /** Read-only wake-up probe: never redirects or renews a session as a page navigation. */
+    public function session_status(): void
+    {
+        method('get');
+        $user_id = (int) session('user_id');
+        json_response([
+            'authenticated' => $user_id > 0,
+            'user_id' => $user_id,
+            'csrf_token' => $this->security->get_csrf_hash(),
+        ], $user_id ? 200 : 401, ['Cache-Control: no-store, private']);
+    }
+
+    /** Redirect to the login page. */
     public function index(): void
     {
         redirect('login');

@@ -34,10 +34,14 @@ App.Http.ClinicalRecords = (function () {
     function savePatient(customerId, data) {
         const url = App.Utils.Url.siteUrl('clinical_records/save_patient');
 
-        return $.post(url, {
+        if (App.Utils.WorkRecovery?.isReady() === false) return $.Deferred().reject().promise();
+        return $.ajax({url, method: 'POST', dataType: 'json', global: false, timeout: 30000, data: {
             csrf_token: vars('csrf_token'),
             customer_id: customerId,
             ...data,
+        }}).then((response) => {
+            if (response?.success !== true) return $.Deferred().reject(response).promise();
+            return response;
         });
     }
 
@@ -67,13 +71,17 @@ App.Http.ClinicalRecords = (function () {
     function saveAppointment(appointmentId, record, surgeryPrice, markers = null) {
         const url = App.Utils.Url.siteUrl('clinical_records/save_appointment');
 
-        return $.post(url, {
+        if (App.Utils.WorkRecovery?.isReady() === false) return $.Deferred().reject().promise();
+        return $.ajax({url, method: 'POST', dataType: 'json', global: false, timeout: 30000, data: {
             csrf_token: vars('csrf_token'),
             appointment_id: appointmentId,
             record,
             surgery_price: surgeryPrice,
             // As JSON, so that an empty list (every marker removed) is sent too.
             markers: markers === null ? undefined : JSON.stringify(markers),
+        }}).then((response) => {
+            if (response?.success !== true) return $.Deferred().reject(response).promise();
+            return response;
         });
     }
 

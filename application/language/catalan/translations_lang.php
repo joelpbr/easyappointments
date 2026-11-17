@@ -1479,3 +1479,12 @@ $lang['settings_group_privacy_hint'] = 'Textos legals, consentiments dels pacien
 $lang['settings_group_maintenance'] = 'Manteniment i control';
 $lang['settings_group_maintenance_hint'] = 'Còpies de seguretat i seguiment de l’activitat de la consulta.';
 $lang['settings_appearance'] = 'Aparença i identitat visual';
+
+$lang['work_reconnecting'] = 'Comprovant la connexió…';
+$lang['work_offline'] = 'Sense connexió. Els canvis oberts es mantenen en aquesta pantalla; encara no s’han desat.';
+$lang['work_session_expired'] = 'La sessió ha caducat o ha canviat. Inicieu sessió amb el mateix compte en una altra pestanya i torneu aquí. Els canvis oberts no s’han desat.';
+$lang['work_login'] = 'Inicia sessió en una altra pestanya';
+$lang['work_retry'] = 'Torna a comprovar';
+$lang['work_save_failed'] = 'No s’ha pogut desar. Els canvis es mantenen en aquesta pantalla. Comproveu la connexió i torneu-ho a provar.';
+$lang['work_discard_signature'] = 'Hi ha una signatura o dades sense desar. Voleu descartar-les i tancar?';
+$lang['work_unsaved'] = 'Hi ha canvis sense desar.';

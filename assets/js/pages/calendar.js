@@ -160,17 +160,21 @@ App.Pages.Calendar = (function () {
     function startAutoRefresh(calendarView) {
         const isBusy = () =>
             document.visibilityState !== 'visible' ||
-            $('.modal.show, .popover, .fc-event-dragging, .fc-event-resizing, .fc-highlight').length > 0;
+            !App.Utils.WorkRecovery.isReady() ||
+            $('.modal.show, dialog[open], .popover, .fc-event-dragging, .fc-event-resizing, .fc-highlight').length > 0;
 
         const refresh = () => {
             if (!isBusy()) {
-                calendarView.refresh();
+                const request = calendarView.refresh();
+                request?.fail?.(() => App.Utils.WorkRecovery.connectionFailed());
             }
         };
 
         setInterval(refresh, AUTO_REFRESH_INTERVAL);
 
-        document.addEventListener('visibilitychange', refresh);
+        window.addEventListener('app:reconnected', refresh);
+        $(document).on('hidden.bs.modal', refresh);
+        document.addEventListener('close', refresh, true);
     }
 
     document.addEventListener('DOMContentLoaded', initialize);

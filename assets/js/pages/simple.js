@@ -240,8 +240,10 @@
             chip.addEventListener('click', () => {
                 providerId = provider.id;
                 saveProvider();
+                const position = {top: window.scrollY, left: window.scrollX};
                 renderProviders();
                 renderList();
+                if (silent) window.scrollTo(position);
             });
 
             container.append(chip);
@@ -619,7 +621,8 @@
      */
     async function load(silent = false) {
         silent = silent === true;
-        if (silent && (loading || $('simple-sheet').hasAttribute('open'))) {
+        if (silent && (loading || $('simple-sheet').hasAttribute('open') ||
+            window.App?.Utils?.WorkRecovery?.isReady() === false || document.querySelector('.modal.show, dialog[open]'))) {
             return;
         }
         loading = true;
@@ -635,23 +638,27 @@
             : window.EaLoading.start($('simple-list'), lastRenderedSignature === null);
         if (!silent && lastRenderedSignature === null) $('simple-empty').hidden = true;
 
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 20000);
         try {
             const response = await fetch(siteUrl('calendar/get_calendar_appointments_for_table_view'), {
                 method: 'POST',
+                headers: {'X-Requested-With': 'XMLHttpRequest'},
+                signal: controller.signal,
                 body,
                 credentials: 'same-origin',
             });
 
             // The session ended: log in again.
             if (response.status === 401 || response.redirected) {
-                window.location.href = siteUrl('login');
+                window.App?.Utils?.WorkRecovery?.check();
                 return;
             }
 
             if (!response.ok) throw new Error('Request failed');
             const data = await response.json();
 
-            if (current !== request) {
+            if (current !== request || (silent && (document.hidden || document.querySelector('.modal.show, dialog[open]')))) {
                 return;
             }
 
@@ -677,8 +684,10 @@
         } catch (error) {
             if (current === request) {
                 $('simple-error').hidden = false;
+                window.App?.Utils?.WorkRecovery?.connectionFailed();
             }
         } finally {
+            clearTimeout(timeout);
             finishLoading();
             if (current === request) {
                 loading = false;
@@ -755,7 +764,7 @@
 
         // Check for changes every five seconds and when coming back to the page.
         setInterval(() => document.visibilityState === 'visible' && load(true), REFRESH_SECONDS * 1000);
-        document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && load(true));
+        window.addEventListener('app:reconnected', () => load(true));
 
         load();
     }

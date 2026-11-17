@@ -8,8 +8,8 @@ function mobileAgenda() {
     const load = source.slice(source.indexOf('    async function load('), source.indexOf('    function goTo('));
     const state = {renders: 0, loading: 0, calls: 0, open: false, data: {appointments: [], blocked_periods: []}};
     const context = {
-        URLSearchParams,
-        window: {EaLoading: {start: () => {state.loading++;return () => {};}}},
+        URLSearchParams, AbortController, setTimeout, clearTimeout,
+        window: {scrollTo() {}, EaLoading: {start: () => {state.loading++;return () => {};}}},
         vars: () => 'csrf',
         siteUrl: path => path,
         isoDate: () => '2026-11-17',
@@ -17,7 +17,7 @@ function mobileAgenda() {
         renderProviders() {},
         renderList: () => state.renders++,
         $: () => ({hasAttribute: () => state.open}),
-        document: {body: {classList: {add: () => state.loading++, remove() {}}}},
+        document: {querySelector: () => null, body: {classList: {add: () => state.loading++, remove() {}}}},
         fetch: async () => {state.calls++; return {ok: true, status: 200, json: async () => state.data};},
     };
     vm.runInNewContext(`let request=0, loading=false, lastRenderedSignature=null;
@@ -64,6 +64,7 @@ test('full calendar skips unchanged polls and batches changed events into one re
         createAppointmentEvents: data => data,
         createUnavailabilityEvents: data => data,
         App: {Http: {Calendar: {getCalendarAppointments: () => ({done(callback) {callback(state.response);return this;}, always(callback) {callback();return this;}})}}, Utils: {CalendarBlockedPeriods: {events: data => data}, CalendarPastTime: {update() {}}}},
+        document: {querySelectorAll: () => []},
         fullCalendar: {view: {type: 'dayGridMonth'}, getEventSources: () => [{remove: () => state.removed++}], addEventSource: () => state.added++, batchRendering: callback => {state.batches++;callback();}},
     };
     vm.runInNewContext(`let refreshPending=false, refreshRequest=0, lastEventsSignature=null; const FILTER_TYPE_PROVIDER='provider'; ${refresh}; globalThis.refresh=refreshCalendarAppointments;`, context);

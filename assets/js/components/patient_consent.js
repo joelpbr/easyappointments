@@ -8,6 +8,7 @@ App.Components.PatientConsent = (function () {
     let form = null;
     let request = 0;
     let saving = false;
+    let dirty = false;
     let pad;
     let context;
     let drawing = false;
@@ -133,6 +134,8 @@ App.Components.PatientConsent = (function () {
     function initializePad() {
         pad = $id('patient-consent-pad');
         pad.addEventListener('pointerdown', (event) => {
+            if (saving) return;
+            dirty = true;
             event.preventDefault();
             pad.setPointerCapture(event.pointerId);
             drawing = true;
@@ -144,7 +147,7 @@ App.Components.PatientConsent = (function () {
             context.stroke();
         });
         pad.addEventListener('pointermove', (event) => {
-            if (!drawing) return;
+            if (!drawing || saving) return;
             event.preventDefault();
             const [x, y] = point(event);
             context.lineTo(x, y);
@@ -170,6 +173,14 @@ App.Components.PatientConsent = (function () {
         signerDefaults();
         App.Components.DocumentDialog.show($id('patient-consent-modal'));
         resizePad();
+        dirty = false;
+    }
+
+    function requestClose() {
+        if (saving) return;
+        if (dirty && !window.confirm(lang('work_discard_signature'))) return;
+        dirty = false;
+        App.Components.DocumentDialog.close($id('patient-consent-modal'));
     }
 
     async function save() {
@@ -185,9 +196,16 @@ App.Components.PatientConsent = (function () {
         );
         saving = true;
         $id('patient-consent-save').disabled = true;
+        const controls = [...$id('patient-consent-modal').querySelectorAll('input, select, button')];
+        const disabled = controls.map((control) => control.disabled);
+        controls.forEach((control) => { control.disabled = true; });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 30000);
         try {
+            if (App.Utils.WorkRecovery?.isReady() === false && !(await App.Utils.WorkRecovery.check())) throw new Error();
             const response = await fetch(url('sign'), {
                 method: 'POST',
+                signal: controller.signal,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'X-Requested-With': 'XMLHttpRequest',
@@ -209,14 +227,18 @@ App.Components.PatientConsent = (function () {
                 }),
             });
             const result = await response.json().catch(() => ({}));
-            if (!response.ok || result.success === false) throw new Error(result.message || lang('consent_save_error'));
+            if (!response.ok || result.success !== true) throw new Error(result.message || lang('consent_save_error'));
+            dirty = false;
             form.current = result.current;
             showStatus();
             App.Components.DocumentDialog.close($id('patient-consent-modal'));
             App.Layouts.Backend.displayNotification(lang('consent_saved'));
         } catch (error) {
-            $error.textContent = error.message || lang('consent_save_error');
+            $error.textContent = lang('work_save_failed');
+            App.Utils.WorkRecovery?.check();
         } finally {
+            clearTimeout(timeout);
+            controls.forEach((control, index) => { control.disabled = disabled[index]; });
             saving = false;
             $id('patient-consent-save').disabled = false;
         }
@@ -231,9 +253,13 @@ App.Components.PatientConsent = (function () {
         $id('patient-consent-open').addEventListener('click', open);
         $id('patient-consent-save').addEventListener('click', save);
         const dialog = $id('patient-consent-modal');
+        App.Utils.WorkRecovery?.register(() => dialog.open && (dirty || saving));
+        dialog.addEventListener('input', () => { dirty = true; });
+        dialog.addEventListener('change', () => { dirty = true; });
+        dialog.addEventListener('cancel', (event) => { event.preventDefault(); requestClose(); });
         dialog.addEventListener('focusin', (event) => event.stopPropagation());
         dialog.querySelectorAll('[data-consent-close]').forEach((button) => {
-            button.addEventListener('click', () => App.Components.DocumentDialog.close(dialog));
+            button.addEventListener('click', requestClose);
         });
         window.addEventListener('resize', () => {
             if ($id('patient-consent-modal').open && !strokes) resizePad();

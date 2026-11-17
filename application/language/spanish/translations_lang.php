@@ -1479,3 +1479,12 @@ $lang['settings_group_privacy_hint'] = 'Textos legales, consentimientos de los p
 $lang['settings_group_maintenance'] = 'Mantenimiento y control';
 $lang['settings_group_maintenance_hint'] = 'Copias de seguridad y seguimiento de la actividad de la consulta.';
 $lang['settings_appearance'] = 'Apariencia e identidad visual';
+
+$lang['work_reconnecting'] = 'Comprobando la conexión…';
+$lang['work_offline'] = 'Sin conexión. Los cambios abiertos se conservan en esta pantalla; todavía no se han guardado.';
+$lang['work_session_expired'] = 'La sesión ha caducado o ha cambiado. Inicie sesión con la misma cuenta en otra pestaña y vuelva aquí. Los cambios abiertos no se han guardado.';
+$lang['work_login'] = 'Iniciar sesión en otra pestaña';
+$lang['work_retry'] = 'Volver a comprobar';
+$lang['work_save_failed'] = 'No se ha podido guardar. Los cambios se conservan en esta pantalla. Compruebe la conexión y vuelva a intentarlo.';
+$lang['work_discard_signature'] = 'Hay una firma o datos sin guardar. ¿Quiere descartarlos y cerrar?';
+$lang['work_unsaved'] = 'Hay cambios sin guardar.';
