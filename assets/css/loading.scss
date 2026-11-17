@@ -1,0 +1,21 @@
+// Deliberately still: no shimmer, pulse, overlay or fade on existing content.
+.ea-skeleton {
+    display: grid;
+    gap: 20px;
+    min-height: 240px;
+    padding: 20px 16px;
+    list-style: none;
+    align-content: start;
+
+    > span {
+        display: block;
+        height: 56px;
+        border-radius: 4px;
+        background:
+            linear-gradient(var(--bs-secondary-bg, #e9ecef), var(--bs-secondary-bg, #e9ecef)) 0 0 / 42px 20px no-repeat,
+            linear-gradient(var(--bs-secondary-bg, #e9ecef), var(--bs-secondary-bg, #e9ecef)) 62px 0 / 45% 14px
+                no-repeat,
+            linear-gradient(var(--bs-tertiary-bg, #f1f3f5), var(--bs-tertiary-bg, #f1f3f5)) 62px 26px / 65% 10px
+                no-repeat;
+    }
+}

@@ -1,8 +1,10 @@
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 /**
@@ -21,7 +23,8 @@ App.Pages.LegalSettings = (function () {
     const $legalNoticeUrl = $('#legal-notice-url');
     const $imprintUrl = $('#imprint-url');
     const $dataRetentionDays = $('#data-retention-days');
-
+    const $companyDpoContact = $('#company-dpo-contact');
+    const $companyDpoName = $('#company-dpo-name');
     /**
      * Check if the form has invalid values.
      *
@@ -92,6 +95,13 @@ App.Pages.LegalSettings = (function () {
             if (legalSetting.name === 'data_retention_days') {
                 $dataRetentionDays.val(legalSetting.value);
             }
+
+            if (legalSetting.name === 'company_dpo_contact') {
+                $companyDpoContact.val(legalSetting.value);
+            }
+            if (legalSetting.name === 'company_dpo_name') {
+                $companyDpoName.val(legalSetting.value);
+            }
         });
     }
 
@@ -141,6 +151,16 @@ App.Pages.LegalSettings = (function () {
         legalSettings.push({
             name: 'data_retention_days',
             value: $dataRetentionDays.val() || '0',
+        });
+
+        legalSettings.push({
+            name: 'company_dpo_contact',
+            value: $companyDpoContact.val().trim(),
+        });
+
+        legalSettings.push({
+            name: 'company_dpo_name',
+            value: $companyDpoName.val().trim(),
         });
 
         return legalSettings;

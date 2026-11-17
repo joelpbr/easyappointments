@@ -15,7 +15,7 @@
  */
 (function () {
     const STORAGE_PROVIDER = 'ea-simple-provider';
-    const REFRESH_SECONDS = 60;
+    const REFRESH_SECONDS = 5;
 
     const $ = (id) => document.getElementById(id);
 
@@ -28,6 +28,8 @@
     let appointments = [];
     let blockedPeriods = [];
     let request = 0;
+    let loading = false;
+    let lastRenderedSignature = null;
 
     /**
      * @param {Date} date
@@ -615,7 +617,12 @@
     /**
      * Load the appointments of the chosen day.
      */
-    async function load() {
+    async function load(silent = false) {
+        silent = silent === true;
+        if (silent && (loading || $('simple-sheet').hasAttribute('open'))) {
+            return;
+        }
+        loading = true;
         const current = ++request;
         const body = new URLSearchParams({
             csrf_token: vars('csrf_token'),
@@ -623,7 +630,10 @@
             end_date: isoDate(day),
         });
 
-        document.body.classList.add('ea-simple-loading');
+        const finishLoading = silent
+            ? () => {}
+            : window.EaLoading.start($('simple-list'), lastRenderedSignature === null);
+        if (!silent && lastRenderedSignature === null) $('simple-empty').hidden = true;
 
         try {
             const response = await fetch(siteUrl('calendar/get_calendar_appointments_for_table_view'), {
@@ -638,6 +648,7 @@
                 return;
             }
 
+            if (!response.ok) throw new Error('Request failed');
             const data = await response.json();
 
             if (current !== request) {
@@ -657,15 +668,20 @@
                     parseDateTime(period.start_datetime) < dayEnd && parseDateTime(period.end_datetime) > dayStart,
             );
             $('simple-error').hidden = true;
-            renderProviders();
-            renderList();
+            const signature = JSON.stringify([isoDate(day), appointments, blockedPeriods]);
+            if (signature !== lastRenderedSignature) {
+                renderProviders();
+                renderList();
+                lastRenderedSignature = signature;
+            }
         } catch (error) {
             if (current === request) {
                 $('simple-error').hidden = false;
             }
         } finally {
+            finishLoading();
             if (current === request) {
-                document.body.classList.remove('ea-simple-loading');
+                loading = false;
             }
         }
     }
@@ -675,11 +691,13 @@
      */
     function goTo(date) {
         day = startOfDay(date);
+        lastRenderedSignature = null;
         appointments = [];
         blockedPeriods = [];
         renderDay();
         renderProviders();
-        renderList();
+        $('simple-list').textContent = '';
+        $('simple-summary').textContent = '';
         load();
         window.scrollTo({top: 0});
     }
@@ -735,9 +753,9 @@
             {passive: true},
         );
 
-        // Fresh data every minute and when coming back to the page.
-        setInterval(() => document.visibilityState === 'visible' && load(), REFRESH_SECONDS * 1000);
-        document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && load());
+        // Check for changes every five seconds and when coming back to the page.
+        setInterval(() => document.visibilityState === 'visible' && load(true), REFRESH_SECONDS * 1000);
+        document.addEventListener('visibilitychange', () => document.visibilityState === 'visible' && load(true));
 
         load();
     }

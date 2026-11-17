@@ -1,8 +1,10 @@
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 /**
  * Calendar Table View Utility
@@ -44,6 +46,10 @@ App.Utils.CalendarTableView = (function () {
     let $popoverTarget = null;
     let lastFocusedEventData = null;
     let lastResponseSignature = null;
+    let refreshPending = false;
+    let viewRequest = 0;
+    let viewLoading = false;
+    let replacingEvents = false;
 
     const MIN_PROVIDER_COLUMN_WIDTH = 200; // Pixels
     const START_TIME = '08:30:00'; // First time shown when a period is opened
@@ -1278,82 +1284,6 @@ App.Utils.CalendarTableView = (function () {
         App.Utils.CalendarPastTime.update($calendar.data('fullCalendar'));
     }
 
-    /**
-     * Create break events in the table view (legacy support).
-     *
-     * @param {jQuery} $providerColumn - Provider column element.
-     * @param {Array} breaks - Break periods array.
-     */
-    function createBreaks($providerColumn, breaks) {
-        if (!breaks.length) {
-            return;
-        }
-
-        const currentDate = new Date($providerColumn.parents('.date-column').data('date'));
-
-        const $tbody = $providerColumn.find('table tbody');
-
-        breaks.forEach((entry) => {
-            const startHour = entry.start.split(':');
-
-            const eventDate = new Date(
-                currentDate.getFullYear(),
-                currentDate.getMonth(),
-                currentDate.getDate(),
-                startHour[0],
-                startHour[1],
-            );
-
-            const endHour = entry.end.split(':');
-
-            const endDate = new Date(
-                currentDate.getFullYear(),
-                currentDate.getMonth(),
-                currentDate.getDate(),
-                endHour[0],
-                endHour[1],
-            );
-
-            const eventDuration = Math.round((endDate - eventDate) / 60000);
-
-            const $event = $('<div/>', {class: 'event unavailability break'});
-
-            $event.html(
-                lang('break') +
-                    ' <span class="hour">' +
-                    moment(eventDate).format('HH:mm') +
-                    '</span> (' +
-                    eventDuration +
-                    "')",
-            );
-            $event.data(entry);
-            $tbody.find('tr').each((index, tr) => {
-                const $td = $(tr).find('td:first');
-
-                const cellDate = moment(currentDate)
-                    .set({
-                        hour: parseInt($td.text().split(':')[0]),
-                        minute: parseInt($td.text().split(':')[1]),
-                    })
-                    .toDate();
-
-                if (eventDate < cellDate) {
-                    if (moment(eventDate).format('HH:mm') === $(tr).prev().find('td').eq(0).text()) {
-                        $event.find('.hour').remove();
-                    }
-
-                    $(tr)
-                        .prev()
-                        .find('td:gt(0)')
-                        .each((index, td) => {
-                            $event.clone().appendTo($(td));
-                        });
-                    return false;
-                }
-            });
-        });
-    }
-
     // View Construction
 
     /**
@@ -1492,6 +1422,9 @@ App.Utils.CalendarTableView = (function () {
      * @param {Function} [onReady] - Called once the columns are rendered.
      */
     function createView(startDate, endDate, onReady) {
+        const currentRequest = ++viewRequest;
+        viewLoading = true;
+        const finishLoading = window.EaLoading.start($calendar[0], !$('#calendar .calendar-view').length);
         // Disable date navigation
 
         $('#calendar .calendar-header .btn').addClass('disabled').prop('disabled', true);
@@ -1507,53 +1440,66 @@ App.Utils.CalendarTableView = (function () {
 
             providerView[providerId] = $providerColumn.find('.calendar-wrapper').data('fullCalendar').view.type;
         });
-        $('#calendar .calendar-view').remove();
-        const $calendarView = $('<div/>', {class: 'calendar-view'}).appendTo('#calendar');
+        return App.Http.Calendar.getCalendarAppointmentsForTableView(startDate, endDate, true)
+            .done((response) => {
+                if (currentRequest !== viewRequest) return;
+                finishLoading();
+                $('#calendar .calendar-view').remove();
+                const $calendarView = $('<div/>', {class: 'calendar-view'}).appendTo('#calendar');
 
-        attachTopScrollbar($calendarView);
+                attachTopScrollbar($calendarView);
 
-        $calendarView.data({
-            startDate: moment(startDate).format('YYYY-MM-DD'),
-            endDate: moment(endDate).format('YYYY-MM-DD'),
-        });
-        const $wrapper = $('<div/>').appendTo($calendarView);
+                $calendarView.data({
+                    startDate: moment(startDate).format('YYYY-MM-DD'),
+                    endDate: moment(endDate).format('YYYY-MM-DD'),
+                });
+                const $wrapper = $('<div/>').appendTo($calendarView);
 
-        App.Http.Calendar.getCalendarAppointmentsForTableView(startDate, endDate).done((response) => {
-            lastResponseSignature = JSON.stringify(response);
+                lastResponseSignature = JSON.stringify(response);
 
-            let currentDate = startDate;
-            while (currentDate <= endDate) {
-                createDateColumn($wrapper, currentDate, response);
-                currentDate = moment(currentDate).add({days: 1}).toDate();
-            }
+                let currentDate = startDate;
+                while (currentDate <= endDate) {
+                    createDateColumn($wrapper, currentDate, response);
+                    currentDate = moment(currentDate).add({days: 1}).toDate();
+                }
 
-            // Activate calendar navigation
+                // Activate calendar navigation
 
-            $('#calendar .calendar-header .btn').removeClass('disabled').prop('disabled', false);
+                $('#calendar .calendar-header .btn').removeClass('disabled').prop('disabled', false);
 
-            // Apply provider calendar view mode
+                // Apply provider calendar view mode
 
-            $('.provider-column').each((index, providerColumn) => {
-                const $providerColumn = $(providerColumn);
+                $('.provider-column').each((index, providerColumn) => {
+                    const $providerColumn = $(providerColumn);
 
-                const providerId = $providerColumn.data('provider').id;
+                    const providerId = $providerColumn.data('provider').id;
 
-                $providerColumn
-                    .find('.calendar-wrapper')
-                    .data('fullCalendar')
-                    .changeView(providerView[providerId] || 'timeGridDay');
-            });
+                    $providerColumn
+                        .find('.calendar-wrapper')
+                        .data('fullCalendar')
+                        .changeView(providerView[providerId] || 'timeGridDay');
+                });
 
-            requestAnimationFrame(() => {
-                setCalendarViewSize();
+                requestAnimationFrame(() => {
+                    setCalendarViewSize();
 
-                if (onReady) {
-                    onReady();
-                } else {
-                    scrollToStartTime();
+                    if (onReady) {
+                        onReady();
+                    } else {
+                        scrollToStartTime();
+                    }
+                });
+            })
+            .fail(() => {
+                if (currentRequest === viewRequest) App.Layouts.Backend.displayNotification(lang('simple_load_failed'));
+            })
+            .always(() => {
+                finishLoading();
+                if (currentRequest === viewRequest) {
+                    viewLoading = false;
+                    $('#calendar .calendar-header .btn').removeClass('disabled').prop('disabled', false);
                 }
             });
-        });
     }
 
     /**
@@ -1565,27 +1511,37 @@ App.Utils.CalendarTableView = (function () {
     function refresh() {
         const $calendarView = $('#calendar .calendar-view');
 
-        if (!$calendarView.length) {
+        if (refreshPending || viewLoading || !$calendarView.length) {
             return;
         }
 
         const startDate = moment($calendarView.data('startDate')).toDate();
         const endDate = moment($calendarView.data('endDate')).toDate();
+        refreshPending = true;
 
-        App.Http.Calendar.getCalendarAppointmentsForTableView(startDate, endDate, true).done((response) => {
-            if (JSON.stringify(response) === lastResponseSignature) {
-                return;
-            }
+        return App.Http.Calendar.getCalendarAppointmentsForTableView(startDate, endDate, true)
+            .then((response) => {
+                // A slow response must not replace a newly selected period or interrupt an edit.
+                if (
+                    $('#calendar .calendar-view')[0] !== $calendarView[0] ||
+                    document.visibilityState !== 'visible' ||
+                    $('.modal.show, .popover, .fc-event-dragging, .fc-event-resizing, .fc-highlight').length ||
+                    JSON.stringify(response) === lastResponseSignature
+                ) {
+                    return;
+                }
 
-            const {scrollTop, scrollLeft} = $calendarView[0];
+                const {scrollTop, scrollLeft} = $calendarView[0];
 
-            createView(startDate, endDate, () => {
-                const calendarView = document.querySelector('#calendar .calendar-view');
-
-                calendarView.scrollTop = scrollTop;
-                calendarView.scrollLeft = scrollLeft;
+                return createView(startDate, endDate, () => {
+                    const calendarView = document.querySelector('#calendar .calendar-view');
+                    calendarView.scrollTop = scrollTop;
+                    calendarView.scrollLeft = scrollLeft;
+                });
+            })
+            .always(() => {
+                refreshPending = false;
             });
-        });
     }
 
     /**
@@ -1925,6 +1881,71 @@ App.Utils.CalendarTableView = (function () {
         }
     }
 
+    /** Replace event sources without exposing intermediate empty grids to layout callbacks. */
+    function replaceDisplayedEvents(response, startDate, endDate) {
+        const root = document.querySelector('#calendar .calendar-view');
+        if (!root) return;
+        const scrollers = [root, ...root.querySelectorAll('.fc-scroller')].map((element) => ({
+            element,
+            top: element.scrollTop,
+            left: element.scrollLeft,
+        }));
+        const calendars = getCalendars();
+        replacingEvents = true;
+        calendars.forEach((calendar) => calendar.pauseRendering());
+        try {
+            let currentDateIter = startDate;
+            while (currentDateIter <= endDate) {
+                $('.calendar-view .date-column').each((index, dateColumn) => {
+                    const $dateColumn = $(dateColumn);
+
+                    const date = new Date($dateColumn.data('date'));
+
+                    if (moment(currentDateIter).format('YYYY-MM-DD') !== moment(date).format('YYYY-MM-DD')) {
+                        return true;
+                    }
+
+                    $dateColumn
+                        .find('.date-column-title')
+                        .text(App.Utils.Date.format(date, vars('date_format'), vars('time_format')));
+                    $dateColumn.find('.provider-column').each((index, providerColumn) => {
+                        const $providerColumn = $(providerColumn);
+
+                        const provider = $providerColumn.data('provider');
+
+                        $providerColumn
+                            .find('.calendar-wrapper')
+                            .data('fullCalendar')
+                            .getEventSources()
+                            .forEach((eventSource) => eventSource.remove());
+                        // The breaks come back as background events with the non working hours, as on the first load.
+                        createNonWorkingHours($providerColumn.find('.calendar-wrapper'), provider);
+                        createAppointments($providerColumn, response.appointments);
+                        createUnavailabilities($providerColumn, response.unavailabilities);
+                        createBlockedPeriods($providerColumn, response.blocked_periods);
+                    });
+                });
+                currentDateIter = moment(currentDateIter).add({days: 1}).toDate();
+            }
+        } finally {
+            replacingEvents = false;
+            // All columns now contain their final events, so shared hours are measured only once.
+            syncAllDaySlot();
+            calendars.forEach((calendar) => calendar.resumeRendering());
+        }
+        lastResponseSignature = JSON.stringify(response);
+        const restore = () => {
+            if (document.querySelector('#calendar .calendar-view') !== root) return;
+            scrollers.forEach(({element, top, left}) => {
+                element.scrollTop = top;
+                element.scrollLeft = left;
+            });
+        };
+        restore();
+        // Midday folding also runs on the next frame; restore after its layout pass.
+        requestAnimationFrame(restore);
+    }
+
     // Event Listeners
 
     /**
@@ -1990,50 +2011,10 @@ App.Utils.CalendarTableView = (function () {
                 .add(dayInterval - 1, 'days')
                 .toDate();
 
+            const requestedView = document.querySelector('#calendar .calendar-view');
             App.Http.Calendar.getCalendarAppointmentsForTableView(startDate, endDate).done((response) => {
-                let currentDateIter = startDate;
-                while (currentDateIter <= endDate) {
-                    $('.calendar-view .date-column').each((index, dateColumn) => {
-                        const $dateColumn = $(dateColumn);
-
-                        const date = new Date($dateColumn.data('date'));
-
-                        if (moment(currentDateIter).format('YYYY-MM-DD') !== moment(date).format('YYYY-MM-DD')) {
-                            return true;
-                        }
-
-                        $dateColumn
-                            .find('.date-column-title')
-                            .text(App.Utils.Date.format(date, vars('date_format'), vars('time_format')));
-                        $dateColumn.find('.provider-column').each((index, providerColumn) => {
-                            const $providerColumn = $(providerColumn);
-
-                            const provider = $providerColumn.data('provider');
-
-                            $providerColumn
-                                .find('.calendar-wrapper')
-                                .data('fullCalendar')
-                                .getEventSources()
-                                .forEach((eventSource) => eventSource.remove());
-                            createNonWorkingHours($providerColumn.find('.calendar-wrapper'), provider);
-                            createAppointments($providerColumn, response.appointments);
-                            createUnavailabilities($providerColumn, response.unavailabilities);
-                            createBlockedPeriods($providerColumn, response.blocked_periods);
-
-                            // Add provider breaks
-
-                            const workingPlan = JSON.parse(provider.settings.working_plan);
-
-                            // The working plan uses English weekday names, whatever the user language.
-                            const day = moment(date).locale('en').format('dddd').toLowerCase();
-
-                            if (workingPlan[day]) {
-                                createBreaks($providerColumn, workingPlan[day].breaks);
-                            }
-                        });
-                    });
-                    currentDateIter = moment(currentDateIter).add({days: 1}).toDate();
-                }
+                if (document.querySelector('#calendar .calendar-view') !== requestedView) return;
+                replaceDisplayedEvents(response, startDate, endDate);
             });
         });
 
@@ -2145,6 +2126,7 @@ App.Utils.CalendarTableView = (function () {
      * every column so that their hours stay aligned.
      */
     function syncAllDaySlot() {
+        if (replacingEvents) return;
         const calendars = getCalendars();
         const show = calendars.some((calendar) => calendar.getEvents().some((event) => event.allDay));
 

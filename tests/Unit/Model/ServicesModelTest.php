@@ -22,7 +22,7 @@ class ServicesModelTest extends TestCase
         defined('EVENT_MINIMUM_DURATION') or define('EVENT_MINIMUM_DURATION', 5);
 
         // The constructor only loads CodeIgniter model/DB dependencies that validate() does not
-        // need, as long as the "id"/"id_service_categories" keys (the only $this->db touches) are
+        // need, as long as the "id" key (the only $this->db touch) is
         // omitted from the payload.
         return (new ReflectionClass(Services_model::class))->newInstanceWithoutConstructor();
     }
@@ -146,4 +146,15 @@ class ServicesModelTest extends TestCase
 
         $this->assertFalse($resource['is_active']);
     }
+    public function testApiDoesNotExposeOrAcceptServiceCategories(): void
+    {
+        $service = $this->service_record(['id_service_categories' => 7]);
+        $this->services_model()->api_encode($service);
+        $this->assertArrayNotHasKey('serviceCategoryId', $service);
+
+        $resource = ['name' => 'Quiropodia', 'serviceCategoryId' => 7];
+        $this->services_model()->api_decode($resource);
+        $this->assertSame(['name' => 'Quiropodia'], $resource);
+    }
+
 }

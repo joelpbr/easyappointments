@@ -152,6 +152,7 @@ class WhatsappRemindersTest extends TestCase
             'days_before' => '30',
             'booking_delay' => '-5',
             'min_notice' => 'abc',
+            // The switch of the former template is gone: it is ignored.
             'template_says_tomorrow' => '1',
         ]);
 
@@ -159,14 +160,13 @@ class WhatsappRemindersTest extends TestCase
         $this->assertSame(7, $rules['days_before']);
         $this->assertSame(30, $rules['booking_delay']);
         $this->assertSame(120, $rules['min_notice']);
-        $this->assertTrue($rules['template_says_tomorrow']);
+        $this->assertArrayNotHasKey('template_says_tomorrow', $rules);
 
         $rules = Whatsapp_reminders::normalize_rules(['send_time' => '9:05', 'days_before' => '0', 'min_notice' => '0']);
 
         $this->assertSame('09:05', $rules['send_time']);
         $this->assertSame(0, $rules['days_before']);
         $this->assertSame(0, $rules['min_notice']);
-        $this->assertFalse($rules['template_says_tomorrow']);
     }
 
     public function testTheKeyIsOnePerAppointmentWhateverItsDay(): void
@@ -226,18 +226,6 @@ class WhatsappRemindersTest extends TestCase
         );
     }
 
-    public function testATemplateThatSaysTomorrowGetsTheDateAlone(): void
-    {
-        $parameters = Whatsapp_reminders::template_parameters(
-            ['start_datetime' => '2026-11-17 09:05:00'],
-            ['first_name' => 'Pau'],
-            self::madrid('2026-11-16 10:00'),
-            true,
-        );
-
-        $this->assertSame(['Pau', 'dimarts 17 de novembre', '09:05'], $parameters);
-    }
-
     public function testTheDateOfTheTemplateIsInCatalan(): void
     {
         $this->assertSame("dijous 15 d'abril", Whatsapp_reminders::date_text('2027-04-15 11:45:00'));
@@ -263,25 +251,6 @@ class WhatsappRemindersTest extends TestCase
         $this->assertNull(Whatsapp_reminders::error_key('HTTP 500 999999 Unknown'));
         $this->assertNull(Whatsapp_reminders::error_key('El número no és vàlid'));
         $this->assertNull(Whatsapp_reminders::error_key(null));
-    }
-
-    public function testATemplateThatSaysTomorrowOnlyFitsTheDayBefore(): void
-    {
-        $now = self::madrid('2026-11-15 18:30');
-        $old = self::rules(['template_says_tomorrow' => true]);
-
-        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-16 09:00:00', $now, $old));
-        $this->assertSame('whatsapp_not_tomorrow', Whatsapp_reminders::retry_blocker('2026-11-15 19:00:00', $now, $old));
-        $this->assertSame('whatsapp_not_tomorrow', Whatsapp_reminders::retry_blocker('2026-11-17 09:00:00', $now, $old));
-
-        // The day of the clinic, whatever the time zone of the server: 23:30 in UTC is already the next day in Madrid.
-        $utc = new DateTimeImmutable('2026-11-15 23:30:00', new DateTimeZone('UTC'));
-
-        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-17 09:00:00', $utc, $old));
-
-        // The template without "demà" fits any day.
-        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-15 19:00:00', $now, self::rules()));
-        $this->assertNull(Whatsapp_reminders::retry_blocker('2026-11-19 09:00:00', $now, self::rules()));
     }
 
     public function testTheStatusOnlyMovesForward(): void
@@ -310,5 +279,55 @@ class WhatsappRemindersTest extends TestCase
         $this->assertFalse(Whatsapp_reminders::valid_signature($body, $signature, 'other'));
         $this->assertFalse(Whatsapp_reminders::valid_signature($body, null, 'secret'));
         $this->assertFalse(Whatsapp_reminders::valid_signature($body, $signature, ''));
+    }
+
+    public function testWithTheNewTemplateAVisitBookedAfterTheUsualMomentGoesOutHalfAnHourLater(): void
+    {
+        // Booked on Tuesday at 11:00 for that same day at 18:00: it cannot wait for Monday at 10:00.
+        $start = '2026-11-17 18:00:00';
+        $this->assertSame('2026-11-17 11:30', self::sent_at('2026-11-17 11:00', $start));
+        $moment = self::madrid('2026-11-17 11:30');
+        $this->assertSame(
+            ['scheduled', '2026-11-17 11:30'],
+            [
+                Whatsapp_reminders::planned_send($start, self::madrid('2026-11-17 11:00'), $moment, self::rules())[0],
+                $moment->format('Y-m-d H:i'),
+            ],
+        );
+        $this->assertSame(
+            'avui, dimarts 17 de novembre',
+            Whatsapp_reminders::template_parameters(['start_datetime' => $start], ['first_name' => 'Anna'], $moment)[1],
+        );
+    }
+
+    public function testTheListSaysWhenEachReminderWillGoOutOrWhyNot(): void
+    {
+        $now = self::madrid('2026-11-17 12:00');
+        $created = self::madrid('2026-11-10 09:00');
+
+        // Usual moment still to come: the day before at 10:00.
+        [$state, $moment] = Whatsapp_reminders::planned_send('2026-11-20 09:00:00', $created, $now, self::rules());
+        $this->assertSame(['scheduled', '2026-11-19 10:00'], [$state, $moment->format('Y-m-d H:i')]);
+
+        // Its moment has gone and it was not sent yet: it goes out on the next run.
+        [$state, $moment] = Whatsapp_reminders::planned_send('2026-11-18 09:00:00', $created, $now, self::rules());
+        $this->assertSame(['scheduled', '2026-11-17 12:00'], [$state, $moment->format('Y-m-d H:i')]);
+
+        // Less than the minimum notice left.
+        $this->assertSame(
+            ['too_late', null],
+            Whatsapp_reminders::planned_send('2026-11-17 13:00:00', $created, $now, self::rules()),
+        );
+
+        // A visit of the same day goes out like any other: {{2}} says "avui".
+        [$state, $moment] = Whatsapp_reminders::planned_send('2026-11-17 18:00:00', $created, $now, self::rules());
+        $this->assertSame(['scheduled', '2026-11-17 12:00'], [$state, $moment->format('Y-m-d H:i')]);
+    }
+
+    public function testTheTemplateTextNamesTheClinic(): void
+    {
+        $body = Whatsapp_reminders::template_body('Clínica de prova');
+        $this->assertStringContainsString('Tens visita *{{2}}* a les *{{3}}h* a la Clínica de prova.', $body);
+        $this->assertStringNotContainsString('%s', $body);
     }
 }

@@ -1,55 +1,34 @@
-<h4 class=" py-3 mb-3 fw-light">
-    <?= lang('settings') ?>
-</h4>
-
-<ul id="settings-nav" class="nav flex-column">
-    <li class="nav-item mb-3">
-        <a class="nav-link px-0 py-2" href="<?= site_url('general_settings') ?>">
-            <?= lang('general_settings') ?>
-        </a>
-    </li>
-
-    <li class="nav-item mb-3">
-        <a class="nav-link px-0 py-2" href="<?= site_url('booking_settings') ?>">
-            <?= lang('booking_settings') ?>
-        </a>
-    </li>
-
-    <li class="nav-item mb-3">
-        <a class="nav-link px-0 py-2" href="<?= site_url('business_settings') ?>">
-            <?= lang('business_logic') ?>
-        </a>
-    </li>
-
-    <li class="nav-item mb-3">
-        <a class="nav-link px-0 py-2" href="<?= site_url('legal_settings') ?>">
-            <?= lang('legal_contents') ?>
-        </a>
-    </li>
-
-    <li class="nav-item mb-3">
-        <a class="nav-link px-0 py-2" href="<?= site_url('integrations') ?>">
-            <?= lang('integrations') ?>
-        </a>
-    </li>
-
-    <?php if (session('role_slug') === DB_SLUG_ADMIN): ?>
-        <li class="nav-item mb-3">
-            <a class="nav-link px-0 py-2" href="<?= site_url('attendance_settings') ?>">
-                <?= lang('att_settings') ?>
-            </a>
-        </li>
-
-        <li class="nav-item mb-3">
-            <a class="nav-link px-0 py-2" href="<?= site_url('backups') ?>">
-                <?= lang('backups') ?>
-            </a>
-        </li>
-
-        <li class="nav-item mb-3">
-            <a class="nav-link px-0 py-2" href="<?= site_url('activity_log') ?>">
-                <?= lang('activity_log') ?>
-            </a>
-        </li>
-    <?php endif; ?>
-</ul>
+<?php
+$settings_groups = require APPPATH . 'config/settings_navigation.php';
+$current_settings_route = get_instance()->uri->segment(1);
+$is_settings_admin = session('role_slug') === DB_SLUG_ADMIN;
+?>
+<nav id="settings-nav" class="mb-4 pe-sm-3" aria-label="<?= lang('settings') ?>">
+    <h4 class="py-3 mb-2 fw-light"><?= lang('settings') ?></h4>
+    <a class="btn btn-outline-primary w-100 mb-4" href="<?= site_url('general_settings') ?>#settings-overview">
+        <i class="fas fa-th-large me-2" aria-hidden="true"></i><?= lang('settings_overview') ?>
+    </a>
+    <?php foreach ($settings_groups as $settings_group): ?>
+        <?php
+        $settings_items = array_filter($settings_group['items'], fn($item) => empty($item[2]) || $is_settings_admin);
+        if (!$settings_items) {
+            continue;
+        }
+        ?>
+        <h5 class="small fw-bold text-muted mb-2"><?= lang($settings_group['label']) ?></h5>
+        <ul class="nav nav-pills flex-column mb-4 gap-1">
+            <?php foreach ($settings_items as [$route, $label]): ?>
+                <?php $is_current = $current_settings_route === $route; ?>
+                <li class="nav-item">
+                    <a class="nav-link py-2 px-3<?= $is_current ? ' active' : '' ?>"
+                       href="<?=
+                       site_url($route) . ($route === 'general_settings' ? '#settings-company' : '')
+                       ?>"
+                       <?= $is_current ? 'aria-current="page"' : '' ?>>
+                        <?= lang($label) ?>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endforeach; ?>
+</nav>

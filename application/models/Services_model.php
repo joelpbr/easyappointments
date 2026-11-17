@@ -51,7 +51,6 @@ class Services_model extends EA_Model
         'attendants_number' => 'integer',
         'is_private' => 'boolean',
         'is_active' => 'boolean',
-        'id_service_categories' => 'integer',
     ];
 
     /**
@@ -71,7 +70,6 @@ class Services_model extends EA_Model
         'attendantsNumber' => 'attendants_number',
         'isPrivate' => 'is_private',
         'isActive' => 'is_active',
-        'serviceCategoryId' => 'id_service_categories',
     ];
 
     /**
@@ -117,19 +115,6 @@ class Services_model extends EA_Model
         // Make sure all required fields are provided.
         if (empty($service['name'])) {
             throw new InvalidArgumentException('Not all required fields are provided: ' . print_r($service, true));
-        }
-
-        // If a category was provided then make sure it really exists in the database.
-        if (!empty($service['id_service_categories'])) {
-            $count = $this->db
-                ->get_where('service_categories', ['id' => $service['id_service_categories']])
-                ->num_rows();
-
-            if (!$count) {
-                throw new InvalidArgumentException(
-                    'The provided category ID was not found in the database: ' . $service['id_service_categories'],
-                );
-            }
         }
 
         // Make sure the color is a hex value, as it is rendered into the calendar markup.
@@ -410,12 +395,9 @@ class Services_model extends EA_Model
 
         $services = $this->db
             ->distinct()
-            ->select(
-                'services.*, service_categories.name AS service_category_name, service_categories.id AS service_category_id',
-            )
+            ->select('services.*')
             ->from('services')
             ->join('services_providers', 'services_providers.id_services = services.id', 'inner')
-            ->join('service_categories', 'service_categories.id = services.id_service_categories', 'left')
             ->get()
             ->result_array();
 
@@ -549,7 +531,7 @@ class Services_model extends EA_Model
      * Load related resources to a service.
      *
      * @param array $service Associative array with the service data.
-     * @param array $resources Resource names to be attached ("category" supported).
+     * @param array $resources Resource names to be attached (none supported).
      *
      * @throws InvalidArgumentException
      */
@@ -559,18 +541,7 @@ class Services_model extends EA_Model
             return;
         }
 
-        foreach ($resources as $resource) {
-            $service['category'] = match ($resource) {
-                'category' => $this->db
-                    ->get_where('service_categories', [
-                        'id' => $service['id_service_categories'] ?? ($service['serviceCategoryId'] ?? null),
-                    ])
-                    ->row_array(),
-                default => throw new InvalidArgumentException(
-                    'The requested appointment relation is not supported: ' . $resource,
-                ),
-            };
-        }
+        throw new InvalidArgumentException('Service relations are not supported.');
     }
 
     /**
@@ -594,8 +565,6 @@ class Services_model extends EA_Model
             'attendantsNumber' => (int) $service['attendants_number'],
             'isPrivate' => (bool) $service['is_private'],
             'isActive' => (bool) ($service['is_active'] ?? true),
-            'serviceCategoryId' =>
-                $service['id_service_categories'] !== null ? (int) $service['id_service_categories'] : null,
         ];
 
         $service = $encoded_resource;
@@ -653,10 +622,6 @@ class Services_model extends EA_Model
 
         if (array_key_exists('attendantsNumber', $service)) {
             $decoded_resource['attendants_number'] = $service['attendantsNumber'];
-        }
-
-        if (array_key_exists('serviceCategoryId', $service)) {
-            $decoded_resource['id_service_categories'] = $service['serviceCategoryId'];
         }
 
         if (array_key_exists('isPrivate', $service)) {

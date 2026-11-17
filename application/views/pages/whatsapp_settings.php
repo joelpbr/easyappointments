@@ -9,6 +9,14 @@ $has_app_secret = vars('has_app_secret');
 $overview = vars('overview');
 $message_price = vars('message_price');
 $template_body = vars('template_body');
+$upcoming = vars('upcoming');
+// Why a reminder still to go out will not, or how it is waiting.
+$upcoming_states = [
+    'pending' => ['whatsapp_upcoming_pending', 'text-bg-light'],
+    'failed' => ['whatsapp_upcoming_failed', 'text-bg-warning'],
+    'too_late' => ['whatsapp_reminder_line_too_late', 'text-bg-secondary'],
+    'invalid_phone' => ['whatsapp_invalid_phone', 'text-bg-danger'],
+];
 
 $counts = $overview['counts'];
 $to_review = $counts['failed'] + $counts['review'];
@@ -138,15 +146,6 @@ $to_review = $counts['failed'] + $counts['review'];
                     <textarea id="whatsapp-template-body" class="form-control font-monospace small mb-3" rows="8" readonly
                               aria-label="<?= e(lang('whatsapp_template_name')) ?>"><?= e($template_body) ?></textarea>
 
-                    <div class="form-check form-switch mb-1">
-                        <input class="form-check-input" type="checkbox" id="whatsapp-template-says-tomorrow"
-                               data-field="whatsapp_template_says_tomorrow">
-                        <label class="form-check-label" for="whatsapp-template-says-tomorrow">
-                            <?= lang('whatsapp_template_says_tomorrow') ?>
-                        </label>
-                    </div>
-                    <p class="form-text mb-4"><?= lang('whatsapp_template_says_tomorrow_hint') ?></p>
-
                     <h6 class="fw-semibold mb-3"><?= lang('whatsapp_delivery_statuses') ?></h6>
 
                     <div class="row">
@@ -204,7 +203,45 @@ $to_review = $counts['failed'] + $counts['review'];
                 </div>
             </div>
 
+            <!-- Every reminder still to go out, the first one first, worked out as the sending does. -->
+            <h5 class="fw-light mb-2"><?= lang('whatsapp_upcoming') ?> (<?= count($upcoming) ?>)</h5>
+            <?php if ($upcoming): ?>
+                <div class="table-responsive mb-4" style="max-height: 420px; overflow-y: auto">
+                    <table class="table table-sm align-middle ea-whatsapp-table mb-0">
+                        <thead class="sticky-top bg-body">
+                        <tr>
+                            <th><?= lang('whatsapp_send_at') ?></th>
+                            <th><?= lang('appointment') ?></th>
+                            <th><?= lang('customer') ?></th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($upcoming as $item): ?>
+                            <tr>
+                                <td class="text-nowrap fw-semibold">
+                                    <?= $item['send_datetime'] ? date('d/m/Y H:i', strtotime($item['send_datetime'])) : '—' ?>
+                                </td>
+                                <td class="text-nowrap"><?= date('d/m/Y H:i', strtotime($item['appointment_datetime'])) ?></td>
+                                <td><?= e($item['customer_name'] ?: '—') ?></td>
+                                <td>
+                                    <?php if (isset($upcoming_states[$item['state']])): ?>
+                                        <span class="badge <?= $upcoming_states[$item['state']][1] ?> text-wrap text-start">
+                                            <?= lang($upcoming_states[$item['state']][0]) ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <p class="text-muted mb-4"><?= lang('whatsapp_upcoming_empty') ?></p>
+            <?php endif; ?>
+
             <?php if ($overview['latest']): ?>
+                <h5 class="fw-light mb-2"><?= lang('whatsapp_latest') ?></h5>
                 <div class="table-responsive">
                     <table class="table table-sm align-middle ea-whatsapp-table">
                         <thead>

@@ -15,7 +15,7 @@ App.Pages.Calendar = (function () {
 
     const moment = window.moment;
 
-    const AUTO_REFRESH_INTERVAL = 30000; // Milliseconds
+    const AUTO_REFRESH_INTERVAL = 5000; // Milliseconds
 
     /**
      * Add the page event listeners.

@@ -950,8 +950,8 @@ App.Components.AppointmentsModal = (function () {
             text = lang('whatsapp_reminder_line_scheduled').replace('%s', format(reminder.datetime));
         } else if (state === 'too_late') {
             text = lang('whatsapp_reminder_line_too_late');
-        } else if (state === 'not_tomorrow') {
-            text = lang('whatsapp_reminder_line_not_tomorrow');
+        } else if (state === 'refused') {
+            text = lang('whatsapp_reminder_line_refused');
         } else if (['pending', 'failed', 'review', 'cancelled'].includes(state)) {
             text = lang('whatsapp_reminder_line_status').replace('%s', lang('whatsapp_state_' + state));
         }
