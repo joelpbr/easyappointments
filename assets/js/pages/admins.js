@@ -1,8 +1,10 @@
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 /**
@@ -368,7 +370,7 @@ App.Pages.Admins = (function () {
         $timezone.val(admin.timezone);
 
         $username.val(admin.settings.username);
-        $calendarView.val(admin.settings.calendar_view);
+        $calendarView.val(admin.settings.calendar_view || 'table');
         $notifications.prop('checked', Boolean(Number(admin.settings.notifications)));
     }
 

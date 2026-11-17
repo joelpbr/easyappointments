@@ -218,7 +218,7 @@ class Calendar extends EA_Controller
             }),
         );
 
-        $calendar_view = request('view', $user['settings']['calendar_view']);
+        $calendar_view = request('view', ($user['settings']['calendar_view'] ?? null) ?: CALENDAR_VIEW_TABLE);
 
         script_vars([
             'user_id' => $user_id,

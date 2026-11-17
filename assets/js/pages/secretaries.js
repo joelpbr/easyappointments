@@ -1,8 +1,10 @@
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 /**
@@ -397,7 +399,7 @@ App.Pages.Secretaries = (function () {
         $timezone.val(secretary.timezone);
 
         $username.val(secretary.settings.username);
-        $calendarView.val(secretary.settings.calendar_view);
+        $calendarView.val(secretary.settings.calendar_view || 'table');
         $notifications.prop('checked', Boolean(Number(secretary.settings.notifications)));
 
         $('#secretary-providers input:checkbox').prop('checked', false);

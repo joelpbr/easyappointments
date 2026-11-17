@@ -188,7 +188,7 @@ class Installation extends EA_Controller
                     'google_sync' => false,
                     'sync_past_days' => 30,
                     'sync_future_days' => 90,
-                    'calendar_view' => CALENDAR_VIEW_DEFAULT,
+                    'calendar_view' => CALENDAR_VIEW_TABLE,
                 ],
             ]);
 

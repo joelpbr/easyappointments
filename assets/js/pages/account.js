@@ -1,8 +1,10 @@
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 /**
@@ -119,7 +121,7 @@ App.Pages.Account = (function () {
         savedUsername = account.settings.username;
         $password.val('');
         $retypePassword.val('');
-        $calendarView.val(account.settings.calendar_view);
+        $calendarView.val(account.settings.calendar_view || 'table');
         notifications.prop('checked', Boolean(Number(account.settings.notifications)));
     }
 

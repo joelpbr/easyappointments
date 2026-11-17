@@ -231,8 +231,8 @@
                                     <span class="text-danger" hidden>*</span>
                                 </label>
                                 <select id="calendar-view" class="form-select required" disabled>
-                                    <option value="default"><?= lang('default') ?></option>
                                     <option value="table"><?= lang('table') ?></option>
+                                    <option value="default"><?= lang('default') ?></option>
                                 </select>
                             </div>
 

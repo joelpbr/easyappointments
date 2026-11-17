@@ -1,8 +1,10 @@
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 /**
@@ -392,7 +394,7 @@ App.Pages.Providers = (function () {
         $providers.find('.record-details').find('input, select, textarea').val('').prop('disabled', true);
         $calendarOrder.val(1000);
         $providers.find('.record-details .form-label span').prop('hidden', true);
-        $providers.find('.record-details #calendar-view').val('default');
+        $providers.find('.record-details #calendar-view').val('table');
         $providers.find('.record-details #language').val(vars('default_language'));
         $providers.find('.record-details #timezone').val(vars('default_timezone'));
         $providers.find('.record-details #is-private').prop('checked', false);
@@ -446,7 +448,7 @@ App.Pages.Providers = (function () {
         $timezone.val(provider.timezone);
 
         $username.val(provider.settings.username);
-        $calendarView.val(provider.settings.calendar_view);
+        $calendarView.val(provider.settings.calendar_view || 'table');
         $notifications.prop('checked', Boolean(Number(provider.settings.notifications)));
 
         // Add dedicated provider link.
