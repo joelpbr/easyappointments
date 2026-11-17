@@ -5,8 +5,7 @@
 <div class="text-center mb-4">
     <img src="<?= e(branding_logo()) ?>"
          alt="<?= e(branding_name()) ?>" class="shadow mb-3" width="72" height="72">
-    <h4 class="text-primary fw-semibold mb-1"><?= lang('backend_section') ?></h4>
-    <p class=" small mb-0"><?= lang('you_need_to_login') ?></p>
+    <h4 class="text-primary fw-semibold mb-1"><?= lang('login') ?></h4>
 </div>
 
 <div class="alert d-none"></div>
@@ -69,12 +68,6 @@
         </button>
     </div>
 
-    <div class="text-center">
-        <a href="<?= site_url('recovery') ?>" class="text-decoration-none  small">
-            <i class="fas fa-key me-1"></i>
-            <?= lang('forgot_your_password') ?>
-        </a>
-    </div>
 </form>
 <?php end_section('content'); ?>
 
