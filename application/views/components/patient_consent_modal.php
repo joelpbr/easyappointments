@@ -55,7 +55,7 @@
             <div id="patient-consent-text">
                 <p id="patient-consent-patient" class="fw-semibold border-bottom pb-3"></p>
                 <div id="patient-consent-sections"></div>
-                <div id="patient-consent-option-descriptions"></div>
+                <div id="patient-consent-options" class="mb-3"></div>
                 <p id="patient-consent-declaration" class="mt-3"></p>
             </div>
         </section>
@@ -67,7 +67,6 @@
                 <label class="btn btn-outline-secondary" for="patient-consent-es">Castellano</label>
             </div>
             <div id="patient-consent-warning" class="alert alert-warning py-2 mb-0" hidden></div>
-            <div id="patient-consent-options"></div>
             <div>
                 <label class="form-label" for="patient-consent-role"><?= lang('consent_signer_role') ?></label>
                 <select id="patient-consent-role" class="form-select">

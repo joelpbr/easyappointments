@@ -16,7 +16,7 @@
 |
 */
 
-$config['patient_consent_version'] = '2026-11-17.2';
+$config['patient_consent_version'] = '2026-11-17.3';
 
 $config['patient_consent_title'] = [
     'ca' => 'Consentiment informat i informació sobre protecció de dades',
@@ -47,9 +47,9 @@ $config['patient_consent_sections'] = [
             ],
         ],
         [
-            'title' => '3. Consentiments opcionals',
+            'title' => '3. Ús opcional de fotografies clíniques',
             'paragraphs' => [
-                'Podeu acceptar-los o no; no afecten l’atenció que rebeu i els podeu retirar quan vulgueu.',
+                'Marqueu la casella següent només si autoritzeu aquest ús de les imatges. Podeu signar el document sense marcar-la: això no afecta l’atenció que rebeu. Podeu retirar aquesta autorització quan vulgueu, adreçant-vos a {email} o a la clínica. La signatura del document, per si sola, no autoritza aquest ús.',
             ],
         ],
     ],
@@ -76,9 +76,9 @@ $config['patient_consent_sections'] = [
             ],
         ],
         [
-            'title' => '3. Consentimientos opcionales',
+            'title' => '3. Uso opcional de fotografías clínicas',
             'paragraphs' => [
-                'Puede aceptarlos o no; no afectan a la atención que recibe y puede retirarlos cuando quiera.',
+                'Marque la casilla siguiente solo si autoriza este uso de las imágenes. Puede firmar el documento sin marcarla: esto no afecta a la atención que recibe. Puede retirar esta autorización cuando quiera, dirigiéndose a {email} o a la clínica. La firma del documento, por sí sola, no autoriza este uso.',
             ],
         ],
     ],
