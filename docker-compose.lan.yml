@@ -1,0 +1,76 @@
+name: programaconsulta-lan
+
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${LAN_DB_NAME:?Use .local-lan/clone.env}
+      MYSQL_USER: ${LAN_DB_USER:?Use .local-lan/clone.env}
+      MYSQL_PASSWORD: ${LAN_DB_PASSWORD:?Use .local-lan/clone.env}
+      MYSQL_ROOT_PASSWORD: ${LAN_DB_ROOT_PASSWORD:?Use .local-lan/clone.env}
+      TZ: Europe/Madrid
+    volumes:
+      - db-data:/var/lib/mysql
+    networks: [lan]
+    healthcheck:
+      test: [CMD, mysqladmin, ping, -h, 127.0.0.1]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+
+  app:
+    image: ${LAN_IMAGE:-programaconsulta-lan:snapshot}
+    restart: unless-stopped
+    environment:
+      BASE_URL: http://${LAN_IP:?Set the Wi-Fi IP}:${LAN_PORT:-8081}
+      DB_HOST: db
+      DB_NAME: ${LAN_DB_NAME:?Use .local-lan/clone.env}
+      DB_USERNAME: ${LAN_DB_USER:?Use .local-lan/clone.env}
+      DB_PASSWORD: ${LAN_DB_PASSWORD:?Use .local-lan/clone.env}
+      LANGUAGE: catalan
+      TZ: Europe/Madrid
+      DEBUG_MODE: 'false'
+      SMTP_HOST: ''
+      SMTP_USER: ''
+      SMTP_PASS: ''
+      PROXY_IPS: ''
+    volumes:
+      - storage:/var/www/html/storage
+    networks: [lan]
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, curl, -fsS, -o, /dev/null, http://localhost/]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  gateway:
+    image: node:22-alpine
+    restart: unless-stopped
+    user: node
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    command: [node, /gateway.cjs]
+    volumes:
+      - ./docker/lan-gateway.cjs:/gateway.cjs:ro
+    ports:
+      - '${LAN_IP}:${LAN_PORT:-8081}:8080'
+    networks: [entry, lan]
+    depends_on:
+      app:
+        condition: service_healthy
+
+networks:
+  entry:
+  lan:
+    internal: true
+
+volumes:
+  db-data:
+  storage:
+    external: true
+    name: programaconsulta-lan_storage

@@ -33,3 +33,6 @@
 /vendor/
 /metafile
 .DS_Store
+
+# Local LAN clone credentials and snapshots
+/.local-lan/
