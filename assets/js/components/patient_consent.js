@@ -40,7 +40,11 @@ App.Components.PatientConsent = (function () {
         showStatus();
         if (!customerId) return;
         try {
-            const response = await fetch(url('form', {customer_id: customerId}));
+            // CodeIgniter skips session-ID rotation for AJAX. This request runs beside the visit request;
+            // rotating here could delete the session that the other request is still using.
+            const response = await fetch(url('form', {customer_id: customerId}), {
+                headers: {'X-Requested-With': 'XMLHttpRequest'},
+            });
             if (!response.ok) throw new Error();
             const data = await response.json();
             if (current !== request) return;
@@ -198,7 +202,10 @@ App.Components.PatientConsent = (function () {
         try {
             const response = await fetch(url('sign'), {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
                 body: new URLSearchParams({
                     csrf_token: vars('csrf_token'),
                     customer_id: customerId,
