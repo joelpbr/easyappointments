@@ -266,6 +266,19 @@ $border_subtle = adjustBrightness($company_color, 40);
         background-image: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.03) 0%, rgba(var(--bs-primary-rgb), 0.01) 100%);
     }
 
+    /* Safari uses the page canvas around its browser UI; match the logo bar. */
+    html.ea-backend,
+    html.ea-backend body {
+        background: var(--bs-primary);
+    }
+
+    /* Keep the content surface and its gradient inside the branded canvas. */
+    html.ea-backend body > main {
+        min-height: 100%;
+        background-color: var(--bs-body-bg);
+        background-image: linear-gradient(135deg, rgba(var(--bs-primary-rgb), 0.03) 0%, rgba(var(--bs-primary-rgb), 0.01) 100%);
+    }
+
     /* Application-specific overrides */
     #header,
     #book-appointment-wizard #header,

@@ -34,7 +34,6 @@ App.Utils.CalendarTableView = (function () {
     const $selectProvider = $('#select-provider');
     const $appointmentsModal = $('#appointments-modal');
     const $unavailabilitiesModal = $('#unavailabilities-modal');
-    const $header = $('#header');
 
     // Module State
 
@@ -260,13 +259,10 @@ App.Utils.CalendarTableView = (function () {
     /**
      * Get the calendar height based on window size.
      *
-     * @returns {number} Calendar height in pixels (minimum 700px).
+     * @returns {number} Calendar height in the visible viewport, in pixels.
      */
     function getCalendarHeight() {
-        const offset = $header.outerHeight() + $calendarToolbar.outerHeight() + 50;
-        const height = window.innerHeight - offset;
-
-        return Math.max(height, 700);
+        return App.Utils.CalendarMobile.height(document.querySelector('#calendar .calendar-view'));
     }
 
     /**
@@ -962,7 +958,7 @@ App.Utils.CalendarTableView = (function () {
      * @param {Object} fullCalendar - FullCalendar instance.
      */
     function onSelect(info, fullCalendar) {
-        if (info.allDay) {
+        if (info.allDay || !document.getElementById('insert-appointment')) {
             return;
         }
 
@@ -1653,7 +1649,11 @@ App.Utils.CalendarTableView = (function () {
             eventClick: onEventClick,
             eventResize: onEventResize,
             eventDrop: onEventDrop,
-            select: (info) => onSelect(info, fullCalendar),
+            ...App.Utils.CalendarMobile.selectionHandlers(
+                (info) => onSelect(info, fullCalendar),
+                undefined,
+                App.Utils.CalendarMidday.allows,
+            ),
             selectAllow: App.Utils.CalendarMidday.allows,
             eventAllow: App.Utils.CalendarMidday.allows,
             // In list mode each row takes the colour of its service, as the cards of the calendar mode do, and is marked
@@ -1836,14 +1836,11 @@ App.Utils.CalendarTableView = (function () {
         });
         $('.calendar-view > div').css('min-width', '100%');
 
-        // One scroll for every column, as high as the calendars used to be plus the provider headings, less the
-        // scrollbar above them when there is one.
+        // Keep the shared scroller within the viewport, below the toolbar and horizontal scrollbar.
         const $calendarView = $('#calendar .calendar-view');
-        const topScrollbarHeight = updateTopScrollbar();
+        updateTopScrollbar();
 
-        $calendarView.outerHeight(
-            getCalendarHeight() + ($calendarView.find('.ea-provider-heading').outerHeight() || 0) - topScrollbarHeight,
-        );
+        $calendarView.outerHeight(getCalendarHeight());
 
         getCalendars().forEach(fitListView);
     }
@@ -2041,9 +2038,7 @@ App.Utils.CalendarTableView = (function () {
 
         // Window resize
 
-        $(window).on('resize', () => {
-            setCalendarViewSize();
-        });
+        App.Utils.CalendarMobile.observe(setCalendarViewSize);
 
         // Time labels: a click or a drag over them opens a new appointment at that time or range, for the provider
         // and day of the column.

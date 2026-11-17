@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="<?= config('language_code') ?>">
+<html lang="<?= config('language_code') ?>" class="ea-backend">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="<?= e(branding_color()) ?>">
-    <?php component('web_app_meta'); ?>
+    <?php component('web_app_meta', ['status_bar_style' => 'black-translucent']); ?>
     <meta name="google" content="notranslate">
 
     <?php slot('meta'); ?>
