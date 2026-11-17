@@ -72,20 +72,7 @@ App.Components.PatientConsent = (function () {
             [...options.querySelectorAll('input')].map((input) => [input.value, input.checked]),
         );
         options.replaceChildren();
-        const descriptions = $id('patient-consent-option-descriptions');
-        descriptions.replaceChildren();
-        const labels =
-            language() === 'es'
-                ? {
-                      images: 'Autorizo imágenes anónimas para docencia o divulgación',
-                  }
-                : {
-                      images: 'Autoritzo imatges anònimes per a docència o divulgació',
-                  };
         Object.entries(text.options).forEach(([key, label]) => {
-            const description = element('p', label);
-            description.id = 'patient-consent-description-' + key;
-            descriptions.append(description);
             const wrap = element('div', '', 'form-check');
             const input = document.createElement('input');
             input.type = 'checkbox';
@@ -93,8 +80,7 @@ App.Components.PatientConsent = (function () {
             input.id = 'patient-consent-option-' + key;
             input.value = key;
             input.checked = !!ticked[key];
-            input.setAttribute('aria-describedby', description.id);
-            const text = element('label', labels[key] || label, 'form-check-label');
+            const text = element('label', label, 'form-check-label');
             text.htmlFor = input.id;
             wrap.append(input, text);
             options.append(wrap);
