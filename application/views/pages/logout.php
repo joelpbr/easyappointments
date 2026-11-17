@@ -10,16 +10,9 @@
 </div>
 
 <div class="d-grid gap-2 mb-3">
-    <a href="<?= site_url() ?>" class="btn btn-primary">
-        <i class="fas fa-calendar-alt me-2"></i>
-        <?= lang('book_appointment_title') ?>
-    </a>
-</div>
-
-<div class="text-center">
-    <a href="<?= site_url('login') ?>" class="text-decoration-none  small">
-        <i class="fas fa-arrow-left me-1"></i>
-        <?= lang('backend_section') ?>
+    <a href="<?= site_url('login') ?>" class="btn btn-primary">
+        <i class="fas fa-sign-in-alt me-2"></i>
+        <?= lang('login') ?>
     </a>
 </div>
 
