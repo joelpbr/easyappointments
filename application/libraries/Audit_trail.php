@@ -808,6 +808,13 @@ class Audit_trail
                 return trim(($recorded('patient_name') ?? '') . ' · ' . ($recorded('document_title') ?? ''), ' ·') ?:
                     null;
 
+            case 'patient_consent':
+                $customer_id = $id
+                    ? $this->CI->db->get_where('patient_consents', ['id' => $id])->row('id_users_customer')
+                    : null;
+
+                return $customer_id ? $this->name('user', (int) $customer_id) : null;
+
             case 'patient_record':
                 // Logged with the ID of the patient, not with the one of the record (see Patient_records_model).
                 return $id ? $this->name('user', $id) : null;

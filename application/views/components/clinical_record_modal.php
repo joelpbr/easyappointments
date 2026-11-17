@@ -20,6 +20,11 @@
                     <span class="ea-clinical-allergies-text"></span>
                 </div>
                 <div class="ea-clinical-header-actions">
+                    <?php if (can('edit', PRIV_CUSTOMERS)): ?>
+                    <button type="button" id="patient-consent-open" class="btn btn-warning btn-sm" hidden disabled>
+                        <i class="fas fa-triangle-exclamation me-1" aria-hidden="true"></i><?= lang('consent_signature_pending') ?>
+                    </button>
+                    <?php endif; ?>
                     <button type="button" id="clinical-document-history" class="btn btn-outline-light btn-sm" hidden>
                         <i class="fas fa-clock-rotate-left me-1" aria-hidden="true"></i><?= lang(
                             'visit_document_history',
@@ -374,6 +379,10 @@
     </div>
 </dialog>
 
+<?php if (can('edit', PRIV_CUSTOMERS)): ?>
+    <?php component('patient_consent_modal'); ?>
+<?php endif; ?>
+
 <?php if (empty($standalone)):
     section('scripts');
 endif; ?>
@@ -381,6 +390,9 @@ endif; ?>
 <script src="<?= asset_url('assets/js/http/clinical_records_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/components/clinical_record_modal.js') ?>"></script>
 <script src="<?= asset_url('assets/js/components/document_dialog.js') ?>"></script>
+<?php if (can('edit', PRIV_CUSTOMERS)): ?>
+    <script src="<?= asset_url('assets/js/components/patient_consent.js') ?>"></script>
+<?php endif; ?>
 <script src="<?= asset_url('assets/js/components/visit_documents.js') ?>"></script>
 <script src="<?= asset_url('assets/js/components/visit_document_history.js') ?>"></script>
 

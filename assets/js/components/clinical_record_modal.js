@@ -1,8 +1,10 @@
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * ---------------------------------------------------------------------------- */
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * ---------------------------------------------------------------------------- */
 
 /**
  * Clinical record modal component.
@@ -160,6 +162,7 @@ App.Components.ClinicalRecordModal = (function () {
         $visitEmpty.prop('hidden', false);
 
         fillPatient(response);
+        App.Components.PatientConsent?.setCustomer(customerId);
         renderVisits(response.appointments);
 
         // A new patient has no visits until it is saved.
@@ -457,6 +460,7 @@ App.Components.ClinicalRecordModal = (function () {
         const create = () =>
             App.Http.ClinicalRecords.savePatient(0, data).done((response) => {
                 customerId = Number(response.id);
+                App.Components.PatientConsent?.setCustomer(customerId);
                 savedPatient = JSON.stringify(data);
                 updateSaveButtons();
                 updateHeader();

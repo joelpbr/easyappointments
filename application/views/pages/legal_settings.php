@@ -99,6 +99,23 @@
                                     </div>
                                 </div>
 
+                                <h5 class="mb-3 fw-light"><?= lang('company_dpo') ?></h5>
+
+                                <div class="mb-5">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="company-dpo-name"><?= lang('company_dpo_name') ?></label>
+                                            <input type="text" id="company-dpo-name" class="form-control" maxlength="256">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label" for="company-dpo-contact"><?= lang('company_dpo_contact') ?></label>
+                                            <input id="company-dpo-contact" class="form-control" maxlength="256"
+                                                   placeholder="dpd@...">
+                                        </div>
+                                    </div>
+                                    <div class="form-text text-muted small"><?= lang('company_dpo_hint') ?></div>
+                                </div>
+
                                 <h5 class="mb-3 fw-light"><?= lang('data_retention') ?></h5>
 
                                 <div class="mb-3">

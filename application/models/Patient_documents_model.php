@@ -51,6 +51,52 @@ class Patient_documents_model extends EA_Model
         return $id;
     }
 
+    /** Type of the consent signed on the tablet: it is evidence, so it is never removed from the history. */
+    public const SIGNED_CONSENT = 'patient_consent';
+
+    /**
+     * Keep a signed consent of a patient, which belongs to no visit (see Patient_consents).
+     *
+     * @param array $titles Title by language name (catalan, spanish).
+     * @param string $collected_by Who collected the signature.
+     * @param string $fingerprint SHA-256 of what was signed.
+     */
+    public function store_consent(
+        int $customer_id,
+        array $titles,
+        string $collected_by,
+        string $pdf,
+        string $fingerprint,
+    ): int {
+        if (!str_starts_with($pdf, '%PDF-') || strlen($pdf) > 16777215) {
+            throw new RuntimeException(lang('visit_document_save_error'));
+        }
+        $now = date('Y-m-d H:i:s');
+        $saved = $this->db->insert('patient_documents', [
+            'id_users_customer' => $customer_id,
+            'id_appointments' => null,
+            'created_at' => $now,
+            'visit_datetime' => $now,
+            'document_type' => self::SIGNED_CONSENT,
+            'titles' => json_encode($titles, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR),
+            'professional_name' => $collected_by,
+            'created_by_name' => $collected_by,
+            'fingerprint' => $fingerprint,
+            'pdf' => $pdf,
+        ]);
+        if (!$saved) {
+            throw new RuntimeException(lang('visit_document_save_error'));
+        }
+        $id = (int) $this->db->insert_id();
+        audit_log(
+            'created',
+            'patient_document',
+            $id,
+            array_map(fn($value) => [null, $value], $this->audit_fields($this->metadata($id))),
+        );
+        return $id;
+    }
+
     /** The saved document of the visit that prints exactly the same, if there is one: generating it again adds nothing. */
     public function identical(int $appointment_id, string $fingerprint): ?int
     {
@@ -113,6 +159,10 @@ class Patient_documents_model extends EA_Model
                 ->row_array();
             if (!$document) {
                 throw new InvalidArgumentException(lang('visit_document_not_found'));
+            }
+            // A signed consent is the evidence of what the patient accepted: a new signature replaces it, never a removal.
+            if ($document['document_type'] === self::SIGNED_CONSENT) {
+                throw new InvalidArgumentException(lang('consent_cannot_delete'));
             }
             $changes = array_map(fn($value) => [$value, null], $this->audit_fields($this->decode($document)));
             $deleted = $this->db->delete('patient_documents', ['id' => $id, 'id_users_customer' => $customer_id]);
