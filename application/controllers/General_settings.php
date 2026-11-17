@@ -152,6 +152,7 @@ class General_settings extends EA_Controller
         'default_timezone',
         'default_language',
         'theme',
+        'header_logo_target',
         'date_format',
         'time_format',
         'first_weekday',
@@ -198,6 +199,12 @@ class General_settings extends EA_Controller
                     !preg_match('/^#[0-9A-Fa-f]{3}([0-9A-Fa-f]{3})?$/', $setting['value'] ?? '')
                 ) {
                     throw new InvalidArgumentException(lang('branding_invalid_color'));
+                }
+                if (
+                    ($setting['name'] ?? '') === 'header_logo_target' &&
+                    !array_key_exists((string) $setting['value'], branding_header_targets())
+                ) {
+                    throw new InvalidArgumentException('Invalid page for the header logo.');
                 }
                 if (
                     ($setting['name'] ?? '') === 'company_logo' &&
