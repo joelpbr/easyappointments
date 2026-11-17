@@ -51,6 +51,7 @@ class Webhooks_model extends EA_Model
      */
     public function save(array $webhook): int
     {
+        $webhook['is_ssl_verified'] = true;
         $this->validate($webhook);
 
         if (empty($webhook['id'])) {
@@ -70,10 +71,10 @@ class Webhooks_model extends EA_Model
     public function validate(array $webhook): void
     {
         if (empty($webhook['name']) || empty($webhook['url'])) {
-            throw new InvalidArgumentException('Not all required fields are provided: ' . print_r($webhook, true));
+            throw new InvalidArgumentException('Webhook name and URL are required.');
         }
 
-        validate_url($webhook['url']);
+        validate_url($webhook['url'], ['https']);
 
         // The secret header is sent as an HTTP header name, so it may only contain RFC 7230 token characters.
         if (
@@ -340,7 +341,8 @@ class Webhooks_model extends EA_Model
             'actions' => $webhook['actions'],
             'secretHeader' => $webhook['secret_header'],
             'secretToken' => $webhook['secret_token'],
-            'isSslVerified' => $webhook['is_ssl_verified'],
+            'isSslVerified' => true,
+            'isActive' => (bool) $webhook['is_active'],
             'notes' => $webhook['notes'],
         ];
 
@@ -381,8 +383,11 @@ class Webhooks_model extends EA_Model
             $decoded_resource['secret_token'] = $webhook['secretToken'];
         }
 
-        if (array_key_exists('isSslVerified', $webhook)) {
-            $decoded_resource['is_ssl_verified'] = $webhook['isSslVerified'];
+        if (array_key_exists('isActive', $webhook)) {
+            if (!is_bool($webhook['isActive'])) {
+                throw new InvalidArgumentException('isActive must be boolean.');
+            }
+            $decoded_resource['is_active'] = (int) $webhook['isActive'];
         }
 
         if (array_key_exists('notes', $webhook)) {

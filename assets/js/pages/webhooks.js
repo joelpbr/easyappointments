@@ -18,7 +18,6 @@ App.Pages.Webhooks = (function () {
     const $actions = $('#actions');
     const $secretHeader = $('#secret-header');
     const $secretToken = $('#secret-token');
-    const $isSslVerified = $('#is-ssl-verified');
     const $notes = $('#notes');
     const $filterWebhooks = $('#filter-webhooks');
     let filterResults = {};
@@ -112,9 +111,9 @@ App.Pages.Webhooks = (function () {
                 name: $name.val(),
                 url: $url.val(),
                 actions: '',
+                is_active: Number($('#webhook-active').prop('checked')),
                 secret_header: $secretHeader.val(),
                 secret_token: $secretToken.val(),
-                is_ssl_verified: Number($isSslVerified.prop('checked')),
                 notes: $notes.val(),
             };
 
@@ -241,6 +240,7 @@ App.Pages.Webhooks = (function () {
      * Resets the webhook tab form back to its initial state.
      */
     function resetForm() {
+        $('#webhook-active').prop('checked', true);
         $filterWebhooks.find('.selected').removeClass('selected');
         $filterWebhooks.find('button').prop('disabled', false);
         $filterWebhooks.find('.results').css('color', '');
@@ -265,12 +265,12 @@ App.Pages.Webhooks = (function () {
      * @param {Object} webhook Contains the webhook record data.
      */
     function display(webhook) {
+        $('#webhook-active').prop('checked', Boolean(Number(webhook.is_active)));
         $id.val(webhook.id);
         $name.val(webhook.name);
         $url.val(webhook.url);
         $secretHeader.val(webhook.secret_header);
         $secretToken.val(webhook.secret_token);
-        $isSslVerified.prop('checked', Boolean(Number(webhook.is_ssl_verified)));
         $notes.val(webhook.notes);
 
         $actions.find('input:checkbox').prop('checked', false);

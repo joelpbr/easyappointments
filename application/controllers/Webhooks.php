@@ -23,7 +23,7 @@ class Webhooks extends EA_Controller
         'actions',
         'secret_header',
         'secret_token',
-        'is_ssl_verified',
+        'is_active',
         'notes',
     ];
 
