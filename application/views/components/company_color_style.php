@@ -116,7 +116,7 @@ $border_subtle = adjustBrightness($company_color, 40);
      * keep working without being overridden by the company color style.
      */
     .btn-primary {
-        --bs-btn-color: var(--ea-accent-contrast);
+        --bs-btn-color: var(--ea-primary-contrast);
         --bs-btn-bg: var(--ea-accent);
         --bs-btn-border-color: var(--ea-accent);
         --bs-btn-hover-color: var(--ea-primary-contrast);
