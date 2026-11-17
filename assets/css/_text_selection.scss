@@ -1,0 +1,31 @@
+// Avoid selecting interface labels while tapping or dragging, especially on touch screens.
+body {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+// Keep editing, native copy/paste and copying useful document/details text available.
+:where(
+    input:not([type='button']):not([type='submit']):not([type='reset']):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']):not([type='image']),
+    textarea,
+    [contenteditable]:not([contenteditable='false']),
+    .user-select-text,
+    .ea-copyable,
+    #patient-consent-text,
+    .popover-body,
+    .alert,
+    [role='alert'],
+    a[href^='tel:'],
+    a[href^='mailto:'],
+    pre,
+    code
+) {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+// Controls inside a selectable document or message remain controls.
+:where(button, [role='button'], .btn, select, option) {
+    -webkit-user-select: none;
+    user-select: none;
+}
