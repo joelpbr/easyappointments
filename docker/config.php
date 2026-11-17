@@ -12,6 +12,10 @@
  */
 
 define('DOCKER_BASE_URL', (string) getenv('BASE_URL'));
+if (getenv('REQUIRE_HTTPS') === '1' && parse_url(DOCKER_BASE_URL, PHP_URL_SCHEME) !== 'https') {
+    throw new RuntimeException('Set BASE_URL to the HTTPS address served by the reverse proxy.');
+}
+
 define('DOCKER_LANGUAGE', getenv('LANGUAGE') ?: 'catalan');
 define('DOCKER_DEBUG_MODE', filter_var(getenv('DEBUG_MODE'), FILTER_VALIDATE_BOOLEAN));
 define('DOCKER_DB_HOST', (string) getenv('DB_HOST'));
