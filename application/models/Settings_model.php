@@ -385,4 +385,15 @@ class Settings_model extends EA_Model
 
         $setting = $decoded_resource;
     }
+
+    /** Load only the values rendered by this settings page. */
+    public function get_for_page(array $names): array
+    {
+        $names = array_diff($names, protected_setting_names());
+        if (!$names) {
+            return [];
+        }
+        $this->db->where_in('name', $names);
+        return $this->get();
+    }
 }

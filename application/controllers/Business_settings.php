@@ -69,7 +69,12 @@ class Business_settings extends EA_Controller
         script_vars([
             'user_id' => $user_id,
             'role_slug' => $role_slug,
-            'business_settings' => filter_sensitive_settings($this->settings_model->get()),
+            'business_settings' => $this->settings_model->get_for_page([
+                'book_advance_timeout',
+                'future_booking_limit',
+                'calendar_slot_minutes',
+                'company_working_plan',
+            ]),
             'appointment_statuses' => appointment_statuses(),
             'first_weekday' => setting('first_weekday'),
             'time_format' => setting('time_format'),

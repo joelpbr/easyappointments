@@ -69,7 +69,32 @@ class Booking_settings extends EA_Controller
         script_vars([
             'user_id' => $user_id,
             'role_slug' => $role_slug,
-            'booking_settings' => filter_sensitive_settings($this->settings_model->get_batch()),
+            'booking_settings' => $this->settings_model->get_for_page([
+                'display_first_name',
+                'require_first_name',
+                'display_last_name',
+                'require_last_name',
+                'display_email',
+                'require_email',
+                'display_phone_number',
+                'require_phone_number',
+                'display_address',
+                'require_address',
+                'display_city',
+                'require_city',
+                'display_zip_code',
+                'require_zip_code',
+                'display_notes',
+                'require_notes',
+                'customer_notifications',
+                'limit_customer_access',
+                'require_captcha',
+                'display_any_provider',
+                'display_login_button',
+                'display_delete_personal_information',
+                'disable_booking',
+                'disable_booking_message',
+            ]),
         ]);
 
         html_vars([
