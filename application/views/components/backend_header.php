@@ -75,8 +75,7 @@
                 <a href="<?= site_url(
                     'calendar' . (vars('calendar_view') === CALENDAR_VIEW_TABLE ? '?view=table' : ''),
                 ) ?>"
-                   class="nav-link text-white fw-light py-3 px-3"
-                   data-tippy-content="<?= lang('manage_appointment_record_hint') ?>">
+                   class="nav-link text-white fw-light py-3 px-3">
                     <i class="fas fa-calendar-alt me-2"></i>
                     <?= lang('calendar') ?>
                 </a>
@@ -85,8 +84,7 @@
             <?php $hidden = can('view', PRIV_CUSTOMERS) ? '' : 'd-none'; ?>
             <?php $active = $active_menu == PRIV_CUSTOMERS ? 'active' : ''; ?>
             <li class="nav-item text-center <?= $active . $hidden ?>" style="min-width: 100px;">
-                <a href="<?= site_url('customers') ?>" class="nav-link text-white fw-light py-3 px-3"
-                   data-tippy-content="<?= lang('manage_customers_hint') ?>">
+                <a href="<?= site_url('customers') ?>" class="nav-link text-white fw-light py-3 px-3">
                     <i class="fas fa-user-friends me-2"></i>
                     <?= lang('customers') ?>
                 </a>
@@ -95,17 +93,13 @@
             <?php $hidden = can('view', PRIV_SERVICES) ? '' : 'd-none'; ?>
             <?php $active = $active_menu == PRIV_SERVICES ? 'active' : ''; ?>
             <li class="nav-item dropdown text-center <?= $active . $hidden ?>" style="min-width: 100px;">
-                <a class="nav-link dropdown-toggle text-white fw-light py-3 px-3" href="#" data-bs-toggle="dropdown"
-                   data-tippy-content="<?= lang('manage_services_hint') ?>">
+                <a class="nav-link dropdown-toggle text-white fw-light py-3 px-3" href="#" data-bs-toggle="dropdown">
                     <i class="fas fa-business-time me-2"></i>
                     <?= lang('services') ?>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <a class="dropdown-item" href="<?= site_url('services') ?>">
                         <?= lang('services') ?>
-                    </a>
-                    <a class="dropdown-item" href="<?= site_url('service_categories') ?>">
-                        <?= lang('categories') ?>
                     </a>
                     <a class="dropdown-item" href="<?= site_url('pathologies') ?>">
                         <?= lang('pathologies') ?>
@@ -116,8 +110,7 @@
             <?php $hidden = can('view', PRIV_USERS) ? '' : 'd-none'; ?>
             <?php $active = $active_menu == PRIV_USERS ? 'active' : ''; ?>
             <li class="nav-item dropdown text-center <?= $active . $hidden ?>" style="min-width: 100px;">
-                <a class="nav-link dropdown-toggle text-white fw-light py-3 px-3" href="#" data-bs-toggle="dropdown"
-                   data-tippy-content="<?= lang('manage_users_hint') ?>">
+                <a class="nav-link dropdown-toggle text-white fw-light py-3 px-3" href="#" data-bs-toggle="dropdown">
                     <i class="fas fa-users me-2"></i>
                     <?= lang('users') ?>
                 </a>
@@ -137,8 +130,7 @@
             <?php $hidden = can('view', PRIV_SYSTEM_SETTINGS) || can('view', PRIV_USER_SETTINGS) ? '' : 'd-none'; ?>
             <?php $active = $active_menu == PRIV_SYSTEM_SETTINGS ? 'active' : ''; ?>
             <li class="nav-item dropdown text-center <?= $active . $hidden ?>" style="min-width: 100px;">
-                <a class="nav-link dropdown-toggle text-white fw-light py-3 px-3" href="#" data-bs-toggle="dropdown"
-                   data-tippy-content="<?= lang('settings_hint') ?>">
+                <a class="nav-link dropdown-toggle text-white fw-light py-3 px-3" href="#" data-bs-toggle="dropdown">
                     <i class="fas fa-user me-2"></i>
                     <?= e(vars('user_display_name')) ?>
                 </a>

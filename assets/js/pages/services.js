@@ -17,7 +17,6 @@ App.Pages.Services = (function () {
     const $duration = $('#duration');
     const $price = $('#price');
     const $currency = $('#currency');
-    const $serviceCategoryId = $('#service-category-id');
     const $slotInterval = $('#slot-interval');
     const $attendantsNumber = $('#attendants-number');
     const $isPrivate = $('#is-private');
@@ -123,7 +122,6 @@ App.Pages.Services = (function () {
             $duration.val('30');
             $price.val('0');
             $currency.val('');
-            $serviceCategoryId.val('');
             $slotInterval.val('15');
             $attendantsNumber.val('1');
         });
@@ -161,7 +159,6 @@ App.Pages.Services = (function () {
                 attendants_number: $attendantsNumber.val(),
                 is_private: Number($isPrivate.prop('checked')),
                 is_active: Number($isActive.prop('checked')),
-                id_service_categories: $serviceCategoryId.val() || undefined,
             };
 
             // Include service providers.
@@ -372,8 +369,6 @@ App.Pages.Services = (function () {
         App.Components.ColorSelection.setColor($color, service.color);
         $recordTemplate.val(service.record_template || 'notes');
 
-        const serviceCategoryId = service.id_service_categories !== null ? service.id_service_categories : '';
-        $serviceCategoryId.val(serviceCategoryId);
 
         // Display providers
         $('#service-providers a').remove();
@@ -515,30 +510,12 @@ App.Pages.Services = (function () {
     }
 
     /**
-     * Update the service-category list box.
-     *
-     * Use this method every time a change is made to the service categories db table.
-     */
-    function updateAvailableServiceCategories() {
-        App.Http.ServiceCategories.search('', 999).then((response) => {
-            $serviceCategoryId.empty();
-
-            $serviceCategoryId.append(new Option('', '')).val('');
-
-            response.forEach((serviceCategory) => {
-                $serviceCategoryId.append(new Option(serviceCategory.name, serviceCategory.id));
-            });
-        });
-    }
-
-    /**
      * Initialize the module.
      */
     function initialize() {
         App.Pages.Services.resetForm();
         App.Pages.Services.filter('');
         App.Pages.Services.addEventListeners();
-        updateAvailableServiceCategories();
     }
 
     document.addEventListener('DOMContentLoaded', initialize);

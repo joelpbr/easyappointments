@@ -97,11 +97,11 @@ curl http://your-site.com/index.php/api/v1/appointments --user admin:password
 curl http://your-site.com/index.php/api/v1/customers/34 --user admin:password
 ```
 
-**Update a service category name (ID 23):**
+**Update a service name (ID 23):**
 
 ```bash
 curl -H 'Content-Type: application/json' -X PUT -d '{"name": "New Name!"}' \
-  http://your-site.com/index.php/api/v1/service_categories/23 --user admin:password
+  http://your-site.com/index.php/api/v1/services/23 --user admin:password
 ```
 
 **Delete a service (ID 15):**
@@ -216,8 +216,7 @@ GET /api/v1/availabilities?providerId=1&serviceId=2&date=2016-07-19
     "currency": "EUR",
     "description": "This is a test service.",
     "availabilitiesType": "flexible",
-    "attendantsNumber": 1,
-    "serviceCategoryId": null
+    "attendantsNumber": 1
 }
 ```
 
@@ -228,20 +227,7 @@ GET /api/v1/availabilities?providerId=1&serviceId=2&date=2016-07-19
 
 > The `availabilitiesType` must be either `flexible` or `fixed`.
 
-### Service Categories
-
-```json
-{
-    "id": 1,
-    "name": "Test Category",
-    "description": "This is a test category."
-}
-```
-
-- `GET /api/v1/service_categories[/:id]` — Get all or one
-- `POST /api/v1/service_categories` — Create new
-- `PUT /api/v1/service_categories/:id` — Update
-- `DELETE /api/v1/service_categories/:id` — Delete
+Service categories are no longer supported. Services are listed directly without category grouping.
 
 ### Admins
 

@@ -97,13 +97,6 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="service-category-id">
-                    <?= lang('category') ?>
-                </label>
-                <select id="service-category-id" class="form-select" disabled></select>
-            </div>
-
-            <div class="mb-3">
                 <label class="form-label" for="slot-interval">
                     <?= lang('slot_interval') ?>
                     <span class="text-danger" hidden>*</span>
@@ -225,7 +218,6 @@
 <?php section('scripts'); ?>
 
 <script src="<?= asset_url('assets/js/http/services_http_client.js') ?>"></script>
-<script src="<?= asset_url('assets/js/http/service_categories_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/pages/services.js') ?>"></script>
 
 <?php end_section('scripts'); ?>
