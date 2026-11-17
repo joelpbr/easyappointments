@@ -108,6 +108,8 @@
                                 ) ?></div>
                             </div>
 
+                            <?php component('employment_field'); ?>
+
                             <div class="mb-3">
                                 <label class="form-label" for="email">
                                     <?= lang('email') ?>

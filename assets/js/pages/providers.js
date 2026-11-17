@@ -17,6 +17,7 @@ App.Pages.Providers = (function () {
     const $id = $('#id');
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
+    const $employment = $('#employment');
     const $shortName = $('#short-name');
     const $email = $('#email');
     const $phoneNumber = $('#phone-number');
@@ -190,6 +191,7 @@ App.Pages.Providers = (function () {
             const provider = {
                 first_name: $firstName.val(),
                 last_name: $lastName.val(),
+                employment: $employment.val() || null,
                 short_name: $shortName.val().trim(),
                 email: $email.val(),
                 phone_number: $phoneNumber.val(),
@@ -421,6 +423,7 @@ App.Pages.Providers = (function () {
         $id.val(provider.id);
         $firstName.val(provider.first_name);
         $lastName.val(provider.last_name);
+        $employment.val(provider.employment || '');
         $shortName.val(provider.short_name || '');
         $email.val(provider.email);
         $phoneNumber.val(provider.phone_number);

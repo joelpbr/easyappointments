@@ -34,6 +34,7 @@ class Providers_model extends EA_Model
         'id' => 'id',
         'firstName' => 'first_name',
         'lastName' => 'last_name',
+        'employment' => 'employment',
         'email' => 'email',
         'phone' => 'phone_number',
         'address' => 'address',
@@ -73,6 +74,10 @@ class Providers_model extends EA_Model
             $provider['short_name'] = trim((string) $provider['short_name']);
         }
 
+        if (array_key_exists('employment', $provider)) {
+            $provider['employment'] = $provider['employment'] ?: null;
+        }
+
         $this->validate($provider);
 
         if (empty($provider['id'])) {
@@ -99,6 +104,10 @@ class Providers_model extends EA_Model
         }
         if (mb_strlen((string) ($provider['short_name'] ?? '')) > 64) {
             throw new InvalidArgumentException('The short name must not exceed 64 characters.');
+        }
+        // Employees clock in (registro de jornada); self-employed professionals and partners do not.
+        if (!in_array($provider['employment'] ?? null, [null, 'employee', 'self_employed'], true)) {
+            throw new InvalidArgumentException('Invalid employment relationship.');
         }
 
         // If a provider ID is provided then check whether the record really exists in the database and that it is
@@ -899,6 +908,7 @@ class Providers_model extends EA_Model
             'id' => array_key_exists('id', $provider) ? (int) $provider['id'] : null,
             'firstName' => $provider['first_name'],
             'lastName' => $provider['last_name'],
+            'employment' => $provider['employment'] ?? null,
             'email' => $provider['email'],
             'phone' => $provider['phone_number'],
             'address' => $provider['address'],
@@ -980,6 +990,10 @@ class Providers_model extends EA_Model
 
         if (array_key_exists('lastName', $provider)) {
             $decoded_resource['last_name'] = $provider['lastName'];
+        }
+
+        if (array_key_exists('employment', $provider)) {
+            $decoded_resource['employment'] = $provider['employment'];
         }
 
         if (array_key_exists('email', $provider)) {

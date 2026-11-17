@@ -52,10 +52,24 @@ try {
     ]);
     require_once APPPATH . 'migrations/109_add_staff_attendance.php';
     (new ReflectionClass(Migration_Add_staff_attendance::class))->newInstanceWithoutConstructor()->up();
+    require_once APPPATH . 'migrations/110_add_attendance_settings.php';
+    (new ReflectionClass(Migration_Add_attendance_settings::class))->newInstanceWithoutConstructor()->up();
+    $ci->load->dbforge();
+    require_once APPPATH . 'migrations/111_add_attendance_employment.php';
+    (new ReflectionClass(Migration_Add_attendance_employment::class))->newInstanceWithoutConstructor()->up();
     $ci->load->model('attendance_model');
     $m = $ci->attendance_model;
+    $check($m->rules() === Attendance_rules::defaults(), 'statute defaults until the clinic sets its agreement');
     $worker = 900002;
     $admin = 900001;
+    $check($m->requires_clock($worker) && !$m->requires_clock($admin), 'secretaries start as employees who clock in');
+    $ci->db->insert('users', ['id' => 900003, 'first_name' => 'Test podiatrist', 'last_name' => '', 'id_roles' => 3]);
+    $ci->db->insert('roles', ['id' => 3, 'slug' => 'provider']);
+    $check(!$m->requires_clock(900003), 'staff with an undefined relationship does not clock in');
+    $ci->db->update('users', ['employment' => 'employee'], ['id' => 900003]);
+    $check($m->requires_clock(900003), 'employed podiatrists clock in');
+    $ci->db->update('users', ['employment' => 'self_employed'], ['id' => 900003]);
+    $check(!in_array(900003, array_column($m->employees(), 'id'), true), 'self-employed staff never clocks in');
     $m->clock($worker, 'in', 0, 'integration-request-0001');
     $entry = $m->current($worker);
     $check($entry['revision'] === 1, 'entry revision');
@@ -88,12 +102,37 @@ try {
             'segments' => $segments,
         ]),
     );
+    $reject(fn() => $m->save_rules($admin, ['min_rest_minutes' => 600]));
+    $m->save_rules($admin, Attendance_rules::agreements()['catalonia_health']['values']);
+    $check($m->rules()['break_minutes'] === 20, 'agreement rules saved');
+    $reject(
+        fn() => $m->save_profile($worker, $admin, [
+            'contract_duration' => 'indefinite',
+            'weekly_minutes' => 2400,
+            'pause_policy' => 'agreement',
+            'complementary_percent' => 20,
+            'schedule' => [],
+        ]),
+    );
     $m->save_profile($worker, $admin, [
-        'contract_type' => 'part',
+        'category' => 'Test category',
+        'contract_duration' => 'indefinite',
         'weekly_minutes' => 1200,
-        'pause_policy' => 'paid',
-        'agreement' => 'Test collective agreement',
+        'pause_policy' => 'agreement',
+        'complementary_percent' => 20,
+        'schedule' => ['1' => [['09:00', '13:00']], '3' => [['09:00', '13:00']]],
     ]);
+    $reject(
+        fn() => $m->save_profile($worker, $admin, [
+            'contract_duration' => 'indefinite',
+            'weekly_minutes' => 1200,
+            'pause_policy' => 'agreement',
+            'schedule' => ['2' => [['08:00', '09:00'], ['10:00', '11:00'], ['12:00', '13:00'], ['14:00', '15:00']]],
+        ]),
+    );
+    $profile = $m->profile($worker);
+    $check($profile['contract_type'] === 'part' && $profile['schedule'][1] === [['09:00', '13:00']], 'contract saved');
+    $check($m->month($worker, '2026-01')['summary']['days'][0]['planned'] === 14400, 'scheduled time per day');
     $m->request_correction($worker, '2026-01-12', 'Please review the test time');
     $reject(
         fn() => $m->issue_report($worker, $admin, '2026-01', [
@@ -129,6 +168,13 @@ try {
     $ci->db->delete('users', ['id' => $worker]);
     $check(in_array($worker, array_column($m->employees(), 'id'), true), 'deleted login retained in historic roster');
     $check($m->month($worker, '2026-01')['summary']['counted_seconds'] === 18000, 'deleted login retains hours');
+    $check(!$m->tampered($worker) && !$m->tampered(0), 'journal seals intact after normal use');
+    $ci->db->update('attendance_entries', ['end_at' => '2026-01-12 15:00:00'], ['id' => $id]);
+    $check($m->tampered($worker), 'a direct change of a record in the database is detected');
+    $check(
+        in_array('integrity', array_column($m->month($worker, '2026-01')['review_flags'], 'type'), true),
+        'the review shows the tampering',
+    );
     echo "PASS: clock transitions, duplicate/stale submissions, overlap rejection, correction history, report validation and snapshots, delivery, user deletion retention.\n";
 } finally {
     foreach ($tables as $table) {

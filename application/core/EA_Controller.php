@@ -82,6 +82,7 @@ class EA_Controller extends CI_Controller
         $this->ensure_user_exists();
         $this->configure_timezone();
         $this->configure_language();
+        $this->require_clock_in();
         $this->load_common_html_vars();
         $this->load_common_script_vars();
 
@@ -101,6 +102,57 @@ class EA_Controller extends CI_Controller
 
             abort(403, 'Forbidden');
         }
+    }
+
+    /**
+     * Employees who clock in can use the application only while they are working: with no open workday, or during a
+     * pause, every page sends them to the clock and any other request is refused. Who clocks in follows the
+     * employment relationship of each user and the roles of config/attendance.php.
+     */
+    private function require_clock_in(): void
+    {
+        $open = ['attendance', 'login', 'logout', 'user', 'localization', 'recovery', 'captcha', 'branding'];
+        $open = array_merge($open, ['update', 'installation', 'console']);
+        html_vars(['attendance_menu' => false]);
+        if (
+            !session('user_id') ||
+            in_array(strtolower($this->router->class), ['update', 'installation', 'console'], true) ||
+            !$this->db->table_exists('attendance_entries') ||
+            !$this->db->field_exists('employment', 'users')
+        ) {
+            return;
+        }
+        $this->load->library('attendance_rules');
+        $user = $this->db
+            ->select('users.employment, roles.slug')
+            ->from('users')
+            ->join('roles', 'roles.id = users.id_roles')
+            ->where('users.id', (int) session('user_id'))
+            ->get()
+            ->row_array();
+        $clocks =
+            ($user['employment'] ?? null) === 'employee' &&
+            in_array($user['slug'], Attendance_rules::law()['attendance_roles'], true);
+        html_vars(['attendance_menu' => $clocks || ($user['slug'] ?? null) === DB_SLUG_ADMIN]);
+        if (!$clocks || in_array(strtolower($this->router->class), $open, true)) {
+            return;
+        }
+        $entry = $this->db
+            ->select('segments')
+            ->where(['employee_id' => (int) session('user_id'), 'voided' => 0, 'end_at' => null])
+            ->order_by('id', 'DESC')
+            ->get('attendance_entries')
+            ->row_array();
+        $segments = $entry ? json_decode($entry['segments'], true) : [];
+        if ($segments && end($segments)['kind'] === 'work') {
+            return;
+        }
+        if ($this->input->method() === 'get' && !$this->input->is_ajax_request()) {
+            redirect('attendance');
+        }
+        json_response(['success' => false, 'message' => lang('att_clock_first')], 403);
+        $this->output->_display();
+        exit();
     }
 
     /**

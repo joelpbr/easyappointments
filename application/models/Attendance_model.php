@@ -6,6 +6,40 @@ class Attendance_model extends EA_Model
     {
         parent::__construct();
         $this->load->library('attendance_rules');
+        Attendance_rules::set_zone(setting('default_timezone'));
+    }
+
+    /** Staff of the roles that can clock in, with their employment relationship (null while undefined). */
+    public function staff(): array
+    {
+        $users = $this->db
+            ->select('users.id, users.first_name, users.last_name, users.employment, roles.slug AS role')
+            ->from('users')
+            ->join('roles', 'roles.id=users.id_roles')
+            ->where_in('roles.slug', Attendance_rules::law()['attendance_roles'])
+            ->order_by('users.first_name')
+            ->get()
+            ->result_array();
+        return array_map(
+            fn($user) => [
+                'id' => (int) $user['id'],
+                'name' => trim($user['first_name'] . ' ' . $user['last_name']),
+                'role' => $user['role'],
+                'employment' => $user['employment'],
+            ],
+            $users,
+        );
+    }
+
+    /** Employees clock in; self-employed professionals and partners do not (art. 34.9 ET covers employees). */
+    public function requires_clock(int $user): bool
+    {
+        foreach ($this->staff() as $person) {
+            if ($person['id'] === $user) {
+                return $person['employment'] === 'employee';
+            }
+        }
+        return false;
     }
 
     public function role(int $id): ?string
@@ -27,20 +61,11 @@ class Attendance_model extends EA_Model
 
     public function employees(): array
     {
-        $users = $this->db
-            ->select('users.id, users.first_name, users.last_name')
-            ->from('users')
-            ->join('roles', 'roles.id=users.id_roles')
-            ->where('roles.slug', DB_SLUG_SECRETARY)
-            ->get()
-            ->result_array();
         $employees = [];
-        foreach ($users as $user) {
-            $employees[(int) $user['id']] = [
-                'id' => (int) $user['id'],
-                'name' => trim($user['first_name'] . ' ' . $user['last_name']),
-                'current' => true,
-            ];
+        foreach ($this->staff() as $person) {
+            if ($person['employment'] === 'employee') {
+                $employees[$person['id']] = ['id' => $person['id'], 'name' => $person['name'], 'current' => true];
+            }
         }
         foreach ($this->db->get('attendance_profiles')->result_array() as $profile) {
             $id = (int) $profile['employee_id'];
@@ -49,16 +74,75 @@ class Attendance_model extends EA_Model
         return array_values($employees);
     }
 
+    /** Working time rules from the settings, with the legal defaults for any value not set. */
+    public function rules(): array
+    {
+        $values = [];
+        foreach (array_keys(Attendance_rules::defaults()) as $key) {
+            $value = setting('attendance_' . $key);
+            if ($value !== null) {
+                $values[$key] = $value;
+            }
+        }
+        return Attendance_rules::config($values);
+    }
+
+    public function save_rules(int $actor, array $data): void
+    {
+        $data = array_intersect_key($data, Attendance_rules::defaults());
+        $rules = Attendance_rules::config($data, true);
+        // The rules have their own chain in the journal, under employee 0.
+        $this->lock(0, function () use ($actor, $rules) {
+            $before = $this->rules();
+            foreach ($rules as $key => $value) {
+                $name = 'attendance_' . $key;
+                if ($this->db->get_where('settings', ['name' => $name])->num_rows()) {
+                    $this->db->update('settings', ['value' => (string) $value], ['name' => $name]);
+                } else {
+                    $this->db->insert('settings', ['name' => $name, 'value' => (string) $value]);
+                }
+            }
+            $this->journal(0, $actor, 'rules', '', $before, $rules);
+        });
+    }
+
     public function profile(int $id): array
     {
-        return $this->db->get_where('attendance_profiles', ['employee_id' => $id])->row_array() ?: [
+        $profile = ($this->db->get_where('attendance_profiles', ['employee_id' => $id])->row_array() ?: [
                 'employee_id' => $id,
                 'employee_name' => $this->name($id),
                 'contract_type' => 'unknown',
                 'weekly_minutes' => null,
                 'agreement' => '',
-                'pause_policy' => 'unknown',
-            ];
+                'pause_policy' => 'agreement',
+            ]) + ['contract_duration' => 'unknown', 'category' => '', 'schedule' => null, 'complementary_percent' => 0];
+        $profile['employee_id'] = (int) $profile['employee_id'];
+        $profile['weekly_minutes'] = $profile['weekly_minutes'] === null ? null : (int) $profile['weekly_minutes'];
+        $profile['complementary_percent'] = (int) $profile['complementary_percent'];
+        $profile['schedule'] = Attendance_rules::schedule($profile['schedule']);
+        unset($profile['updated_at']);
+        return $profile;
+    }
+
+    /** The profile row exists before the first record, so that its name survives the deletion of the login. */
+    private function ensure_profile(int $employee): void
+    {
+        if (!$this->db->get_where('attendance_profiles', ['employee_id' => $employee])->num_rows()) {
+            $this->db->insert('attendance_profiles', $this->profile_row($this->profile($employee)));
+        }
+    }
+
+    private function profile_row(array $profile): array
+    {
+        $profile['schedule'] = json_encode($profile['schedule']);
+        $profile['updated_at'] = gmdate('Y-m-d H:i:s');
+        return $profile;
+    }
+
+    /** What applies to a record when it is created: the contract and the rules of that moment. */
+    private function snapshot(int $employee): array
+    {
+        return $this->profile($employee) + ['rules' => $this->rules()];
     }
 
     private function lock(int $employee, callable $operation): mixed
@@ -93,7 +177,7 @@ class Attendance_model extends EA_Model
         ?int $entry = null,
         ?string $key = null,
     ): void {
-        $this->db->insert('attendance_journal', [
+        $row = [
             'employee_id' => $employee,
             'entry_id' => $entry,
             'actor_id' => $actor,
@@ -104,7 +188,52 @@ class Attendance_model extends EA_Model
             'after_json' => json_encode($after, JSON_UNESCAPED_UNICODE),
             'request_key' => $key,
             'created_at' => gmdate('Y-m-d H:i:s'),
-        ]);
+        ];
+        // Callers hold the lock of the employee, so the previous seal cannot change meanwhile.
+        $previous = $this->db
+            ->select('hash')
+            ->where('employee_id', $employee)
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get('attendance_journal')
+            ->row('hash');
+        $row['hash'] = Attendance_rules::seal($previous, $row);
+        $this->db->insert('attendance_journal', $row);
+    }
+
+    /**
+     * Whether the records of an employee were changed outside the application: a broken seal in the journal, or an
+     * entry that differs from the state its last journal row recorded.
+     */
+    public function tampered(int $employee): bool
+    {
+        $previous = null;
+        $states = [];
+        $rows = $this->db->where('employee_id', $employee)->order_by('id')->get('attendance_journal')->result_array();
+        foreach ($rows as $row) {
+            if ($row['hash'] !== Attendance_rules::seal($previous, $row)) {
+                return true;
+            }
+            $previous = $row['hash'];
+            if ($row['entry_id'] !== null) {
+                $states[(int) $row['entry_id']] = json_decode($row['after_json'], true);
+            }
+        }
+        foreach ($this->db->get_where('attendance_entries', ['employee_id' => $employee])->result_array() as $row) {
+            $entry = $this->decode($row);
+            $state = $states[$entry['id']] ?? null;
+            if (
+                !$state ||
+                $state['segments'] !== $entry['segments'] ||
+                $state['start_at'] !== $entry['start_at'] ||
+                $state['end_at'] !== $entry['end_at'] ||
+                (int) $state['voided'] !== $entry['voided'] ||
+                (int) $state['revision'] !== $entry['revision']
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function decode(array $entry): array
@@ -159,16 +288,14 @@ class Attendance_model extends EA_Model
                 if ($current) {
                     throw new RuntimeException(lang('att_stale'));
                 }
-                $profile = $this->profile($employee);
-                if (!$this->db->get_where('attendance_profiles', ['employee_id' => $employee])->num_rows()) {
-                    $this->db->insert('attendance_profiles', $profile + ['updated_at' => $now]);
-                }
+                $this->ensure_profile($employee);
+                $profile = $this->snapshot($employee);
                 $entry = [
                     'employee_id' => $employee,
                     'employee_name' => $this->name($employee),
                     'start_at' => $now,
                     'end_at' => null,
-                    'timezone' => Attendance_rules::ZONE,
+                    'timezone' => Attendance_rules::zone(),
                     'segments' => [['kind' => 'work', 'policy' => 'work', 'start' => $now, 'end' => null]],
                     'policy_snapshot' => $profile,
                     'revision' => 1,
@@ -185,13 +312,21 @@ class Attendance_model extends EA_Model
                 if (($action === 'pause' && $kind !== 'work') || ($action === 'resume' && $kind !== 'break')) {
                     throw new RuntimeException(lang('att_stale'));
                 }
+                if (
+                    $action === 'pause' &&
+                    !Attendance_rules::pauses_allowed($this->profile($employee)['schedule'], $this->rules())
+                ) {
+                    throw new InvalidArgumentException(lang('att_no_pause'));
+                }
                 $entry['segments'][$last]['end'] = $now;
                 if ($action === 'out') {
                     $entry['end_at'] = $now;
                 } else {
+                    $pause_policy = $entry['policy_snapshot']['pause_policy'] ?? 'unknown';
                     $entry['segments'][] = [
                         'kind' => $action === 'pause' ? 'break' : 'work',
-                        'policy' => $action === 'pause' ? $entry['policy_snapshot']['pause_policy'] : 'work',
+                        'policy' =>
+                            $action === 'pause' ? ($pause_policy === 'agreement' ? 'auto' : $pause_policy) : 'work',
                         'start' => $now,
                         'end' => null,
                     ];
@@ -273,11 +408,12 @@ class Attendance_model extends EA_Model
                     }
                 }
             }
+            $this->ensure_profile($employee);
             $entry = $before ?: [
                 'employee_id' => $employee,
                 'employee_name' => $this->profile($employee)['employee_name'],
-                'timezone' => Attendance_rules::ZONE,
-                'policy_snapshot' => $this->profile($employee),
+                'timezone' => Attendance_rules::zone(),
+                'policy_snapshot' => $this->snapshot($employee),
                 'created_at' => gmdate('Y-m-d H:i:s'),
             ];
             $entry['segments'] = $segments;
@@ -285,51 +421,68 @@ class Attendance_model extends EA_Model
             $entry['end_at'] = $end;
             $entry['voided'] = $voided;
             $entry['revision'] = ($before['revision'] ?? 0) + 1;
-            if (!$this->db->get_where('attendance_profiles', ['employee_id' => $employee])->num_rows()) {
-                $this->db->insert(
-                    'attendance_profiles',
-                    $this->profile($employee) + ['updated_at' => gmdate('Y-m-d H:i:s')],
-                );
-            }
             return $this->persist($entry, $before, $actor, 'correction', $reason);
         });
     }
 
+    /**
+     * The contract of an employee. Part or full time follows from the weekly hours against the full-time workday
+     * of the settings; complementary hours need a part-time contract of at least 10 h a week (art. 12.5 ET).
+     */
     public function save_profile(int $employee, int $actor, array $data): void
     {
-        $this->lock($employee, function () use ($employee, $actor, $data) {
+        $rules = $this->rules();
+        $this->lock($employee, function () use ($employee, $actor, $data, $rules) {
+            $minutes = $data['weekly_minutes'] ?? null;
+            $minutes = $minutes === '' || $minutes === null ? null : $minutes;
+            $percent = $data['complementary_percent'] ?? 0;
             if (
-                !in_array($data['contract_type'] ?? '', ['unknown', 'full', 'part'], true) ||
-                !in_array($data['pause_policy'] ?? '', ['unknown', 'paid', 'unpaid'], true)
+                !in_array($data['contract_duration'] ?? '', ['unknown', 'indefinite', 'temporary'], true) ||
+                !in_array($data['pause_policy'] ?? '', ['agreement', 'paid', 'unpaid'], true) ||
+                mb_strlen(trim((string) ($data['category'] ?? ''))) > 255 ||
+                ($minutes !== null &&
+                    (filter_var($minutes, FILTER_VALIDATE_INT) === false ||
+                        $minutes < 1 ||
+                        $minutes > $rules['full_time_minutes'])) ||
+                filter_var($percent, FILTER_VALIDATE_INT) === false ||
+                $percent < 0 ||
+                $percent > $rules['complementary_max_percent']
             ) {
                 throw new InvalidArgumentException(lang('att_invalid_profile'));
             }
-            $minutes = $data['weekly_minutes'] ?? null;
+            $contract =
+                $minutes === null ? 'unknown' : ((int) $minutes < $rules['full_time_minutes'] ? 'part' : 'full');
             if (
-                $minutes !== null &&
-                $minutes !== '' &&
-                (filter_var($minutes, FILTER_VALIDATE_INT) === false || $minutes < 1 || $minutes > 10080)
+                $percent > 0 &&
+                ($contract !== 'part' ||
+                    $minutes < Attendance_rules::law()['attendance_complementary_min_weekly_minutes'])
             ) {
-                throw new InvalidArgumentException(lang('att_invalid_profile'));
+                throw new InvalidArgumentException(lang('att_invalid_pact'));
+            }
+            $schedule = Attendance_rules::schedule($data['schedule'] ?? [], true);
+            if ($contract === 'part' && !Attendance_rules::interruptions_allowed($schedule, $rules)) {
+                throw new InvalidArgumentException(lang('att_too_many_interruptions'));
             }
             $before = $this->profile($employee);
             $profile = [
                 'employee_id' => $employee,
                 'employee_name' => $before['employee_name'],
-                'contract_type' => $data['contract_type'],
+                'contract_type' => $contract,
+                'contract_duration' => $data['contract_duration'],
+                'category' => trim((string) ($data['category'] ?? '')),
+                'weekly_minutes' => $minutes === null ? null : (int) $minutes,
+                'schedule' => $schedule,
+                'complementary_percent' => (int) $percent,
                 'pause_policy' => $data['pause_policy'],
-                'weekly_minutes' => $minutes === '' || $minutes === null ? null : (int) $minutes,
-                'agreement' => mb_substr(trim((string) ($data['agreement'] ?? '')), 0, 512),
-                'updated_at' => gmdate('Y-m-d H:i:s'),
+                'agreement' => $before['agreement'],
             ];
-            $this->db->replace('attendance_profiles', $profile);
+            $this->db->replace('attendance_profiles', $this->profile_row($profile));
             $this->journal($employee, $actor, 'profile', '', $before, $profile);
         });
     }
 
-    public function month(int $employee, string $month): array
+    private function entries_between(int $employee, int $from, int $to): array
     {
-        [$from, $to] = Attendance_rules::month_bounds($month);
         $entries = $this->db
             ->where('employee_id', $employee)
             ->where('start_at <', gmdate('Y-m-d H:i:s', $to))
@@ -340,13 +493,61 @@ class Attendance_model extends EA_Model
             ->order_by('start_at')
             ->get('attendance_entries')
             ->result_array();
-        $entries = array_map(fn($entry) => $this->decode($entry), $entries);
+        return array_map(fn($entry) => $this->decode($entry), $entries);
+    }
+
+    /** Totals from January to the given month, for the yearly limits. */
+    private function year(int $employee, string $month, array $schedule, int $now): array
+    {
+        $year = ['counted' => 0, 'excess' => 0, 'planned' => 0];
+        for ($number = 1; $number <= (int) substr($month, 5, 2); $number++) {
+            $current = substr($month, 0, 4) . '-' . sprintf('%02d', $number);
+            [$from, $to] = Attendance_rules::month_bounds($current);
+            $summary = Attendance_rules::plan(
+                Attendance_rules::summarize($this->entries_between($employee, $from, $to), $current, $now),
+                $schedule,
+            );
+            $year['counted'] += $summary['counted_seconds'];
+            $year['excess'] += $summary['excess_seconds'];
+            $year['planned'] += Attendance_rules::planned_seconds($current, $schedule);
+        }
+        return $year;
+    }
+
+    public function month(int $employee, string $month): array
+    {
+        [$from, $to] = Attendance_rules::month_bounds($month);
+        $now = time();
+        $rules = $this->rules();
+        $profile = $this->profile($employee);
+        $entries = $this->entries_between($employee, $from, $to);
+        $summary = Attendance_rules::plan(Attendance_rules::summarize($entries, $month, $now), $profile['schedule']);
+        $summary['planned_seconds'] = Attendance_rules::planned_seconds($month, $profile['schedule']);
+        $prior = array_filter(
+            $this->entries_between($employee, $from - $rules['weekly_rest_days'] * 86400, $from),
+            fn($entry) => Attendance_rules::instant($entry['start_at']) < $from,
+        );
+        $flags = array_merge(
+            Attendance_rules::review_flags($entries, $summary, $now, $rules, array_values($prior), $month),
+            Attendance_rules::limit_flags(
+                $this->year($employee, $month, $profile['schedule'], $now),
+                $summary,
+                $profile,
+                $rules,
+            ),
+        );
+        if ($this->tampered($employee)) {
+            array_unshift($flags, ['type' => 'integrity', 'date' => null, 'entry_id' => null]);
+        }
         return [
             'month' => $month,
-            'timezone' => Attendance_rules::ZONE,
-            'employee' => $this->profile($employee),
+            'timezone' => Attendance_rules::zone(),
+            'employee' => $profile,
+            'rules' => $rules,
             'entries' => $entries,
-            'summary' => Attendance_rules::summarize($entries, $month, time()),
+            'summary' => $summary,
+            'review_flags' => $flags,
+            'suggestion' => Attendance_rules::suggest($summary, $profile['contract_type']),
             'generated_at' => gmdate('Y-m-d H:i:s'),
         ];
     }
@@ -379,12 +580,7 @@ class Attendance_model extends EA_Model
             throw new InvalidArgumentException(lang('att_reason_required'));
         }
         $this->lock($employee, function () use ($employee, $date, $message) {
-            if (!$this->db->get_where('attendance_profiles', ['employee_id' => $employee])->num_rows()) {
-                $this->db->insert(
-                    'attendance_profiles',
-                    $this->profile($employee) + ['updated_at' => gmdate('Y-m-d H:i:s')],
-                );
-            }
+            $this->ensure_profile($employee);
             $record = [
                 'employee_id' => $employee,
                 'employee_name' => $this->name($employee),
@@ -430,7 +626,11 @@ class Attendance_model extends EA_Model
                 throw new InvalidArgumentException(lang('att_report_not_ready'));
             }
             $profile = $report['employee'];
-            if ($profile['contract_type'] === 'unknown' || !$profile['weekly_minutes'] || !$profile['agreement']) {
+            if (
+                $profile['contract_type'] === 'unknown' ||
+                $profile['contract_duration'] === 'unknown' ||
+                !$report['rules']['agreement']
+            ) {
                 throw new InvalidArgumentException(lang('att_profile_required'));
             }
             $sum = 0;

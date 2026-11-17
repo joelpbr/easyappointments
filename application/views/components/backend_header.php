@@ -42,7 +42,7 @@
 
     <div id="header-menu" class="collapse navbar-collapse flex-row-reverse px-2">
         <ul class="navbar-nav">
-            <?php if (in_array(session('role_slug'), [DB_SLUG_ADMIN, DB_SLUG_SECRETARY], true)): ?>
+            <?php if (vars('attendance_menu')): ?>
                 <li class="nav-item text-center <?= $active_menu === 'attendance' ? 'active' : '' ?>">
                     <a href="<?= site_url('attendance') ?>" class="nav-link text-white py-3 px-3"><i class="fas fa-clock me-2"></i><?= lang('att_title') ?></a>
                 </li>

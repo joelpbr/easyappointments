@@ -2658,6 +2658,11 @@ components:
                     type: string
                 lastName:
                     type: string
+                employment:
+                    type: string
+                    nullable: true
+                    enum: [employee, self_employed, null]
+                    description: Employees clock in (working time register); self-employed professionals and partners do not. Null while undefined.
                 email:
                     type: string
                 phone:
@@ -2780,6 +2785,11 @@ components:
                     type: string
                 lastName:
                     type: string
+                employment:
+                    type: string
+                    nullable: true
+                    enum: [employee, self_employed, null]
+                    description: Employees clock in (working time register); self-employed professionals and partners do not. Null while undefined.
                 email:
                     type: string
                 phone:
@@ -2904,6 +2914,11 @@ components:
                     type: string
                 lastName:
                     type: string
+                employment:
+                    type: string
+                    nullable: true
+                    enum: [employee, self_employed, null]
+                    description: Employees clock in (working time register); self-employed professionals and partners do not. Null while undefined.
                 email:
                     type: string
                 phone:
@@ -2964,6 +2979,11 @@ components:
                     type: string
                 lastName:
                     type: string
+                employment:
+                    type: string
+                    nullable: true
+                    enum: [employee, self_employed, null]
+                    description: Employees clock in (working time register); self-employed professionals and partners do not. Null while undefined.
                 email:
                     type: string
                 phone:

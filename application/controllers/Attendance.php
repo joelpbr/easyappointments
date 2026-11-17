@@ -3,6 +3,7 @@
 class Attendance extends EA_Controller
 {
     private bool $manager;
+    private bool $worker;
     private int $actor;
 
     public function __construct()
@@ -18,10 +19,16 @@ class Attendance extends EA_Controller
             }
             abort(401, 'Unauthorized');
         }
-        if (!in_array($role, [DB_SLUG_ADMIN, DB_SLUG_SECRETARY], true)) {
+        $this->manager = $role === DB_SLUG_ADMIN;
+        $this->worker = !$this->manager && $this->attendance_model->requires_clock($this->actor);
+        // Former employees keep access to the records of the time they were employees.
+        if (
+            !$this->manager &&
+            !$this->worker &&
+            !in_array($this->actor, array_column($this->attendance_model->employees(), 'id'), true)
+        ) {
             abort(403, 'Forbidden');
         }
-        $this->manager = $role === DB_SLUG_ADMIN;
         $this->output->set_header('Cache-Control: no-store, private');
     }
 
@@ -42,11 +49,13 @@ class Attendance extends EA_Controller
         method('get');
         script_vars([
             'attendance_admin' => $this->manager,
+            'attendance_worker' => $this->worker,
+            'attendance_timezone' => Attendance_rules::zone(),
             'attendance_user' => $this->actor,
             'attendance_employees' => $this->manager
                 ? $this->attendance_model->employees()
                 : [['id' => $this->actor, 'name' => $this->attendance_model->name($this->actor), 'current' => true]],
-            'attendance_month' => (new DateTimeImmutable('now', new DateTimeZone(Attendance_rules::ZONE)))->format(
+            'attendance_month' => (new DateTimeImmutable('now', new DateTimeZone(Attendance_rules::zone())))->format(
                 'Y-m',
             ),
         ]);
@@ -54,6 +63,10 @@ class Attendance extends EA_Controller
             'page_title' => lang('att_title'),
             'active_menu' => 'attendance',
             'attendance_admin' => $this->manager,
+            'attendance_worker' => $this->worker,
+            'attendance_retention_years' => $this->attendance_model->rules()['retention_years'],
+            'attendance_legal_reference' => Attendance_rules::law()['attendance_legal_reference'],
+            'attendance_legal_url' => Attendance_rules::law()['attendance_legal_url'],
             'user_display_name' => $this->accounts->get_user_display_name($this->actor),
         ]);
         $this->load->view('pages/attendance');
@@ -66,7 +79,6 @@ class Attendance extends EA_Controller
         try {
             $month = (string) request('month');
             $report = $this->attendance_model->month($employee, $month);
-            $report['review_flags'] = Attendance_rules::review_flags($report['entries'], $report['summary'], time());
             $report['current'] = $this->attendance_model->current($employee);
             $report['server_now'] = gmdate('Y-m-d H:i:s');
             $report['requests'] = $this->db
@@ -106,7 +118,7 @@ class Attendance extends EA_Controller
     public function clock(): void
     {
         method('post');
-        if ($this->manager) {
+        if (!$this->worker) {
             abort(403, 'Forbidden');
         }
         $this->employee();
@@ -151,9 +163,6 @@ class Attendance extends EA_Controller
                     break;
                 case 'correct':
                     $this->attendance_model->correct($employee, $this->actor, $payload);
-                    break;
-                case 'profile':
-                    $this->attendance_model->save_profile($employee, $this->actor, $payload);
                     break;
                 case 'resolve':
                     $this->attendance_model->resolve_request(
@@ -265,7 +274,7 @@ class Attendance extends EA_Controller
                     $local = static fn($time) => $time === null
                         ? ''
                         : (new DateTimeImmutable($time, new DateTimeZone('UTC')))
-                            ->setTimezone(new DateTimeZone(Attendance_rules::ZONE))
+                            ->setTimezone(new DateTimeZone(Attendance_rules::zone()))
                             ->format('Y-m-d H:i:s P');
                     $write([
                         $entry['employee_name'],
@@ -275,7 +284,7 @@ class Attendance extends EA_Controller
                         lang('att_' . $segment['policy']),
                         $local($segment['start']),
                         $local($segment['end']),
-                        Attendance_rules::ZONE,
+                        Attendance_rules::zone(),
                         $entry['voided'],
                         (int) $report['summary']['provisional'],
                     ]);

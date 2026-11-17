@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const $id = (id) => document.getElementById(id);
     const admin = vars('attendance_admin');
+    const worker = vars('attendance_worker');
+    const ZONE = vars('attendance_timezone');
     const employees = vars('attendance_employees');
     let data = null,
         busy = false,
@@ -10,7 +12,27 @@ document.addEventListener('DOMContentLoaded', () => {
         seconds = Math.max(0, Math.floor(seconds));
         return `${Math.floor(seconds / 3600)}:${String(Math.floor(seconds / 60) % 60).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
     };
-    const local = (value) => (value ? moment.utc(value).tz('Europe/Madrid').format('DD/MM/YYYY HH:mm:ss Z') : '—');
+    const hours = (seconds) => {
+        const minutes = Math.floor(Math.max(0, seconds) / 60);
+        return `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, '0')} min`;
+    };
+    const local = (value) => (value ? moment.utc(value).tz(ZONE).format('DD/MM/YYYY HH:mm:ss Z') : '—');
+    const zoned = (value) => moment.utc(value).tz(ZONE);
+    const dayFormat = new Intl.DateTimeFormat(document.documentElement.lang || undefined, {
+        weekday: 'short',
+        day: '2-digit',
+        month: '2-digit',
+        timeZone: ZONE,
+    });
+    const day = (value) => dayFormat.format(value.toDate());
+    const calendarDay = (date) => day(moment.tz(date, ZONE).hour(12));
+    const segmentTotals = (entry) => {
+        const totals = {work: 0, break: 0};
+        entry.segments.forEach((s) => {
+            totals[s.kind] += Math.max(0, moment.utc(s.end || data.server_now).diff(moment.utc(s.start), 'seconds'));
+        });
+        return totals;
+    };
     const element = (tag, text, cls = '') => {
         const el = document.createElement(tag);
         el.textContent = text ?? '';
@@ -23,11 +45,28 @@ document.addEventListener('DOMContentLoaded', () => {
         el.addEventListener('click', handler);
         return el;
     };
+    let feedbackTimer,
+        serverOffset = 0;
+    const longDate = new Intl.DateTimeFormat(document.documentElement.lang || undefined, {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        timeZone: ZONE,
+    });
+    const tick = () => {
+        if (!$id('att-time')) return;
+        const now = moment(Date.now() + serverOffset).tz(ZONE);
+        $id('att-time').textContent = now.format('HH:mm');
+        const date = longDate.format(now.toDate());
+        $id('att-date').textContent = date.charAt(0).toUpperCase() + date.slice(1);
+    };
     const feedback = (text, error = false) => {
         const box = $id('att-feedback');
         box.textContent = text;
-        box.className = `alert alert-${error ? 'danger' : 'success'}`;
+        box.className = `att-feedback alert alert-${error ? 'danger' : 'success'}`;
         box.hidden = !text;
+        clearTimeout(feedbackTimer);
+        if (!error) feedbackTimer = setTimeout(() => (box.hidden = true), 3000);
     };
     const employee = () => Number($id('att-employee').value);
     const month = () => $id('att-month').value;
@@ -82,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await api('data');
             if (version !== loadVersion) return;
             data = result;
+            serverOffset = moment.utc(data.server_now).valueOf() - Date.now();
             render();
         } catch (error) {
             feedback(error.message, true);
@@ -132,14 +172,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     function render() {
         const current = data.current;
-        if (!admin) {
+        if (worker) {
             const paused = current?.segments.at(-1).kind === 'break';
             $id('att-state').textContent = lang(!current ? 'att_off' : paused ? 'att_paused' : 'att_working');
+            $id('att-state-pill').dataset.state = !current ? 'off' : paused ? 'paused' : 'working';
             $id('att-since').textContent = current
-                ? lang('att_start') + ': ' + local(current.start_at)
-                : lang('att_ready');
+                ? `${lang('att_since')} ${zoned(current.start_at).format('HH:mm')} · ${hours(segmentTotals(current).work)}`
+                : lang('att_clock_first');
             const actions = $id('att-clock-actions');
             actions.replaceChildren();
+            // A pause only exists in a continuous stretch long enough to give right to it; a split shift clocks out.
+            const minutes = (time) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
+            const blocks = Object.values(data.employee.schedule).flat();
+            const pauses =
+                !blocks.length ||
+                blocks.some(([start, end]) => minutes(end) - minutes(start) > data.rules.break_after_minutes);
             const choices = !current
                 ? [['in', 'att_in']]
                 : paused
@@ -147,90 +194,92 @@ document.addEventListener('DOMContentLoaded', () => {
                         ['resume', 'att_resume'],
                         ['out', 'att_out'],
                     ]
-                  : [
-                        ['pause', 'att_pause'],
-                        ['out', 'att_out'],
-                    ];
-            choices.forEach(([action, label], index) =>
-                actions.append(
-                    button(
-                        lang(label),
-                        () => clock(action),
-                        'btn btn-lg ' + (index ? 'btn-outline-primary' : 'btn-primary'),
-                    ),
-                ),
+                  : pauses
+                    ? [
+                          ['pause', 'att_pause'],
+                          ['out', 'att_out'],
+                      ]
+                    : [['out', 'att_out']];
+            const styles = {
+                in: 'btn-primary',
+                resume: 'btn-primary',
+                pause: 'btn-outline-secondary',
+                out: 'btn-outline-danger',
+            };
+            choices.forEach(([action, label]) =>
+                actions.append(button(lang(label), () => clock(action), 'btn btn-lg ' + styles[action])),
             );
             $id('att-open-warning').hidden =
-                !current || moment.utc(data.server_now).diff(moment.utc(current.start_at), 'hours') < 16;
-        } else {
+                !current ||
+                moment.utc(data.server_now).diff(moment.utc(current.start_at), 'minutes') <
+                    data.rules.open_alert_minutes;
+        } else if (admin) {
             $id('att-team').replaceChildren();
             data.team.forEach((person) => {
-                const col = element('div', '', 'col-md-4');
+                const col = element('div', '', 'col-sm-6 col-md-4');
+                const state = person.current
+                    ? person.current.segments.at(-1).kind === 'break'
+                        ? ['att_paused', 'paused']
+                        : ['att_working', 'working']
+                    : ['att_off', 'off'];
                 const card = button(
                     '',
                     () => {
                         $id('att-employee').value = person.id;
+                        location.hash = 'registres';
                         load();
                     },
-                    'card card-body text-start w-100',
+                    'card border-0 shadow-sm att-person card-body text-start w-100 d-flex flex-row align-items-center gap-3',
                 );
-                card.append(
-                    element('strong', person.name),
-                    element(
-                        'span',
-                        lang(
-                            person.current
-                                ? person.current.segments.at(-1).kind === 'break'
-                                    ? 'att_paused'
-                                    : 'att_working'
-                                : 'att_off',
-                        ),
-                    ),
-                    element('small', `${lang('att_requests')}: ${person.pending}`),
-                );
+                const info = element('div', '', 'me-auto');
+                const status = element('div', '', 'small text-muted d-flex align-items-center gap-2');
+                status.dataset.state = state[1];
+                status.append(element('span', '', 'att-dot'), element('span', lang(state[0])));
+                info.append(element('div', person.name, 'fw-semibold'), status);
+                card.append(element('span', (person.name || '?').charAt(0).toUpperCase(), 'att-avatar'), info);
+                if (person.pending) card.append(element('span', person.pending, 'badge rounded-pill text-bg-danger'));
                 col.append(card);
                 $id('att-team').append(col);
             });
         }
-        $id('att-summary').replaceChildren();
-        for (const [key, value] of [
-            ['counted', data.summary.counted_seconds],
-            ['paid', data.summary.totals.paid],
-            ['unpaid', data.summary.totals.unpaid],
-            ['unknown', data.summary.totals.unknown],
-        ]) {
-            const col = element('div', '', 'col-6 col-lg-3');
-            const card = element('div', '', 'card card-body');
-            card.append(element('small', lang('att_' + key), 'text-muted'), element('strong', duration(value), 'fs-4'));
-            col.append(card);
-            $id('att-summary').append(col);
-        }
+        $id('att-total').textContent = hours(data.summary.counted_seconds);
+        $id('att-breakdown').replaceChildren(
+            ...['paid', 'unpaid', 'unknown']
+                .filter((key) => data.summary.totals[key] > 0)
+                .map((key) => element('div', `${lang('att_' + key)}: ${hours(data.summary.totals[key])}`)),
+        );
         $id('att-provisional').hidden = !data.summary.provisional;
         $id('att-review').hidden = !data.review_flags.length;
-        $id('att-review').replaceChildren(element('strong', lang('att_review_hint')));
+        $id('att-review').replaceChildren();
         data.review_flags.forEach((flag) =>
-            $id('att-review').append(element('div', `${flag.date} · ${lang('att_flag_' + flag.type)}`)),
+            $id('att-review').append(
+                element('div', (flag.date ? `${calendarDay(flag.date)} · ` : '') + lang('att_flag_' + flag.type)),
+            ),
         );
         $id('att-entries').replaceChildren();
         data.entries.forEach((entry) => {
-            const totals = {work: 0, break: 0};
-            entry.segments.forEach((s) => {
-                totals[s.kind] += Math.max(
-                    0,
-                    moment.utc(s.end || data.server_now).diff(moment.utc(s.start), 'seconds'),
-                );
+            const totals = segmentTotals(entry);
+            const start = zoned(entry.start_at);
+            const end = entry.end_at ? zoned(entry.end_at) : null;
+            const tr = element('tr', '', entry.voided ? 'text-decoration-line-through text-muted' : '');
+            const cells = [
+                [day(start), ''],
+                [start.format('HH:mm'), local(entry.start_at)],
+                [end ? end.format(end.isSame(start, 'day') ? 'HH:mm' : 'DD/MM HH:mm') : '', local(entry.end_at)],
+                [hours(totals.work), ''],
+                [totals.break ? hours(totals.break) : '—', ''],
+            ];
+            cells.forEach(([text, title]) => {
+                const td = element('td', text);
+                if (title) td.title = title;
+                tr.append(td);
             });
-            const tr = element('tr');
-            [
-                local(entry.start_at),
-                local(entry.end_at),
-                duration(totals.work),
-                duration(totals.break),
-                lang(entry.voided ? 'att_voided' : entry.end_at ? 'att_closed' : 'att_open') +
-                    (entry.revision > 1 ? ` · v${entry.revision}` : ''),
-            ].forEach((v) => tr.append(element('td', v)));
-            const actions = element('td', '', 'text-nowrap');
-            actions.append(button(lang('att_history'), () => history(entry.id)));
+            if (!end && !entry.voided)
+                tr.children[2].append(element('span', lang('att_open'), 'badge text-bg-success'));
+            if (entry.voided)
+                tr.children[0].append(element('span', lang('att_voided'), 'badge text-bg-secondary ms-1'));
+            const actions = element('td', '', 'text-nowrap text-end');
+            actions.append(button(lang('att_history'), () => history(entry.id), 'btn btn-sm btn-outline-secondary'));
             if (admin)
                 actions.append(button(lang('att_correct'), () => edit(entry), 'btn btn-sm btn-outline-primary ms-1'));
             tr.append(actions);
@@ -244,40 +293,59 @@ document.addEventListener('DOMContentLoaded', () => {
             $id('att-entries').append(tr);
         }
         $id('att-days').replaceChildren();
-        data.summary.days.forEach((day) => {
+        data.summary.days.forEach((total) => {
             const tr = element('tr');
-            [day.date, ...['work', 'paid', 'unpaid', 'unknown'].map((k) => duration(day[k]))].forEach((v) =>
-                tr.append(element('td', v)),
-            );
+            [
+                calendarDay(total.date),
+                ...['planned', 'work', 'paid', 'unpaid', 'unknown'].map((k) => hours(total[k] || 0)),
+            ].forEach((v) => tr.append(element('td', v)));
             $id('att-days').append(tr);
         });
+        const pending = data.requests.filter((request) => request.status === 'pending').length;
+        $id('att-pending-badge').textContent = pending;
+        $id('att-pending-badge').hidden = !pending;
         $id('att-requests').replaceChildren();
         data.requests.forEach((request) => {
-            const card = element('div', '', 'border rounded p-3 mb-2');
-            card.append(
-                element('strong', `${request.work_date} · ${lang('att_' + request.status)}`),
-                element('p', request.message, 'mb-1'),
+            const card = element('div', '', 'card border-0 shadow-sm att-card p-3 mb-2');
+            const header = element('div', '', 'd-flex gap-2 align-items-center mb-1');
+            header.append(
+                element('strong', moment(request.work_date).format('DD/MM/YYYY')),
+                element(
+                    'span',
+                    lang('att_' + request.status),
+                    'badge rounded-pill ms-auto ' +
+                        (request.status === 'pending' ? 'text-bg-warning' : 'text-bg-light'),
+                ),
             );
+            card.append(header, element('p', request.message, 'mb-1'));
             if (request.resolution) card.append(element('p', request.resolution, 'text-muted mb-0'));
             if (admin && request.status === 'pending')
                 card.append(
-                    button(lang('att_resolve'), () => {
-                        let resolution;
-                        openModal(lang('att_resolve'), () =>
-                            change('resolve', {id: request.id, resolution: resolution.value}),
-                        );
-                        $id('att-modal-body').append(element('p', lang('att_resolve_hint')));
-                        resolution = field(lang('att_resolution'), 'textarea');
-                        resolution.maxLength = 2000;
-                    }),
+                    button(
+                        lang('att_resolve'),
+                        () => {
+                            let resolution;
+                            openModal(lang('att_resolve'), () =>
+                                change('resolve', {id: request.id, resolution: resolution.value}),
+                            );
+                            resolution = field(lang('att_resolution'), 'textarea');
+                            resolution.maxLength = 2000;
+                        },
+                        'btn btn-sm btn-outline-primary align-self-end',
+                    ),
                 );
             $id('att-requests').append(card);
         });
-        if (!data.requests.length) $id('att-requests').append(element('p', lang('att_none'), 'text-muted'));
+        if (!data.requests.length)
+            $id('att-requests').append(element('p', lang('att_none'), 'text-muted text-center py-4'));
         $id('att-reports').replaceChildren();
         data.reports.forEach((report) => {
-            const row = element('div', '', 'border rounded p-3 mb-2 d-flex flex-wrap gap-2 align-items-center');
-            const a = element('a', `#${report.id} · ${local(report.issued_at)}`, 'btn btn-outline-primary');
+            const row = element(
+                'div',
+                '',
+                'card border-0 shadow-sm att-card p-3 mb-2 d-flex flex-row flex-wrap gap-2 align-items-center',
+            );
+            const a = element('a', `#${report.id} · ${zoned(report.issued_at).format('DD/MM/YYYY')}`, 'fw-semibold');
             a.href = url('report', {id: report.id});
             a.target = '_blank';
             a.rel = 'noopener';
@@ -286,8 +354,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 element(
                     'span',
                     report.delivered_at
-                        ? lang('att_delivered') + ' · ' + local(report.delivered_at)
+                        ? lang('att_delivered') + ' · ' + zoned(report.delivered_at).format('DD/MM/YYYY')
                         : lang('att_not_delivered'),
+                    'badge rounded-pill ms-auto ' + (report.delivered_at ? 'text-bg-light' : 'text-bg-warning'),
                 ),
             );
             if (admin && !report.delivered_at)
@@ -303,22 +372,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 );
             $id('att-reports').append(row);
         });
-        if (!data.reports.length) $id('att-reports').append(element('p', lang('att_none'), 'text-muted'));
+        if (!data.reports.length)
+            $id('att-reports').append(element('p', lang('att_none'), 'text-muted text-center py-4'));
         for (const [id, format] of [
             ['att-csv', 'csv'],
             ['att-print', 'print'],
             ['att-json', 'json'],
         ])
             $id(id).href = url('export', {format});
-        if (admin) {
-            $id('att-contract').value = data.employee.contract_type;
-            $id('att-weekly').value = data.employee.weekly_minutes ?? '';
-            $id('att-agreement').value = data.employee.agreement;
-            $id('att-pause-policy').value = data.employee.pause_policy;
-            $id('att-ordinary').value = duration(data.summary.counted_seconds);
-            $id('att-complementary').value = '0:00:00';
-            $id('att-overtime').value = '0:00:00';
-        }
+        if (admin)
+            ['ordinary', 'complementary', 'overtime'].forEach(
+                (kind) => ($id('att-' + kind).value = duration(data.suggestion[kind])),
+            );
     }
 
     async function history(id) {
@@ -381,7 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 segments,
             });
         });
-        $id('att-modal-body').append(element('p', lang('att_correction_hint'), 'text-muted'));
         const container = element('div');
         $id('att-modal-body').append(container);
         function timeInput(parent, label, value) {
@@ -392,17 +456,19 @@ document.addEventListener('DOMContentLoaded', () => {
             input.type = 'datetime-local';
             input.step = '1';
             input.className = 'form-control';
-            input.value = value ? moment.utc(value).tz('Europe/Madrid').format('YYYY-MM-DDTHH:mm:ss') : '';
+            input.value = value ? moment.utc(value).tz(ZONE).format('YYYY-MM-DDTHH:mm:ss') : '';
             const offset = document.createElement('select');
             offset.className = 'form-select';
             offset.style.maxWidth = '105px';
             offset.setAttribute('aria-label', lang('att_offset'));
-            ['+01:00', '+02:00'].forEach((v) => offset.append(new Option(v, v)));
-            offset.value = value
-                ? moment.utc(value).tz('Europe/Madrid').format('Z')
-                : moment.tz('Europe/Madrid').format('Z');
+            // Winter and summer offsets of the clinic timezone, for the repeated hour of the DST change.
+            const year = moment.tz(ZONE).year();
+            [...new Set([`${year}-01-15`, `${year}-07-15`].map((date) => moment.tz(date, ZONE).format('Z')))]
+                .sort()
+                .forEach((v) => offset.append(new Option(v, v)));
+            offset.value = value ? moment.utc(value).tz(ZONE).format('Z') : moment.tz(ZONE).format('Z');
             input.addEventListener('change', () => {
-                if (input.value) offset.value = moment.tz(input.value, 'Europe/Madrid').format('Z');
+                if (input.value) offset.value = moment.tz(input.value, ZONE).format('Z');
             });
             flex.append(input, offset);
             box.append(flex);
@@ -417,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const kind = document.createElement('select');
             kind.className = 'form-select mb-2';
             kind.setAttribute('aria-label', lang('att_kind'));
-            ['work', 'paid', 'unpaid', 'unknown'].forEach((k) => kind.append(new Option(lang('att_' + k), k)));
+            ['work', 'auto', 'paid', 'unpaid', 'unknown'].forEach((k) => kind.append(new Option(lang('att_' + k), k)));
             kind.value = segment.policy;
             wrapper.append(kind);
             const start = timeInput(wrapper, lang('att_start'), segment.start),
@@ -445,26 +511,24 @@ document.addEventListener('DOMContentLoaded', () => {
         ),
     );
     $id('att-employee').disabled = !admin;
+    const showView = () => {
+        // Former employees no longer clock in: they only see their records.
+        const records = location.hash === '#registres' || (!admin && !worker);
+        $id('att-view-clock').hidden = records;
+        $id('att-view-records').hidden = !records;
+    };
+    window.addEventListener('hashchange', showView);
+    showView();
     $id('att-month').value = vars('attendance_month');
     $id('att-employee').addEventListener('change', load);
     $id('att-month').addEventListener('change', load);
-    $id('att-refresh').addEventListener('click', load);
     $id('att-add')?.addEventListener('click', () => edit(null));
     $id('att-request')?.addEventListener('click', () => {
         let date, message;
         openModal(lang('att_request'), () => change('request', {date: date.value, message: message.value}));
-        date = field(lang('date'), 'date', moment.tz('Europe/Madrid').format('YYYY-MM-DD'));
+        date = field(lang('date'), 'date', moment.tz(ZONE).format('YYYY-MM-DD'));
         message = field(lang('att_request_message'), 'textarea');
         message.maxLength = 2000;
-    });
-    $id('att-profile-form')?.addEventListener('submit', (event) => {
-        event.preventDefault();
-        change('profile', {
-            contract_type: $id('att-contract').value,
-            weekly_minutes: $id('att-weekly').value,
-            agreement: $id('att-agreement').value,
-            pause_policy: $id('att-pause-policy').value,
-        });
     });
     $id('att-issue-form')?.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -476,14 +540,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
     document.addEventListener('visibilitychange', () => {
-        if (!admin && !document.hidden && !busy && !$id('att-modal').classList.contains('show')) load();
+        if (worker && !document.hidden && !busy && !$id('att-modal').classList.contains('show')) load();
     });
-    if (!admin)
+    if (worker)
         setInterval(() => {
             if (!document.hidden && !busy && !$id('att-modal').classList.contains('show')) load();
         }, 30000);
+    tick();
+    setInterval(tick, 1000);
     if (!employees.length) {
-        feedback(lang('att_no_staff'));
+        feedback(lang('att_no_staff'), true);
         return;
     }
     load();

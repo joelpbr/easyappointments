@@ -1074,17 +1074,11 @@ $lang['provider_order_empty'] = 'No hay podólogos disponibles en el calendario.
 
 $lang['att_title'] = 'Fichaje';
 
-$lang['att_intro'] = 'Registro de jornada de los administrativos';
-
-$lang['att_now'] = 'Tu jornada';
-
 $lang['att_off'] = 'Fuera de jornada';
 
 $lang['att_working'] = 'Trabajando';
 
 $lang['att_paused'] = 'En pausa';
-
-$lang['att_ready'] = 'Cuando empieces a trabajar, marca la entrada.';
 
 $lang['att_in'] = 'Entrar';
 
@@ -1094,9 +1088,7 @@ $lang['att_pause'] = 'Hacer pausa';
 
 $lang['att_resume'] = 'Reanudar';
 
-$lang['att_clock_hint'] = 'La hora la pone el servidor. Cerrar sesión no finaliza la jornada.';
-
-$lang['att_open_warning'] = 'Esta jornada lleva más de 16 horas abierta. Si olvidaste la salida, solicita una corrección; no se cierra automáticamente.';
+$lang['att_open_warning'] = 'La jornada lleva demasiado tiempo abierta. Si olvidaste la salida, comunícalo.';
 
 $lang['att_employee'] = 'Persona';
 
@@ -1104,17 +1096,15 @@ $lang['att_month'] = 'Mes';
 
 $lang['att_print'] = 'Imprimir / PDF';
 
-$lang['att_evidence'] = 'Exportación completa de los registros, revisiones e informes de esta persona';
-
 $lang['att_entry'] = 'Registro';
 
 $lang['att_entries'] = 'Entradas y salidas';
 
-$lang['att_start'] = 'Entrada / inicio';
+$lang['att_start'] = 'Inicio';
 
-$lang['att_end'] = 'Salida / fin';
+$lang['att_end'] = 'Fin';
 
-$lang['att_work'] = 'Trabajo sin pausas';
+$lang['att_work'] = 'Trabajo';
 
 $lang['att_break'] = 'Pausas';
 
@@ -1124,45 +1114,41 @@ $lang['att_open'] = 'Abierta';
 
 $lang['att_closed'] = 'Cerrada';
 
-$lang['att_voided'] = 'Anulado con historial';
+$lang['att_voided'] = 'Anulado';
 
 $lang['att_paid'] = 'Pausa computable';
 
 $lang['att_unpaid'] = 'Pausa no computable';
 
-$lang['att_unknown'] = 'Pendiente de definir';
+$lang['att_unknown'] = 'Sin definir';
 
 $lang['att_counted'] = 'Tiempo computado';
 
 $lang['att_provisional'] = 'Provisional';
 
-$lang['att_provisional_hint'] = 'Resumen provisional: hay jornadas abiertas o pausas pendientes de definir. El tiempo computado no incluye estas pausas.';
-
-$lang['att_daily'] = 'Totales diarios del mes';
+$lang['att_daily'] = 'Totales diarios';
 
 $lang['att_total'] = 'Total';
 
-$lang['att_empty'] = 'No hay fichajes en este mes. No se infieren ausencias ni jornadas trabajadas.';
+$lang['att_empty'] = 'No hay fichajes en este mes.';
 
 $lang['att_none'] = 'Ningún registro';
 
-$lang['att_request'] = 'Comunicar un olvido o una incidencia';
+$lang['att_request'] = 'Comunicar incidencia';
 
-$lang['att_request_message'] = 'Explica qué ha pasado y qué horas deben revisarse. No incluyas datos médicos ni de pacientes.';
+$lang['att_request_message'] = '¿Qué ha pasado?';
 
 $lang['att_requests'] = 'Incidencias';
 
 $lang['att_pending'] = 'Pendiente';
 
-$lang['att_resolved'] = 'Respuesta registrada';
+$lang['att_resolved'] = 'Resuelta';
 
 $lang['att_resolve'] = 'Responder';
 
-$lang['att_resolution'] = 'Respuesta y actuación realizada';
+$lang['att_resolution'] = 'Respuesta';
 
-$lang['att_resolve_hint'] = 'Corregir los horarios y responder la incidencia son acciones separadas. Indica la corrección realizada o por qué no corresponde.';
-
-$lang['att_add_missing'] = 'Añadir un fichaje olvidado';
+$lang['att_add_missing'] = 'Añadir registro';
 
 $lang['att_correct'] = 'Corregir';
 
@@ -1178,23 +1164,19 @@ $lang['att_kind'] = 'Tramo';
 
 $lang['att_policy'] = 'Cómputo de las pausas';
 
-$lang['att_reason'] = 'Motivo de la corrección (obligatorio)';
-
-$lang['att_correction_hint'] = 'Los originales se conservan. Los tramos deben ser consecutivos, sin huecos ni solapamientos. Añade trabajo y pausas en orden. El huso es Europe/Madrid; revisa el desplazamiento +01:00/+02:00 en cambios de hora.';
+$lang['att_reason'] = 'Motivo';
 
 $lang['att_offset'] = 'Desplazamiento horario';
 
-$lang['att_end_optional'] = 'Final (vacío solo si todavía está abierto)';
+$lang['att_end_optional'] = 'Fin (opcional)';
 
-$lang['att_remove_segment'] = 'Quitar este tramo de la corrección';
+$lang['att_remove_segment'] = 'Quitar';
 
 $lang['att_add_segment'] = 'Añadir tramo';
 
-$lang['att_void_label'] = 'Anular este registro, conservando el original y el motivo';
+$lang['att_void_label'] = 'Anular registro';
 
-$lang['att_profile'] = 'Datos laborales y criterio de pausas';
-
-$lang['att_profile_hint'] = 'No son necesarias para empezar a fichar. Deben completarse con los datos del contrato y convenio antes de emitir un resumen laboral clasificado. El criterio de pausas se aplica a jornadas nuevas; las anteriores solo cambian con una corrección motivada.';
+$lang['att_profile'] = 'Datos laborales';
 
 $lang['att_contract'] = 'Contrato';
 
@@ -1202,17 +1184,13 @@ $lang['att_full'] = 'Tiempo completo';
 
 $lang['att_part'] = 'Tiempo parcial';
 
-$lang['att_weekly'] = 'Minutos semanales pactados';
+$lang['att_weekly'] = 'Jornada semanal';
 
-$lang['att_agreement'] = 'Convenio / acuerdo de jornada aplicable';
+$lang['att_agreement'] = 'Convenio aplicable';
 
-$lang['att_reports'] = 'Resúmenes mensuales emitidos';
-
-$lang['att_reports_hint'] = 'Cada emisión conserva una copia de los registros y revisiones. Si después se corrigen horas, emite un nuevo resumen y entrégalo de nuevo.';
+$lang['att_reports'] = 'Resúmenes mensuales';
 
 $lang['att_issue'] = 'Emitir resumen mensual';
-
-$lang['att_issue_hint'] = 'Para meses finalizados, sin jornadas abiertas, pausas pendientes ni incidencias sin respuesta. Revisa el reparto según el contrato: no se deducen horas extras automáticamente. La suma debe coincidir exactamente con el tiempo computado (HH:MM:SS).';
 
 $lang['att_ordinary'] = 'Ordinarias';
 
@@ -1222,7 +1200,7 @@ $lang['att_overtime'] = 'Extraordinarias';
 
 $lang['att_issued'] = 'Resumen emitido';
 
-$lang['att_draft'] = 'Consulta / borrador, no es un resumen laboral clasificado';
+$lang['att_draft'] = 'Borrador';
 
 $lang['att_generated'] = 'Generado';
 
@@ -1230,53 +1208,53 @@ $lang['att_timezone'] = 'Huso horario';
 
 $lang['att_delivery'] = 'Entrega';
 
-$lang['att_delivered'] = 'Entrega anotada';
+$lang['att_delivered'] = 'Entregado';
 
-$lang['att_not_delivered'] = 'Entrega pendiente de anotar';
+$lang['att_not_delivered'] = 'Pendiente de entregar';
 
 $lang['att_mark_delivered'] = 'Anotar entrega';
 
-$lang['att_delivery_note'] = 'Indica cuándo y cómo se ha entregado (papel, correo…). Esto no envía ningún mensaje.';
+$lang['att_delivery_note'] = 'Cómo y cuándo se entregó';
 
-$lang['att_report_note'] = 'Los totales diarios se limitan al mes seleccionado; el detalle conserva los tramos originales, incluidos los que cruzan medianoche o el cambio de mes. Las correcciones no eliminan los registros anteriores.';
+$lang['att_report_note'] = 'Las correcciones conservan los registros anteriores.';
 
-$lang['att_legal_title'] = 'Información del registro de jornada';
+$lang['att_legal_title'] = 'Información legal';
 
-$lang['att_legal'] = 'Registro diario de inicio y fin de jornada (art. 34.9 ET), conservación mínima de cuatro años y acceso para la persona trabajadora, representantes e Inspección. Los resúmenes a tiempo parcial se entregan con la nómina (art. 12.4.c); el cómputo de horas extras tiene también resumen (art. 35.5). Admin puede imprimir o exportar los datos para facilitar este acceso. Debe documentarse el procedimiento de fichaje y consultarse a la representación laboral cuando corresponda.';
+$lang['att_legal'] = 'Registro diario de jornada (art. 34.9 ET). Se conserva %d años y está a disposición de la persona trabajadora, sus representantes y la Inspección de Trabajo. A tiempo parcial, el resumen mensual se entrega con la nómina (art. 12.4.c ET).';
 
-$lang['att_privacy'] = 'Responsable: la clínica. Finalidad: registro de jornada y cumplimiento de las obligaciones laborales, no vigilancia clínica. Acceso restringido a la persona y admin; comunicaciones legalmente exigibles. No se recogen ubicación, biometría ni datos de pacientes. Contacta con la clínica para ejercer los derechos de protección de datos. No se borran automáticamente los registros; la clínica debe revisar la conservación al cumplirse el plazo legal.';
+$lang['att_privacy'] = 'Responsable: la clínica. Finalidad: registro de jornada (obligación legal). No se recoge ubicación ni biometría. Para ejercer tus derechos, contacta con la clínica.';
 
 $lang['att_saved'] = 'Guardado correctamente';
 
 $lang['att_clock_saved'] = 'Fichaje registrado';
 
-$lang['att_failed'] = 'No se ha podido completar la operación. Comprueba la conexión y recarga antes de volver a intentarlo.';
+$lang['att_failed'] = 'No se ha podido guardar. Recarga y vuelve a intentarlo.';
 
 $lang['att_retry'] = 'Hay otra operación en curso. Vuelve a intentarlo.';
 
 $lang['att_stale'] = 'El registro ha cambiado. Recarga antes de continuar.';
 
-$lang['att_invalid_time'] = 'Fecha u hora no válida. Revisa también el cambio de hora y el desplazamiento horario.';
+$lang['att_invalid_time'] = 'Fecha u hora no válida.';
 
-$lang['att_invalid_segments'] = 'Revisa los tramos: inicio con trabajo, horas no futuras, consecutivas y sin solapamientos. Solo el último tramo puede quedar abierto.';
+$lang['att_invalid_segments'] = 'Tramos no válidos: deben empezar con trabajo, ser consecutivos y no futuros.';
 
 $lang['att_invalid_month'] = 'Mes no válido';
 
 $lang['att_not_found'] = 'Registro no encontrado';
 
-$lang['att_reason_required'] = 'Escribe un motivo o una respuesta de 5 a 2.000 caracteres y revisa la fecha.';
+$lang['att_reason_required'] = 'Escribe un motivo (mínimo 5 caracteres) y revisa la fecha.';
 
-$lang['att_overlap'] = 'Este horario se solapa con otro registro de la persona.';
+$lang['att_overlap'] = 'Se solapa con otro registro.';
 
-$lang['att_invalid_profile'] = 'Revisa el tipo de contrato, los minutos semanales y el criterio de pausas.';
+$lang['att_invalid_profile'] = 'Datos laborales no válidos.';
 
-$lang['att_profile_required'] = 'Completa el contrato, los minutos semanales y el convenio antes de emitir el resumen.';
+$lang['att_profile_required'] = 'Antes de emitir el resumen, indica el convenio en la configuración y la jornada y la duración del contrato.';
 
-$lang['att_report_not_ready'] = 'No se puede emitir: el mes no ha terminado o hay registros, pausas o incidencias pendientes.';
+$lang['att_report_not_ready'] = 'Todavía no se puede emitir: el mes no ha terminado o hay pendientes.';
 
-$lang['att_classification_invalid'] = 'La suma HH:MM:SS debe coincidir con el tiempo computado. Complementarias solo a tiempo parcial; horas extras ordinarias solo a tiempo completo. Revisa los casos excepcionales con la gestoría.';
+$lang['att_classification_invalid'] = 'El reparto debe sumar el tiempo computado. Complementarias solo a tiempo parcial; extraordinarias solo a tiempo completo.';
 
-$lang['att_no_staff'] = 'No hay administrativos registrados.';
+$lang['att_no_staff'] = 'Nadie ficha. Indica en la ficha de cada podólogo o administrativo si es asalariado.';
 
 $lang['att_event_in'] = 'Entrada';
 
@@ -1298,12 +1276,153 @@ $lang['att_event_report'] = 'Informe';
 
 $lang['att_event_delivery'] = 'Entrega';
 
-$lang['att_review_hint'] = 'Avisos orientativos para revisar con el convenio y las incidencias; no determinan por sí solos un incumplimiento.';
+$lang['att_flag_long_open'] = 'Jornada abierta demasiado tiempo';
 
-$lang['att_flag_long_open'] = 'Jornada abierta más de 16 horas';
+$lang['att_flag_short_rest'] = 'Descanso entre jornadas insuficiente';
 
-$lang['att_flag_short_rest'] = 'Menos de 12 horas entre registros de días distintos';
+$lang['att_flag_long_day'] = 'Supera el máximo diario de trabajo';
 
-$lang['att_flag_long_continuous'] = 'Tramo de trabajo de más de 6 horas sin pausa registrada';
+$lang['att_since'] = 'Desde las';
 
-$lang['att_flag_long_day'] = 'Más de 9 horas computadas este día';
+$lang['att_team'] = 'Equipo';
+
+$lang['att_records'] = 'Registros';
+
+$lang['att_flag_integrity'] = 'Registros modificados fuera de la aplicación';
+
+$lang['att_too_many_interruptions'] = 'El horario a tiempo parcial tiene más interrupciones por día de las permitidas.';
+
+$lang['att_statute_paid'] = 'Estatuto: computa';
+
+$lang['att_per_day'] = 'por día';
+
+$lang['att_part_time_interruptions'] = 'Interrupciones de la jornada partida a tiempo parcial';
+
+$lang['att_employment_missing'] = 'Sin relación laboral definida; no fichan hasta que se indique en su ficha:';
+
+$lang['employment_hint'] = 'Las personas asalariadas deben registrar la jornada (art. 34.9 ET).';
+
+$lang['employment_self_employed'] = 'Cuenta propia (autónomo o socio): no ficha';
+
+$lang['employment_employee'] = 'Cuenta ajena: ficha';
+
+$lang['employment_undefined'] = 'Sin definir';
+
+$lang['employment'] = 'Relación laboral';
+
+$lang['att_clock_first'] = 'Ficha la entrada para empezar a trabajar.';
+
+$lang['att_no_pause'] = 'Con tu horario no haces pausas: para parar, ficha la salida.';
+
+$lang['att_complementary_legal'] = 'Estatuto: %s; por convenio, hasta el %s';
+
+$lang['att_statute_unpaid'] = 'Estatuto: no computa';
+
+$lang['att_statute_value'] = 'Estatuto: %s';
+
+$lang['att_legal_max'] = 'Máximo legal: %s';
+
+$lang['att_legal_min'] = 'Mínimo legal: %s';
+
+$lang['att_statute_note'] = 'El Estatuto de los Trabajadores se aplica siempre: el convenio puede mejorarlo, pero ningún valor puede quedar por debajo de sus mínimos.';
+
+$lang['att_agreement_name'] = 'Nombre y código del convenio';
+
+$lang['att_agreement_none'] = 'Ningún convenio';
+
+$lang['att_agreement_other'] = 'Otro convenio';
+
+$lang['att_flag_overtime_limit'] = 'Supera el máximo anual de horas extraordinarias';
+
+$lang['att_flag_pact_exceeded'] = 'Supera las horas complementarias pactadas';
+
+$lang['att_flag_extra_without_pact'] = 'Horas fuera de horario sin pacto de horas complementarias';
+
+$lang['att_flag_annual_limit'] = 'Supera la jornada máxima anual';
+
+$lang['att_flag_weekly_rest'] = 'Descanso semanal insuficiente';
+
+$lang['att_flag_missing_break'] = 'Jornada continuada sin la pausa mínima';
+
+$lang['att_event_rules'] = 'Reglas de jornada';
+
+$lang['att_invalid_pact'] = 'Solo se pueden pactar horas complementarias con un contrato a tiempo parcial que llegue al mínimo legal de horas semanales.';
+
+$lang['att_invalid_schedule'] = 'Horario no válido: demasiados tramos en un día o tramos solapados.';
+
+$lang['att_invalid_settings'] = 'Hay valores fuera de los límites legales.';
+
+$lang['att_planned'] = 'Previsto';
+
+$lang['att_auto'] = 'Pausa según convenio';
+
+$lang['att_policy_unpaid'] = 'Ninguna computable';
+
+$lang['att_policy_paid'] = 'Todas computables';
+
+$lang['att_policy_agreement'] = 'Según el convenio';
+
+$lang['att_complementary_pact'] = 'Pacto de horas complementarias';
+
+$lang['att_add_interval'] = 'Añadir tramo';
+
+$lang['att_schedule_total'] = 'Total';
+
+$lang['att_schedule'] = 'Horario';
+
+$lang['att_temporary'] = 'Temporal';
+
+$lang['att_indefinite'] = 'Indefinido';
+
+$lang['att_duration'] = 'Duración del contrato';
+
+$lang['att_category'] = 'Categoría profesional';
+
+$lang['att_staff'] = 'Personal que ficha';
+
+$lang['att_years'] = 'años';
+
+$lang['att_days'] = 'días';
+
+$lang['att_retention'] = 'Conservación de los registros';
+
+$lang['att_open_alert'] = 'Aviso de jornada abierta tras';
+
+$lang['att_section_other'] = 'Avisos y conservación';
+
+$lang['att_complementary_max'] = 'Máximo de horas complementarias pactadas';
+
+$lang['att_overtime_max'] = 'Máximo de horas extraordinarias al año';
+
+$lang['att_section_extra'] = 'Horas extraordinarias y complementarias';
+
+$lang['att_break_paid'] = 'La pausa mínima computa como tiempo de trabajo';
+
+$lang['att_break_minutes'] = 'Pausa mínima';
+
+$lang['att_break_after'] = 'Cuando la jornada continuada supera';
+
+$lang['att_section_break'] = 'Pausa en jornada continuada';
+
+$lang['att_weekly_rest_days'] = 'Acumulable en un periodo de';
+
+$lang['att_weekly_rest'] = 'Descanso semanal ininterrumpido';
+
+$lang['att_min_rest'] = 'Descanso mínimo entre jornadas';
+
+$lang['att_max_daily'] = 'Máximo diario de trabajo ordinario';
+
+$lang['att_section_rest'] = 'Límites y descansos';
+
+$lang['att_annual_max'] = 'Jornada máxima anual (0 = sin límite)';
+
+$lang['att_full_time'] = 'Jornada completa semanal';
+
+$lang['att_section_agreement'] = 'Convenio y jornada';
+
+$lang['att_settings'] = 'Registro de jornada';
+
+$lang['att_worked'] = 'Trabajado';
+
+$lang['att_export'] = 'Exportar';
+

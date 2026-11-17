@@ -40,7 +40,7 @@
 <body class="ea-simple">
 
 <header class="ea-simple-header">
-    <?php if (in_array(session('role_slug'), [DB_SLUG_ADMIN, DB_SLUG_SECRETARY], true)): ?>
+    <?php if (vars('attendance_menu')): ?>
         <a href="<?= site_url('attendance') ?>" class="btn btn-outline-primary btn-sm m-2"><?= lang('att_title') ?></a>
     <?php endif; ?>
     <nav class="ea-simple-day" aria-label="<?= e(lang('calendar')) ?>">
