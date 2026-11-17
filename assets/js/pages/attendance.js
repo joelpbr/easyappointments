@@ -81,10 +81,10 @@ document.addEventListener('DOMContentLoaded', () => {
             payload
                 ? {
                       method: 'POST',
-                      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                      headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest'},
                       body: new URLSearchParams({csrf_token: vars('csrf_token'), ...payload}),
                   }
-                : {},
+                : {headers: {'X-Requested-With': 'XMLHttpRequest'}},
         );
         let result;
         try {
@@ -151,6 +151,15 @@ document.addEventListener('DOMContentLoaded', () => {
         $id('att-modal-body').append(wrapper);
         return input;
     }
+    // getRandomValues also works over the clinic LAN (HTTP), where randomUUID is unavailable.
+    function createRequestKey() {
+        const bytes = crypto.getRandomValues(new Uint8Array(16));
+        bytes[6] = (bytes[6] & 0x0f) | 0x40;
+        bytes[8] = (bytes[8] & 0x3f) | 0x80;
+        const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+        return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+    }
+
     async function clock(action) {
         if (busy) return;
         busy = true;
@@ -160,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 action,
                 revision: data.current?.revision || 0,
                 entry_id: data.current?.id || 0,
-                request_key: crypto.randomUUID(),
+                request_key: createRequestKey(),
             });
             feedback(lang('att_clock_saved'));
         } catch (error) {
