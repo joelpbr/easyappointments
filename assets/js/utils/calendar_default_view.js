@@ -45,6 +45,9 @@ App.Utils.CalendarDefaultView = (function () {
     const moment = window.moment;
     let $popoverTarget = null;
     let fullCalendar = null;
+    let lastEventsSignature = null;
+    let refreshRequest = 0;
+    let refreshPending = false;
     let lastFocusedEventData = null;
 
     // Helper Functions
@@ -831,15 +834,18 @@ App.Utils.CalendarDefaultView = (function () {
      * @param {boolean} [silent] - Automatic refresh: no error dialog when the request fails.
      */
     function refreshCalendarAppointments($calendar, recordId, filterType, startDate, endDate, silent = false) {
-        $('#loading').css('visibility', 'hidden');
+        if (silent && refreshPending) return;
+        refreshPending = true;
+        const currentRequest = ++refreshRequest;
+        if (!silent) $('#loading').css('visibility', 'hidden');
 
         const formattedStartDate = moment(startDate).format('YYYY-MM-DD');
         const formattedEndDate = moment(endDate).format('YYYY-MM-DD');
 
         App.Http.Calendar.getCalendarAppointments(recordId, formattedStartDate, formattedEndDate, filterType, silent)
             .done((response) => {
-                // Clear existing events
-                fullCalendar.getEventSources().forEach((source) => source.remove());
+                if (currentRequest !== refreshRequest) return;
+                if (silent && $('.modal.show, .popover, .fc-event-dragging, .fc-event-resizing, .fc-highlight').length) return;
 
                 const events = [];
 
@@ -862,12 +868,20 @@ App.Utils.CalendarDefaultView = (function () {
                     events.push(...createWorkingPlanEvents(recordId));
                 }
 
-                fullCalendar.addEventSource(events);
+                const signature = JSON.stringify([recordId, filterType, formattedStartDate, formattedEndDate, fullCalendar.view.type, events]);
+                if (silent && signature === lastEventsSignature) return;
+
+                fullCalendar.batchRendering(() => {
+                    fullCalendar.getEventSources().forEach((source) => source.remove());
+                    fullCalendar.addEventSource(events);
+                });
+                lastEventsSignature = signature;
 
                 App.Utils.CalendarPastTime.update(fullCalendar);
             })
             .always(() => {
-                $('#loading').css('visibility', '');
+                if (currentRequest === refreshRequest) refreshPending = false;
+                if (!silent) $('#loading').css('visibility', '');
             });
     }
 
@@ -1391,20 +1405,7 @@ App.Utils.CalendarDefaultView = (function () {
             $('#calendar-actions button').prop('disabled', true);
         }
 
-        // Auto-refresh every 60 seconds
-        setInterval(() => {
-            if ($('.popover').length || App.Utils.CalendarSync.isCurrentlySyncing()) {
-                return;
-            }
-
-            refreshCalendarAppointments(
-                $calendar,
-                $selectFilterItem.val(),
-                getSelectedFilterType(),
-                fullCalendar.view.activeStart,
-                fullCalendar.view.activeEnd,
-            );
-        }, 60000);
+        // Automatic refresh is scheduled centrally by App.Pages.Calendar.
     }
 
     // Public API
@@ -1413,7 +1414,7 @@ App.Utils.CalendarDefaultView = (function () {
      * Reload the events of the displayed period without rebuilding the calendar (automatic refresh).
      */
     function refresh() {
-        if (!fullCalendar) {
+        if (!fullCalendar || App.Utils.CalendarSync.isCurrentlySyncing()) {
             return;
         }
 
