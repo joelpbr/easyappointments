@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="theme-color" content="<?= e(branding_color()) ?>">
+    <?php component('web_app_meta'); ?>
     <meta name="google" content="notranslate">
 
     <meta property="og:title" content="<?= e(lang('page_title')) ?> | <?= e(branding_name()) ?>"/>

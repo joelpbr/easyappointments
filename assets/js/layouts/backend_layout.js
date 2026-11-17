@@ -135,11 +135,13 @@ window.App.Layouts.Backend = (function () {
 
         $('#toggle-money').on('click', () => setMoneyHidden(!isMoneyHidden(), true));
 
+        let loadingTimer;
         $(document).ajaxStart(() => {
-            $loading.show();
+            loadingTimer = setTimeout(() => $loading.show(), 180);
         });
 
         $(document).ajaxStop(() => {
+            clearTimeout(loadingTimer);
             $loading.hide();
         });
 

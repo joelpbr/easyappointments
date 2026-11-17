@@ -51,7 +51,8 @@
 
 require_once __DIR__ . '/../helpers/routes_helper.php';
 
-$route['default_controller'] = 'booking';
+// Render the sign-in form at the root; signed-in users continue to their calendar.
+$route['default_controller'] = 'login';
 
 $route['404_override'] = '';
 

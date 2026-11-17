@@ -13,9 +13,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="<?= e(branding_color()) ?>">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <?php component('web_app_meta'); ?>
     <meta name="google" content="notranslate">
 
     <title><?= lang('simple_version') ?> | <?= e(setting('company_name')) ?></title>
@@ -36,6 +34,7 @@
     <?php endif; ?>
     <link rel="stylesheet" type="text/css" href="<?= asset_url('assets/css/simple.css') ?>">
     <?php component('company_color_style', ['company_color' => setting('company_color')]); ?>
+    <link rel="stylesheet" href="<?= asset_url('assets/css/loading.css') ?>">
 </head>
 <body class="ea-simple">
 
@@ -116,6 +115,7 @@
     <?php component('clinical_record_modal', ['standalone' => true]); ?>
 <?php endif; ?>
 
+<script src="<?= asset_url('assets/js/utils/loading.js') ?>"></script>
 <script src="<?= asset_url('assets/js/pages/simple.js') ?>"></script>
 
 </body>

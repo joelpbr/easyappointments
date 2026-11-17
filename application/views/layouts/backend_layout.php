@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <meta name="theme-color" content="<?= e(branding_color()) ?>">
+    <?php component('web_app_meta'); ?>
     <meta name="google" content="notranslate">
 
     <?php slot('meta'); ?>
@@ -39,6 +40,7 @@
     <?php component('company_color_style', ['company_color' => setting('company_color')]); ?>
 
     <?php slot('styles'); ?>
+    <link rel="stylesheet" href="<?= asset_url('assets/css/loading.css') ?>">
 </head>
 <body class="d-flex flex-column h-100">
 
@@ -71,6 +73,7 @@
 <script src="<?= asset_url('assets/js/utils/string.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/url.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/validation.js') ?>"></script>
+<script src="<?= asset_url('assets/js/utils/loading.js') ?>"></script>
 <script src="<?= asset_url('assets/js/layouts/backend_layout.js') ?>"></script>
 <script src="<?= asset_url('assets/js/http/localization_http_client.js') ?>"></script>
 
