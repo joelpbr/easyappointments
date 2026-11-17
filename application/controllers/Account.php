@@ -186,11 +186,13 @@ class Account extends EA_Controller
             method('post');
 
             check('username', 'string');
-            check('user_id', 'numeric|null');
+            if (!session('user_id') || cannot('edit', PRIV_USER_SETTINGS)) {
+                abort(403, 'Forbidden');
+            }
 
             $username = request('username');
 
-            $user_id = request('user_id');
+            $user_id = can('edit', PRIV_USERS) ? request('user_id') : session('user_id');
 
             $is_valid = $this->users_model->validate_username($username, $user_id);
 
