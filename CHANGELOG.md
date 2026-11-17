@@ -7,6 +7,8 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- Each patient can sign, with a finger on the tablet, the consent to the usual podiatric care with the data protection information and the optional consents (WhatsApp reminders, teaching use of anonymised photos): the signed PDF is kept in the patient's documents and cannot be deleted, the evidence of the signature is stored with its SHA-256 fingerprint, a patient who does not accept WhatsApp gets no reminders, and the contact of the data protection officer is set in the legal settings.
+
 - Administrative staff clock in, pause and clock out from the Fitxatge page, which opens showing only the clock button and keeps entries, incidents, monthly summaries, exports and the legal notice in a separate Records view; administrators review the team, correct entries with a traceable reason and issue monthly summaries.
 
 - The record of each podiatrist and administrative employee has an employment relationship: employees clock in, self-employed professionals and partners do not, and staff still undefined is listed in the working time settings; the legal values, the collective agreements and the roles that clock in live in a configuration file, the days follow the timezone of the general settings, part-time split schedules respect the allowed interruptions, and records changed directly in the database are flagged.
@@ -83,6 +85,12 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- The WhatsApp settings list every reminder still to go out, the first one first, with the date and time it will be sent or why it will not (too little notice left, a phone that cannot receive WhatsApp).
+
+- The WhatsApp switch for the former template that said "demà" is gone: a visit booked after the usual moment, also for the same day, gets its reminder half an hour after it was booked, saying "avui" or "demà", and the reminders the switch had left for review go back to the queue.
+
+- The WhatsApp settings show the reminder template as the clinic has it approved ("Tens visita *{{2}}* a les *{{3}}h* a la …"), with the name of the clinic from its settings instead of a fixed one.
+
 - Hiperqueratosi now uses thin green lines pointing inward instead of green dots in its yellow icon.
 
 - The amounts of money are hidden by default on every browser; "Show balances" in the user menu shows them, and that choice is remembered on that browser
@@ -138,6 +146,8 @@ developers to maintain and readjust their custom modifications on the main proje
 - The Docker setup now runs MySQL 8.4 and defaults to the Spanish language and the Europe/Madrid time zone, both configurable in .env
 
 ### Fixed
+
+- Reloading the calendar no longer pushes the hours down out of line with the appointments: each reload used to add another hidden break label to the first row of every column.
 
 - The activity log names the right patient on the changes of a clinical record and lists them when searching by that patient.
 - Placing a pathology on a foot drawing uses the marker layer's position and size to center the icon at the pointer.
