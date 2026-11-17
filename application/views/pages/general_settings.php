@@ -9,6 +9,7 @@
                 <?php component('settings_nav'); ?>
             </div>
             <div class="col-sm-9">
+                <?php component('settings_overview'); ?>
                 <form>
                     <fieldset>
                         <div class="d-flex justify-content-between align-items-center border-bottom mb-4 py-2">
@@ -24,15 +25,22 @@
                             <?php endif; ?>
                         </div>
 
+                        <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="<?= lang('general_settings') ?>">
+                            <a class="btn btn-sm btn-outline-secondary" href="#settings-company"><?= lang(
+                                'company',
+                            ) ?></a>
+                            <a class="btn btn-sm btn-outline-secondary" href="#settings-appearance"><?= lang(
+                                'settings_appearance',
+                            ) ?></a>
+                            <a class="btn btn-sm btn-outline-secondary" href="#settings-localization"><?= lang(
+                                'localization',
+                            ) ?></a>
+                            <a class="btn btn-sm btn-outline-secondary" href="#settings-calendar"><?= lang(
+                                'provider_order_title',
+                            ) ?></a>
+                        </nav>
 
-                        <section class="mb-5" aria-labelledby="provider-order-title">
-                            <h5 id="provider-order-title"><?= lang('provider_order_title') ?></h5>
-                            <p class="text-muted"><?= lang('provider_order_hint') ?></p>
-                            <ol id="provider-order-list" class="list-group"></ol>
-                            <p id="provider-order-status" class="form-text mt-2" role="status" aria-live="polite"></p>
-                        </section>
-
-                        <div class="row mb-5">
+                        <div id="settings-company" class="card card-body mb-4">
                             <div class="col-12">
                                 <h5 class="mb-3 fw-light"><?= lang('company') ?></h5>
 
@@ -98,6 +106,13 @@
                                         </small>
                                     </div>
                                 </div>
+
+                            </div>
+                        </div>
+
+                        <div id="settings-appearance" class="card card-body mb-4">
+                            <div class="col-12">
+                                <h5 class="mb-3 fw-light"><?= lang('settings_appearance') ?></h5>
 
                                 <div class="mb-3">
                                     <label class="form-label" for="company-logo">
@@ -184,7 +199,7 @@
                             </div>
                         </div>
 
-                        <div class="row mb-5">
+                        <div id="settings-localization" class="card card-body mb-4">
                             <div class="col-12">
                                 <h5 class="mb-3 fw-light"><?= lang('localization') ?></h5>
 
@@ -277,6 +292,12 @@
                             </div>
                         </div>
 
+                        <section id="settings-calendar" class="card card-body mb-4" aria-labelledby="provider-order-title">
+                            <h5 id="provider-order-title"><?= lang('provider_order_title') ?></h5>
+                            <p class="text-muted"><?= lang('provider_order_hint') ?></p>
+                            <ol id="provider-order-list" class="list-group"></ol>
+                            <p id="provider-order-status" class="form-text mt-2" role="status" aria-live="polite"></p>
+                        </section>
                     </fieldset>
                 </form>
             </div>
