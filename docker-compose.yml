@@ -24,6 +24,7 @@ x-app: &app
         BASE_URL: ${BASE_URL:?Set BASE_URL in .env}
         LANGUAGE: ${LANGUAGE:-catalan}
         TZ: ${TZ:-Europe/Madrid}
+        REQUIRE_HTTPS: '1'
         DEBUG_MODE: 'false'
         DB_HOST: db
         DB_NAME: ${DB_NAME:-programaconsulta}
@@ -47,7 +48,7 @@ services:
     app:
         <<: *app
         ports:
-            - '${APP_PORT:-80}:80'
+            - '127.0.0.1:${APP_PORT:-8080}:80'
         healthcheck:
             test: ['CMD', 'curl', '-fsS', '-o', '/dev/null', 'http://localhost/']
             interval: 30s

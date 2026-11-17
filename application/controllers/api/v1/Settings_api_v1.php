@@ -15,13 +15,6 @@
 class Settings_api_v1 extends EA_Controller
 {
     /**
-     * Settings that hold credentials and must never be read from or written to through the API.
-     *
-     * @var string[]
-     */
-    private const PROTECTED_SETTINGS = ['api_token', 'google_client_secret', 'altcha_hmac_key'];
-
-    /**
      * Settings_api_v1 constructor.
      */
     public function __construct()
@@ -56,7 +49,7 @@ class Settings_api_v1 extends EA_Controller
                 : $this->settings_model->search($keyword, $limit, $offset, $order_by);
 
             $settings = array_values(
-                array_filter($settings, fn($setting) => !in_array($setting['name'], self::PROTECTED_SETTINGS, true)),
+                array_filter($settings, fn($setting) => !in_array($setting['name'], protected_setting_names(), true)),
             );
 
             foreach ($settings as &$setting) {
@@ -83,7 +76,7 @@ class Settings_api_v1 extends EA_Controller
         try {
             $this->check_name($name);
 
-            if (in_array($name, self::PROTECTED_SETTINGS, true)) {
+            if (in_array($name, protected_setting_names(), true)) {
                 abort(403, 'This setting cannot be read through the API.');
             }
 
@@ -108,7 +101,7 @@ class Settings_api_v1 extends EA_Controller
         try {
             $this->check_name($name);
 
-            if (in_array($name, self::PROTECTED_SETTINGS, true)) {
+            if (in_array($name, protected_setting_names(), true)) {
                 abort(403, 'This setting cannot be changed through the API.');
             }
 

@@ -3068,8 +3068,13 @@ components:
                     type: string
                 secretToken:
                     type: string
+                isActive:
+                    type: boolean
+                    default: true
                 isSslVerified:
                     type: boolean
+                    readOnly: true
+                    enum: [true]
                 notes:
                     type: string
             example:
@@ -3079,7 +3084,7 @@ components:
                 actions: appointment_create,appointment_update,customer_delete,category_create
                 secretHeader: X-Ea-Signature
                 secretToken: SecureSecretTokenHere
-                isSslVerified: true
+                isActive: true
                 notes: This is a webhook.
         WebhookPayload:
             type: object
@@ -3094,8 +3099,13 @@ components:
                     type: string
                 secretToken:
                     type: string
+                isActive:
+                    type: boolean
+                    default: true
                 isSslVerified:
                     type: boolean
+                    readOnly: true
+                    enum: [true]
                 notes:
                     type: string
             example:
@@ -3104,7 +3114,7 @@ components:
                 actions: appointment_create,appointment_update,customer_delete,category_create
                 secretHeader: X-Ea-Signature
                 secretToken: SecureSecretTokenHere
-                isSslVerified: true
+                isActive: true
                 notes: This is a webhook.
         BlockedPeriodRecord:
             type: object

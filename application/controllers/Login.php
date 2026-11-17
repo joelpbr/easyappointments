@@ -149,7 +149,7 @@ class Login extends EA_Controller
             if (empty($user_data)) {
                 // Log failed login attempt
                 log_message(
-                    'info',
+                    'error',
                     'Failed login attempt for username: ' . $username . ' from IP: ' . $this->input->ip_address(),
                 );
 
@@ -170,7 +170,7 @@ class Login extends EA_Controller
 
             session($user_data); // Save data in the session.
 
-            log_message('info', 'Successful login for user: ' . $username . ' from IP: ' . $this->input->ip_address());
+            audit_log('login', 'user', (int) $user_data['user_id']);
 
             json_response([
                 'success' => true,

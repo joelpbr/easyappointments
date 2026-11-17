@@ -14,6 +14,14 @@ L'aplicació s'obre a http://localhost. El codi es munta al contenidor i el serv
 
 ## Instal·lació
 
+En producció, configura BASE_URL amb el domini HTTPS. El servidor publica Apache a 127.0.0.1. Configura el proxy TLS del servidor perquè reenviï al port APP_PORT (8080 per defecte). Per exemple, amb Caddy:
+
+```caddyfile
+cites.example.com {
+    reverse_proxy 127.0.0.1:8080
+}
+```
+
 1. Copia .env.example a .env i configura l'URL i les credencials.
 2. Executa `docker compose up -d`.
 3. Obre l'aplicació i completa la instal·lació.

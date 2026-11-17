@@ -15,22 +15,7 @@
 |
 */
 
-$protocol =
-    (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-    (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443) ||
-    (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-        ? 'https://'
-        : 'http://';
-
-$domain = $_SERVER['HTTP_HOST'] ?? 'localhost';
-
-$request_uri = dirname($_SERVER['SCRIPT_NAME'] ?? 'index.php');
-
-if ($request_uri === '.') {
-    $request_uri = '';
-}
-
-$config['base_url'] = rtrim(!is_cli() ? $protocol . $domain . $request_uri : Config::BASE_URL, '/');
+$config['base_url'] = rtrim(Config::BASE_URL, '/');
 
 /*
 |--------------------------------------------------------------------------

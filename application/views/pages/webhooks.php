@@ -128,18 +128,8 @@
 
             <div>
                 <label class="form-label mb-3">
-                    <?= lang('options') ?>
+                    <input type="checkbox" id="webhook-active" checked disabled> <?= lang('active') ?>
                 </label>
-            </div>
-
-            <div class="border rounded mb-3 p-3">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="is-ssl-verified">
-
-                    <label class="form-check-label" for="is-ssl-verified">
-                        <?= lang('verify_ssl') ?>
-                    </label>
-                </div>
             </div>
 
             <div class="mb-3">

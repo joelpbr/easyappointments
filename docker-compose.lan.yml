@@ -23,7 +23,7 @@ services:
     image: ${LAN_IMAGE:-programaconsulta-lan:snapshot}
     restart: unless-stopped
     environment:
-      BASE_URL: http://${LAN_IP:?Set the Wi-Fi IP}:${LAN_PORT:-8081}
+      BASE_URL: https://${LAN_IP:?Set the Wi-Fi IP}:${LAN_PORT:-8081}
       DB_HOST: db
       DB_NAME: ${LAN_DB_NAME:?Use .local-lan/clone.env}
       DB_USERNAME: ${LAN_DB_USER:?Use .local-lan/clone.env}
@@ -57,6 +57,8 @@ services:
     command: [node, /gateway.cjs]
     volumes:
       - ./docker/lan-gateway.cjs:/gateway.cjs:ro
+      - ${LAN_TLS_CERT:?Set LAN_TLS_CERT}:/tls/cert.pem:ro
+      - ${LAN_TLS_KEY:?Set LAN_TLS_KEY}:/tls/key.pem:ro
     ports:
       - '${LAN_IP}:${LAN_PORT:-8081}:8080'
     networks: [entry, lan]

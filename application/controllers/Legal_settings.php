@@ -54,7 +54,19 @@ class Legal_settings extends EA_Controller
         script_vars([
             'user_id' => $user_id,
             'role_slug' => $role_slug,
-            'legal_settings' => filter_sensitive_settings($this->settings_model->get()),
+            'legal_settings' => $this->settings_model->get_for_page([
+                'display_cookie_notice',
+                'cookie_notice_content',
+                'display_terms_and_conditions',
+                'terms_and_conditions_content',
+                'display_privacy_policy',
+                'privacy_policy_content',
+                'legal_notice_url',
+                'imprint_url',
+                'data_retention_days',
+                'company_dpo_contact',
+                'company_dpo_name',
+            ]),
         ]);
 
         html_vars([

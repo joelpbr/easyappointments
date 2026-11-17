@@ -290,7 +290,7 @@ if (!function_exists('filter_sensitive_settings')) {
      */
     function filter_sensitive_settings(array $settings): array
     {
-        $sensitive_setting_names = ['api_token', 'google_client_secret'];
+        $sensitive_setting_names = protected_setting_names();
         return array_values(
             array_filter($settings, function ($setting) use ($sensitive_setting_names) {
                 if (isset($setting['name'])) {
@@ -362,4 +362,10 @@ if (!function_exists('filter_sensitive_users_data')) {
     {
         return array_map('filter_sensitive_user_data', $users);
     }
+}
+
+function protected_setting_names(): array
+{
+    return ['ldap_password', 'api_token', 'google_client_secret', 'altcha_hmac_key',
+        'whatsapp_access_token', 'whatsapp_app_secret', 'whatsapp_webhook_verify_token'];
 }

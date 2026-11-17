@@ -2,7 +2,7 @@
 
 Instància Docker: `programaconsulta-lan` (web i base de dades pròpies, amb una passarel·la local).
 
-Adreça inicial: **http://192.168.1.154:8081**. El mòbil ha d'estar connectat al mateix Wi-Fi i l'ordinador ha d'estar encès.
+Adreça inicial: **https://192.168.1.154:8081**. El mòbil ha d'estar connectat al mateix Wi-Fi i l'ordinador ha d'estar encès.
 
 És una còpia independent de les dades i els documents de la instància `easyappointments`, feta el 17/11/2026. Utilitza els mateixos comptes d'usuari que existien en fer la còpia. Els canvis posteriors no se sincronitzen entre les dues instàncies.
 
@@ -11,6 +11,8 @@ La imatge `programaconsulta-lan:snapshot` conserva el codi que estava executant 
 La web només es publica a la IP Wi-Fi indicada, al port 8081. La base de dades no publica cap port. No s'ha configurat cap túnel ni cap redirecció de ports al router. La regla `ProgramaConsulta-LAN-8081` permet l'accés des de `192.168.1.0/24` a la interfície WiFi.
 
 Les credencials Docker del clon són a `.local-lan/clone.env`, exclòs de Git. Les dades persistents són als volums `programaconsulta-lan_db-data` i `programaconsulta-lan_storage`. No es copien les sessions obertes, les memòries cau, els logs ni les còpies de seguretat antigues.
+
+Abans de recrear la passarel·la, indica a `.local-lan/clone.env` les rutes absolutes dels fitxers PEM amb `LAN_TLS_CERT` i `LAN_TLS_KEY`. El certificat ha d’incloure la IP de la Wi-Fi al camp SAN i estar signat per una CA de confiança als dispositius. Instal·la el certificat de la CA als iPads i activa la confiança per a TLS. Mantén la clau privada fora del repositori. Construeix la imatge actual amb `docker build -f docker/Dockerfile -t programaconsulta-lan:secure .` i indica `LAN_IMAGE=programaconsulta-lan:secure` al mateix fitxer. Després de recrear el servei, executa `docker compose --env-file .local-lan/clone.env -f docker-compose.lan.yml exec app php index.php console migrate`.
 
 Des de l'arrel del projecte:
 

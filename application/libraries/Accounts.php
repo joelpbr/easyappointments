@@ -86,6 +86,7 @@ class Accounts
             'timezone' => !empty($user['timezone']) ? $user['timezone'] : $default_timezone,
             'language' => normalize_language($user['language'] ?? Config::LANGUAGE),
             'role_slug' => $role['slug'],
+            'credential_stamp' => hash('sha256', $new_hash ?? $stored_hash),
         ];
     }
 

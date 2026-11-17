@@ -47,10 +47,7 @@ function add_security_headers(): void
     header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
 
     // If the app is served over HTTPS, add HSTS header
-    if (
-        (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ||
-        (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')
-    ) {
+    if (parse_url(Config::BASE_URL, PHP_URL_SCHEME) === 'https') {
         // Strict Transport Security - enforce HTTPS for 1 year
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     }

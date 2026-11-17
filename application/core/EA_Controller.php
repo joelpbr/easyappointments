@@ -96,10 +96,19 @@ class EA_Controller extends CI_Controller
             return;
         }
 
-        if (!$this->accounts->does_account_exist($user_id)) {
-            session_destroy();
+        $current = $this->db->select('roles.slug, user_settings.password')->from('users')
+            ->join('roles', 'roles.id = users.id_roles')
+            ->join('user_settings', 'user_settings.id_users = users.id')
+            ->where('users.id', $user_id)->get()->row_array();
 
-            abort(403, 'Forbidden');
+        if (!$current || $current['slug'] !== session('role_slug') ||
+            !hash_equals(hash('sha256', $current['password']), (string) session('credential_stamp'))) {
+            $this->session->sess_destroy();
+            if ($this->input->method() === 'get' && !$this->input->is_ajax_request()
+                && $this->router->method !== 'session_status') {
+                redirect('login');
+            }
+            abort(401, 'Authentication required');
         }
     }
 
