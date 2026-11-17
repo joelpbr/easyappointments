@@ -196,6 +196,22 @@
                                     </div>
                                 </div>
 
+                                <div class="mb-3">
+                                    <label class="form-label" for="header-logo-target">
+                                        <?= lang('header_logo_target') ?>
+                                    </label>
+
+                                    <select id="header-logo-target" data-field="header_logo_target" class="form-select">
+                                        <?php foreach (branding_header_targets() as $key => [, $label]): ?>
+                                            <option value="<?= e($key) ?>"><?= lang($label) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+
+                                    <div class="form-text text-muted">
+                                        <small><?= lang('header_logo_target_hint') ?></small>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 

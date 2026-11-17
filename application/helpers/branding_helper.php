@@ -46,6 +46,38 @@ function branding_valid_logo(string $value): bool
     return $image && $image['mime'] === 'image/' . $match[1] && strlen($bytes) <= 2 * 1024 * 1024;
 }
 
+/**
+ * Pages the logo of the header can open (setting header_logo_target): key => [route, label, privilege needed to see
+ * it (null for the public booking page)]. The calendar is the default.
+ */
+function branding_header_targets(): array
+{
+    return [
+        'calendar' => ['calendar', 'calendar', PRIV_APPOINTMENTS],
+        'simple' => ['simple', 'simple_version', PRIV_APPOINTMENTS],
+        'customers' => ['customers', 'customers', PRIV_CUSTOMERS],
+        'services' => ['services', 'services', PRIV_SERVICES],
+        'settings' => ['general_settings', 'settings', PRIV_SYSTEM_SETTINGS],
+        'booking' => ['booking', 'booking', null],
+    ];
+}
+
+/**
+ * Where the logo of the header goes: the page chosen in the settings, or the calendar when the user cannot see it.
+ */
+function branding_header_url(): string
+{
+    $targets = branding_header_targets();
+    $key = (string) setting('header_logo_target', 'calendar');
+    [$route, , $privilege] = $targets[$key] ?? $targets['calendar'];
+
+    if ($privilege !== null && cannot('view', $privilege)) {
+        $route = $targets['calendar'][0];
+    }
+
+    return site_url($route);
+}
+
 function branding_logo(): string
 {
     $logo = (string) setting('company_logo', '');

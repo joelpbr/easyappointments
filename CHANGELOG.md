@@ -7,6 +7,8 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- The logo and the clinic name in the header open a page chosen in the general settings (the calendar by default; whoever cannot see the chosen page goes to the calendar).
+
 - Each patient can sign, with a finger on the tablet, the consent to the usual podiatric care with the data protection information and the optional consents (WhatsApp reminders, teaching use of anonymised photos): the signed PDF is kept in the patient's documents and cannot be deleted, the evidence of the signature is stored with its SHA-256 fingerprint, a patient who does not accept WhatsApp gets no reminders, and the contact of the data protection officer is set in the legal settings.
 
 - Administrative staff clock in, pause and clock out from the Fitxatge page, which opens showing only the clock button and keeps entries, incidents, monthly summaries, exports and the legal notice in a separate Records view; administrators review the team, correct entries with a traceable reason and issue monthly summaries.

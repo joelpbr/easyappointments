@@ -8,13 +8,15 @@
 ?>
 
 <nav id="header" class="navbar navbar-expand-md navbar-dark bg-primary p-0">
-    <div id="header-logo" class="navbar-brand d-flex align-items-center p-1 lh-1">
+    <!-- The logo and the name open the page chosen in the general settings (the calendar by default). -->
+    <a id="header-logo" class="navbar-brand d-flex align-items-center p-1 lh-1 text-decoration-none"
+       href="<?= e(branding_header_url()) ?>">
         <img src="<?= e(branding_logo()) ?>" alt="<?= e(branding_name()) ?>" class="me-2"
              style="width: 45px; height: 45px;">
         <h6 class="m-0 fw-bold text-white text-truncate" style="font-size: 15px;" title="<?= e(
             branding_name(),
         ) ?>"><?= e(branding_name()) ?></h6>
-    </div>
+    </a>
 
     <!-- On phones: the simple version, the main menu and, on the calendar, the folded toolbar of the calendar
          (backend_layout.js). -->
