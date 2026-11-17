@@ -1,10 +1,12 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * ---------------------------------------------------------------------------- */
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * ---------------------------------------------------------------------------- */
 
 /**
  * WhatsApp reminders.
@@ -55,8 +57,6 @@ class Whatsapp_reminders
         'booking_delay' => 30,
         // Minutes before the appointment from which nothing is sent any more.
         'min_notice' => 120,
-        // The approved template says "demà" in its text: only the day before, and the day goes without "demà".
-        'template_says_tomorrow' => false,
     ];
 
     /**
@@ -110,12 +110,13 @@ class Whatsapp_reminders
     /**
      * Text of the default template, to create it in Meta (category Utility, language Catalan, with a call button):
      * {{1}} name, {{2}} day (e.g. "demà, dilluns 16 de gener", "avui, dijous 3 d'abril"; see day_text()) and {{3}} time
-     * (e.g. "09:00"). The former template said "demà" before {{2}} (see the rule template_says_tomorrow).
+     * (e.g. "09:00"). %s is the name of the clinic (see template_body()). The template never says "avui" or "demà"
+     * itself: {{2}} does, so the same template fits a reminder sent on any day.
      */
     public const TEMPLATE_BODY =
         "Hola {{1}},
 " .
-        "Tens visita *{{2}}*, a les *{{3}} h*, a la Clínica Podològica.
+        "Tens visita *{{2}}* a les *{{3}}h* a la %s.
 
 " .
         "```· Recorda que no acceptem pagament amb targeta.
@@ -126,6 +127,18 @@ class Whatsapp_reminders
 
 " .
         'Gràcies 👣';
+
+    /**
+     * Text of the default template with the name of the clinic.
+     *
+     * @param string $clinic Name of the clinic, as the patients know it.
+     *
+     * @return string
+     */
+    public static function template_body(string $clinic): string
+    {
+        return sprintf(self::TEMPLATE_BODY, $clinic);
+    }
 
     public const STATUSES = [
         'pending',
@@ -206,7 +219,6 @@ class Whatsapp_reminders
             'days_before' => setting('whatsapp_days_before'),
             'booking_delay' => setting('whatsapp_booking_delay'),
             'min_notice' => setting('whatsapp_min_notice'),
-            'template_says_tomorrow' => setting('whatsapp_template_says_tomorrow'),
         ]);
     }
 
@@ -234,10 +246,6 @@ class Whatsapp_reminders
             if (preg_match('/^\d+$/', $value)) {
                 $rules[$name] = max($min, min($max, (int) $value));
             }
-        }
-
-        if (array_key_exists('template_says_tomorrow', $values) && $values['template_says_tomorrow'] !== null) {
-            $rules['template_says_tomorrow'] = filter_var($values['template_says_tomorrow'], FILTER_VALIDATE_BOOLEAN);
         }
 
         return $rules;
@@ -269,8 +277,11 @@ class Whatsapp_reminders
      *
      * @return DateTimeImmutable In the time of the clinic.
      */
-    public static function send_moment(string $appointment_start, ?DateTimeInterface $created, array $rules): DateTimeImmutable
-    {
+    public static function send_moment(
+        string $appointment_start,
+        ?DateTimeInterface $created,
+        array $rules,
+    ): DateTimeImmutable {
         [$hours, $minutes] = array_map('intval', explode(':', $rules['send_time']));
 
         $moment = self::local($appointment_start)
@@ -313,27 +324,16 @@ class Whatsapp_reminders
      *
      * @return bool
      */
-    public static function is_due(string $appointment_start, ?DateTimeInterface $created, DateTimeInterface $now, array $rules): bool
-    {
+    public static function is_due(
+        string $appointment_start,
+        ?DateTimeInterface $created,
+        DateTimeInterface $now,
+        array $rules,
+    ): bool {
         $now = self::local($now);
 
         return self::send_moment($appointment_start, $created, $rules) <= $now &&
             $now < self::send_deadline($appointment_start, $rules);
-    }
-
-    /**
-     * Whether the template fits a reminder sent at a moment: one that says "demà" only fits the day before.
-     *
-     * @param string $appointment_start Start of the appointment (Y-m-d H:i:s, time of the clinic).
-     * @param DateTimeInterface $now
-     * @param array $rules See rules().
-     *
-     * @return bool
-     */
-    public static function template_fits(string $appointment_start, DateTimeInterface $now, array $rules): bool
-    {
-        return !$rules['template_says_tomorrow'] ||
-            substr($appointment_start, 0, 10) === self::local($now)->modify('+1 day')->format('Y-m-d');
     }
 
     /**
@@ -345,7 +345,7 @@ class Whatsapp_reminders
      */
     public static function created_moment(array $appointment): ?DateTimeImmutable
     {
-        $created = ($appointment['create_datetime'] ?? null) ?: ($appointment['book_datetime'] ?? null);
+        $created = $appointment['create_datetime'] ?? null ?: $appointment['book_datetime'] ?? null;
 
         if (!$created) {
             return null;
@@ -396,7 +396,6 @@ class Whatsapp_reminders
      * @param array $appointment With start_datetime.
      * @param array $customer With first_name.
      * @param DateTimeInterface|null $now When it is sent, for "avui" and "demà"; now by default.
-     * @param bool $template_says_tomorrow The template says "demà" itself: the day goes alone.
      *
      * @return array
      */
@@ -404,15 +403,12 @@ class Whatsapp_reminders
         array $appointment,
         array $customer,
         ?DateTimeInterface $now = null,
-        bool $template_says_tomorrow = false,
     ): array {
         $start = strtotime($appointment['start_datetime']);
 
         return [
             trim((string) ($customer['first_name'] ?? '')) ?: '-',
-            $template_says_tomorrow
-                ? self::date_text($appointment['start_datetime'])
-                : self::day_text($appointment['start_datetime'], $now ?? new DateTimeImmutable()),
+            self::day_text($appointment['start_datetime'], $now ?? new DateTimeImmutable()),
             date('H:i', $start),
         ];
     }
@@ -585,21 +581,6 @@ class Whatsapp_reminders
     }
 
     /**
-     * Get why the reminder of an appointment cannot be sent again by hand now: a template that says "demà" only fits
-     * the day before the appointment.
-     *
-     * @param string $appointment_start Start of the appointment (Y-m-d H:i:s, local time of the clinic).
-     * @param DateTimeInterface $now
-     * @param array $rules See rules().
-     *
-     * @return string|null Language key of the reason, or null when it can be sent.
-     */
-    public static function retry_blocker(string $appointment_start, DateTimeInterface $now, array $rules): ?string
-    {
-        return self::template_fits($appointment_start, $now, $rules) ? null : 'whatsapp_not_tomorrow';
-    }
-
-    /**
      * Send the reminders that are due now.
      *
      * @param DateTimeInterface|null $now For tests and manual runs; now by default.
@@ -609,7 +590,15 @@ class Whatsapp_reminders
     public function run(?DateTimeInterface $now = null): array
     {
         $now = self::local($now ?? new DateTimeImmutable());
-        $report = ['created' => 0, 'sent' => 0, 'failed' => 0, 'cancelled' => 0, 'review' => 0, 'waiting' => 0, 'changed' => 0];
+        $report = [
+            'created' => 0,
+            'sent' => 0,
+            'failed' => 0,
+            'cancelled' => 0,
+            'review' => 0,
+            'waiting' => 0,
+            'changed' => 0,
+        ];
 
         if (!$this->is_configured()) {
             return $report;
@@ -848,17 +837,8 @@ class Whatsapp_reminders
             return ['ok' => $result['ok'], 'error' => $result['error']];
         }
 
-        $appointment = $reminder['id_appointments']
-            ? $this->CI->db->get_where('appointments', ['id' => $reminder['id_appointments']])->row_array()
-            : null;
-
         $now = self::local(new DateTimeImmutable());
         $rules = $this->rules();
-
-        // A template that says "demà" would be wrong on any other day.
-        if ($appointment && ($blocker = self::retry_blocker($appointment['start_datetime'], $now, $rules))) {
-            return ['ok' => false, 'error' => lang($blocker)];
-        }
 
         // Sent by hand: whoever sends it decides, whatever the time left before the appointment.
         $result = $this->process($reminder, $now, $rules, true);
@@ -1026,7 +1006,8 @@ class Whatsapp_reminders
      *
      * @param int $appointment_id
      *
-     * @return array ['state' => off|disabled|sent|pending|failed|review|cancelled|scheduled|too_late|not_tomorrow|past]:
+     * @return array ['state' => off|disabled|refused|sent|pending|failed|review|cancelled|scheduled|too_late|past]
+     * (refused: the patient signed that they do not want WhatsApp messages):
      * - sent (and the other statuses of a reminder that exists): status, sent_datetime, appointment_datetime,
      *   change_to_datetime.
      * - scheduled: datetime, the moment it will be sent.
@@ -1069,6 +1050,10 @@ class Whatsapp_reminders
             return ['state' => 'disabled'];
         }
 
+        if ($this->refused((int) $appointment['id_users_customer'])) {
+            return ['state' => 'refused'];
+        }
+
         $rules = $this->rules();
         $now = self::local(new DateTimeImmutable());
         $start = $appointment['start_datetime'];
@@ -1077,23 +1062,148 @@ class Whatsapp_reminders
             return ['state' => 'past'];
         }
 
-        $moment = self::send_moment($start, self::created_moment($appointment), $rules);
-        $deadline = self::send_deadline($start, $rules);
+        [$state, $moment] = self::planned_send($start, self::created_moment($appointment), $now, $rules);
 
-        // Due already but not sent yet: it goes out on the next run.
-        if ($moment < $now) {
-            $moment = $now;
+        return $moment ? ['state' => $state, 'datetime' => $moment->format('Y-m-d H:i:s')] : ['state' => $state];
+    }
+
+    /**
+     * Get when the reminder of an appointment that has none yet will go out, from now.
+     *
+     * @param string $appointment_start Start of the appointment (Y-m-d H:i:s, time of the clinic).
+     * @param DateTimeInterface|null $created When the appointment was created.
+     * @param DateTimeInterface $now
+     * @param array $rules See rules().
+     *
+     * @return array [state, moment]: ['scheduled', DateTimeImmutable] (a moment already gone is the next run, that is,
+     * now), or ['too_late', null] when the minimum notice comes first.
+     */
+    public static function planned_send(
+        string $appointment_start,
+        ?DateTimeInterface $created,
+        DateTimeInterface $now,
+        array $rules,
+    ): array {
+        $now = self::local($now);
+        $moment = max(self::send_moment($appointment_start, $created, $rules), $now);
+
+        if ($moment >= self::send_deadline($appointment_start, $rules)) {
+            return ['too_late', null];
         }
 
-        if ($moment >= $deadline) {
-            return ['state' => 'too_late'];
+        return ['scheduled', $moment];
+    }
+
+    /**
+     * Get every reminder still to go out, from the future appointments that want one: when it will be sent, or why it
+     * will not. They are worked out as run() does, so the list says what will happen.
+     *
+     * @param DateTimeInterface|null $now
+     * @param int $limit Most appointments listed.
+     *
+     * @return array Rows ['appointment_id', 'appointment_datetime', 'customer_name', 'send_datetime' (Y-m-d H:i:s or
+     * null), 'state' (scheduled, pending, failed, too_late or invalid_phone)], the first to go out first.
+     */
+    public function upcoming(?DateTimeInterface $now = null, int $limit = 500): array
+    {
+        if (!$this->is_configured()) {
+            return [];
         }
 
-        if (!self::template_fits($start, $moment, $rules)) {
-            return ['state' => 'not_tomorrow'];
+        $now = self::local($now ?? new DateTimeImmutable());
+        $rules = $this->rules();
+        $reminders = $this->CI->db->dbprefix('whatsapp_reminders');
+        $appointments = $this->CI->db->dbprefix('appointments');
+        // Before building the query: the free codes come from the settings, with a query of their own.
+        $free_codes = appointment_status_free_codes();
+
+        $query = $this->CI->db
+            ->select(
+                'appointments.id, appointments.start_datetime, appointments.create_datetime, ' .
+                    'appointments.book_datetime, customers.phone_number, ' .
+                    "CONCAT_WS(' ', customers.first_name, customers.last_name) AS customer_name",
+                false,
+            )
+            ->from('appointments')
+            ->join('users AS customers', 'customers.id = appointments.id_users_customer', 'inner')
+            ->where('appointments.is_unavailability', 0)
+            ->where('appointments.send_whatsapp_reminder', 1)
+            ->where('appointments.start_datetime >', $now->format('Y-m-d H:i:s'))
+            // Not those whose reminder already went out or was left for review (the same reminders that stop
+            // create_due_reminders() from creating another one); a pending or failed one is still to go out.
+            ->where(
+                "NOT EXISTS (SELECT 1 FROM `$reminders` r WHERE r.id_appointments = `$appointments`.id " .
+                    "AND r.is_test = 0 AND (r.status <> 'cancelled' OR r.provider_message_id IS NOT NULL) " .
+                    "AND r.status NOT IN ('pending', 'failed'))",
+                null,
+                false,
+            )
+            ->where($this->not_refused("`$appointments`.id_users_customer"), null, false)
+            ->order_by('appointments.start_datetime')
+            ->limit($limit);
+
+        if ($free_codes) {
+            $query->where_not_in('appointments.status', $free_codes);
         }
 
-        return ['state' => 'scheduled', 'datetime' => $moment->format('Y-m-d H:i:s')];
+        $rows = $query->get()->result_array();
+
+        $waiting = [];
+
+        if ($rows) {
+            foreach (
+                $this->CI->db
+                    ->where_in('id_appointments', array_column($rows, 'id'))
+                    ->where_in('status', ['pending', 'failed'])
+                    ->where('is_test', 0)
+                    ->where('is_deleted', 0)
+                    ->get('whatsapp_reminders')
+                    ->result_array()
+                as $reminder
+            ) {
+                $waiting[(int) $reminder['id_appointments']] = $reminder;
+            }
+        }
+
+        $list = [];
+
+        foreach ($rows as $row) {
+            $start = $row['start_datetime'];
+            $reminder = $waiting[(int) $row['id']] ?? null;
+
+            if ($reminder) {
+                // Created already: it goes out on the next run (a failed one, while it has attempts left).
+                $retries = $reminder['status'] === 'pending' || (int) $reminder['attempts'] < self::MAX_ATTEMPTS;
+                $state = $reminder['status'];
+                $moment = $retries ? max(self::local($reminder['scheduled_datetime']), $now) : null;
+            } else {
+                [$state, $moment] = self::planned_send($start, self::created_moment($row), $now, $rules);
+
+                if ($state === 'scheduled' && !self::recipient($row['phone_number'])) {
+                    $state = 'invalid_phone';
+                }
+            }
+
+            $list[] = [
+                'appointment_id' => (int) $row['id'],
+                'appointment_datetime' => $start,
+                'customer_name' => $row['customer_name'],
+                'send_datetime' => $moment?->format('Y-m-d H:i:s'),
+                'state' => $state,
+            ];
+        }
+
+        // The first to go out first; those that will not go out at the end.
+        usort(
+            $list,
+            fn(array $a, array $b) => [
+                $a['send_datetime'] === null,
+                $a['send_datetime'],
+                $a['appointment_datetime'],
+            ] <=> [$b['send_datetime'] === null, $b['send_datetime'], $b['appointment_datetime']],
+        );
+
+        return $list;
     }
 
     /**
@@ -1190,7 +1300,8 @@ class Whatsapp_reminders
                     "AND r.is_test = 0 AND (r.status <> 'cancelled' OR r.provider_message_id IS NOT NULL))",
                 null,
                 false,
-            );
+            )
+            ->where($this->not_refused("`$appointments`.id_users_customer"), null, false);
 
         if ($free_codes) {
             $query->where_not_in('appointments.status', $free_codes);
@@ -1235,6 +1346,36 @@ class Whatsapp_reminders
     }
 
     /**
+     * SQL condition: the patient did not refuse the WhatsApp messages in the last consent that included that choice.
+     * New consent versions do not ask about WhatsApp and must not overwrite an earlier choice.
+     *
+     * @param string $customer_column Column with the ID of the patient, quoted.
+     */
+    private function not_refused(string $customer_column): string
+    {
+        $consents = $this->CI->db->dbprefix('patient_consents');
+
+        return "NOT EXISTS (SELECT 1 FROM `$consents` pc WHERE pc.id_users_customer = $customer_column " .
+            "AND pc.whatsapp = 0 AND pc.id = (SELECT MAX(pc2.id) FROM `$consents` pc2 " .
+            "WHERE pc2.id_users_customer = pc.id_users_customer AND JSON_CONTAINS_PATH(pc2.choices, 'one', '$.whatsapp') = 1))";
+    }
+
+    /** Whether the last explicit WhatsApp choice refuses messages (see not_refused()). */
+    private function refused(int $customer_id): bool
+    {
+        $whatsapp = $this->CI->db
+            ->select('whatsapp')
+            ->where('id_users_customer', $customer_id)
+            ->where("JSON_CONTAINS_PATH(choices, 'one', '$.whatsapp') = 1", null, false)
+            ->order_by('id', 'DESC')
+            ->limit(1)
+            ->get('patient_consents')
+            ->row('whatsapp');
+
+        return $whatsapp !== null && !(int) $whatsapp;
+    }
+
+    /**
      * Send one reminder, after checking that its appointment still wants it.
      *
      * @param array $reminder Row of whatsapp_reminders.
@@ -1250,11 +1391,13 @@ class Whatsapp_reminders
             ? $this->CI->db->get_where('appointments', ['id' => $reminder['id_appointments']])->row_array()
             : null;
 
-        // Removed, cancelled, or no longer wanted since the reminder was created.
+        // Removed, cancelled, or no longer wanted since the reminder was created (also by the patient, signing that
+        // they do not want WhatsApp messages).
         if (
             !$appointment ||
             !(int) $appointment['send_whatsapp_reminder'] ||
-            in_array($appointment['status'], appointment_status_free_codes(), true)
+            in_array($appointment['status'], appointment_status_free_codes(), true) ||
+            $this->refused((int) $appointment['id_users_customer'])
         ) {
             $this->update($reminder['id'], ['status' => 'cancelled']);
 
@@ -1280,12 +1423,6 @@ class Whatsapp_reminders
 
             if ($now >= self::send_deadline($start, $rules)) {
                 $this->update($reminder['id'], ['status' => 'review', 'error' => lang('whatsapp_too_late')]);
-
-                return 'review';
-            }
-
-            if (!self::template_fits($start, $now, $rules)) {
-                $this->update($reminder['id'], ['status' => 'review', 'error' => lang('whatsapp_not_tomorrow')]);
 
                 return 'review';
             }
@@ -1315,10 +1452,7 @@ class Whatsapp_reminders
             return 'review';
         }
 
-        $result = $this->send(
-            $recipient,
-            self::template_parameters($appointment, $customer, $now, $rules['template_says_tomorrow']),
-        );
+        $result = $this->send($recipient, self::template_parameters($appointment, $customer, $now));
 
         if ($result['ok']) {
             // The patient has the current day and time: a change marked before is no longer pending.
@@ -1557,7 +1691,6 @@ class Whatsapp_reminders
                     ['start_datetime' => $reminder['appointment_datetime']],
                     ['first_name' => 'Prova'],
                     self::local(new DateTimeImmutable()),
-                    $this->rules()['template_says_tomorrow'],
                 ),
             )
             : ['ok' => false, 'message_id' => null, 'error' => lang('whatsapp_invalid_phone')];

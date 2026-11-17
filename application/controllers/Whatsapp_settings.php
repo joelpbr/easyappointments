@@ -36,7 +36,6 @@ class Whatsapp_settings extends EA_Controller
         'whatsapp_days_before' => 'days_before',
         'whatsapp_booking_delay' => 'booking_delay',
         'whatsapp_min_notice' => 'min_notice',
-        'whatsapp_template_says_tomorrow' => 'template_says_tomorrow',
     ];
 
     private const SECRET_FIELDS = ['whatsapp_access_token', 'whatsapp_app_secret'];
@@ -97,8 +96,9 @@ class Whatsapp_settings extends EA_Controller
             'has_access_token' => (bool) setting('whatsapp_access_token'),
             'has_app_secret' => (bool) setting('whatsapp_app_secret'),
             'overview' => $this->whatsapp_reminders->overview(20),
+            'upcoming' => $this->whatsapp_reminders->upcoming(),
             'message_price' => Whatsapp_reminders::MESSAGE_PRICE,
-            'template_body' => Whatsapp_reminders::TEMPLATE_BODY,
+            'template_body' => Whatsapp_reminders::template_body(branding_name()),
         ]);
 
         $this->load->view('pages/whatsapp_settings');
