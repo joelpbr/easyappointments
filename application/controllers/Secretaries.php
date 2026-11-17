@@ -21,6 +21,7 @@ class Secretaries extends EA_Controller
         'id',
         'first_name',
         'last_name',
+        'employment',
         'email',
         'alt_number',
         'phone_number',

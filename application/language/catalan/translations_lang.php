@@ -1071,3 +1071,358 @@ $lang['provider_order_saved'] = 'Ordre desat';
 $lang['provider_order_failed'] = 'No s’ha pogut desar l’ordre. Torna-ho a provar.';
 $lang['provider_order_changed'] = 'La llista de podòlegs ha canviat. Recarrega la pàgina.';
 $lang['provider_order_empty'] = 'No hi ha podòlegs disponibles al calendari.';
+
+$lang['att_title'] = 'Fitxatge';
+
+$lang['att_off'] = 'Fora de jornada';
+
+$lang['att_working'] = 'Treballant';
+
+$lang['att_paused'] = 'En pausa';
+
+$lang['att_in'] = 'Entrar';
+
+$lang['att_out'] = 'Sortir';
+
+$lang['att_pause'] = 'Fer pausa';
+
+$lang['att_resume'] = 'Reprendre';
+
+$lang['att_open_warning'] = 'Fa massa temps que la jornada és oberta. Si vas oblidar la sortida, comunica-ho.';
+
+$lang['att_employee'] = 'Persona';
+
+$lang['att_month'] = 'Mes';
+
+$lang['att_print'] = 'Imprimir / PDF';
+
+$lang['att_entry'] = 'Registre';
+
+$lang['att_entries'] = 'Entrades i sortides';
+
+$lang['att_start'] = 'Inici';
+
+$lang['att_end'] = 'Final';
+
+$lang['att_work'] = 'Treball';
+
+$lang['att_break'] = 'Pauses';
+
+$lang['att_status'] = 'Estat';
+
+$lang['att_open'] = 'Oberta';
+
+$lang['att_closed'] = 'Tancada';
+
+$lang['att_voided'] = 'Anul·lat';
+
+$lang['att_paid'] = 'Pausa computable';
+
+$lang['att_unpaid'] = 'Pausa no computable';
+
+$lang['att_unknown'] = 'Sense definir';
+
+$lang['att_counted'] = 'Temps computat';
+
+$lang['att_provisional'] = 'Provisional';
+
+$lang['att_daily'] = 'Totals diaris';
+
+$lang['att_total'] = 'Total';
+
+$lang['att_empty'] = 'No hi ha fitxatges en aquest mes.';
+
+$lang['att_none'] = 'Cap registre';
+
+$lang['att_request'] = 'Comunicar incidència';
+
+$lang['att_request_message'] = 'Què ha passat?';
+
+$lang['att_requests'] = 'Incidències';
+
+$lang['att_pending'] = 'Pendent';
+
+$lang['att_resolved'] = 'Resolta';
+
+$lang['att_resolve'] = 'Respondre';
+
+$lang['att_resolution'] = 'Resposta';
+
+$lang['att_add_missing'] = 'Afegir registre';
+
+$lang['att_correct'] = 'Corregir';
+
+$lang['att_history'] = 'Historial';
+
+$lang['att_revision'] = 'Revisió';
+
+$lang['att_before'] = 'Abans';
+
+$lang['att_after'] = 'Després';
+
+$lang['att_kind'] = 'Tram';
+
+$lang['att_policy'] = 'Còmput de les pauses';
+
+$lang['att_reason'] = 'Motiu';
+
+$lang['att_offset'] = 'Desplaçament horari';
+
+$lang['att_end_optional'] = 'Final (opcional)';
+
+$lang['att_remove_segment'] = 'Treure';
+
+$lang['att_add_segment'] = 'Afegir tram';
+
+$lang['att_void_label'] = 'Anul·lar registre';
+
+$lang['att_profile'] = 'Dades laborals';
+
+$lang['att_contract'] = 'Contracte';
+
+$lang['att_full'] = 'Temps complet';
+
+$lang['att_part'] = 'Temps parcial';
+
+$lang['att_weekly'] = 'Jornada setmanal';
+
+$lang['att_agreement'] = 'Conveni aplicable';
+
+$lang['att_reports'] = 'Resums mensuals';
+
+$lang['att_issue'] = 'Emetre resum mensual';
+
+$lang['att_ordinary'] = 'Ordinàries';
+
+$lang['att_complementary'] = 'Complementàries';
+
+$lang['att_overtime'] = 'Extraordinàries';
+
+$lang['att_issued'] = 'Resum emès';
+
+$lang['att_draft'] = 'Esborrany';
+
+$lang['att_generated'] = 'Generat';
+
+$lang['att_timezone'] = 'Fus horari';
+
+$lang['att_delivery'] = 'Lliurament';
+
+$lang['att_delivered'] = 'Lliurat';
+
+$lang['att_not_delivered'] = 'Pendent de lliurar';
+
+$lang['att_mark_delivered'] = 'Anotar lliurament';
+
+$lang['att_delivery_note'] = 'Com i quan s’ha lliurat';
+
+$lang['att_report_note'] = 'Les correccions conserven els registres anteriors.';
+
+$lang['att_legal_title'] = 'Informació legal';
+
+$lang['att_legal'] = 'Registre diari de jornada (art. 34.9 ET). Es conserva %d anys i està a disposició de la persona treballadora, els seus representants i la Inspecció de Treball. A temps parcial, el resum mensual es lliura amb la nòmina (art. 12.4.c ET).';
+
+$lang['att_privacy'] = 'Responsable: la clínica. Finalitat: registre de jornada (obligació legal). No es recull ubicació ni biometria. Per exercir els teus drets, contacta amb la clínica.';
+
+$lang['att_saved'] = 'Desat correctament';
+
+$lang['att_clock_saved'] = 'Fitxatge registrat';
+
+$lang['att_failed'] = 'No s’ha pogut desar. Recarrega i torna-ho a provar.';
+
+$lang['att_retry'] = 'Hi ha una altra operació en curs. Torna-ho a provar.';
+
+$lang['att_stale'] = 'El registre ha canviat. Recarrega abans de continuar.';
+
+$lang['att_invalid_time'] = 'Data o hora no vàlida.';
+
+$lang['att_invalid_segments'] = 'Trams no vàlids: han de començar amb treball, ser consecutius i no futurs.';
+
+$lang['att_invalid_month'] = 'Mes no vàlid';
+
+$lang['att_not_found'] = 'Registre no trobat';
+
+$lang['att_reason_required'] = 'Escriu un motiu (mínim 5 caràcters) i revisa la data.';
+
+$lang['att_overlap'] = 'Se solapa amb un altre registre.';
+
+$lang['att_invalid_profile'] = 'Dades laborals no vàlides.';
+
+$lang['att_profile_required'] = 'Abans d’emetre el resum, indica el conveni a la configuració i la jornada i la durada del contracte.';
+
+$lang['att_report_not_ready'] = 'Encara no es pot emetre: el mes no ha acabat o hi ha pendents.';
+
+$lang['att_classification_invalid'] = 'El repartiment ha de sumar el temps computat. Complementàries només a temps parcial; extraordinàries només a temps complet.';
+
+$lang['att_no_staff'] = 'Ningú no fitxa. Indica a la fitxa de cada podòleg o administratiu si és assalariat.';
+
+$lang['att_event_in'] = 'Entrada';
+
+$lang['att_event_out'] = 'Sortida';
+
+$lang['att_event_pause'] = 'Pausa';
+
+$lang['att_event_resume'] = 'Represa';
+
+$lang['att_event_correction'] = 'Correcció';
+
+$lang['att_event_profile'] = 'Dades laborals';
+
+$lang['att_event_request'] = 'Incidència';
+
+$lang['att_event_resolve'] = 'Resposta';
+
+$lang['att_event_report'] = 'Informe';
+
+$lang['att_event_delivery'] = 'Lliurament';
+
+$lang['att_flag_long_open'] = 'Jornada oberta massa temps';
+
+$lang['att_flag_short_rest'] = 'Descans entre jornades insuficient';
+
+$lang['att_flag_long_day'] = 'Supera el màxim diari de treball';
+
+$lang['att_since'] = 'Des de les';
+
+$lang['att_team'] = 'Equip';
+
+$lang['att_records'] = 'Registres';
+
+$lang['att_flag_integrity'] = 'Registres modificats fora de l’aplicació';
+
+$lang['att_too_many_interruptions'] = 'L’horari a temps parcial té més interrupcions per dia de les permeses.';
+
+$lang['att_statute_paid'] = 'Estatut: computa';
+
+$lang['att_per_day'] = 'per dia';
+
+$lang['att_part_time_interruptions'] = 'Interrupcions de la jornada partida a temps parcial';
+
+$lang['att_employment_missing'] = 'Sense relació laboral definida; no fitxen fins que s’indiqui a la seva fitxa:';
+
+$lang['employment_hint'] = 'Les persones assalariades han de registrar la jornada (art. 34.9 ET).';
+
+$lang['employment_self_employed'] = 'Compte propi (autònom o soci): no fitxa';
+
+$lang['employment_employee'] = 'Compte d’altri: fitxa';
+
+$lang['employment_undefined'] = 'Sense definir';
+
+$lang['employment'] = 'Relació laboral';
+
+$lang['att_clock_first'] = 'Fitxa l’entrada per començar a treballar.';
+
+$lang['att_no_pause'] = 'Amb el teu horari no fas pauses: per parar, fitxa la sortida.';
+
+$lang['att_complementary_legal'] = 'Estatut: %s; per conveni, fins al %s';
+
+$lang['att_statute_unpaid'] = 'Estatut: no computa';
+
+$lang['att_statute_value'] = 'Estatut: %s';
+
+$lang['att_legal_max'] = 'Màxim legal: %s';
+
+$lang['att_legal_min'] = 'Mínim legal: %s';
+
+$lang['att_statute_note'] = 'L’Estatut dels Treballadors s’aplica sempre: el conveni el pot millorar, però cap valor pot quedar per sota dels seus mínims.';
+
+$lang['att_agreement_name'] = 'Nom i codi del conveni';
+
+$lang['att_agreement_none'] = 'Cap conveni';
+
+$lang['att_agreement_other'] = 'Un altre conveni';
+
+$lang['att_flag_overtime_limit'] = 'Supera el màxim anual d’hores extraordinàries';
+
+$lang['att_flag_pact_exceeded'] = 'Supera les hores complementàries pactades';
+
+$lang['att_flag_extra_without_pact'] = 'Hores fora d’horari sense pacte d’hores complementàries';
+
+$lang['att_flag_annual_limit'] = 'Supera la jornada màxima anual';
+
+$lang['att_flag_weekly_rest'] = 'Descans setmanal insuficient';
+
+$lang['att_flag_missing_break'] = 'Jornada continuada sense la pausa mínima';
+
+$lang['att_event_rules'] = 'Regles de jornada';
+
+$lang['att_invalid_pact'] = 'Només es poden pactar hores complementàries amb un contracte a temps parcial que arribi al mínim legal d’hores setmanals.';
+
+$lang['att_invalid_schedule'] = 'Horari no vàlid: massa trams en un dia o trams solapats.';
+
+$lang['att_invalid_settings'] = 'Hi ha valors fora dels límits legals.';
+
+$lang['att_planned'] = 'Previst';
+
+$lang['att_auto'] = 'Pausa segons conveni';
+
+$lang['att_policy_unpaid'] = 'Cap computable';
+
+$lang['att_policy_paid'] = 'Totes computables';
+
+$lang['att_policy_agreement'] = 'Segons el conveni';
+
+$lang['att_complementary_pact'] = 'Pacte d’hores complementàries';
+
+$lang['att_add_interval'] = 'Afegir tram';
+
+$lang['att_schedule_total'] = 'Total';
+
+$lang['att_schedule'] = 'Horari';
+
+$lang['att_temporary'] = 'Temporal';
+
+$lang['att_indefinite'] = 'Indefinit';
+
+$lang['att_duration'] = 'Durada del contracte';
+
+$lang['att_category'] = 'Categoria professional';
+
+$lang['att_staff'] = 'Personal que fitxa';
+
+$lang['att_years'] = 'anys';
+
+$lang['att_days'] = 'dies';
+
+$lang['att_retention'] = 'Conservació dels registres';
+
+$lang['att_open_alert'] = 'Avís de jornada oberta després de';
+
+$lang['att_section_other'] = 'Avisos i conservació';
+
+$lang['att_complementary_max'] = 'Màxim d’hores complementàries pactades';
+
+$lang['att_overtime_max'] = 'Màxim d’hores extraordinàries a l’any';
+
+$lang['att_section_extra'] = 'Hores extraordinàries i complementàries';
+
+$lang['att_break_paid'] = 'La pausa mínima computa com a temps de treball';
+
+$lang['att_break_minutes'] = 'Pausa mínima';
+
+$lang['att_break_after'] = 'Quan la jornada continuada supera';
+
+$lang['att_section_break'] = 'Pausa en jornada continuada';
+
+$lang['att_weekly_rest_days'] = 'Acumulable en un període de';
+
+$lang['att_weekly_rest'] = 'Descans setmanal ininterromput';
+
+$lang['att_min_rest'] = 'Descans mínim entre jornades';
+
+$lang['att_max_daily'] = 'Màxim diari de treball ordinari';
+
+$lang['att_section_rest'] = 'Límits i descansos';
+
+$lang['att_annual_max'] = 'Jornada màxima anual (0 = sense límit)';
+
+$lang['att_full_time'] = 'Jornada completa setmanal';
+
+$lang['att_section_agreement'] = 'Conveni i jornada';
+
+$lang['att_settings'] = 'Registre de jornada';
+
+$lang['att_worked'] = 'Treballat';
+
+$lang['att_export'] = 'Exportar';
+

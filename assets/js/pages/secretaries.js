@@ -17,6 +17,7 @@ App.Pages.Secretaries = (function () {
     const $id = $('#id');
     const $firstName = $('#first-name');
     const $lastName = $('#last-name');
+    const $employment = $('#employment');
     const $email = $('#email');
     const $phoneNumber = $('#phone-number');
     const $address = $('#address');
@@ -195,6 +196,7 @@ App.Pages.Secretaries = (function () {
             const secretary = {
                 first_name: $firstName.val(),
                 last_name: $lastName.val(),
+                employment: $employment.val() || null,
                 email: $email.val(),
                 phone_number: $phoneNumber.val(),
                 address: $address.val(),
@@ -388,6 +390,7 @@ App.Pages.Secretaries = (function () {
         $id.val(secretary.id);
         $firstName.val(secretary.first_name);
         $lastName.val(secretary.last_name);
+        $employment.val(secretary.employment || '');
         $email.val(secretary.email);
         $phoneNumber.val(secretary.phone_number);
         $address.val(secretary.address);

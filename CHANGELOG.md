@@ -7,6 +7,14 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Added
 
+- Administrative staff clock in, pause and clock out from the Fitxatge page, which opens showing only the clock button and keeps entries, incidents, monthly summaries, exports and the legal notice in a separate Records view; administrators review the team, correct entries with a traceable reason and issue monthly summaries.
+
+- The record of each podiatrist and administrative employee has an employment relationship: employees clock in, self-employed professionals and partners do not, and staff still undefined is listed in the working time settings; the legal values, the collective agreements and the roles that clock in live in a configuration file, the days follow the timezone of the general settings, part-time split schedules respect the allowed interruptions, and records changed directly in the database are flagged.
+
+- Employees who clock in can only use the application while their workday is open: until they clock in, or while on a pause, every page takes them to the clock; employees with a split schedule clock out between shifts instead of pausing.
+
+- Settings has a "Registre de jornada" page where the administrator sets the working time rules of the law or of the collective agreement (the collective agreement, with the values of the Catalan private health agreement ready to apply, on top of the Estatuto de los Trabajadores, whose minimums no value can go below) and the contract of each employee: category, duration, weekly hours, split schedule, complementary hours pact and paid pauses; clock-in pauses, warnings, the scheduled hours of each day and the proposed monthly split into ordinary, complementary and overtime hours follow them.
+
 - A clinic can use its own visit documents by placing its document pack (a catalog and its Word templates, in any language) in storage/visit_documents: the menu, the forms, the limits of each field and which documents must be reviewed follow the catalog, with no change in the application.
 
 - The general settings have the address and the phone of the clinic, which the visit documents that carry them (such as the prescriptions) print instead of a fixed address; such a document asks to complete them while they are empty.

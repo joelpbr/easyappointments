@@ -31,6 +31,7 @@ class Secretaries_model extends EA_Model
         'id' => 'id',
         'firstName' => 'first_name',
         'lastName' => 'last_name',
+        'employment' => 'employment',
         'email' => 'email',
         'phone' => 'phone_number',
         'address' => 'address',
@@ -59,6 +60,10 @@ class Secretaries_model extends EA_Model
             $secretary['language'] = normalize_language($secretary['language']);
         }
 
+        if (array_key_exists('employment', $secretary)) {
+            $secretary['employment'] = $secretary['employment'] ?: null;
+        }
+
         $this->validate($secretary);
 
         if (empty($secretary['id'])) {
@@ -77,6 +82,11 @@ class Secretaries_model extends EA_Model
      */
     public function validate(array $secretary): void
     {
+        // Employees clock in (registro de jornada); self-employed professionals and partners do not.
+        if (!in_array($secretary['employment'] ?? null, [null, 'employee', 'self_employed'], true)) {
+            throw new InvalidArgumentException('Invalid employment relationship.');
+        }
+
         // If a secretary ID is provided then check whether the record really exists in the database and that it is
         // bound to the secretary role, so that the ID cannot target another kind of user (e.g. an administrator).
         if (!empty($secretary['id'])) {
@@ -654,6 +664,7 @@ class Secretaries_model extends EA_Model
             'id' => array_key_exists('id', $secretary) ? (int) $secretary['id'] : null,
             'firstName' => $secretary['first_name'],
             'lastName' => $secretary['last_name'],
+            'employment' => $secretary['employment'] ?? null,
             'email' => $secretary['email'],
             'phone' => $secretary['phone_number'],
             'address' => $secretary['address'],
@@ -694,6 +705,10 @@ class Secretaries_model extends EA_Model
 
         if (array_key_exists('lastName', $secretary)) {
             $decoded_resource['last_name'] = $secretary['lastName'];
+        }
+
+        if (array_key_exists('employment', $secretary)) {
+            $decoded_resource['employment'] = $secretary['employment'];
         }
 
         if (array_key_exists('email', $secretary)) {
