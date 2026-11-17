@@ -175,6 +175,7 @@
 <script src="<?= asset_url('assets/vendor/fullcalendar-moment/index.global.min.js') ?>"></script>
 <script src="<?= asset_url('assets/vendor/jquery-jeditable/jquery.jeditable.min.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/ui.js') ?>"></script>
+<script src="<?= asset_url('assets/js/utils/calendar_mobile.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_default_view.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_midday.js') ?>"></script>
 <script src="<?= asset_url('assets/js/utils/calendar_time_labels.js') ?>"></script>

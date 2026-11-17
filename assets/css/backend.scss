@@ -5,6 +5,20 @@
  * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
+// Extend the branded header behind the iOS status bar without covering its controls.
+#header {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    padding-left: env(safe-area-inset-left, 0px) !important;
+    padding-right: env(safe-area-inset-right, 0px) !important;
+}
+
+#calendar-page {
+    padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+
 /* Navigation hover and active states */
 #header #header-menu .nav-item:hover {
     background: rgba(0, 0, 0, 0.1);
@@ -209,7 +223,7 @@ body .modal.full-screen .modal-push {
 
 /* Calendar page specific styles */
 #calendar-page #calendar {
-    margin-bottom: 15px;
+    margin-bottom: 0;
 }
 
 #calendar .fc-header-toolbar {

@@ -36,9 +36,7 @@ App.Utils.CalendarDefaultView = (function () {
     const $selectFilterItem = $('#select-filter-item');
     const $appointmentsModal = $('#appointments-modal');
     const $unavailabilitiesModal = $('#unavailabilities-modal');
-    const $header = $('#header');
     const $notification = $('#notification');
-    const $calendarToolbar = $('#calendar-toolbar');
 
     // Module State
 
@@ -55,13 +53,10 @@ App.Utils.CalendarDefaultView = (function () {
     /**
      * Get the calendar height based on window size.
      *
-     * @returns {number} Calendar height in pixels (minimum 700px).
+     * @returns {number} Calendar height in the visible viewport, in pixels.
      */
     function getCalendarHeight() {
-        const offset = $header.outerHeight() + $calendarToolbar.outerHeight() + 35;
-        const height = window.innerHeight - offset;
-
-        return Math.max(height, 700);
+        return App.Utils.CalendarMobile.height($calendar[0]);
     }
 
     /**
@@ -738,7 +733,7 @@ App.Utils.CalendarDefaultView = (function () {
      * @param {Object} info - FullCalendar selection info.
      */
     function onSelect(info) {
-        if (info.allDay) return;
+        if (info.allDay || !document.getElementById('insert-appointment')) return;
 
         // Absences are blocked periods ("Blocks" button), so a selection is always a new appointment.
         $('#insert-appointment').trigger('click');
@@ -1348,11 +1343,10 @@ App.Utils.CalendarDefaultView = (function () {
             },
             windowResize: onWindowResize,
             datesSet: onDatesSet,
-            dateClick: onDateClick,
+            ...App.Utils.CalendarMobile.selectionHandlers(onSelect, onDateClick),
             eventClick: onEventClick,
             eventResize: onEventResize,
             eventDrop: onEventDrop,
-            select: onSelect,
         });
 
         fullCalendar.render();
@@ -1360,6 +1354,7 @@ App.Utils.CalendarDefaultView = (function () {
         $calendar.data('fullCalendar', fullCalendar);
 
         onWindowResize();
+        App.Utils.CalendarMobile.observe(onWindowResize);
 
         // Setup filter dropdown
         populateFilterDropdown();
