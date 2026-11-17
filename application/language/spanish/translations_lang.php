@@ -1061,3 +1061,13 @@ $lang['provider_calendar_order'] = 'Orden en el calendario';
 $lang['provider_calendar_order_hint'] = 'Los números más bajos aparecen primero (1, 2, 3...). En caso de empate, se ordenan alfabéticamente por el nombre completo.';
 $lang['provider_calendar_order_invalid'] = 'Introduce un número entero entre 1 y 9999.';
 $lang['audit_field_calendar_order'] = 'Orden en el calendario';
+
+$lang['provider_order_title'] = 'Orden de los podólogos en el calendario';
+$lang['provider_order_hint'] = 'Arrastra los podólogos o utiliza las flechas. Los cambios se guardan automáticamente para todos.';
+$lang['provider_order_up'] = 'Subir';
+$lang['provider_order_down'] = 'Bajar';
+$lang['provider_order_saving'] = 'Guardando…';
+$lang['provider_order_saved'] = 'Orden guardado';
+$lang['provider_order_failed'] = 'No se ha podido guardar el orden. Vuelve a intentarlo.';
+$lang['provider_order_changed'] = 'La lista de podólogos ha cambiado. Recarga la página.';
+$lang['provider_order_empty'] = 'No hay podólogos disponibles en el calendario.';

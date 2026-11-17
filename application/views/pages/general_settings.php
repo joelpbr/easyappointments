@@ -24,6 +24,14 @@
                             <?php endif; ?>
                         </div>
 
+
+                        <section class="mb-5" aria-labelledby="provider-order-title">
+                            <h5 id="provider-order-title"><?= lang('provider_order_title') ?></h5>
+                            <p class="text-muted"><?= lang('provider_order_hint') ?></p>
+                            <ol id="provider-order-list" class="list-group"></ol>
+                            <p id="provider-order-status" class="form-text mt-2" role="status" aria-live="polite"></p>
+                        </section>
+
                         <div class="row mb-5">
                             <div class="col-12">
                                 <h5 class="mb-3 fw-light"><?= lang('company') ?></h5>
@@ -282,5 +290,6 @@
 
 <script src="<?= asset_url('assets/js/http/general_settings_http_client.js') ?>"></script>
 <script src="<?= asset_url('assets/js/pages/general_settings.js') ?>"></script>
+<script src="<?= asset_url('assets/js/components/provider_order.js') ?>"></script>
 
 <?php end_section('scripts'); ?>

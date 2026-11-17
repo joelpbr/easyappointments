@@ -1061,3 +1061,13 @@ $lang['provider_calendar_order'] = 'Ordre al calendari';
 $lang['provider_calendar_order_hint'] = 'Els números més baixos surten primer (1, 2, 3...). En cas d’empat, s’ordenen alfabèticament pel nom complet.';
 $lang['provider_calendar_order_invalid'] = 'Introdueix un número enter entre 1 i 9999.';
 $lang['audit_field_calendar_order'] = 'Ordre al calendari';
+
+$lang['provider_order_title'] = 'Ordre dels podòlegs al calendari';
+$lang['provider_order_hint'] = 'Arrossega els podòlegs o utilitza les fletxes. Els canvis es desen automàticament per a tothom.';
+$lang['provider_order_up'] = 'Puja';
+$lang['provider_order_down'] = 'Baixa';
+$lang['provider_order_saving'] = 'Desant…';
+$lang['provider_order_saved'] = 'Ordre desat';
+$lang['provider_order_failed'] = 'No s’ha pogut desar l’ordre. Torna-ho a provar.';
+$lang['provider_order_changed'] = 'La llista de podòlegs ha canviat. Recarrega la pàgina.';
+$lang['provider_order_empty'] = 'No hi ha podòlegs disponibles al calendari.';
