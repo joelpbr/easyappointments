@@ -7,7 +7,7 @@ function consent(fetch) {
     const button = {hidden: true, disabled: true};
     const context = {
         App: {Components: {}, Utils: {Url: {siteUrl: path => '/index.php/' + path}}},
-        document: {getElementById: () => button, addEventListener() {}},
+        document: {getElementById: id => id === 'patient-consent-open' ? button : null, addEventListener() {}},
         URLSearchParams,
         fetch,
     };
@@ -41,10 +41,12 @@ test('a previous patient response cannot replace the current consent status', as
     const {api, button} = consent(() => new Promise(resolve => pending.push(resolve)));
     const first = api.setCustomer(1);
     const second = api.setCustomer(2);
-    pending[1]({ok: true, json: async () => ({current: {id: 10}})});
+    pending[1]({ok: true, json: async () => ({current: {id: 10, id_patient_documents: 12}})});
     await second;
     pending[0]({ok: true, json: async () => ({current: null})});
     await first;
+    assert.equal(button.hidden, true);
+    await api.setCustomer(null);
     assert.equal(button.hidden, true);
 });
 
