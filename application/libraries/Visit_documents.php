@@ -233,6 +233,13 @@ class Visit_documents
         $xpath = new DOMXPath($document);
         $xpath->registerNamespace('w', 'http://schemas.openxmlformats.org/wordprocessingml/2006/main');
         foreach (iterator_to_array($xpath->query('//w:t')) as $node) {
+            // A line with an optional token includes its label only when the field is filled in.
+            $content = preg_replace_callback('/^.*\$\{\?([a-z_]+)\}.*$/m', static function ($match) use ($values) {
+                if (!array_key_exists($match[1], $values)) {
+                    throw new RuntimeException('Unresolved document field: ' . $match[1]);
+                }
+                return $values[$match[1]] === '' ? '' : str_replace('${?', '${', $match[0]);
+            }, $node->textContent);
             $text = preg_replace_callback(
                 '/\$\{([a-z_]+)\}/',
                 static function ($match) use ($values) {
@@ -249,7 +256,7 @@ class Visit_documents
                     }
                     return $values[$match[1]];
                 },
-                $node->textContent,
+                rtrim($content, "\n"),
             );
             $lines = explode("\n", $text);
             $node->textContent = '';
