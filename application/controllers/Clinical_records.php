@@ -346,7 +346,8 @@ class Clinical_records extends EA_Controller
             ]);
             $this->output->set_content_type('application/pdf');
             response($pdf, 200, [
-                'Content-Disposition: inline; filename="document-' . (int) $document['id'] . '.pdf"',
+                'Content-Disposition: ' . (request('download') === '1' ? 'attachment' : 'inline') .
+                    '; filename="document-' . (int) $document['id'] . '.pdf"',
                 'Cache-Control: no-store, private',
                 'X-Content-Type-Options: nosniff',
             ]);

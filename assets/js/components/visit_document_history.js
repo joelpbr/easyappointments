@@ -31,6 +31,7 @@ App.Components.VisitDocumentHistory = (function () {
         $('<a/>', {
             class: 'btn btn-outline-primary btn-sm',
             href: App.Http.ClinicalRecords.savedDocumentUrl(item.id),
+            'data-pdf-actions': title,
             target: '_blank',
             rel: 'noopener',
             text: lang('visit_document_view'),

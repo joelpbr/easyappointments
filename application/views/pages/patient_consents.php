@@ -56,7 +56,7 @@ $query = vars('query');
                                 <td><?= e(strtoupper($entry['language'])) ?></td>
                                 <td>
                                     <?php if ($entry['id_patient_documents']): ?>
-                                        <a class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener"
+                                        <a data-pdf-actions="<?= e(lang('consent')) ?>" class="btn btn-outline-primary btn-sm" target="_blank" rel="noopener"
                                            href="<?= site_url(
                                                'patient_consents/pdf?document_id=' .
                                                    (int) $entry['id_patient_documents'],
@@ -104,4 +104,5 @@ $query = vars('query');
     </div>
 </div>
 
+<?php component('pdf_actions'); ?>
 <?php end_section('content'); ?>

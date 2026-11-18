@@ -1,8 +1,10 @@
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.4.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * @since       v1.4.0
  * ---------------------------------------------------------------------------- */
 
 const babel = require('gulp-babel');
@@ -140,6 +142,11 @@ function watch(done) {
 function vendor(done) {
     deleteSync(['assets/vendor/**', '!assets/vendor/index.html']);
 
+    gulp.src([
+        'node_modules/pdfjs-dist/legacy/build/pdf.min.mjs',
+        'node_modules/pdfjs-dist/legacy/build/pdf.worker.min.mjs',
+    ])
+        .pipe(gulp.dest('assets/vendor/pdfjs'));
     // bootstrap
     gulp.src([
         'node_modules/bootstrap/dist/js/bootstrap.min.js',
