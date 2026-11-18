@@ -44,6 +44,8 @@ App.Utils.CalendarDefaultView = (function () {
     let $popoverTarget = null;
     let fullCalendar = null;
     let lastEventsSignature = null;
+    let initialScrollPeriod = null;
+    const START_TIME = '08:45:00';
     let refreshRequest = 0;
     let refreshPending = false;
     let lastFocusedEventData = null;
@@ -797,6 +799,7 @@ App.Utils.CalendarDefaultView = (function () {
      * Handle calendar dates change (view render).
      */
     function onDatesSet() {
+        initialScrollPeriod = null;
         if (!$selectFilterItem.val()) return;
 
         refreshCalendarAppointments(
@@ -872,6 +875,17 @@ App.Utils.CalendarDefaultView = (function () {
                     fullCalendar.addEventSource(events);
                 });
                 if (silent) scroll.forEach(({el, top, left}) => { el.scrollTop = top; el.scrollLeft = left; });
+                if (!silent && fullCalendar.view.type.startsWith('timeGrid')) {
+                    const period = JSON.stringify([formattedStartDate, formattedEndDate, filterType, recordId]);
+                    if (period !== initialScrollPeriod) {
+                        initialScrollPeriod = period;
+                        const firstTime = response.appointments.reduce((earliest, appointment) => {
+                            const time = moment(appointment.start_datetime).format('HH:mm:ss');
+                            return time < earliest ? time : earliest;
+                        }, START_TIME);
+                        fullCalendar.scrollToTime(firstTime);
+                    }
+                }
                 lastEventsSignature = signature;
 
                 App.Utils.CalendarPastTime.update(fullCalendar);
@@ -1314,7 +1328,7 @@ App.Utils.CalendarDefaultView = (function () {
             firstDay: firstWeekdayNumber,
             slotDuration: {minutes: vars('calendar_slot_minutes')},
             snapDuration: {minutes: vars('calendar_slot_minutes')},
-            scrollTime: '08:30:00',
+            scrollTime: START_TIME,
             slotLabelInterval: '01:00',
             eventTimeFormat: timeFormat,
             eventTextColor: '#333',

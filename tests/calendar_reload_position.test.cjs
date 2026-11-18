@@ -6,6 +6,35 @@ const source = fs.readFileSync('assets/js/utils/calendar_table_view.js','utf8');
 const replacement = source.slice(source.indexOf('    function replaceDisplayedEvents('), source.indexOf('    // Event Listeners'));
 const sync = source.slice(source.indexOf('    function syncAllDaySlot('), source.indexOf('    // Public API'));
 
+test('opening a table calendar aligns 08:45 or the first earlier visible appointment below the heading', () => {
+    const start = source.indexOf('    function scrollToStartTime(');
+    const scroll = source.slice(start, source.indexOf('\n    }', start) + 6);
+    const row = (top, height) => ({getBoundingClientRect: () => ({top, height})});
+    // Half-hour rows put 08:45 halfway between two grid lines.
+    const lanes = Array.from({length: 48}, (_, index) => row(60 + index * 30, 30));
+    const appointments = [];
+    const view = {
+        scrollTop: 0,
+        querySelector: selector => selector === '.fc-timegrid-slots'
+            ? {querySelectorAll: () => lanes}
+            : {offsetHeight: 40},
+        querySelectorAll: () => appointments,
+        getBoundingClientRect: () => ({top: 20}),
+    };
+    const context = {document: {querySelector: () => view}, vars: () => 30};
+    vm.runInNewContext(source.match(/const START_MINUTES = [^;]+;/)[0] + scroll, context);
+    for (const [rows, expected] of [
+        [[], 525],
+        [[row(60 + 540, 30)], 525],
+        [[row(60 + 500, 30), row(60 + 482, 15), row(0, 0)], 482],
+    ]) {
+        appointments.splice(0, appointments.length, ...rows);
+        view.scrollTop = 0;
+        context.scrollToStartTime();
+        assert.equal(view.scrollTop, expected);
+    }
+});
+
 test('reload keeps shared hours stable and restores both outer and column scroll positions', () => {
     const frames=[];
     const inner={scrollTop:230,scrollLeft:4};

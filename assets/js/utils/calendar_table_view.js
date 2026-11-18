@@ -51,7 +51,7 @@ App.Utils.CalendarTableView = (function () {
     let replacingEvents = false;
 
     const MIN_PROVIDER_COLUMN_WIDTH = 200; // Pixels
-    const START_TIME = '08:30:00'; // First time shown when a period is opened
+    const START_MINUTES = 8 * 60 + 45;
 
     /**
      * Get the last filters used by the current user in this browser.
@@ -1064,8 +1064,8 @@ App.Utils.CalendarTableView = (function () {
                     display: 'block',
                     data: appointment,
                     classNames: App.Utils.CalendarEventPopover.statusFreesSlot(appointment.status)
-                        ? ['fc-appointment-freed']
-                        : [],
+                        ? ['ea-appointment', 'fc-appointment-freed']
+                        : ['ea-appointment'],
                 };
             });
         $providerColumn.find('.calendar-wrapper').data('fullCalendar').addEventSource(calendarEvents);
@@ -1728,23 +1728,29 @@ App.Utils.CalendarTableView = (function () {
     }
 
     /**
-     * Scroll the view to START_TIME, or to the first time after it on the grid.
+     * Align 08:45 or the first earlier appointment with the bottom of the sticky heading.
      */
     function scrollToStartTime() {
         const calendarView = document.querySelector('#calendar .calendar-view');
 
-        const lane = [...(calendarView?.querySelectorAll('.fc-timegrid-slot-lane[data-time]') ?? [])].find(
-            (slot) => slot.dataset.time >= START_TIME,
-        );
+        const grid = calendarView?.querySelector('.fc-timegrid-slots');
+        if (!grid) return;
 
-        if (!lane) {
-            return;
+        const slotMinutes = Number(vars('calendar_slot_minutes'));
+        const lanes = grid.querySelectorAll('.fc-timegrid-slot-lane[data-time]');
+        const lane = lanes[Math.floor(START_MINUTES / slotMinutes)];
+        if (!lane) return;
+
+        const bounds = lane.getBoundingClientRect();
+        let top = bounds.top + bounds.height * ((START_MINUTES % slotMinutes) / slotMinutes);
+        for (const appointment of calendarView.querySelectorAll('.fc-timegrid-event.ea-appointment')) {
+            const rect = appointment.getBoundingClientRect();
+            if (rect.height) top = Math.min(top, rect.top);
         }
 
         const headingHeight = calendarView.querySelector('.ea-provider-heading')?.offsetHeight ?? 0;
 
-        calendarView.scrollTop +=
-            lane.getBoundingClientRect().top - calendarView.getBoundingClientRect().top - headingHeight;
+        calendarView.scrollTop += top - calendarView.getBoundingClientRect().top - headingHeight;
     }
 
     /**
