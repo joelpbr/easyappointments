@@ -106,13 +106,7 @@ class Patient_consents extends EA_Controller
             json_response(
                 [
                     'patient' => $this->patient($customer_id),
-                    'texts' => array_combine(
-                        Patient_consent::LANGUAGES,
-                        array_map(
-                            fn($language) => Patient_consent::text($language, $clinic),
-                            Patient_consent::LANGUAGES,
-                        ),
-                    ),
+                    'texts' => ['ca' => Patient_consent::text('ca', $clinic)],
                     'current' => $this->patient_consents_model->current($customer_id),
                     'dpo_missing' => !trim((string) $clinic['dpo']),
                 ],
@@ -146,7 +140,10 @@ class Patient_consents extends EA_Controller
                 throw new InvalidArgumentException(lang('consent_dpo_missing'));
             }
 
-            $text = Patient_consent::text((string) ($data['language'] ?? ''), $clinic);
+            if (($data['language'] ?? '') !== 'ca') {
+                throw new InvalidArgumentException(lang('consent_language_reload'));
+            }
+            $text = Patient_consent::text('ca', $clinic);
             $choices = Patient_consent::choices((array) ($data['choices'] ?? []));
             $patient = $this->patient($customer_id);
             $signer_data = (array) ($data['signer'] ?? []);
@@ -252,7 +249,8 @@ class Patient_consents extends EA_Controller
             $this->output->set_content_type('application/pdf');
 
             response($this->patient_documents_model->pdf((int) $document['id']), 200, [
-                'Content-Disposition: inline; filename="consentiment-' . (int) $document['id'] . '.pdf"',
+                'Content-Disposition: ' . (request('download') === '1' ? 'attachment' : 'inline') .
+                    '; filename="consentiment-' . (int) $document['id'] . '.pdf"',
                 'Cache-Control: no-store, private',
                 'X-Content-Type-Options: nosniff',
             ]);

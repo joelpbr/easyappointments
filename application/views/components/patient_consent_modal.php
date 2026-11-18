@@ -60,12 +60,6 @@
             </div>
         </section>
         <div id="patient-consent-actions" class="ea-document-dialog-body">
-            <div class="btn-group w-100" role="group" aria-label="<?= e(lang('language')) ?>">
-                <input type="radio" class="btn-check" name="patient-consent-language" id="patient-consent-ca" value="ca" checked>
-                <label class="btn btn-outline-secondary" for="patient-consent-ca">Catal&agrave;</label>
-                <input type="radio" class="btn-check" name="patient-consent-language" id="patient-consent-es" value="es">
-                <label class="btn btn-outline-secondary" for="patient-consent-es">Castellano</label>
-            </div>
             <div id="patient-consent-warning" class="alert alert-warning py-2 mb-0" hidden></div>
             <div>
                 <label class="form-label" for="patient-consent-role"><?= lang('consent_signer_role') ?></label>

@@ -1,8 +1,10 @@
-/* ---------------------------------------------------------------------------- *
+/* ----------------------------------------------------------------------------
+ *
  * @package     ProgramaConsulta
  * @author      A.Tselegidis <alextselegidis@gmail.com>
  * @copyright   Copyright (c) Alex Tselegidis
- * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3 * @since       v1.5.0
+ * @license     https://opensource.org/licenses/GPL-3.0 - GPLv3
+ * @since       v1.5.0
  * ---------------------------------------------------------------------------- */
 
 // Extend the branded header behind the iOS status bar without covering its controls.
@@ -17,8 +19,18 @@
 
 #calendar-page {
     padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+
+    .calendar-view,
+    .fc-scroller {
+        overscroll-behavior-y: contain;
+    }
 }
 
+@media (display-mode: standalone) {
+    html:has(#calendar-page) {
+        overscroll-behavior-y: none;
+    }
+}
 /* Navigation hover and active states */
 #header #header-menu .nav-item:hover {
     background: rgba(0, 0, 0, 0.1);
@@ -186,7 +198,8 @@ body .modal.full-screen .modal-push {
 
     // Every other row in light grey, to tell the rows apart.
     &:nth-child(odd) {
-        background-color: var(--ea-primary-subtle);    }
+        background-color: var(--ea-primary-subtle);
+    }
 
     // The row under the mouse stands out from both tones.
     &:hover {
@@ -1217,7 +1230,8 @@ body .modal.full-screen .modal-push {
 
     .provider-column .fc-list-event > td,
     .provider-column .fc-list-event:hover > td {
-        background-color: var(--ea-list-event-color, var(--ea-accent));    }
+        background-color: var(--ea-list-event-color, var(--ea-accent));
+    }
 
     .provider-column .fc-list-event.ea-list-event-ended > td {
         background-image: url('../img/unavailability.jpg');
@@ -1497,7 +1511,8 @@ body .modal.full-screen .modal-push {
         border-left: 3px solid transparent;
 
         &.active {
-            background: var(--ea-primary-subtle);            color: inherit;
+            background: var(--ea-primary-subtle);
+            color: inherit;
             border-color: transparent;
             border-left-color: var(--ea-accent);
         }
@@ -1523,7 +1538,8 @@ body .modal.full-screen .modal-push {
 
             &:hover,
             &:focus-visible {
-                color: var(--ea-primary-hover);            }
+                color: var(--ea-primary-hover);
+            }
         }
 
         .ea-clinical-visit-notes {

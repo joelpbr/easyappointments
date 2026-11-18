@@ -39,9 +39,16 @@
 <body class="ea-simple">
 
 <header class="ea-simple-header">
-    <?php if (vars('attendance_menu')): ?>
-        <a href="<?= site_url('attendance') ?>" class="btn btn-outline-primary btn-sm m-2"><?= lang('att_title') ?></a>
-    <?php endif; ?>
+    <div class="d-flex flex-wrap gap-2 mb-2">
+        <?php if (vars('attendance_menu')): ?>
+            <a href="<?= site_url('attendance') ?>" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-clock me-1" aria-hidden="true"></i><?= lang('att_title') ?>
+            </a>
+        <?php endif; ?>
+        <a href="<?= site_url('calendar?full=1') ?>" class="btn btn-outline-light btn-sm">
+            <i class="fas fa-calendar-alt me-1" aria-hidden="true"></i><?= lang('calendar') ?>
+        </a>
+    </div>
     <nav class="ea-simple-day" aria-label="<?= e(lang('calendar')) ?>">
         <button type="button" class="ea-simple-icon-button" id="simple-previous" aria-label="‹">
             <i class="fas fa-chevron-left"></i>

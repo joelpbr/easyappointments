@@ -23,7 +23,6 @@ App.Components.PatientConsent = (function () {
     };
     const url = (path, params = {}) =>
         App.Utils.Url.siteUrl('patient_consents/' + path) + '?' + new URLSearchParams(params);
-    const language = () => document.querySelector('input[name="patient-consent-language"]:checked').value;
     const role = () => $id('patient-consent-role').value;
 
     /** The signing button is an alert, visible only for a patient with no signed consent. */
@@ -57,7 +56,7 @@ App.Components.PatientConsent = (function () {
     }
 
     function renderText() {
-        const text = form.texts[language()];
+        const text = form.texts.ca;
         $id('patient-consent-title').textContent = text.title;
         $id('patient-consent-patient').textContent =
             form.patient.name + (form.patient.document ? ' · ' + form.patient.document : '');
@@ -164,7 +163,6 @@ App.Components.PatientConsent = (function () {
         if (!form) return;
         $id('patient-consent-error').textContent = '';
         $id('patient-consent-options').replaceChildren();
-        $id('patient-consent-ca').checked = true;
         $id('patient-consent-role').value = 'patient';
         const warning = $id('patient-consent-warning');
         warning.hidden = !form.dpo_missing;
@@ -200,7 +198,7 @@ App.Components.PatientConsent = (function () {
         const disabled = controls.map((control) => control.disabled);
         controls.forEach((control) => { control.disabled = true; });
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 30000);
+        const timeout = setTimeout(() => controller.abort(), 60000);
         try {
             if (App.Utils.WorkRecovery?.isReady() === false && !(await App.Utils.WorkRecovery.check())) throw new Error();
             const response = await fetch(url('sign'), {
@@ -214,7 +212,7 @@ App.Components.PatientConsent = (function () {
                     csrf_token: vars('csrf_token'),
                     customer_id: customerId,
                     consent: JSON.stringify({
-                        language: language(),
+                        language: 'ca',
                         choices,
                         signer: {
                             role: role(),
@@ -227,7 +225,11 @@ App.Components.PatientConsent = (function () {
                 }),
             });
             const result = await response.json().catch(() => ({}));
-            if (!response.ok || result.success !== true) throw new Error(result.message || lang('consent_save_error'));
+            if (!response.ok && result?.message) {
+                $error.textContent = result.message;
+                return;
+            }
+            if (!response.ok || !result?.current?.id) throw new Error(lang('consent_save_error'));
             dirty = false;
             form.current = result.current;
             showStatus();
@@ -264,9 +266,6 @@ App.Components.PatientConsent = (function () {
         window.addEventListener('resize', () => {
             if ($id('patient-consent-modal').open && !strokes) resizePad();
         });
-        document
-            .querySelectorAll('input[name="patient-consent-language"]')
-            .forEach((input) => input.addEventListener('change', renderText));
         $id('patient-consent-role').addEventListener('change', signerDefaults);
     });
 

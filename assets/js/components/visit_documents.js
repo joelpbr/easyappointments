@@ -30,6 +30,12 @@ App.Components.VisitDocuments = (function () {
     // Each load of the menu gets a number: the answer of an older one (another visit) is dropped.
     let menuRequest = 0;
     let generating = false;
+    let formRevision = 0;
+
+    function closeCard() {
+        formRevision++;
+        close($panel[0]);
+    }
 
     const visitId = () => Number($toggle.attr('data-appointment-id'));
 
@@ -114,6 +120,7 @@ App.Components.VisitDocuments = (function () {
     }
 
     function resetCard() {
+        formRevision++;
         $('#clinical-document-fields, #clinical-document-known-fields').empty();
         $('#clinical-document-known').prop('hidden', true).prop('open', false);
         $('#clinical-document-professional-wrap, #clinical-document-signer, #clinical-document-review-wrap').prop(
@@ -226,7 +233,7 @@ App.Components.VisitDocuments = (function () {
     /** The options of the catalog plus "other", which shows a free input that takes the place of the select. */
     function choiceControl(field, id, value) {
         const $select = $('<select/>', {id, class: 'form-select', required: field.required});
-        $('<option/>', {value: '', text: '—'}).appendTo($select);
+        $('<option/>', {value: '', text: 'â€”'}).appendTo($select);
         field.options.forEach((option) =>
             $('<option/>', {
                 value: option,
@@ -269,13 +276,7 @@ App.Components.VisitDocuments = (function () {
         // Browsers cannot focus an invalid control inside closed details.
         if ($('#clinical-document-known-fields :invalid').length) $('#clinical-document-known').prop('open', true);
         if (!$form[0].reportValidity()) return;
-        // Open the PDF window during the click to keep it outside popup blocking.
-        const preview = window.open('', '_blank');
-        if (preview) {
-            preview.document.title = lang('visit_document_download');
-            preview.document.body.textContent = lang('visit_document_preparing');
-            preview.opener = null;
-        }
+        const revision = formRevision;
         const fields = {};
         $form.find('[data-document-field]').each((index, input) => {
             fields[input.dataset.documentField] = input.value;
@@ -291,13 +292,14 @@ App.Components.VisitDocuments = (function () {
                 reviewed: $('#clinical-document-reviewed').prop('checked') ? '1' : '0',
                 fields,
             });
-            // The document is saved by now: it is shown even if the card was closed while it was being prepared.
+            if (!Number(response?.document_id)) throw new Error();
             const url = App.Http.ClinicalRecords.savedDocumentUrl(response.document_id);
-            if (preview && !preview.closed) preview.location.replace(url);
-            else window.location.assign(url);
+            if (context === visit && revision === formRevision && $panel[0].open) {
+                $panel[0].close();
+                document.getElementById('pdf-actions').showPdf(url, $('#clinical-document-heading').text());
+            }
             if (context === visit) message('');
         } catch (error) {
-            if (preview && !preview.closed) preview.close();
             if (context === visit) message(error.responseJSON?.message || lang('visit_document_generate_error'), true);
         } finally {
             generating = false;
@@ -344,14 +346,14 @@ App.Components.VisitDocuments = (function () {
 
         $('#clinical-document-variant').on('change', (event) => selectTemplate(event.currentTarget.value));
         // Let reportValidity open the saved-data section before browser validation runs.
-        $form.attr('novalidate', 'novalidate').on('submit', generate);
-        $('#clinical-document-close').on('click', () => close($panel[0]));
+        $form.attr('novalidate', 'novalidate').on('submit', generate).on('input change', () => { formRevision++; });
+        $('#clinical-document-close').on('click', closeCard);
         // The native dialog owns the focus while the Bootstrap modal of the record stays open underneath.
         $panel
             .on('focusin', (event) => event.stopPropagation())
             .on('cancel', (event) => {
                 event.preventDefault();
-                close($panel[0]);
+                closeCard();
             })
             .on('close', () => $toggle.trigger('focus'));
     });

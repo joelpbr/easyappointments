@@ -39,7 +39,7 @@ for (const result of ['network-error', 'invalid-response', 'saved']) test(`signa
     let closed=0;
     const context={$id:node,document:{querySelectorAll:()=>[]},lang:x=>x,url:x=>x,vars:()=>'',customerId:1,language:()=> 'ca',role:()=> 'patient',URLSearchParams,AbortController,setTimeout:()=>1,clearTimeout(){},showStatus(){},pad:{toDataURL:()=> 'preserved-drawing'},fetch:async()=>{
         if(result==='network-error')throw Error('offline');
-        return {ok:true,json:async()=>result==='saved'?{success:true,current:{id:1}}:{}};
+        return {ok:true,json:async()=>result==='saved'?{current:{id:1}}:{}};
     },App:{Utils:{WorkRecovery:{isReady:()=>true,check(){}}},Components:{DocumentDialog:{close(){closed++;}}},Layouts:{Backend:{displayNotification(){}}}}};
     vm.runInNewContext(`let saving=false,dirty=true,strokes=8,form={};${save};globalThis.save=save;globalThis.state=()=>({dirty,strokes,saving});`,context);
     await context.save();

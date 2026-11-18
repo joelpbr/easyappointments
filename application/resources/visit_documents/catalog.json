@@ -200,7 +200,7 @@
     {
       "id": "rx_amoxicillin",
       "label": {
-        "catalan": "Amoxicilina 500 mg · 30 comprimits EFG",
+        "catalan": "Amoxicil·lina 500 mg · 30 comprimits EFG",
         "spanish": "Amoxicilina 500 mg · 30 comprimits EFG"
       },
       "group": "prescriptions",
@@ -344,13 +344,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Amoxicilina 500 mg · 30 comprimits EFG"
+        "medication": "Amoxicil·lina 500 mg · 30 comprimits EFG"
       }
     },
     {
       "id": "rx_amoxiclav_250",
       "label": {
-        "catalan": "Amoxicilina / clavulánico 250 / 62,5 mg · sobres EFG",
+        "catalan": "Amoxicil·lina / àcid clavulànic 250 / 62,5 mg · sobres EFG",
         "spanish": "Amoxicilina / clavulánico 250 / 62,5 mg · sobres EFG"
       },
       "group": "prescriptions",
@@ -494,13 +494,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Amoxicilina / clavulánico 250 / 62,5 mg · sobres EFG"
+        "medication": "Amoxicil·lina / àcid clavulànic 250 / 62,5 mg · sobres EFG"
       }
     },
     {
       "id": "rx_amoxiclav_500",
       "label": {
-        "catalan": "Amoxicilina / clavulánico 500 / 125 mg · comprimidos EFG",
+        "catalan": "Amoxicil·lina / àcid clavulànic 500 / 125 mg · comprimits EFG",
         "spanish": "Amoxicilina / clavulánico 500 / 125 mg · comprimidos EFG"
       },
       "group": "prescriptions",
@@ -644,13 +644,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Amoxicilina / clavulánico 500 / 125 mg · comprimidos EFG"
+        "medication": "Amoxicil·lina / àcid clavulànic 500 / 125 mg · comprimits EFG"
       }
     },
     {
       "id": "rx_arcoxia",
       "label": {
-        "catalan": "Arcoxia 60 mg · 28 comprimidos",
+        "catalan": "Arcoxia 60 mg · 28 comprimits",
         "spanish": "Arcoxia 60 mg · 28 comprimidos"
       },
       "group": "prescriptions",
@@ -794,13 +794,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Arcoxia 60 mg · 28 comprimidos"
+        "medication": "Arcoxia 60 mg · 28 comprimits"
       }
     },
     {
       "id": "rx_celestone",
       "label": {
-        "catalan": "Celestone Cronodose · inyectable",
+        "catalan": "Celestone Cronodose · injectable",
         "spanish": "Celestone Cronodose · inyectable"
       },
       "group": "prescriptions",
@@ -944,13 +944,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Celestone Cronodose · inyectable"
+        "medication": "Celestone Cronodose · injectable"
       }
     },
     {
       "id": "rx_ciprofloxacin",
       "label": {
-        "catalan": "Ciprofloxacino 500 mg EFG",
+        "catalan": "Ciprofloxacina 500 mg EFG",
         "spanish": "Ciprofloxacino 500 mg EFG"
       },
       "group": "prescriptions",
@@ -1094,7 +1094,7 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Ciprofloxacino 500 mg EFG"
+        "medication": "Ciprofloxacina 500 mg EFG"
       }
     },
     {
@@ -1250,7 +1250,7 @@
     {
       "id": "rx_enantyum",
       "label": {
-        "catalan": "Enantyum 25 mg · solución oral",
+        "catalan": "Enantyum 25 mg · solució oral",
         "spanish": "Enantyum 25 mg · solución oral"
       },
       "group": "prescriptions",
@@ -1394,7 +1394,7 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Enantyum 25 mg · solución oral"
+        "medication": "Enantyum 25 mg · solució oral"
       }
     },
     {
@@ -1700,7 +1700,7 @@
     {
       "id": "rx_ibuprofen_400",
       "label": {
-        "catalan": "Ibuprofeno 400 mg EFG",
+        "catalan": "Ibuprofèn 400 mg EFG",
         "spanish": "Ibuprofeno 400 mg EFG"
       },
       "group": "prescriptions",
@@ -1845,13 +1845,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Ibuprofeno 400 mg EFG"
+        "medication": "Ibuprofèn 400 mg EFG"
       }
     },
     {
       "id": "rx_ibuprofen_600",
       "label": {
-        "catalan": "Ibuprofeno 600 mg EFG",
+        "catalan": "Ibuprofèn 600 mg EFG",
         "spanish": "Ibuprofeno 600 mg EFG"
       },
       "group": "prescriptions",
@@ -1995,13 +1995,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Ibuprofeno 600 mg EFG"
+        "medication": "Ibuprofèn 600 mg EFG"
       }
     },
     {
       "id": "rx_ibuprofen_sachets",
       "label": {
-        "catalan": "Ibuprofeno + arginina 600 mg · sobres EFG",
+        "catalan": "Ibuprofèn + arginina 600 mg · sobres EFG",
         "spanish": "Ibuprofeno + arginina 600 mg · sobres EFG"
       },
       "group": "prescriptions",
@@ -2145,13 +2145,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Ibuprofeno + arginina 600 mg · sobres EFG"
+        "medication": "Ibuprofèn + arginina 600 mg · sobres EFG"
       }
     },
     {
       "id": "rx_itragerm",
       "label": {
-        "catalan": "Itragerm 50 mg · cápsulas duras, 14 unidades",
+        "catalan": "Itragerm 50 mg · càpsules dures, 14 unitats",
         "spanish": "Itragerm 50 mg · cápsulas duras, 14 unidades"
       },
       "group": "prescriptions",
@@ -2295,13 +2295,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Itragerm 50 mg · cápsulas duras, 14 unidades"
+        "medication": "Itragerm 50 mg · càpsules dures, 14 unitats"
       }
     },
     {
       "id": "rx_mepivacaine",
       "label": {
-        "catalan": "Mepivacaína Normon 2% · solución inyectable · 100 unidades · CN 602914.5",
+        "catalan": "Mepivacaïna Normon 2% · solució injectable · 100 unitats · CN 602914.5",
         "spanish": "Mepivacaína Normon 2% · solución inyectable · 100 unidades · CN 602914.5"
       },
       "group": "prescriptions",
@@ -2445,7 +2445,7 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Mepivacaína Normon 2% · solución inyectable · 100 unidades · CN 602914.5"
+        "medication": "Mepivacaïna Normon 2% · solució injectable · 100 unitats · CN 602914.5"
       }
     },
     {
@@ -2751,7 +2751,7 @@
     {
       "id": "rx_nolotil_injection",
       "label": {
-        "catalan": "Nolotil 0,4 g/ml · solución inyectable y para perfusión",
+        "catalan": "Nolotil 0,4 g/ml · solució injectable i per a perfusió",
         "spanish": "Nolotil 0,4 g/ml · solución inyectable y para perfusión"
       },
       "group": "prescriptions",
@@ -2895,7 +2895,7 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Nolotil 0,4 g/ml · solución inyectable y para perfusión"
+        "medication": "Nolotil 0,4 g/ml · solució injectable i per a perfusió"
       }
     },
     {
@@ -3202,7 +3202,7 @@
     {
       "id": "rx_voltaren_100",
       "label": {
-        "catalan": "Voltaren Retard 100 mg · comprimidos",
+        "catalan": "Voltaren Retard 100 mg · comprimits",
         "spanish": "Voltaren Retard 100 mg · comprimidos"
       },
       "group": "prescriptions",
@@ -3346,13 +3346,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Voltaren Retard 100 mg · comprimidos"
+        "medication": "Voltaren Retard 100 mg · comprimits"
       }
     },
     {
       "id": "rx_voltaren_50",
       "label": {
-        "catalan": "Voltaren Retard 50 mg · comprimidos",
+        "catalan": "Voltaren Retard 50 mg · comprimits",
         "spanish": "Voltaren Retard 50 mg · comprimidos"
       },
       "group": "prescriptions",
@@ -3496,13 +3496,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Voltaren Retard 50 mg · comprimidos"
+        "medication": "Voltaren Retard 50 mg · comprimits"
       }
     },
     {
       "id": "rx_voltaren_75",
       "label": {
-        "catalan": "Voltaren Retard 75 mg · comprimidos",
+        "catalan": "Voltaren Retard 75 mg · comprimits",
         "spanish": "Voltaren Retard 75 mg · comprimidos"
       },
       "group": "prescriptions",
@@ -3646,13 +3646,13 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Voltaren Retard 75 mg · comprimidos"
+        "medication": "Voltaren Retard 75 mg · comprimits"
       }
     },
     {
       "id": "rx_zaldiar",
       "label": {
-        "catalan": "Zaldiar 37,5 mg / 325 mg · comprimidos",
+        "catalan": "Zaldiar 37,5 mg / 325 mg · comprimits",
         "spanish": "Zaldiar 37,5 mg / 325 mg · comprimidos"
       },
       "group": "prescriptions",
@@ -3796,7 +3796,7 @@
       ],
       "restricted": true,
       "defaults": {
-        "medication": "Zaldiar 37,5 mg / 325 mg · comprimidos"
+        "medication": "Zaldiar 37,5 mg / 325 mg · comprimits"
       }
     },
     {
@@ -4021,7 +4021,7 @@
             "EXPLORACIÓ BIOMECÀNICA",
             "PLANTILLES",
             "VISITA PODOLÒGICA",
-            "CIRUGIA UNGUEAL"
+            "CIRURGIA UNGUIAL"
           ]
         },
         {
@@ -4266,7 +4266,7 @@
       ],
       "restricted": false,
       "defaults": {
-        "footwear_recommendation": "calzado laboral suficientemente ancho y con buena amortiguación, tipo deportivo"
+        "footwear_recommendation": "Calçat de tipus esportiu, prou ample i amb un bon amortiment."
       }
     },
     {
@@ -4326,9 +4326,9 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "ROTACIÓ INTERNA AUMENTADA",
+            "ROTACIÓ INTERNA AUGMENTADA",
             "ROTACIÓ INTERNA REDUÏDA",
-            "ROTACIÓ EXTERNA AUMENTADA",
+            "ROTACIÓ EXTERNA AUGMENTADA",
             "ROTACIÓ EXTERNA REDUÏDA"
           ]
         },
@@ -4342,9 +4342,9 @@
           "required": true,
           "options": [
             "GENU VALGUM",
-            "GENU VARUS",
+            "GENU VARUM",
             "GENU FLEXUS",
-            "GENUS RECURVATUM"
+            "GENU RECURVATUM"
           ]
         },
         {
@@ -4385,9 +4385,9 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "NORMAL",
-            "REDUÏT",
-            "HIPERMOVILITAT"
+            "NORMALS",
+            "REDUÏTS",
+            "HIPERMOBILITAT"
           ]
         },
         {
@@ -4413,7 +4413,7 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "NORMAL",
+            "NORMALS",
             "CONVERGENTS",
             "DIVERGENTS"
           ]
@@ -4456,7 +4456,7 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "RECOLZAMENT AUMENTAT",
+            "RECOLZAMENT AUGMENTAT",
             "RECOLZAMENT REDUÏT",
             "NORMAL"
           ]
@@ -4470,12 +4470,12 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "VALGO",
-            "VARO",
-            "CAIGUDA RADIS CENTRALS",
+            "VALG",
+            "VAR",
+            "CAIGUDA DELS RADIS CENTRALS",
             "ADDUCCIÓ",
-            "INSUFICIÈNCIA PRIMER RADI",
-            "INSUFICIÈNCIA 5É RADI"
+            "INSUFICIÈNCIA DEL PRIMER RADI",
+            "INSUFICIÈNCIA DEL CINQUÈ RADI"
           ]
         },
         {
@@ -4487,10 +4487,10 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "HIPEREXTENSIÓ 1ER DIT",
-            "DITS URPA",
+            "HIPEREXTENSIÓ DEL PRIMER DIT",
+            "DITS EN URPA",
             "DIT RÀFAGA",
-            "ABDUCCIÓ 1ER DIT"
+            "ABDUCCIÓ DEL PRIMER DIT"
           ]
         },
         {
@@ -4519,8 +4519,8 @@
           "required": true,
           "options": [
             "NEUTRE",
-            "VALGO",
-            "VARO"
+            "VALG",
+            "VAR"
           ]
         },
         {
@@ -4533,8 +4533,8 @@
           "required": true,
           "options": [
             "NEUTRE",
-            "VALGO",
-            "VARO"
+            "VALG",
+            "VAR"
           ]
         },
         {
@@ -4561,7 +4561,7 @@
           "required": true,
           "options": [
             "NORMAL",
-            "HIERRECOLZAMENT 1ER DIT"
+            "SUPORT EXCESSIU DEL PRIMER DIT"
           ]
         },
         {
@@ -4574,7 +4574,7 @@
           "required": true,
           "options": [
             "NORMAL",
-            "AUMENTAT",
+            "AUGMENTAT",
             "REDUÏT"
           ]
         },
@@ -4587,16 +4587,16 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "PEUS VALGOS PRIMARIS",
-            "PEUS VALGOS SECUNDARIS",
+            "PEUS VALGS PRIMARIS",
+            "PEUS VALGS SECUNDARIS",
             "PEUS PLANS",
-            "PEUS CAVOS",
-            "PEUS VALGOS INSUFICIÈNCIA 1º RADI",
+            "PEUS CAVUS",
+            "PEUS VALGS PER INSUFICIÈNCIA DEL PRIMER RADI",
             "ESPERÓ CALCANI",
             "FASCITIS PLANTAR",
-            "PEUS CAVOS VALGOS",
-            "PEUS CAVOS VAROS",
-            "NEUROMA MORTON"
+            "PEUS CAVUS VALGS",
+            "PEUS CAVUS VARS",
+            "NEUROMA DE MORTON"
           ]
         },
         {
@@ -4608,9 +4608,9 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "SOPORTS PLANTARS PERSONALIZATS",
-            "REVISIÓ 6 MESOS",
-            "REVISIÓ 1 ANY"
+            "SUPORTS PLANTARS PERSONALITZATS",
+            "REVISIÓ AL CAP DE 6 MESOS",
+            "REVISIÓ AL CAP D’UN ANY"
           ]
         },
         {
@@ -4714,7 +4714,7 @@
           "options": [
             "1",
             "2",
-            "HIPERGLUCEMIA TRACTADA AMB DIETA"
+            "HIPERGLUCÈMIA TRACTADA AMB DIETA"
           ]
         },
         {
@@ -4737,8 +4737,8 @@
           "required": true,
           "options": [
             "CONTROL",
-            "PEU RISC NEUROLÒGIC",
-            "PEU RISC VASCULAR",
+            "PEU DE RISC NEUROLÒGIC",
+            "PEU DE RISC VASCULAR",
             "QUERATOPATIES",
             "ONICOPATIES"
           ]
@@ -4752,12 +4752,12 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "POSITIU",
-            "NEGATIU",
-            "FEBLE PEU ESQUERRE",
-            "FEBLE PEU DRET",
-            "NEGATIU PEU ESQUERRE",
-            "NEGATIU PEU DRET",
+            "POSITIVA",
+            "NEGATIVA",
+            "FEBLE AL PEU ESQUERRE",
+            "FEBLE AL PEU DRET",
+            "NEGATIVA AL PEU ESQUERRE",
+            "NEGATIVA AL PEU DRET",
             "FEBLE"
           ]
         },
@@ -4770,12 +4770,12 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "POSITIU",
-            "NEGATIU",
-            "FEBLE PEU ESQUERRE",
-            "FEBLE PEU DRET",
-            "NEGATIU PEU ESQUERRE",
-            "NEGATIU PEU DRET",
+            "POSITIVA",
+            "NEGATIVA",
+            "FEBLE AL PEU ESQUERRE",
+            "FEBLE AL PEU DRET",
+            "NEGATIVA AL PEU ESQUERRE",
+            "NEGATIVA AL PEU DRET",
             "FEBLE"
           ]
         },
@@ -4788,12 +4788,12 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "POSITIU",
-            "NEGATIU",
-            "FLEBLE PEU ESQUERRE",
-            "FEBLE PEU DRET",
-            "NEGATIU PEU ESQUERRE",
-            "NEGATIU PEU DRET",
+            "POSITIVA",
+            "NEGATIVA",
+            "FEBLE AL PEU ESQUERRE",
+            "FEBLE AL PEU DRET",
+            "NEGATIVA AL PEU ESQUERRE",
+            "NEGATIVA AL PEU DRET",
             "FEBLE"
           ]
         },
@@ -4808,10 +4808,10 @@
           "options": [
             "POSITIU",
             "NEGATIU",
-            "FLEBLE PEU ESQUERRE",
-            "FEBLE PEU DRET",
-            "NEGATIU PEU ESQUERRE",
-            "NEGATIU PEU DRET",
+            "FEBLE AL PEU ESQUERRE",
+            "FEBLE AL PEU DRET",
+            "NEGATIU AL PEU ESQUERRE",
+            "NEGATIU AL PEU DRET",
             "FEBLE"
           ]
         },
@@ -4824,12 +4824,12 @@
           "type": "textarea",
           "required": true,
           "options": [
-            "POSITIU",
-            "NEGATIU",
-            "FEBLE PEU DRET",
-            "FEBLE PEU ESQUERRE",
-            "NEGATIU PEU DRET",
-            "NEGATIU PEU ESQUERRE",
+            "POSITIVA",
+            "NEGATIVA",
+            "FEBLE AL PEU DRET",
+            "FEBLE AL PEU ESQUERRE",
+            "NEGATIVA AL PEU DRET",
+            "NEGATIVA AL PEU ESQUERRE",
             "FEBLE"
           ]
         },
@@ -4845,13 +4845,13 @@
             "POSITIU",
             "NEGATIU",
             "FEBLE",
-            "NEGATIU PEU DRET",
-            "NEGATIU PEU ESQUERRE",
-            "FLEBLE PEU DRET",
-            "FEBLE PEU ESQUERRE",
+            "NEGATIU AL PEU DRET",
+            "NEGATIU AL PEU ESQUERRE",
+            "FEBLE AL PEU DRET",
+            "FEBLE AL PEU ESQUERRE",
             "NOMÉS AUDIBLE AMB DOPPLER",
-            "NOMÉS AUDIBLE AMB DOPPLER PEU DRET",
-            "NOMÉS AUDIBLE AMB DOPPLER PEU ESQUERRE"
+            "NOMÉS AUDIBLE AMB DOPPLER AL PEU DRET",
+            "NOMÉS AUDIBLE AMB DOPPLER AL PEU ESQUERRE"
           ]
         },
         {
@@ -4866,13 +4866,13 @@
             "POSITIU",
             "NEGATIU",
             "FEBLE",
-            "NEGATIU PEU DRET",
-            "NEGATIU PEU ESQUERRE",
-            "FEBLE PEU DRET",
-            "FEBLE PEU ESQUERRE",
+            "NEGATIU AL PEU DRET",
+            "NEGATIU AL PEU ESQUERRE",
+            "FEBLE AL PEU DRET",
+            "FEBLE AL PEU ESQUERRE",
             "NOMÉS AUDIBLE AMB DOPPLER",
-            "NOMÉS AUDIBLE AMB DOPPLER PEU DRET",
-            "NOMÉS AUDIBLE AMB DOPPLER PEU ESQUERRE"
+            "NOMÉS AUDIBLE AMB DOPPLER AL PEU DRET",
+            "NOMÉS AUDIBLE AMB DOPPLER AL PEU ESQUERRE"
           ]
         },
         {
@@ -4924,10 +4924,10 @@
           "required": true,
           "options": [
             "ZONA METATARSAL",
-            "DORS DITS",
-            "PULPELL DITS",
+            "DORS DELS DITS",
+            "PULPELL DELS DITS",
             "TALONS",
-            "NO PRESENTA",
+            "ABSENT",
             "HELOMES INTERDIGITALS"
           ]
         },
@@ -4941,7 +4941,7 @@
           "required": true,
           "options": [
             "PRESENT",
-            "NO PRESENT"
+            "ABSENT"
           ]
         },
         {
@@ -4958,7 +4958,7 @@
             "HELOMES PERIUNGUEALS",
             "ONICOMICOSI",
             "ONICOLISI",
-            "NO PRESENTA"
+            "ABSENT"
           ]
         },
         {
@@ -4971,11 +4971,11 @@
           "required": true,
           "options": [
             "HALLUX VALGUS",
-            "DITS URPA",
+            "DITS EN URPA",
             "CLINODACTÍLIES",
             "PEUS CAVUS",
             "PEUS PLANS",
-            "NO PRESENTA"
+            "ABSENT"
           ]
         },
         {
@@ -4988,9 +4988,9 @@
           "required": true,
           "options": [
             "NO. ESTRET",
-            "NO. EXCÉS TALÓ",
+            "NO. EXCÉS DE TALÓ",
             "SÍ",
-            "NO.MANCA D´AMORTIGUACIÓ",
+            "NO. MANCA D’AMORTIMENT",
             "NO. MANCA DE SUBJECCIÓ AL PEU"
           ]
         },
@@ -5017,9 +5017,9 @@
           "required": true,
           "options": [
             "Quiropòdia",
-            "Recomanem realitzar les tres consultes anuals per presència peu de risc.",
-            "Tall i fresat ungueal.",
-            "QUIROPÒDIA.NO PRESENTA CAP PATOLOGIA VASCULAR NI NEUROPÀTICA CRÒNICA."
+            "Recomanem fer les tres visites anuals per la presència d’un peu de risc.",
+            "Tall i fresatge unguial.",
+            "Quiropòdia. No presenta cap patologia vascular ni neuropàtica crònica."
           ]
         }
       ],
@@ -5082,7 +5082,7 @@
       ],
       "restricted": false,
       "defaults": {
-        "instructions": "DOS DÍAS ANTES INTERVENCIÓN EMPEZAR CON AMOXICILINA  CLAVULANICO 250/62.5 MG. SOBRES (ANTIBIÓTICO), 2 VECES AL DÍA DURANTE 10 DÍAS.\n2 HORAS ANTES DE LA INTERVENCIÓN, TOMAR 1 IBUPROFENO 400MG. A LAS 4 HORAS TOMAR 1 PARACETAMOL 650 MG., Y ASÍ DURANTE LAS PRIMERAS 72 H.",
+        "instructions": "Dos dies abans de la intervenció, comenceu a prendre amoxicil·lina / àcid clavulànic de 250/62,5 mg en sobres (antibiòtic), dues vegades al dia durant 10 dies.\nDues hores abans de la intervenció, preneu un ibuprofèn de 400 mg. Quatre hores després, preneu un paracetamol de 650 mg. Seguiu aquesta pauta durant les primeres 72 hores.",
         "emergency_phone": "681344344"
       }
     },
@@ -5139,7 +5139,7 @@
       ],
       "restricted": false,
       "defaults": {
-        "instructions": "DOS DÍAS ANTES INTERVENCIÓN EMPEZAR CON CIPROFLOXACINO 500 MG. (ANTIBIÓTICO), 2 VECES AL DÍA DURANTE 10 DÍAS.\n2 HORAS ANTES INTERVENCIÓN TOMAR 1 IBUPROFENO 600MG. A LAS 4 HORAS TOMAR 1 PARACETAMOL 1 G., Y ASÍ DURANTE LAS PRIMERAS 72 H.",
+        "instructions": "Dos dies abans de la intervenció, comenceu a prendre ciprofloxacina de 500 mg (antibiòtic), dues vegades al dia durant 10 dies.\nDues hores abans de la intervenció, preneu un ibuprofèn de 600 mg. Quatre hores després, preneu un paracetamol de 1 g. Seguiu aquesta pauta durant les primeres 72 hores.",
         "emergency_phone": "681344344"
       }
     },
@@ -5196,7 +5196,7 @@
       ],
       "restricted": false,
       "defaults": {
-        "instructions": "*ANTIMONIUM CRUDUM 7CH\n-3 GRÀNULS ABANS DE DINAR\n-3 GRÀNULS ABANS DE SOPAR\n*THUYA OCCIDENTALIS\n-10 GRÀNULS UN COP CADA SETMANA",
+        "instructions": "Antimonium crudum 7 CH\n3 grànuls abans de dinar i 3 grànuls abans de sopar.\nThuya occidentalis\n10 grànuls un cop per setmana.",
         "emergency_phone": ""
       }
     }

@@ -409,4 +409,6 @@ assert covered == {p.name for p in SOURCE.iterdir() if p.is_file()}, covered.sym
 assert {item['group'] for item in catalog} <= {group['id'] for group in groups}
 (OUTPUT / 'catalog.json').write_text(
     json.dumps({'groups': groups, 'templates': catalog}, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+from catalan_visit_pack import localize_pack
+localize_pack(OUTPUT)
 print(f'{len(covered)} original files classified into {len(catalog)} document types.')

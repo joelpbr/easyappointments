@@ -87,6 +87,13 @@ developers to maintain and readjust their custom modifications on the main proje
 
 ### Changed
 
+- Visit PDFs and signed consents open and print inside the patient record. New clinic documents are issued in Catalan.
+
+- A generated visit PDF opens automatically. Closing the PDF returns to the visit. The patient record header shows a consent warning only while the signature is pending.
+
+- The simple agenda has direct links to the full calendar and, for staff with access, Fitxatge at the top of the page.
+- The calendar opens at 08:45 or at the start of the earliest visible appointment if it starts earlier.
+
 - The WhatsApp settings list every reminder still to go out, the first one first, with the date and time it will be sent or why it will not (too little notice left, a phone that cannot receive WhatsApp).
 
 - The WhatsApp switch for the former template that said "demà" is gone: a visit booked after the usual moment, also for the same day, gets its reminder half an hour after it was booked, saying "avui" or "demà", and the reminders the switch had left for review go back to the queue.
@@ -148,6 +155,13 @@ developers to maintain and readjust their custom modifications on the main proje
 - The Docker setup now runs MySQL 8.4 and defaults to the Spanish language and the Europe/Madrid time zone, both configurable in .env
 
 ### Fixed
+
+- The calendar fills the space below its toolbar again when a temporary connection notice disappears.
+- The calendar header follows the visible viewport when returning to the agenda on iPad, including after editing a field.
+
+- The PDF viewer displays embedded lettering and accents correctly on iPad.
+
+- Saving a patient consent now confirms the signature when the server returns the saved record.
 
 - Reloading the calendar no longer pushes the hours down out of line with the appointments: each reload used to add another hidden break label to the first row of every column.
 

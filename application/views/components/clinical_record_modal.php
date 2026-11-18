@@ -193,7 +193,7 @@
                         <div id="clinical-documents-dropdown" class="dropdown ms-auto">
                             <button type="button" id="clinical-visit-documents" class="btn btn-outline-primary btn-sm dropdown-toggle"
                                     data-bs-toggle="dropdown" aria-expanded="false" aria-controls="clinical-documents-menu">
-                                <i class="fas fa-file-pdf me-2" aria-hidden="true"></i><?= lang('visit_documents') ?>
+                                <i class="fas fa-file-pdf me-2" aria-hidden="true"></i><?= lang('visit_document_new') ?>
                             </button>
                             <ul id="clinical-documents-menu" class="dropdown-menu dropdown-menu-end ea-visit-documents-menu"
                                 aria-labelledby="clinical-visit-documents"></ul>
@@ -380,6 +380,7 @@
     </div>
 </dialog>
 
+<?php component('pdf_actions'); ?>
 <?php if (can('edit', PRIV_CUSTOMERS)): ?>
     <?php component('patient_consent_modal'); ?>
 <?php endif; ?>

@@ -4,7 +4,7 @@ Revisió de fonts: 17 de novembre de 2026.
 
 ## Què signa el pacient
 
-Un sol document, en català o castellà, amb tres parts:
+El pacient llegeix i signa en català el mateix text que es guarda al PDF. El document té tres parts:
 
 1. **Consentiment per a l'atenció podològica habitual** (exploració, quiropòdia, cures, estudi biomecànic, ortesis, tractaments conservadors), amb els riscos freqüents i el dret a revocar-lo. [Llei 41/2002](https://www.boe.es/buscar/act.php?id=BOE-A-2002-22188), arts. 4, 8 i 10, i [Llei catalana 21/2000](https://portaljuridic.gencat.cat/eli/es-ct/l/2000/12/29/21), art. 6. Les intervencions amb risc rellevant (cirurgia, infiltracions…) necessiten el seu consentiment específic per escrit, que segueix sent un document de la visita.
 2. **Informació sobre protecció de dades** (art. 13 [RGPD](https://eur-lex.europa.eu/eli/reg/2016/679/oj)): responsable, delegat de protecció de dades, finalitat, base jurídica, destinataris, conservació, drets i reclamació a l'[AEPD](https://www.aepd.es). La història clínica es tracta per l'assistència sanitària (art. 9.2.h RGPD), no per consentiment: per això aquesta part informa i no demana permís.

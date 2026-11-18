@@ -13,13 +13,20 @@ App.Utils.CalendarMobile = (function () {
         let frame;
         const schedule = () => {
             cancelAnimationFrame(frame);
-            frame = requestAnimationFrame(resize);
+            frame = requestAnimationFrame(() => {
+                if (document.hidden) return;
+                resize();
+            });
         };
         window.visualViewport?.addEventListener('resize', schedule);
+        window.visualViewport?.addEventListener('scroll', schedule);
         window.addEventListener('resize', schedule);
+        window.addEventListener('pageshow', schedule);
+        document.addEventListener('visibilitychange', schedule);
+        document.addEventListener('focusout', schedule);
         if (window.ResizeObserver) {
             const observer = new ResizeObserver(schedule);
-            ['header', 'calendar-toolbar', 'sync-alert'].forEach((id) => {
+            ['header', 'connection-status', 'calendar-toolbar', 'sync-alert'].forEach((id) => {
                 const element = document.getElementById(id);
                 if (element) observer.observe(element);
             });

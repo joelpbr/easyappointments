@@ -4,6 +4,7 @@ import pathlib
 import sys
 import xml.etree.ElementTree as ET
 import zipfile
+from catalan_visit_pack import catalan_option
 
 source = pathlib.Path(sys.argv[1])
 catalog = json.loads(pathlib.Path(sys.argv[2]).read_text(encoding='utf-8'))['templates']
@@ -31,7 +32,7 @@ for path in sorted(source.iterdir()):
             original = [value for value in original if value]
             if field['type'] == 'money':
                 original = [f"{float(value.replace('€', '').strip().replace(',', '.')):.2f}" for value in original]
-            assert all(value in field['options'] for value in original), (path.name, field['key'], original)
+            assert all(catalan_option(field['key'], value) in field['options'] for value in original), (path.name, field['key'], original)
             assert len(set(field['options'])) == len(field['options']), (path.name, field['key'], 'duplicates')
             total_options += len(original)
         print(f'{path.name}: {len(controls)} dropdowns, all options preserved')
