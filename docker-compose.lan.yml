@@ -34,7 +34,7 @@ services:
       SMTP_HOST: ''
       SMTP_USER: ''
       SMTP_PASS: ''
-      PROXY_IPS: ''
+      PROXY_IPS: '172.16.0.0/12,127.0.0.1'
     volumes:
       - storage:/var/www/html/storage
     networks: [lan]
@@ -42,7 +42,7 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: [CMD, curl, -fsS, -o, /dev/null, http://localhost/]
+      test: [CMD, curl, -fsS, -o, /dev/null, -H, 'X-Forwarded-Proto: https', http://localhost/]
       interval: 15s
       timeout: 5s
       retries: 5
